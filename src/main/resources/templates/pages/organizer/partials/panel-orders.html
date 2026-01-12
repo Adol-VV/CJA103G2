@@ -1,0 +1,66 @@
+<div class="orders-management">
+    <h2 class="mb-4"><i class="fas fa-ticket-alt me-2"></i>活動訂單</h2>
+
+    <!-- Filter Bar -->
+    <div class="card border-secondary bg-dark mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">選擇活動</label>
+                    <select class="form-select" id="filterEvent">
+                        <option value="">全部活動</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">訂單狀態</label>
+                    <select class="form-select" id="filterStatus">
+                        <option value="">全部</option>
+                        <option value="paid">已付款</option>
+                        <option value="used">已核銷</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">搜尋</label>
+                    <input type="text" class="form-control" id="searchOrder" placeholder="訂單編號 / 購票人">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" id="btnApplyFilter">查詢</button>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success ms-auto" id="btnOpenScanner">
+                    <i class="fas fa-qrcode"></i> 掃描核銷
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card border-secondary bg-dark">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>活動</th>
+                        <th>購票人</th>
+                        <th>金額</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Mock Data -->
+                    <tr>
+                        <td>#MOM2024122801</td>
+                        <td>五月天演唱會</td>
+                        <td>陳小明</td>
+                        <td>NT$ 2,400</td>
+                        <td><span class="badge bg-success">已付款</span></td>
+                        <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

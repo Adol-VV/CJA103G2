@@ -1,0 +1,911 @@
+<!-- 1. Review Report Modal (from Comment Management) -->
+<div class="modal fade" id="reviewReportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-gavel text-warning me-2"></i>檢舉審核</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 被檢舉留言資訊 -->
+                <div class="card bg-secondary bg-opacity-25 border-0 mb-4">
+                    <div class="card-header border-0 bg-transparent">
+                        <strong><i class="fas fa-comment-alt me-2"></i>被檢舉的留言</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <img src="https://ui-avatars.com/api/?name=User1&background=random&size=48"
+                                class="rounded-circle me-3" style="width: 48px; height: 48px;">
+                            <div>
+                                <strong class="text-white">張XX</strong>
+                                <span class="text-muted small ms-2">user001@email.com</span>
+                                <p class="mb-1 mt-2">這個主辦方是詐騙！大家不要買！他們之前就騙過很多人，千萬不要相信！</p>
+                                <small class="text-muted">2024/12/26 10:30 • 來自：2025新年音樂會</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 small">
+                            <span class="text-muted"><i class="fas fa-history me-1"></i>該會員歷史留言：23 則</span>
+                            <span class="text-danger"><i class="fas fa-flag me-1"></i>歷史被檢舉：2 次</span>
+                            <span class="text-warning"><i class="fas fa-ban me-1"></i>歷史被下架：1 次</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 檢舉人資訊 -->
+                <h6 class="mb-3"><i class="fas fa-users me-2"></i>檢舉紀錄（共 3 人）</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-dark table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>檢舉人</th>
+                                <th>檢舉原因</th>
+                                <th>補充說明</th>
+                                <th>檢舉時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=R1&background=2D5F4F&color=fff&size=24"
+                                            class="rounded-circle me-2" style="width: 24px;">
+                                        <span>陳XX</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">不實資訊</span></td>
+                                <td class="text-muted small">這是惡意誹謗，該主辦方是合法的</td>
+                                <td class="small">12/26 11:05</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=R2&background=3B82F6&color=fff&size=24"
+                                            class="rounded-circle me-2" style="width: 24px;">
+                                        <span>林XX</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning text-dark">冒犯性言論</span></td>
+                                <td class="text-muted small">-</td>
+                                <td class="small">12/26 11:30</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=R3&background=F59E0B&color=fff&size=24"
+                                            class="rounded-circle me-2" style="width: 24px;">
+                                        <span>黃XX</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">不實資訊</span></td>
+                                <td class="text-muted small">我有參加過這個主辦方的活動，沒有問題</td>
+                                <td class="small">12/26 12:15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 審核決定 -->
+                <h6 class="mb-3"><i class="fas fa-clipboard-check me-2"></i>審核決定</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">處理方式 <span class="text-danger">*</span></label>
+                        <select class="form-select bg-dark text-white border-secondary" id="reportAction">
+                            <option value="">請選擇...</option>
+                            <option value="dismiss">駁回檢舉（留言保留）</option>
+                            <option value="remove">刪除留言</option>
+                            <option value="warn">警告會員 + 刪除留言</option>
+                            <option value="suspend">暫停會員帳號 + 刪除留言</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">通知設定</label>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox"
+                                id="notifyReporters" checked>
+                            <label class="form-check-label" for="notifyReporters">通知檢舉人審核結果</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox"
+                                id="notifyCommenter" checked>
+                            <label class="form-check-label" for="notifyCommenter">通知留言者處理結果</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">審核備註（內部使用）</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="2"
+                            placeholder="記錄審核理由..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" id="btnDismissReport">
+                    <i class="fas fa-check me-1"></i>駁回檢舉
+                </button>
+                <button type="button" class="btn btn-danger" id="btnConfirmReport">
+                    <i class="fas fa-gavel me-1"></i>確認執行
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Article Preview Modal (from Article Approval) -->
+<div class="modal fade" id="articlePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-newspaper me-2"></i>文章預覽</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary me-2">活動攻略</span>
+                    <span class="badge bg-warning text-dark">待審核</span>
+                </div>
+                <h3>2025 跨年音樂祭攻略：搶票指南與必看陣容</h3>
+                <div class="d-flex align-items-center text-muted mb-4">
+                    <img src="https://ui-avatars.com/api/?name=Happy&background=2D5F4F&color=fff&size=32"
+                        class="rounded-circle me-2" style="width: 32px;">
+                    <span>快樂文創</span>
+                    <span class="mx-2">•</span>
+                    <span>2025/01/06 14:30 提交</span>
+                </div>
+                <img src="https://via.placeholder.com/800x400/2D5F4F/FFFFFF?text=Article+Cover"
+                    class="img-fluid rounded mb-4" style="max-height: 300px; width: 100%; object-fit: cover;">
+                <div class="article-content text-muted">
+                    <p>2025 跨年音樂祭即將到來！作為今年最盛大的跨年活動之一，我們整理了最完整的攻略指南，幫助您順利搶票並享受最佳的觀演體驗。</p>
+                    <h5 class="text-white mt-4">一、票券開賣時間</h5>
+                    <p>預售票將於 12/15 中午 12:00 開放購票，建議提前登入並確認付款方式...</p>
+                    <h5 class="text-white mt-4">二、必看陣容推薦</h5>
+                    <p>本次音樂祭邀請到多組重量級卡司，包括...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <div class="me-auto">
+                    <label class="form-label small text-muted">駁回原因（選填）</label>
+                    <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                        placeholder="若駁回請填寫原因..." style="width: 300px;">
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-danger">
+                    <i class="fas fa-times me-1"></i>駁回
+                </button>
+                <button type="button" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i>通過審核
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Product Review Modal (from Product Approval) -->
+<div class="modal fade" id="productReviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-box-open me-2"></i>商品審核詳情</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img loading="lazy" src="https://picsum.photos/seed/prod1/400/400"
+                            class="img-fluid rounded mb-3" id="reviewProductImage">
+                        <div class="d-flex gap-2">
+                            <img loading="lazy" src="https://picsum.photos/seed/prod1a/80/80" class="rounded"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                            <img loading="lazy" src="https://picsum.photos/seed/prod1b/80/80" class="rounded"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                            <img loading="lazy" src="https://picsum.photos/seed/prod1c/80/80" class="rounded"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h4 id="reviewProductName">10週年紀念黑膠套裝</h4>
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-building me-1"></i>
+                            <span id="reviewProductOrganizer">藝響樂團文化基金會</span>
+                        </p>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">類別</small>
+                                <p class="mb-0"><span class="badge bg-secondary" id="reviewProductCategory">收藏藝品</span>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">售價</small>
+                                <p class="mb-0 text-success fw-bold" id="reviewProductPrice">NT$ 3,200</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">庫存數量</small>
+                                <p class="mb-0" id="reviewProductStock">100</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">申請日期</small>
+                                <p class="mb-0" id="reviewProductDate">2024/12/26</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">商品描述</small>
+                            <p class="mb-0" id="reviewProductDesc">限量500套，收錄十年精選錄音，含典藏木盒與紀念冊。每套皆有獨立編號，附贈限量明信片組。</p>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-secondary">
+                <div class="mb-3">
+                    <label class="form-label">審核意見</label>
+                    <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                        id="reviewProductComment" placeholder="輸入審核意見（駁回時必填）..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="requestProductRevision()">
+                    <i class="fas fa-edit me-1"></i>要求補件
+                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmRejectProduct()">
+                    <i class="fas fa-times me-1"></i>駁回
+                </button>
+                <button type="button" class="btn btn-success" onclick="confirmApproveProduct()">
+                    <i class="fas fa-check me-1"></i>通過審核
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Member Detail Modal (from Member List) -->
+<div class="modal fade" id="memberDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5>會員詳情</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center border-end border-secondary">
+                        <img loading="lazy" src="https://ui-avatars.com/api/?name=User+One" class="rounded-circle mb-3"
+                            width="100">
+                        <h4>User One</h4>
+                        <p class="text-muted">user1@example.com</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-warning">重設密碼</button>
+                            <button class="btn btn-outline-danger">停權帳號</button>
+                        </div>
+                    </div>
+                    <div class="col-md-8 ps-4">
+                        <h6 class="border-bottom border-secondary pb-2 mb-3">帳號統計</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-4">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted">訂單總數</small>
+                                    <h4 class="mb-0">12</h4>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted">總消費</small>
+                                    <h4 class="mb-0">NT$ 24k</h4>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted">違規次數</small>
+                                    <h4 class="mb-0 text-success">0</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 class="border-bottom border-secondary pb-2 mb-3">近期活動</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><small class="text-muted">2024/12/25</small> 購買了 <span
+                                    class="text-white">五月天演唱會</span></li>
+                            <li class="mb-2"><small class="text-muted">2024/12/20</small> 登入平台</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Application Review Modal (from Organizer Reviews) -->
+<div class="modal fade" id="applicationReviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5>申請審核 - 快樂文創有限公司</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">公司資訊</h6>
+                        <p><strong>負責人：</strong>王小明</p>
+                        <p><strong>統編：</strong>12345678</p>
+                        <p><strong>地址：</strong>台北市...</p>
+                        <p><strong>電話：</strong>02-1234-5678</p>
+                        <hr class="border-secondary">
+                        <h6 class="text-muted">備註</h6>
+                        <p>我們專注於獨立音樂展演，希望能在此平台售票。</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">文件審核</h6>
+                        <div class="card bg-secondary bg-opacity-10 mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-alt fa-3x mb-2"></i>
+                                <p class="mb-0">營利事業登記證.pdf</p>
+                                <button class="btn btn-sm btn-link">預覽</button>
+                            </div>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkReg">
+                            <label class="form-check-label" for="checkReg">公司登記驗證無誤</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkBank">
+                            <label class="form-check-label" for="checkBank">銀行帳戶驗證無誤</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button class="btn btn-outline-danger">駁回申請</button>
+                <button class="btn btn-success"
+                    onclick="alert('申請已核准，通知信已寄出');$('#applicationReviewModal').modal('hide')">核准申請</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Refund Detail Modal (from Refund Management) -->
+<div class="modal fade" id="refundDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-undo me-2"></i>退款申請詳情 #R20250107001</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">訂單資訊</h6>
+                        <table class="table table-dark table-sm">
+                            <tr>
+                                <td class="text-muted">原訂單編號</td>
+                                <td>#MOM2025010301</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">活動名稱</td>
+                                <td>2025新年音樂會｜維也納之夜</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">票種</td>
+                                <td>VIP 特區 x 2</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">購買日期</td>
+                                <td>2025/01/03 14:20</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">訂單金額</td>
+                                <td>NT$ 5,600</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">申請退款金額</td>
+                                <td class="text-warning">NT$ 3,600</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">申請人資訊</h6>
+                        <table class="table table-dark table-sm">
+                            <tr>
+                                <td class="text-muted">會員</td>
+                                <td>王小明</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Email</td>
+                                <td>wang@example.com</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">申請時間</td>
+                                <td>2025/01/07 09:30</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">退款原因</td>
+                                <td><span class="badge bg-secondary">無法出席</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6 class="text-muted mb-2">申請說明</h6>
+                    <div class="p-3 bg-secondary bg-opacity-25 rounded">
+                        臨時有事無法參加，希望能退票。我購買了 2 張 VIP 票，只能退 1 張，另 1 張要給朋友。
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6 class="text-muted mb-2">退票政策檢查</h6>
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        此活動採用「標準」退票政策（活動前 7 天可退票），目前距活動還有 <strong>24 天</strong>，符合退款條件。
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <div class="me-auto">
+                    <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                        placeholder="駁回原因（選填）" style="width: 250px;">
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-danger">
+                    <i class="fas fa-times me-1"></i>駁回申請
+                </button>
+                <button type="button" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i>同意退款
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Dispute Detail Modal (from Disputes Panel) -->
+<div class="modal fade" id="disputeDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary bg-danger bg-opacity-25">
+                <h5 class="modal-title"><i class="fas fa-gavel me-2"></i>爭議案件 #D20250105001 <span
+                        class="badge bg-danger ms-2">高優先</span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <!-- 申訴方 -->
+                    <div class="col-md-6">
+                        <div class="card bg-secondary bg-opacity-25 border-0 h-100">
+                            <div class="card-header border-0 bg-transparent">
+                                <strong><i class="fas fa-user me-2"></i>申訴方（會員）</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://ui-avatars.com/api/?name=Lin&background=random&size=48"
+                                        class="rounded-circle me-3" style="width: 48px;">
+                                    <div>
+                                        <strong>林小美</strong>
+                                        <br><small class="text-muted">lin.mei@email.com</small>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-1">會員等級：<span class="text-white">黃金會員</span></p>
+                                <p class="small text-muted mb-1">歷史訂單：<span class="text-white">23 筆</span></p>
+                                <p class="small text-muted mb-0">歷史爭議：<span class="text-success">0 次</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 被申訴方 -->
+                    <div class="col-md-6">
+                        <div class="card bg-secondary bg-opacity-25 border-0 h-100">
+                            <div class="card-header border-0 bg-transparent">
+                                <strong><i class="fas fa-building me-2"></i>被申訴方（主辦方）</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://ui-avatars.com/api/?name=XY&background=2D5F4F&color=fff&size=48"
+                                        class="rounded-circle me-3" style="width: 48px;">
+                                    <div>
+                                        <strong>XY娛樂</strong>
+                                        <br><small class="text-muted">已認證主辦方</small>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-1">舉辦活動：<span class="text-white">15 場</span></p>
+                                <p class="small text-muted mb-1">平均評分：<span class="text-warning">4.2 / 5</span></p>
+                                <p class="small text-muted mb-0">歷史爭議：<span class="text-warning">2 次</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 爭議詳情 -->
+                <h6 class="mb-3"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>爭議詳情</h6>
+                <div class="card bg-secondary bg-opacity-25 border-0 mb-4">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3"><span class="text-muted">爭議類型</span></div>
+                            <div class="col-md-9"><span class="badge bg-danger">活動取消</span></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3"><span class="text-muted">涉及活動</span></div>
+                            <div class="col-md-9">跨年電音派對 2025</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3"><span class="text-muted">涉及訂單</span></div>
+                            <div class="col-md-9">#MOM2024122001（VIP票 x 4）</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3"><span class="text-muted">涉及金額</span></div>
+                            <div class="col-md-9"><strong class="text-danger">NT$ 12,000</strong></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"><span class="text-muted">申訴內容</span></div>
+                            <div class="col-md-9">
+                                主辦方在活動前 2 天突然宣布取消，但拒絕全額退款，說要扣除 20% 手續費。我認為這是主辦方的問題，應該全額退款。而且他們的通知很晚，我已經訂好飯店和車票了，造成額外損失。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 證據與紀錄 -->
+                <h6 class="mb-3"><i class="fas fa-folder-open me-2 text-info"></i>證據與紀錄</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-image text-muted fa-2x mb-2"></i>
+                                <p class="small mb-1">取消公告截圖</p>
+                                <button class="btn btn-sm btn-outline-info">查看</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-receipt text-muted fa-2x mb-2"></i>
+                                <p class="small mb-1">訂單收據</p>
+                                <button class="btn btn-sm btn-outline-info">查看</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-comments text-muted fa-2x mb-2"></i>
+                                <p class="small mb-1">客服對話紀錄</p>
+                                <button class="btn btn-sm btn-outline-info">查看</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 仲裁決定 -->
+                <h6 class="mb-3"><i class="fas fa-balance-scale me-2 text-success"></i>仲裁決定</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">仲裁結果 <span class="text-danger">*</span></label>
+                        <select class="form-select bg-dark text-white border-secondary">
+                            <option value="">請選擇...</option>
+                            <option value="favor_member">判定申訴方勝訴（全額退款）</option>
+                            <option value="partial">部分退款（需說明）</option>
+                            <option value="favor_organizer">判定被申訴方無責</option>
+                            <option value="both_responsible">雙方各負部分責任</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">退款金額</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark text-white border-secondary">NT$</span>
+                            <input type="number" class="form-control bg-dark text-white border-secondary" value="12000">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">仲裁說明 <span class="text-danger">*</span></label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                            placeholder="請詳細說明仲裁理由..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="notifyBoth"
+                                checked>
+                            <label class="form-check-label" for="notifyBoth">通知雙方仲裁結果</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="warnOrganizer">
+                            <label class="form-check-label" for="warnOrganizer">對主辦方發出警告</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-warning">
+                    <i class="fas fa-clock me-1"></i>轉為調查中
+                </button>
+                <button type="button" class="btn btn-success">
+                    <i class="fas fa-gavel me-1"></i>確認仲裁結果
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 8. Settlement Detail Modal -->
+<div class="modal fade" id="settlementDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-secondary">
+                <h5>結算詳情 #S202412-001</h5><button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card bg-dark mb-3 p-3">
+                            <h6>活動資訊</h6>
+                            <h4 class="mb-0">五月天 2024 巡迴演唱會</h4>
+                            <p class="text-muted">主辦：相信音樂 | 日期：2024/12/31</p>
+                        </div>
+                        <table class="table table-sm table-dark">
+                            <thead>
+                                <tr>
+                                    <th>票種</th>
+                                    <th>售出</th>
+                                    <th>金額</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>搖滾區</td>
+                                    <td>500</td>
+                                    <td>NT$ 1,900,000</td>
+                                </tr>
+                                <tr>
+                                    <td>看台區</td>
+                                    <td>1000</td>
+                                    <td>NT$ 2,800,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="settlement-calculation">
+                            <h6 class="border-bottom border-secondary pb-2 mb-3">結算計算</h6>
+                            <div class="calc-row"><span>總營收</span><strong>NT$ 5,000,000</strong></div>
+                            <div class="calc-row text-danger"><span>退款</span><strong>- NT$ 0</strong></div>
+                            <div class="calc-row text-warning"><span>平台抽成 (10%)</span><strong>- NT$ 500,000</strong>
+                            </div>
+                            <hr class="border-secondary">
+                            <div class="calc-row"><span>應付帳款</span>
+                                <h4 class="text-success">NT$ 4,500,000</h4>
+                            </div>
+
+                            <div class="timeline-compact mt-4">
+                                <div class="timeline-step completed">
+                                    <div class="step-marker"><i class="fas fa-check"></i></div>
+                                    <div class="step-content"><strong>活動結束</strong></div>
+                                </div>
+                                <div class="timeline-step completed">
+                                    <div class="step-marker">2</div>
+                                    <div class="step-content"><strong>系統計算</strong></div>
+                                </div>
+                                <div class="timeline-step active">
+                                    <div class="step-marker">3</div>
+                                    <div class="step-content"><strong>財務審核</strong>
+                                        <p class="small text-warning">待處理</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="step-marker">4</div>
+                                    <div class="step-content"><strong>撥款</strong></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success w-100 mt-3"
+                                onclick="alert('已核准並排程撥款');$('#settlementDetailModal').modal('hide')">核准撥款</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 9. Announcement Modal -->
+<div class="modal fade" id="announcementModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-secondary">
+                <h5>編輯公告</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label>標題</label><input type="text" class="form-control mb-3" value="2024 新年優惠活動">
+                <label>圖片</label>
+                <div class="upload-zone mb-3">
+                    <p class="mb-0">點擊上傳圖片</p>
+                </div>
+                <label>連結</label><input type="text" class="form-control" placeholder="https://...">
+            </div>
+            <div class="modal-footer border-secondary"><button class="btn btn-primary"
+                    data-bs-dismiss="modal">儲存</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- 10. Featured Selector Modal -->
+<div class="modal fade" id="featuredSelectorModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-secondary">
+                <h5>選擇主打活動</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card bg-dark border-secondary selector-item">
+                            <img loading="lazy" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30"
+                                class="card-img-top" height="120">
+                            <div class="card-body p-2">
+                                <h6 class="small mb-0 text-white">台北國際書展</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark border-secondary selector-item"
+                            style="border-color: #2D5F4F !important">
+                            <span class="position-absolute top-0 end-0 m-1 text-success"><i
+                                    class="fas fa-check-circle"></i></span>
+                            <img loading="lazy" src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4"
+                                class="card-img-top" height="120">
+                            <div class="card-body p-2">
+                                <h6 class="small mb-0 text-white">五月天演唱會</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary"><button class="btn btn-primary"
+                    data-bs-dismiss="modal">確認選擇</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- 11. Staff Modal -->
+<div class="modal fade" id="staffModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content text-white bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">新增員工</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label required">姓名</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Email</label>
+                        <input type="email" class="form-control bg-dark text-white border-secondary">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">職位</label>
+                        <select class="form-select bg-dark text-white border-secondary">
+                            <option>客服專員</option>
+                            <option>財務專員</option>
+                            <option>內容管理員</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">權限設定</label>
+                        <div class="card bg-secondary bg-opacity-10 border-0 p-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" checked disabled>
+                                <label class="form-check-label">基礎後台存取</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label">會員管理權限</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label">活動審核權限</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label">財務結算權限</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="alert('員工帳號已建立');$('#staffModal').modal('hide')">建立帳號</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 12. Event Review Modal -->
+<div class="modal fade" id="eventReviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content text-white bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">活動審核 - 2025 新年音樂會</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-8 border-end border-secondary">
+                        <h4 class="mb-3">活動詳情</h4>
+                        <div class="mb-4">
+                            <img loading="lazy" src="https://images.unsplash.com/photo-1514525253440-b393452e8d26"
+                                class="img-fluid rounded mb-3 w-100" style="max-height: 300px; object-fit: cover;">
+                            <h6>活動說明</h6>
+                            <p class="text-muted">這是一場盛大的新年音樂會，邀請了維也納知名樂團來台演出...</p>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted">活動時間</small>
+                                    <p class="mb-0 fw-bold">2025/01/01 19:30</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted">活動地點</small>
+                                    <p class="mb-0 fw-bold">高雄衛武營音樂廳</p>
+                                </div>
+                            </div>
+                        </div>
+                        <h6>票種設定</h6>
+                        <table class="table table-sm table-dark">
+                            <thead>
+                                <tr>
+                                    <th>票種</th>
+                                    <th>價格</th>
+                                    <th>數量</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>VIP</td>
+                                    <td>$3,600</td>
+                                    <td>200</td>
+                                </tr>
+                                <tr>
+                                    <td>一般票</td>
+                                    <td>$2,000</td>
+                                    <td>800</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4">
+                        <h4 class="mb-3">審核檢查點</h4>
+                        <div class="card bg-secondary bg-opacity-10 border-0 mb-3">
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check1">
+                                    <label class="form-check-label" for="check1">活動內容合規</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check2">
+                                    <label class="form-check-label" for="check2">場地租借證明確認</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check3">
+                                    <label class="form-check-label" for="check3">票價設定合理</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">審核備註</label>
+                            <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                                placeholder="若駁回請填寫原因..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success"
+                                onclick="alert('活動已核准上架！');$('#eventReviewModal').modal('hide')">核准上架</button>
+                            <button class="btn btn-outline-danger">駁回申請</button>
+                            <button class="btn btn-outline-warning">退回補件</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,217 @@
+<div class="content-panel" id="panel-notification-composer">
+    <h2 class="mb-4">系統通知發送</h2>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>編輯通知</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">通知類型</label>
+                        <select class="form-select bg-dark text-white border-secondary">
+                            <option>系統公告</option>
+                            <option>活動提醒</option>
+                            <option>促銷優惠</option>
+                            <option>服務更新</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">通知標題</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                            placeholder="輸入通知標題...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">通知內容</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="5"
+                            placeholder="輸入通知內容..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">連結 (選填)</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                            placeholder="https://...">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">發送時間</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sendTime" id="sendNow" checked>
+                                <label class="form-check-label" for="sendNow">立即發送</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sendTime" id="sendLater">
+                                <label class="form-check-label" for="sendLater">排程發送</label>
+                            </div>
+                            <input type="datetime-local" class="form-control bg-dark text-white border-secondary mt-2"
+                                disabled id="scheduleTime">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">推送通道</label>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" checked><label
+                                    class="form-check-label">站內通知</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                                    class="form-check-label">Email</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                                    class="form-check-label">推播 (App)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary mb-3">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>收件對象</h5>
+                </div>
+                <div class="card-body">
+                    <!-- 快速選擇 -->
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase mb-2 d-block">快速選擇</small>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recEveryone" checked>
+                            <label class="form-check-label" for="recEveryone">
+                                <i class="fas fa-globe me-1 text-primary"></i>所有人（會員+主辦方）
+                                <span class="text-muted">(12,606)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- 前台會員 -->
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase mb-2 d-block">
+                            <i class="fas fa-user me-1"></i>前台會員
+                        </small>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recAllMembers">
+                            <label class="form-check-label" for="recAllMembers">
+                                全部會員 <span class="text-muted">(12,450)</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recActive">
+                            <label class="form-check-label" for="recActive">
+                                活躍會員 <span class="text-muted">(8,320)</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recNewMembers">
+                            <label class="form-check-label" for="recNewMembers">
+                                新會員（30天內註冊）<span class="text-muted">(523)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- 主辦方 -->
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase mb-2 d-block">
+                            <i class="fas fa-store me-1"></i>主辦方
+                        </small>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recAllOrganizers">
+                            <label class="form-check-label" for="recAllOrganizers">
+                                全部主辦方 <span class="text-muted">(156)</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="recipients" id="recActiveOrganizers">
+                            <label class="form-check-label" for="recActiveOrganizers">
+                                活躍主辦方 <span class="text-muted">(89)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- 自訂 -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="recipients" id="recCustom">
+                        <label class="form-check-label" for="recCustom">
+                            <i class="fas fa-filter me-1"></i>自訂條件
+                        </label>
+                    </div>
+                    <div class="mt-3 d-none" id="customRecipients">
+                        <input type="text" class="form-control bg-dark text-white border-secondary mb-2"
+                            placeholder="搜尋會員或主辦方...">
+                        <small class="text-muted">可輸入 Email 或 ID，用逗號分隔</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-3">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>範本</h5>
+                </div>
+                <div class="card-body">
+                    <select class="form-select bg-dark text-white border-secondary mb-2">
+                        <option>選擇範本...</option>
+                        <option>新活動上架通知</option>
+                        <option>限時優惠提醒</option>
+                        <option>系統維護公告</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary w-100">載入範本</button>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary btn-lg" onclick="alert('通知已發送！')"><i
+                        class="fas fa-paper-plane me-2"></i>發送通知</button>
+                <button class="btn btn-outline-secondary">預覽</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="card bg-dark border-secondary mt-4">
+        <div class="card-header border-secondary d-flex justify-content-between">
+            <h5 class="mb-0"><i class="fas fa-history me-2"></i>發送紀錄</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark mb-0">
+                <thead class="border-secondary">
+                    <tr>
+                        <th>發送時間</th>
+                        <th>標題</th>
+                        <th>類型</th>
+                        <th>對象</th>
+                        <th>已讀率</th>
+                        <th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024/12/25 18:00</td>
+                        <td>聖誕節快樂！限時優惠開跑</td>
+                        <td><span class="badge bg-warning text-dark">促銷</span></td>
+                        <td>全部會員</td>
+                        <td>
+                            <div class="progress" style="width: 100px; height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 68%;"></div>
+                            </div><small>68%</small>
+                        </td>
+                        <td><span class="badge bg-success">已發送</span></td>
+                    </tr>
+                    <tr>
+                        <td>2024/12/20 10:00</td>
+                        <td>系統維護公告 (12/21)</td>
+                        <td><span class="badge bg-info">系統</span></td>
+                        <td>全部會員</td>
+                        <td>
+                            <div class="progress" style="width: 100px; height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 82%;"></div>
+                            </div><small>82%</small>
+                        </td>
+                        <td><span class="badge bg-success">已發送</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
