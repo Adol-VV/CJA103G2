@@ -1,0 +1,246 @@
+<div class="content-panel" id="panel-event-orders">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-ticket-alt me-2"></i>活動訂單管理</h2>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="搜尋訂單/活動..."
+                style="width: 200px;">
+            <select class="form-select bg-dark text-white border-secondary" style="width: 150px;">
+                <option value="">全部活動</option>
+                <option value="1">2025新年音樂會</option>
+                <option value="2">春季室內樂系列</option>
+                <option value="3">實驗劇場｜記憶的形狀</option>
+            </select>
+            <input type="date" class="form-control bg-dark text-white border-secondary" style="width: 150px;">
+        </div>
+    </div>
+
+    <!-- 訂單統計 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card bg-success bg-opacity-10 border-success text-center py-3">
+                <h4 class="text-success mb-0">1,250</h4>
+                <small class="text-muted">已付款</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning bg-opacity-10 border-warning text-center py-3">
+                <h4 class="text-warning mb-0">45</h4>
+                <small class="text-muted">待付款</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info bg-opacity-10 border-info text-center py-3">
+                <h4 class="text-info mb-0">892</h4>
+                <small class="text-muted">已核銷</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-primary bg-opacity-10 border-primary text-center py-3">
+                <h4 class="text-primary mb-0">358</h4>
+                <small class="text-muted">待入場</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary bg-opacity-10 border-secondary text-center py-3">
+                <h4 class="text-secondary mb-0">28</h4>
+                <small class="text-muted">申請退款</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger bg-opacity-10 border-danger text-center py-3">
+                <h4 class="text-danger mb-0">15</h4>
+                <small class="text-muted">已退款</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <ul class="nav nav-tabs card-header-tabs" id="eventOrderTabs">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#" data-status="all">全部訂單</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="paid">
+                        已付款 <span class="badge bg-success ms-1">1,250</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="pending">
+                        待付款 <span class="badge bg-warning ms-1">45</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="refund">
+                        退款中 <span class="badge bg-danger ms-1">28</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="form-check-input"></th>
+                            <th>訂單編號</th>
+                            <th>活動資訊</th>
+                            <th>購票人</th>
+                            <th>票種/數量</th>
+                            <th>金額</th>
+                            <th>付款狀態</th>
+                            <th>核銷狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td><code>#MOE20241226001</code></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://picsum.photos/seed/newyear1/50/50" class="rounded me-2"
+                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <div class="fw-bold">2025新年音樂會</div>
+                                        <small class="text-muted">2024/12/31 19:30</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>林書涵</div>
+                                <small class="text-muted">0912***678</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">貴賓席</span>
+                                <span class="text-muted">x1</span>
+                            </td>
+                            <td class="text-success fw-bold">NT$ 2,800</td>
+                            <td><span class="badge bg-success">已付款</span></td>
+                            <td><span class="badge bg-info">待入場</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-info" title="查看"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-primary" title="QRCode"><i
+                                            class="fas fa-qrcode"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td><code>#MOE20241226002</code></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://picsum.photos/seed/chamber1/50/50" class="rounded me-2"
+                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <div class="fw-bold">春季室內樂系列</div>
+                                        <small class="text-muted">2025/04/05 19:30</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>陳柏翰</div>
+                                <small class="text-muted">0923***789</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">一般席</span>
+                                <span class="text-muted">x2</span>
+                            </td>
+                            <td class="text-success fw-bold">NT$ 2,000</td>
+                            <td><span class="badge bg-success">已付款</span></td>
+                            <td><span class="badge bg-info">待入場</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-info" title="查看"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-primary" title="QRCode"><i
+                                            class="fas fa-qrcode"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="table-warning">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td><code>#MOE20241225003</code></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://picsum.photos/seed/newmedia1/50/50" class="rounded me-2"
+                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <div class="fw-bold">光影交織｜新媒體藝術展</div>
+                                        <small class="text-muted">2025/02/01 10:00</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>黃子軒</div>
+                                <small class="text-muted">0945***901</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">全票</span>
+                                <span class="text-muted">x1</span>
+                            </td>
+                            <td class="text-warning fw-bold">NT$ 400</td>
+                            <td><span class="badge bg-warning text-dark">待付款</span></td>
+                            <td><span class="badge bg-secondary">-</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-info" title="查看"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-warning" title="提醒付款"><i
+                                            class="fas fa-bell"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="table-danger">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td><code>#MOE20241224004</code></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://picsum.photos/seed/newyear1/50/50" class="rounded me-2"
+                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <div class="fw-bold">2025新年音樂會</div>
+                                        <small class="text-muted">2024/12/31 19:30</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>李宜蓁</div>
+                                <small class="text-muted">0956***012</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">貴賓席</span>
+                                <span class="text-muted">x2</span>
+                            </td>
+                            <td class="text-danger fw-bold">NT$ 5,600</td>
+                            <td><span class="badge bg-danger">申請退款</span></td>
+                            <td><span class="badge bg-secondary">-</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-info" title="查看"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-success" title="審核退款"><i
+                                            class="fas fa-check"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer border-secondary d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted me-3">已選擇 <span id="selectedEventOrderCount">0</span> 筆訂單</span>
+                <button class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-file-export me-1"></i>匯出</button>
+                <button class="btn btn-sm btn-outline-info"><i class="fas fa-envelope me-1"></i>批次通知</button>
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,665 @@
+/**
+ * Momento Dashboard Styles
+ * 後台管理共用樣式：Sidebar, Panels, Stats Cards
+ * 適用於：admin/dashboard, organizer/dashboard, user/dashboard
+ */
+
+/* ========================================
+   Dashboard Layout
+   ======================================== */
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========================================
+   Sidebar
+   ======================================== */
+.side_nav {
+    background-color: var(--bg-card, #1A1A1A);
+    border-right: 1px solid var(--border-color, #2A2A2A);
+    position: sticky;
+    top: 56px;
+    /* Height of navbar */
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.side_header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.side_brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.side_brand:hover {
+    color: var(--text-primary);
+}
+
+/* Sidebar Navigation */
+.side_nav {
+    padding: 1rem 0;
+}
+
+.side_heading {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 0.75rem 1.5rem 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.side_nav .nav-item {
+    margin: 2px 0.75rem;
+}
+
+.side_nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.625rem 0.75rem !important;
+    color: var(--text-secondary) !important;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.side_nav .nav-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.side_nav .nav-link:hover {
+    background-color: var(--momento-green-light);
+    color: var(--text-primary) !important;
+}
+
+.side_nav .nav-link.active {
+    background-color: var(--momento-green);
+    color: #fff !important;
+}
+
+.side_nav .nav-link .badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+}
+
+/* Sidebar User Info */
+.side_user {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.user_info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user_avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user_name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.user_role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.main {
+    flex: 1;
+    min-height: 100vh;
+    background-color: var(--bg-black, #0A0A0A);
+    /* margin-left is handled by Bootstrap grid, not fixed value */
+}
+
+.main_head {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+}
+
+.main_body {
+    padding: 1.5rem;
+}
+
+/* ========================================
+   Content Panels
+   ======================================== */
+.panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   Stats Cards
+   ======================================== */
+.stats_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat_card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.stat_card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+.stat_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.stat_icon.primary {
+    background-color: var(--momento-green-light);
+    color: var(--momento-green);
+}
+
+.stat_icon.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+}
+
+.stat_icon.warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+}
+
+.stat_icon.danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.stat_icon.info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--color-info);
+}
+
+.stat_value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.stat_label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.stat_trend {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.stat_trend.up {
+    color: var(--color-success);
+}
+
+.stat_trend.down {
+    color: var(--color-danger);
+}
+
+/* ========================================
+   Data Tables
+   ======================================== */
+.data_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data_table th {
+    background-color: var(--bg-dark);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data_table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.data_table tbody tr:hover {
+    background-color: var(--momento-green-light);
+}
+
+.data_table .actions {
+    white-space: nowrap;
+}
+
+/* ========================================
+   Panel Header
+   ======================================== */
+.panel_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.panel_title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel_title i {
+    color: var(--momento-green);
+}
+
+.panel_actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   Filter Bar
+   ======================================== */
+.filter_bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter_bar .form-control,
+.filter_bar .form-select {
+    max-width: 200px;
+}
+
+.filter_bar .search_input {
+    min-width: 250px;
+}
+
+/* ========================================
+   Tabs for Panels
+   ======================================== */
+.panel_tabs {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.panel_tabs .nav-link {
+    color: var(--text-secondary) !important;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: -1px;
+    background: transparent;
+}
+
+.panel_tabs .nav-link:hover {
+    color: var(--text-primary) !important;
+    background: transparent;
+}
+
+.panel_tabs .nav-link.active {
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--momento-green);
+    background: transparent;
+}
+
+/* ========================================
+   Quick Actions
+   ======================================== */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick_btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all var(--transition-base);
+}
+
+.quick_btn:hover {
+    background-color: var(--momento-green-light);
+    border-color: var(--momento-green);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.quick_btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--momento-green);
+}
+
+.quick_btn span {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ========================================
+   Mobile Responsive
+   ======================================== */
+@media (max-width: 767.98px) {
+    .side_nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        transform: translateX(-100%);
+        z-index: 1050;
+    }
+
+    .side_nav.show {
+        transform: translateX(0);
+    }
+
+    .side_backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        display: none;
+    }
+
+    .side_backdrop.show {
+        display: block;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main_body {
+        padding: 1rem;
+    }
+
+    .stats_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter_bar {
+        flex-direction: column;
+    }
+
+    .filter_bar .form-control,
+    .filter_bar .form-select,
+    .filter_bar .search_input {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stats_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat_card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat_icon {
+        margin-bottom: 0;
+    }
+}
+
+/* ========================================
+   Section Toggle (for User Dashboard)
+   ======================================== */
+.section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.section.active {
+    display: block;
+}
+
+/* ========================================
+   Notification Badge Pulse
+   ======================================== */
+.badge_pulse {
+    position: relative;
+}
+
+.badge_pulse::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    animation: pulse 2s infinite;
+    background: inherit;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* ========================================
+   Step Indicator (Stepper)
+   ======================================== */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+}
+
+.stepper-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: var(--border-color, #2a2a2a);
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.stepper-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.step-counter {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 3px solid var(--border-color, #2a2a2a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--text-muted, #666);
+    margin-bottom: 0.75rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    box-shadow: 0 0 0 4px #0a0a0a;
+}
+
+.step-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted, #666);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Active State */
+.stepper-item.active .step-counter {
+    background: var(--momento-green, #2d5f4f);
+    border-color: var(--momento-green, #2d5f4f);
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(45, 95, 79, 0.5), 0 0 0 4px #0a0a0a;
+}
+
+.stepper-item.active .step-name {
+    color: var(--text-primary, #fff);
+    font-weight: 700;
+}
+
+/* Completed State */
+.stepper-item.completed .step-counter {
+    background: #198754;
+    /* Success Green */
+    border-color: #198754;
+    color: #fff;
+}
+
+.stepper-item.completed .step-counter::after {
+    content: '\f00c';
+    /* FontAwesome Check */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.stepper-item.completed .step-counter {
+    font-size: 0;
+    /* Hide Number */
+}
+
+.stepper-item.completed .step-name {
+    color: #198754;
+}
+
+/* Line Progress Animation */
+.stepper-wrapper[data-progress="1"]::after {
+    width: 0%;
+}
+
+.stepper-wrapper[data-progress="2"]::after {
+    width: 33.33%;
+}
+
+.stepper-wrapper[data-progress="3"]::after {
+    width: 66.66%;
+}
+
+.stepper-wrapper[data-progress="4"]::after {
+    width: 100%;
+}
+
+.stepper-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 40px;
+    height: 3px;
+    background: var(--momento-green);
+    z-index: 1;
+    transition: width 0.5s ease;
+    border-radius: 4px;
+    width: 0;
+    /* Initial width */
+}

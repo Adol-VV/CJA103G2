@@ -1,0 +1,195 @@
+<!-- Order Detail Modal -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>訂單詳情 <code
+                        id="modalOrderId">#MOP20241226001</code></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 訂單狀態流程 -->
+                <div class="d-flex justify-content-between align-items-center mb-4 px-4">
+                    <div class="text-center">
+                        <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px;">
+                            <i class="fas fa-check text-white"></i>
+                        </div>
+                        <div class="small mt-1">已付款</div>
+                    </div>
+                    <div class="flex-grow-1 border-top border-success mx-2"></div>
+                    <div class="text-center">
+                        <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px;">
+                            <i class="fas fa-box-open text-dark"></i>
+                        </div>
+                        <div class="small mt-1 text-warning">備貨中</div>
+                    </div>
+                    <div class="flex-grow-1 border-top border-secondary mx-2"></div>
+                    <div class="text-center text-muted">
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px;">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="small mt-1">運送中</div>
+                    </div>
+                    <div class="flex-grow-1 border-top border-secondary mx-2"></div>
+                    <div class="text-center text-muted">
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="small mt-1">已完成</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 購買人資訊 -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-black border-secondary h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3"><i class="fas fa-user me-2"></i>購買人資訊</h6>
+                                <p class="mb-1"><strong>林書涵</strong></p>
+                                <p class="mb-1 small text-muted">0912-345-678</p>
+                                <p class="mb-0 small text-muted">example@email.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 收件資訊 -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-black border-secondary h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3"><i class="fas fa-map-marker-alt me-2"></i>收件資訊</h6>
+                                <p class="mb-1"><strong>林書涵</strong></p>
+                                <p class="mb-1 small text-muted">0912-345-678</p>
+                                <p class="mb-0 small text-muted">台北市大安區敦化南路二段81號3樓</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品明細 -->
+                <div class="card bg-black border-secondary mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3"><i class="fas fa-shopping-bag me-2"></i>商品明細</h6>
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-secondary">
+                            <img src="https://picsum.photos/seed/tshirt1/80/80" class="rounded me-3"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">2024年度音樂會紀念T恤</div>
+                                <small class="text-muted">規格：L / 黑色</small>
+                            </div>
+                            <div class="text-end">
+                                <div>NT$ 880</div>
+                                <small class="text-muted">x1</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <img src="https://picsum.photos/seed/totebag1/80/80" class="rounded me-3"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">經典Logo帆布袋</div>
+                                <small class="text-muted">規格：米白色</small>
+                            </div>
+                            <div class="text-end">
+                                <div>NT$ 450</div>
+                                <small class="text-muted">x1</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 金額明細 -->
+                <div class="card bg-black border-secondary mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">商品小計</span>
+                            <span>NT$ 1,330</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">運費</span>
+                            <span>NT$ 60</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">代幣折抵</span>
+                            <span class="text-danger">-NT$ 60</span>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="d-flex justify-content-between">
+                            <strong>實付金額</strong>
+                            <strong class="text-success fs-5">NT$ 1,330</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 出貨資訊 -->
+                <div class="card bg-black border-secondary">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3"><i class="fas fa-truck me-2"></i>出貨資訊</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small">物流業者</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="shippingCarrier">
+                                    <option value="">選擇物流業者</option>
+                                    <option value="711">7-ELEVEN 交貨便</option>
+                                    <option value="family">全家 好賣+</option>
+                                    <option value="hct">新竹物流</option>
+                                    <option value="tcat" selected>黑貓宅急便</option>
+                                    <option value="post">郵局包裹</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">追蹤編號</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary"
+                                    id="trackingNumber" placeholder="輸入物流追蹤編號">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-outline-danger" onclick="handleRefund()">
+                    <i class="fas fa-undo me-1"></i>處理退款
+                </button>
+                <button type="button" class="btn btn-success" onclick="confirmShipping()">
+                    <i class="fas fa-shipping-fast me-1"></i>確認出貨
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Scanner Modal -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5>QR Code 掃票核銷</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="scanner-container">
+                            <video id="qrVideo" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                            <canvas id="qrCanvas" class="d-none"></canvas>
+                        </div>
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-outline-primary" id="btnStartScanner">啟動攝影機</button>
+                            <button class="btn btn-outline-secondary d-none" id="btnStopScanner">停止掃描</button>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div id="scanResult" class="scan-result-panel">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-qrcode" style="font-size: 60px; opacity: 0.3;"></i>
+                                <p class="mt-3">等待掃描...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

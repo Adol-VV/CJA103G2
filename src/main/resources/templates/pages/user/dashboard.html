@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員中心 - Momento</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom Theme -->
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link href="../../css/dashboard.css" rel="stylesheet">
+    <link href="../../css/user-dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(18, 18, 18, 0.95);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html" style="letter-spacing: 2px;">
+                MOMENTO
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto text-uppercase small" style="letter-spacing: 1px;">
+                    <li class="nav-item"><a class="nav-link" href="../public/event-list.html">探索活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../public/article-list.html">最新消息</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../public/product-list.html">周邊商品</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> 會員中心
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#overview">總覽</a></li>
+                            <li><a class="dropdown-item" href="#tickets">票券</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="../../index.html">登出</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="member-header d-flex align-items-center">
+        <div class="container position-relative z-index-1">
+            <h1 class="display-4 fw-bold">會員中心</h1>
+            <p class="lead mb-0 text-white-50">管理您的票券、訂單與個人資料</p>
+        </div>
+    </header>
+
+    <div class="container py-5 mt-n5 position-relative z-index-2">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <aside class="col-lg-3 col-md-4 member-sidebar mb-4" data-partial="../../pages/user/partials/sidebar.html">
+                <!-- User Profile Card & Menu loaded here -->
+            </aside>
+
+            <!-- Main Content -->
+            <main class="col-lg-9 col-md-8 member-content">
+                <!-- Overview Section -->
+                <div class="content-section active" id="section-overview"
+                    data-partial="../../pages/user/partials/panel-overview.html"></div>
+
+                <!-- Tickets Section -->
+                <div class="content-section" id="section-tickets"
+                    data-partial="../../pages/user/partials/panel-tickets.html"></div>
+
+                <!-- Orders Section -->
+                <div class="content-section" id="section-orders"
+                    data-partial="../../pages/user/partials/panel-orders.html"></div>
+
+                <!-- Favorites Section -->
+                <div class="content-section" id="section-favorites"
+                    data-partial="../../pages/user/partials/panel-favorites.html"></div>
+
+                <!-- Tokens Section -->
+                <div class="content-section" id="section-tokens"
+                    data-partial="../../pages/user/partials/panel-tokens.html"></div>
+
+                <!-- Notifications Section -->
+                <div class="content-section" id="section-notifications"
+                    data-partial="../../pages/user/partials/panel-notifications.html"></div>
+
+                <!-- Comments Section -->
+                <div class="content-section" id="section-comments"
+                    data-partial="../../pages/user/partials/panel-comments.html"></div>
+
+                <!-- Settings Section -->
+                <div class="content-section" id="section-settings"
+                    data-partial="../../pages/user/partials/panel-settings.html"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals Partial -->
+    <div data-partial="../../pages/user/partials/modals.html"></div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script type="module" src="../../js/user/dashboard/index.js"></script>
+</body>
+
+</html>

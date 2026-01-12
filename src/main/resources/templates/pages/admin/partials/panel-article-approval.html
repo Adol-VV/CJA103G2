@@ -1,0 +1,159 @@
+<div class="content-panel" id="panel-article-approval">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-newspaper me-2"></i>文章審核</h2>
+        <div class="d-flex gap-2">
+            <select class="form-select bg-dark text-white border-secondary" style="width: 150px;">
+                <option value="">所有主辦方</option>
+                <option>快樂文創</option>
+                <option>動漫協進會</option>
+            </select>
+            <select class="form-select bg-dark text-white border-secondary" style="width: 120px;">
+                <option value="">所有狀態</option>
+                <option value="pending">待審核</option>
+                <option value="approved">已通過</option>
+                <option value="rejected">已駁回</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 文章審核統計 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">待審核</p>
+                    <h4 class="mb-0 text-warning">2</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">本週已審</p>
+                    <h4 class="mb-0 text-success">8</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">已駁回</p>
+                    <h4 class="mb-0 text-danger">1</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">總文章數</p>
+                    <h4 class="mb-0">156</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章審核列表 -->
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#" data-status="pending">
+                        待審核 <span class="badge bg-warning ms-1">2</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="approved">已通過</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a>
+                </li>
+            </ul>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">文章標題</th>
+                        <th>主辦方</th>
+                        <th>分類</th>
+                        <th>提交時間</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="fw-bold">2025 跨年音樂祭攻略：搶票指南與必看陣容</div>
+                            <small class="text-muted">ID: A20250106</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://ui-avatars.com/api/?name=Happy&background=2D5F4F&color=fff&size=24"
+                                    class="rounded-circle me-2" style="width: 24px;">
+                                <span>快樂文創</span>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-primary">活動攻略</span></td>
+                        <td><small>2025/01/06<br>14:30</small></td>
+                        <td><span class="badge bg-warning text-dark">待審核</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" title="預覽文章" data-bs-toggle="modal"
+                                    data-bs-target="#articlePreviewModal">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="通過">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="駁回">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="fw-bold">專訪：獨立樂團的崛起之路</div>
+                            <small class="text-muted">ID: A20250105</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://ui-avatars.com/api/?name=Indie&background=3B82F6&color=fff&size=24"
+                                    class="rounded-circle me-2" style="width: 24px;">
+                                <span>地下社會</span>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-info">藝人專訪</span></td>
+                        <td><small>2025/01/05<br>10:15</small></td>
+                        <td><span class="badge bg-warning text-dark">待審核</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" title="預覽文章">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="通過">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="駁回">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 審核說明 -->
+    <div class="alert alert-secondary mt-4">
+        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>文章審核標準</h6>
+        <ul class="mb-0 small">
+            <li>文章內容需與藝文活動、音樂、展覽等主題相關</li>
+            <li>不得包含不實資訊、廣告內容或違反社群規範的內容</li>
+            <li>圖片需有合法使用權限</li>
+            <li>審核通過後文章將公開顯示，駁回需附理由通知主辦方</li>
+        </ul>
+    </div>
+</div>

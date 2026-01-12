@@ -1,0 +1,115 @@
+<h3 class="mb-4">我的商品訂單</h3>
+
+<!-- Order Status Tabs -->
+<ul class="nav nav-tabs mb-4 border-secondary">
+    <li class="nav-item">
+        <a class="nav-link active bg-transparent text-white border-bottom border-success border-0 border-bottom-2"
+            data-bs-toggle="tab" href="#ordersAll">全部訂單</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab" href="#ordersPending">
+            待出貨 <span class="badge bg-warning ms-2 rounded-pill" id="pendingOrderCount">1</span>
+        </a>
+    </li>
+    <li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+            href="#ordersShipped">已出貨</a></li>
+    <li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+            href="#ordersCompleted">已完成</a></li>
+    <li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+            href="#ordersRefunded">退款/退貨</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- All Orders -->
+    <div class="tab-pane fade show active" id="ordersAll">
+        <div class="row g-3 mb-3">
+            <div class="col-md-6"><input type="text" class="form-control bg-dark text-white border-secondary"
+                    id="searchProductOrder" placeholder="搜尋訂單編號或商品名稱"></div>
+            <div class="col-md-3">
+                <select class="form-select bg-dark text-white border-secondary" id="filterOrderDate">
+                    <option value="">全部時間</option>
+                    <option value="30d">近 30 天</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select bg-dark text-white border-secondary" id="filterOrderStatus">
+                    <option value="">全部狀態</option>
+                    <option value="pending">待付款</option>
+                    <option value="shipped">已出貨</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="productOrdersList">
+            <!-- Mock Order Card 1 -->
+            <div class="card mb-3 order-card bg-dark border-secondary">
+                <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">訂單編號：</span><strong
+                            class="text-white">#ORD-PROD-20241120-001</strong>
+                        <span class="ms-3 text-muted small">下單時間：</span><span class="text-white small">2024/11/20
+                            14:30</span>
+                    </div>
+                    <span class="badge bg-success text-white">已完成</span>
+                </div>
+                <div class="card-body">
+                    <div class="order-item mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-auto"><img loading="lazy" src="https://via.placeholder.com/80"
+                                    class="rounded"></div>
+                            <div class="col">
+                                <h6 class="mb-1 text-white">2024年度音樂會紀念T恤</h6>
+                                <p class="text-muted small mb-1">尺寸：L / 顏色：黑色</p>
+                                <p class="mb-0 text-white"><span class="text-muted">NT$ 880</span> x
+                                    1</p>
+                            </div>
+                            <div class="col-auto text-end"><strong class="text-white">NT$
+                                    880</strong></div>
+                        </div>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-white small">
+                            <div class="mb-1"><strong>收件人：</strong>王小明 (0912-345-678)</div>
+                            <div><strong>地址：</strong>台北市信義區信義路五段7號</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="text-muted small">訂單總額</div>
+                            <strong class="text-primary fs-5">NT$ 1,390</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer border-secondary d-flex justify-content-between">
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm btn-view-order-detail" data-id="MOP20241225001"><i
+                                class="fas fa-eye"></i> 詳情</button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-headset"></i> 客服</button>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm btn-cancel-order"
+                        data-id="MOP20241225001">取消訂單</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center pagination-sm">
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Other tabs placeholders (simplified) -->
+    <div class="tab-pane fade" id="ordersPending">
+        <div class="alert alert-info bg-dark border-secondary text-white">載入待出貨訂單...</div>
+    </div>
+    <div class="tab-pane fade" id="ordersShipped">
+        <div class="alert alert-info bg-dark border-secondary text-white">載入已出貨訂單...</div>
+    </div>
+    <div class="tab-pane fade" id="ordersCompleted">
+        <div class="alert alert-info bg-dark border-secondary text-white">載入已完成訂單...</div>
+    </div>
+    <div class="tab-pane fade" id="ordersRefunded">
+        <div class="alert alert-info bg-dark border-secondary text-white">載入退款訂單...</div>
+    </div>
+</div>

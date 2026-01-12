@@ -1,0 +1,117 @@
+<div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2">總覽儀表板</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-share"></i> 匯出報表
+        </button>
+        <button type="button" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> 快速建立
+        </button>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase">進行中活動</p>
+                        <h3 class="mb-0">12</h3>
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +2 本月</small>
+                    </div>
+                    <div class="stats-icon bg-primary">
+                        <i class="far fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase">本月營收</p>
+                        <h3 class="mb-0">NT$ 2.4M</h3>
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +24%</small>
+                    </div>
+                    <div class="stats-icon bg-success">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase">商品銷量</p>
+                        <h3 class="mb-0">843</h3>
+                        <small class="text-danger"><i class="fas fa-arrow-down"></i> -5%</small>
+                    </div>
+                    <div class="stats-icon bg-warning text-dark">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase">待處理訂單</p>
+                        <h3 class="mb-0">34</h3>
+                        <small class="text-warning"><i class="fas fa-exclamation-circle"></i>
+                            需處理</small>
+                    </div>
+                    <div class="stats-icon bg-danger">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">銷售趨勢 (近7日)</h6>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active">7日</button>
+                    <button class="btn btn-outline-secondary">30日</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="position: relative; height: 250px; width: 100%;">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary">
+                <h6 class="mb-0">營收佔比</h6>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-center">
+                <div style="position: relative; height: 200px; width: 100%;">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                <div class="mt-4 text-center">
+                    <span class="badge bg-primary me-2">● 票券: 68%</span>
+                    <span class="badge bg-success">● 商品: 32%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

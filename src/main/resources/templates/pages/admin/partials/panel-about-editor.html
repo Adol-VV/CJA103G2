@@ -1,0 +1,306 @@
+<div class="content-panel" id="panel-about-editor">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-info-circle me-2"></i>關於我們 編輯</h2>
+        <div>
+            <button class="btn btn-outline-secondary me-2" id="btnPreviewAbout">
+                <i class="fas fa-eye me-1"></i>預覽
+            </button>
+            <button class="btn btn-primary" id="btnSaveAbout">
+                <i class="fas fa-save me-1"></i>儲存變更
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- 編輯區域 -->
+        <div class="col-lg-8">
+            <!-- 公司簡介 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>公司簡介</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">標題</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" value="關於 Momento"
+                            id="aboutTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Slogan（標語）</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" value="讓每個瞬間成為永恆的記憶"
+                            id="aboutSlogan">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">簡介內容</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="5"
+                            id="aboutDescription">Momento 是台灣領先的活動票務與周邊商品電商平台。我們致力於連結活動主辦方與熱情的參與者，打造無縫的購票與購物體驗。
+
+自 2020 年成立以來，我們已服務超過 500 場活動、10 萬名會員，累積銷售金額突破 1 億元。無論是演唱會、展覽、運動賽事還是講座，Momento 都是您的最佳選擇。</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 使命與願景 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>使命與願景</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">使命 (Mission)</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                            id="aboutMission">透過科技創新，讓每一位用戶都能輕鬆探索、購買並享受各種精彩活動與商品，創造美好回憶。</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">願景 (Vision)</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                            id="aboutVision">成為亞太地區最受信賴的活動與電商整合平台，讓每個人都能找到屬於自己的精彩時刻。</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心價值 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-heart me-2"></i>核心價值</h5>
+                    <button class="btn btn-sm btn-outline-primary" id="btnAddValue">
+                        <i class="fas fa-plus me-1"></i>新增價值
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="list-group" id="coreValuesList">
+                        <div
+                            class="list-group-item bg-dark text-white border-secondary d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <i class="fas fa-grip-vertical text-muted me-3" style="cursor: move;"></i>
+                                <div class="me-3">
+                                    <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                                        style="width: 80px;">
+                                        <option>💡</option>
+                                        <option selected>🎯</option>
+                                        <option>🤝</option>
+                                        <option>🚀</option>
+                                        <option>❤️</option>
+                                    </select>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary mb-1"
+                                        value="用戶至上">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary"
+                                        value="始終將用戶需求放在首位">
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger ms-2"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div
+                            class="list-group-item bg-dark text-white border-secondary d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <i class="fas fa-grip-vertical text-muted me-3" style="cursor: move;"></i>
+                                <div class="me-3">
+                                    <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                                        style="width: 80px;">
+                                        <option selected>💡</option>
+                                        <option>🎯</option>
+                                        <option>🤝</option>
+                                        <option>🚀</option>
+                                        <option>❤️</option>
+                                    </select>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary mb-1"
+                                        value="持續創新">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary"
+                                        value="不斷探索新技術與服務模式">
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger ms-2"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div
+                            class="list-group-item bg-dark text-white border-secondary d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <i class="fas fa-grip-vertical text-muted me-3" style="cursor: move;"></i>
+                                <div class="me-3">
+                                    <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                                        style="width: 80px;">
+                                        <option>💡</option>
+                                        <option>🎯</option>
+                                        <option selected>🤝</option>
+                                        <option>🚀</option>
+                                        <option>❤️</option>
+                                    </select>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary mb-1"
+                                        value="誠信透明">
+                                    <input type="text"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary"
+                                        value="建立信任，公開透明地營運">
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger ms-2"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 聯絡資訊 -->
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>聯絡資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">公司地址</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                value="台北市信義區信義路五段 7 號 88 樓" id="aboutAddress">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">客服電話</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                value="02-8888-8888" id="aboutPhone">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">客服 Email</label>
+                            <input type="email" class="form-control bg-dark text-white border-secondary"
+                                value="support@momento.com.tw" id="aboutEmail">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">客服時間</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                value="週一至週五 09:00 - 18:00" id="aboutServiceHours">
+                        </div>
+                    </div>
+                    <hr class="border-secondary my-4">
+                    <h6 class="mb-3">社群連結</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary"><i
+                                        class="fab fa-facebook text-primary"></i></span>
+                                <input type="url" class="form-control bg-dark text-white border-secondary"
+                                    placeholder="Facebook 連結" value="https://facebook.com/momento">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary"><i
+                                        class="fab fa-instagram text-danger"></i></span>
+                                <input type="url" class="form-control bg-dark text-white border-secondary"
+                                    placeholder="Instagram 連結" value="https://instagram.com/momento">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary"><i
+                                        class="fab fa-line text-success"></i></span>
+                                <input type="url" class="form-control bg-dark text-white border-secondary"
+                                    placeholder="LINE 官方帳號" value="@momento">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary"><i
+                                        class="fab fa-youtube text-danger"></i></span>
+                                <input type="url" class="form-control bg-dark text-white border-secondary"
+                                    placeholder="YouTube 頻道" value="https://youtube.com/@momento">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側設定 -->
+        <div class="col-lg-4">
+            <!-- 頁面狀態 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h6 class="mb-0">頁面狀態</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>頁面啟用</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked id="aboutPageEnabled">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">上次更新</span>
+                        <span class="text-muted small">2025/01/05 14:30</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 封面圖片 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h6 class="mb-0">封面圖片</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87"
+                            class="img-fluid rounded mb-2" alt="封面圖片" id="aboutCoverPreview">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-upload me-1"></i>更換圖片
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted">建議尺寸：1920 x 600 px</small>
+                </div>
+            </div>
+
+            <!-- SEO 設定 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h6 class="mb-0">SEO 設定</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label small">Meta Title</label>
+                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                            value="關於我們 | Momento - 活動票務與周邊商品平台">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">Meta Description</label>
+                        <textarea class="form-control form-control-sm bg-dark text-white border-secondary"
+                            rows="3">了解 Momento 的使命、願景與核心價值，我們致力於打造最佳的活動票務與購物體驗。</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作紀錄 -->
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary">
+                    <h6 class="mb-0">最近編輯紀錄</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item bg-dark text-white border-secondary small">
+                        <div class="d-flex justify-content-between">
+                            <span>Admin 更新了聯絡資訊</span>
+                            <span class="text-muted">2 天前</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item bg-dark text-white border-secondary small">
+                        <div class="d-flex justify-content-between">
+                            <span>Admin 更新了公司簡介</span>
+                            <span class="text-muted">1 週前</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item bg-dark text-white border-secondary small">
+                        <div class="d-flex justify-content-between">
+                            <span>Admin 更換了封面圖片</span>
+                            <span class="text-muted">2 週前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

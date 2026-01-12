@@ -1,0 +1,166 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3"><i class="fas fa-bullhorn me-2"></i>通知會員</h2>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-body">
+                <h5 class="mb-4">編輯通知內容</h5>
+
+                <div class="mb-3">
+                    <label class="form-label required">通知類型</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyType">
+                        <option value="event_reminder">活動提醒</option>
+                        <option value="event_change">活動異動通知</option>
+                        <option value="event_cancel">活動取消通知</option>
+                        <option value="merchandise">商品出貨通知</option>
+                        <option value="custom">自訂通知</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required">選擇活動/商品</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyTarget">
+                        <option value="">請選擇</option>
+                        <optgroup label="進行中活動">
+                            <option value="event-1">2025新年音樂會｜維也納之夜 (購票人數: 856)</option>
+                            <option value="event-2">春季室內樂系列｜弦樂四重奏之夜 (購票人數: 234)</option>
+                        </optgroup>
+                        <optgroup label="上架中商品">
+                            <option value="prod-1">官方週邊 T-shirt (購買人數: 156)</option>
+                            <option value="prod-2">限定版海報組 (購買人數: 89)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required">通知標題</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="memberNotifyTitle"
+                        placeholder="例：活動入場提醒" maxlength="50">
+                    <small class="text-muted">50 字以內</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required">通知內容</label>
+                    <textarea class="form-control bg-dark text-white border-secondary" rows="6" id="memberNotifyContent"
+                        placeholder="請輸入要通知會員的內容..."></textarea>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyEmail">
+                    <label class="form-check-label" for="notifyEmail">
+                        同時發送 Email 通知
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速範本 -->
+        <div class="card bg-dark border-secondary">
+            <div class="card-header border-secondary">
+                <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>快速範本</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="活動入場提醒"
+                            data-content="親愛的觀眾您好，您購買的活動將於明日舉行，請記得攜帶電子票券（QR Code）準時入場。建議提前 30 分鐘抵達會場。期待與您相見！">
+                            <i class="fas fa-clock me-1"></i>入場提醒
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="活動時間變更通知"
+                            data-content="親愛的觀眾您好，因故活動時間有所調整，請留意以下變更：\n\n原定時間：\n調整後時間：\n\n造成不便敬請見諒，如需退票請至會員中心申請。">
+                            <i class="fas fa-calendar-alt me-1"></i>時間變更
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="商品已出貨通知"
+                            data-content="親愛的顧客您好，您訂購的商品已經出貨！\n\n物流編號：\n查詢網址：\n\n預計 2-3 個工作天送達，請留意收件。感謝您的支持！">
+                            <i class="fas fa-truck me-1"></i>出貨通知
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 發送對象統計 -->
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">發送對象</h6>
+                <h2 class="text-primary mb-0" id="notifyTargetCount">0</h2>
+                <small class="text-muted">位會員將收到此通知</small>
+            </div>
+        </div>
+
+        <!-- 預覽 -->
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-header border-secondary">
+                <h6 class="mb-0"><i class="fas fa-eye me-2"></i>通知預覽</h6>
+            </div>
+            <div class="card-body">
+                <div class="bg-black rounded p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="bg-primary rounded-circle p-2 me-2">
+                            <i class="fas fa-bell text-white small"></i>
+                        </div>
+                        <div>
+                            <strong class="small" id="previewNotifyTitle">通知標題</strong>
+                            <br><small class="text-muted">剛剛</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0" id="previewNotifyContent">通知內容預覽...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 發送按鈕 -->
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-lg" id="btnSendMemberNotify">
+                <i class="fas fa-paper-plane me-1"></i>發送通知
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="fas fa-clock me-1"></i>排程發送
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 歷史通知紀錄 -->
+<div class="card bg-dark border-secondary mt-4">
+    <div class="card-header border-secondary">
+        <h6 class="mb-0"><i class="fas fa-history me-2"></i>已發送通知紀錄</h6>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>發送時間</th>
+                    <th>類型</th>
+                    <th>標題</th>
+                    <th>對象</th>
+                    <th>狀態</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2024/12/28 10:30</td>
+                    <td><span class="badge bg-info">活動提醒</span></td>
+                    <td>入場提醒 - 維也納之夜</td>
+                    <td>856 人</td>
+                    <td><span class="badge bg-success">已發送</span></td>
+                </tr>
+                <tr>
+                    <td>2024/12/25 14:00</td>
+                    <td><span class="badge bg-warning">出貨通知</span></td>
+                    <td>商品已出貨通知</td>
+                    <td>45 人</td>
+                    <td><span class="badge bg-success">已發送</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

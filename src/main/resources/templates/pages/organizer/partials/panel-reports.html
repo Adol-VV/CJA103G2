@@ -1,0 +1,141 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3">銷售報表</h2>
+    <div class="d-flex align-items-center">
+        <input type="date" class="form-control bg-dark text-white border-secondary me-2" value="2024-12-01">
+        <span class="text-white me-2">-</span>
+        <input type="date" class="form-control bg-dark text-white border-secondary me-2" value="2024-12-31">
+        <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-download me-1"></i>匯出報表
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('csv')"><i
+                            class="fas fa-file-csv me-2"></i>CSV 格式</a></li>
+                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('excel')"><i
+                            class="fas fa-file-excel me-2"></i>Excel 格式</a></li>
+                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('pdf')"><i
+                            class="fas fa-file-pdf me-2"></i>PDF 格式</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small">總營收</h6>
+                <h3 class="mb-0">NT$ 12,540,800</h3>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> 12.5% 較上月</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small">售出票券</h6>
+                <h3 class="mb-0">8,542</h3>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> 5.2% 較上月</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small">周邊商品營收</h6>
+                <h3 class="mb-0">NT$ 3,240,000</h3>
+                <small class="text-danger"><i class="fas fa-arrow-down"></i> 2.1% 較上月</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small">訂單平均單價</h6>
+                <h3 class="mb-0">NT$ 2,450</h3>
+                <small class="text-muted">- 持平</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card bg-dark border-secondary mb-4">
+    <div class="card-header border-secondary">
+        <h5 class="mb-0">營收趨勢</h5>
+    </div>
+    <div class="card-body">
+        <!-- Helper for Chart implementation -->
+        <div
+            style="height: 300px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 4px;">
+            <div class="text-center text-muted">
+                <i class="fas fa-chart-area fa-3x mb-2"></i>
+                <p>Detailed Revenue Chart Placeholder</p>
+            </div>
+        </div>
+        <!-- In real app, canvas id="revenueChart" would be initialized here -->
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary">熱銷票種排行</div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span>1. 搖滾區 A (NT$ 3,800)</span>
+                    <div class="progress w-50" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 95%">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span>2. 看台區 B (NT$ 2,800)</span>
+                    <div class="progress w-50" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 82%">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>3. 身障席 (NT$ 1,900)</span>
+                    <div class="progress w-50" style="height: 8px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary">顧客分析</div>
+            <div class="card-body">
+                <table class="table table-dark table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>年齡層</th>
+                            <th>佔比</th>
+                            <th>趨勢</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>18-24 歲</td>
+                            <td>45%</td>
+                            <td class="text-success"><i class="fas fa-arrow-up"></i></td>
+                        </tr>
+                        <tr>
+                            <td>25-34 歲</td>
+                            <td>35%</td>
+                            <td class="text-muted">-</td>
+                        </tr>
+                        <tr>
+                            <td>35-44 歲</td>
+                            <td>15%</td>
+                            <td class="text-danger"><i class="fas fa-arrow-down"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

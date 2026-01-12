@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快樂文創 | 主辦單位 | Momento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #2D5F4F;
+            object-fit: cover;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .stat-item h3 {
+            color: #2D5F4F;
+            margin-bottom: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #9A9A9A;
+            border: none;
+            padding: 15px 25px;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #fff;
+            background: transparent;
+            border-bottom: 3px solid #2D5F4F;
+        }
+
+        .event-card,
+        .product-card {
+            transition: transform 0.3s;
+        }
+
+        .event-card:hover,
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-success" href="../../index.html"><i
+                    class="fas fa-ticket-alt me-2"></i>Momento</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../user/event-list.html">活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="article-list.html">最新消息</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <img loading="lazy" src="https://ui-avatars.com/api/?name=Happy+Creative&background=2D5F4F&color=fff&size=256"
+                        class="rounded-circle profile-avatar" alt="Organizer Avatar">
+                </div>
+                <div class="col">
+                    <div class="d-flex align-items-center mb-2">
+                        <h1 class="mb-0 me-3">快樂文創</h1>
+                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>已認證</span>
+                    </div>
+                    <p class="text-muted mb-3">致力於打造最獨特的音樂現場體驗，讓感動無所不在。專注於獨立音樂與藝文展演策劃。</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>追蹤主辦</button>
+                        <button class="btn btn-outline-light"><i class="fas fa-share-alt me-2"></i>分享</button>
+                    </div>
+                </div>
+                <div class="col-auto d-none d-lg-block">
+                    <div class="row g-4">
+                        <div class="col">
+                            <div class="stat-item">
+                                <h3>12</h3>
+                                <small class="text-muted">活動</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stat-item">
+                                <h3>8</h3>
+                                <small class="text-muted">商品</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stat-item">
+                                <h3>2.5K</h3>
+                                <small class="text-muted">粉絲</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stat-item">
+                                <h3>15</h3>
+                                <small class="text-muted">文章</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="container">
+        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-events">
+                    <i class="fas fa-calendar-alt me-2"></i>活動
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-products">
+                    <i class="fas fa-box me-2"></i>商品
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-articles">
+                    <i class="fas fa-newspaper me-2"></i>文章
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-about">
+                    <i class="fas fa-info-circle me-2"></i>關於
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content pb-5">
+            <!-- Events Tab -->
+            <div class="tab-pane fade show active" id="tab-events">
+                <div class="row g-4">
+                    <!-- Event 1 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bg-dark border-secondary event-card h-100">
+                            <div class="position-relative">
+                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
+                                    style="height: 180px; object-fit: cover;">
+                                <span class="badge bg-success position-absolute top-0 end-0 m-2">熱賣中</span>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">音樂演出</span>
+                                <h5 class="card-title">獨立樂團之夜 Vol.5</h5>
+                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2025/02/14</p>
+                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>Legacy Taipei</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="fw-bold text-white">NT$ 800 起</span>
+                                    <a href="../user/event-detail.html" class="btn btn-sm btn-primary">查看詳情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Event 2 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bg-dark border-secondary event-card h-100">
+                            <div class="position-relative">
+                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
+                                    style="height: 180px; object-fit: cover;">
+                                <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">即將開賣</span>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-info mb-2">音樂節</span>
+                                <h5 class="card-title">春季電音派對</h5>
+                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2025/03/21</p>
+                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>大安森林公園</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="fw-bold text-white">NT$ 1,200 起</span>
+                                    <a href="#" class="btn btn-sm btn-outline-light">敬請期待</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Event 3 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bg-dark border-secondary event-card h-100">
+                            <div class="position-relative">
+                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
+                                    style="height: 180px; object-fit: cover;">
+                                <span class="badge bg-secondary position-absolute top-0 end-0 m-2">已結束</span>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-success mb-2">音樂演出</span>
+                                <h5 class="card-title">冬季不插電演唱會</h5>
+                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2024/12/20</p>
+                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>河岸留言</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="text-muted">已結束</span>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">回顧</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-pane fade" id="tab-products">
+                <div class="row g-4">
+                    <!-- Product 1 -->
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card bg-dark border-secondary product-card h-100">
+                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate">快樂文創紀念T恤</h6>
+                                <p class="text-muted small mb-2">官方週邊</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-white">NT$ 680</span>
+                                    <a href="../user/prod-detail.html" class="btn btn-sm btn-outline-primary"><i
+                                            class="fas fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product 2 -->
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card bg-dark border-secondary product-card h-100">
+                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate">限定版帆布袋</h6>
+                                <p class="text-muted small mb-2">環保系列</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-white">NT$ 450</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                            class="fas fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product 3 -->
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card bg-dark border-secondary product-card h-100">
+                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate">音樂祭貼紙包</h6>
+                                <p class="text-muted small mb-2">收藏品</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-white">NT$ 120</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                            class="fas fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product 4 -->
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card bg-dark border-secondary product-card h-100">
+                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate">保溫杯 500ml</h6>
+                                <p class="text-muted small mb-2">生活用品</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-white">NT$ 580</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                            class="fas fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Tab -->
+            <div class="tab-pane fade" id="tab-articles">
+                <div class="row g-4">
+                    <!-- Article 1 -->
+                    <div class="col-md-6">
+                        <div class="card bg-dark border-secondary h-100">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <img loading="lazy" src="https://via.placeholder.com/300x200" class="img-fluid h-100"
+                                        style="object-fit: cover;">
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <span class="badge bg-success mb-2">主辦專欄</span>
+                                        <h5 class="card-title">打造沈浸式音樂體驗的幕後推手</h5>
+                                        <p class="text-muted small mb-2">不僅僅是聽覺的饗宴，我們致力於將視覺與互動結合...</p>
+                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/15</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Article 2 -->
+                    <div class="col-md-6">
+                        <div class="card bg-dark border-secondary h-100">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <img loading="lazy" src="https://via.placeholder.com/300x200" class="img-fluid h-100"
+                                        style="object-fit: cover;">
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <span class="badge bg-success mb-2">主辦專欄</span>
+                                        <h5 class="card-title">2024年度回顧：我們一起走過的音樂歷程</h5>
+                                        <p class="text-muted small mb-2">感謝每一位支持者，讓我們共同創造了無數美好回憶...</p>
+                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/28</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div class="tab-pane fade" id="tab-about">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-building me-2"></i>關於我們</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>快樂文創成立於 2018 年，是一家專注於獨立音樂與藝文展演策劃的公司。我們相信音樂能夠連結人心，創造無可取代的感動時刻。</p>
+                                <p>從小型 Live House 演出到大型戶外音樂節，我們累積了豐富的策展經驗，致力於為觀眾帶來最優質的現場體驗。</p>
+                                <h6 class="mt-4 mb-3">我們的理念</h6>
+                                <ul>
+                                    <li>支持獨立音樂創作者</li>
+                                    <li>打造沈浸式觀演體驗</li>
+                                    <li>促進藝文交流與合作</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-link me-2"></i>聯絡資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-globe me-2 text-muted"></i><a href="#"
+                                        class="text-white text-decoration-none">www.happycreative.tw</a></p>
+                                <p><i class="fas fa-envelope me-2 text-muted"></i>contact@happycreative.tw</p>
+                                <p><i class="fas fa-map-marker-alt me-2 text-muted"></i>台北市大安區</p>
+                                <hr class="border-secondary">
+                                <div class="d-flex gap-3">
+                                    <a href="#" class="text-muted fs-4"><i class="fab fa-facebook"></i></a>
+                                    <a href="#" class="text-muted fs-4"><i class="fab fa-instagram"></i></a>
+                                    <a href="#" class="text-muted fs-4"><i class="fab fa-youtube"></i></a>
+                                    <a href="#" class="text-muted fs-4"><i class="fab fa-line"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-top border-secondary py-5">
+        <div class="container text-center text-white-50">
+            <p>&copy; 2024 Momento. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/common.js"></script>
+</body>
+
+</html>

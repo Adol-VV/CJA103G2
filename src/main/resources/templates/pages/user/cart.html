@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購物車 | Momento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html"><i
+                    class="fas fa-ticket-alt me-2 text-success"></i>Momento</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prod-list.html">找商品</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="h3 mb-0"><i class="fas fa-shopping-cart me-3 text-success"></i>購物車</h1>
+            <span class="badge bg-success ms-3">2 件商品</span>
+        </div>
+
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <!-- Item 1: Ticket -->
+                <div class="card bg-dark border-secondary mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <img loading="lazy" src="https://via.placeholder.com/100x100" class="rounded" alt="Event">
+                            </div>
+                            <div class="col">
+                                <span class="badge bg-primary mb-1">票券</span>
+                                <h5 class="mb-1">2025新年音樂會｜維也納之夜</h5>
+                                <p class="text-muted small mb-0">VIP 特區 x 1</p>
+                                <p class="text-muted small mb-0">2024/12/31 (二) 19:30</p>
+                            </div>
+                            <div class="col-auto text-end">
+                                <h5 class="text-success mb-1">NT$ 2,800</h5>
+                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2: Merchandise -->
+                <div class="card bg-dark border-secondary mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <img loading="lazy" src="https://via.placeholder.com/100x100" class="rounded" alt="Product">
+                            </div>
+                            <div class="col">
+                                <span class="badge bg-warning text-dark mb-1">商品</span>
+                                <h5 class="mb-1">經典Logo帆布袋</h5>
+                                <p class="text-muted small mb-0">米白色 x 1</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="input-group input-group-sm" style="width: 120px;">
+                                    <button class="btn btn-outline-secondary">-</button>
+                                    <input type="text"
+                                        class="form-control bg-dark text-white text-center border-secondary" value="1">
+                                    <button class="btn btn-outline-secondary">+</button>
+                                </div>
+                            </div>
+                            <div class="col-auto text-end">
+                                <h5 class="text-success mb-1">NT$ 450</h5>
+                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State (Hidden) -->
+                <div class="card bg-dark border-secondary text-center py-5 d-none" id="emptyCart">
+                    <div class="card-body">
+                        <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">購物車是空的</h5>
+                        <p class="text-muted small">快去探索精彩活動和周邊商品吧！</p>
+                        <a href="../../index.html" class="btn btn-primary">開始探索</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card bg-dark border-secondary sticky-top" style="top: 100px;">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0">訂單摘要</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">票券小計</span>
+                            <span>NT$ 2,800</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">商品小計</span>
+                            <span>NT$ 450</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">運費</span>
+                            <span class="text-success">免運費</span>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">總計</span>
+                            <span class="fw-bold text-success fs-4">NT$ 3,250</span>
+                        </div>
+
+                        <!-- Promo Code -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                placeholder="優惠碼">
+                            <button class="btn btn-outline-success">套用</button>
+                        </div>
+
+                        <!-- Token Usage -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="useTokens">
+                            <label class="form-check-label text-muted small" for="useTokens">
+                                使用 Momento 代幣折抵 <span class="text-success">(餘額: 1,250)</span>
+                            </label>
+                        </div>
+
+                        <a href="checkout.html" class="btn btn-primary w-100 btn-lg">
+                            <i class="fas fa-lock me-2"></i>前往結帳
+                        </a>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted"><i class="fas fa-shield-alt me-1"></i>安全加密付款</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-top border-secondary py-4 mt-5">
+        <div class="container text-center text-muted small">
+            &copy; 2024 Momento. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/common.js"></script>
+</body>
+
+</html>

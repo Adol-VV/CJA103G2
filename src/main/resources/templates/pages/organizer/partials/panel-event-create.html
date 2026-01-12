@@ -1,0 +1,406 @@
+<div class="event-create-container">
+    <h2 class="mb-4">建立新活動</h2>
+
+    <!-- Progress Stepper -->
+    <div class="stepper-wrapper mb-5" data-progress="1">
+        <div class="stepper-item active" data-step="1">
+            <div class="step-counter">1</div>
+            <div class="step-name">基本資訊</div>
+        </div>
+        <div class="stepper-item" data-step="2">
+            <div class="step-counter">2</div>
+            <div class="step-name">票券設定</div>
+        </div>
+        <div class="stepper-item" data-step="3">
+            <div class="step-counter">3</div>
+            <div class="step-name">詳細內容</div>
+        </div>
+        <div class="stepper-item" data-step="4">
+            <div class="step-counter">4</div>
+            <div class="step-name">預覽送審</div>
+        </div>
+    </div>
+
+    <form id="eventCreateForm">
+        <!-- Step 1: Basic Info -->
+        <div class="step-content active" data-step="1">
+            <div class="card border-secondary bg-dark">
+                <div class="card-body">
+                    <h5 class="mb-4">活動基本資訊</h5>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label required">活動名稱</label>
+                            <input type="text" class="form-control" name="eventName" placeholder="例：五月天 2024 巡迴演唱會"
+                                required>
+                            <small class="text-muted">建議 10-50 字</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required">活動類型</label>
+                            <select class="form-select" name="eventCategory" required>
+                                <option value="">請選擇</option>
+                                <option value="music">音樂演唱</option>
+                                <option value="theater">戲劇表演</option>
+                                <option value="exhibition">展覽</option>
+                                <option value="sports">運動賽事</option>
+                                <option value="lecture">講座研討</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required">活動標籤</label>
+                            <input type="text" class="form-control" name="eventTags" placeholder="多個標籤用逗號分隔">
+                            <small class="text-muted">例：流行音樂,演唱會,五月天</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required">活動地點</label>
+                            <input type="text" class="form-control" name="eventVenue" placeholder="場館名稱" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required">詳細地址</label>
+                            <input type="text" class="form-control" name="eventAddress" placeholder="完整地址" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Google Maps 位置</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="eventMapUrl"
+                                    placeholder="貼上 Google Maps 連結（選填）">
+                                <button class="btn btn-outline-secondary" type="button" id="btnTestMap">測試地圖</button>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required">活動主視覺</label>
+                            <div class="upload-zone" id="mainImageUpload">
+                                <input type="file" class="d-none" id="mainImageInput" accept="image/*" required>
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                                    <p>點擊或拖曳上傳圖片</p>
+                                    <small class="text-muted">建議尺寸：1200x630 px，格式：JPG/PNG，大小：5MB
+                                        以下</small>
+                                </div>
+                                <div class="upload-preview d-none position-relative">
+                                    <img src="" id="mainImagePreview" class="img-fluid rounded">
+                                    <button type="button" class="btn btn-sm btn-danger btn-remove-image">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary btn-next-step" data-next="2">
+                    下一步 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Ticket Settings -->
+        <div class="step-content" data-step="2">
+            <div class="card border-secondary bg-dark">
+                <div class="card-body">
+                    <h5 class="mb-4">票券場次設定</h5>
+
+                    <div id="sessionsContainer">
+                        <div class="session-item mb-4 p-3"
+                            style="background: #0A0A0A; border: 1px solid #2A2A2A; border-radius: 8px;">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>場次 #1</h6>
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-session">
+                                    <i class="fas fa-trash"></i> 刪除場次
+                                </button>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label required">活動日期</label>
+                                    <input type="date" class="form-control" name="sessionDate[]" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required">開始時間</label>
+                                    <input type="time" class="form-control" name="sessionStartTime[]" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required">結束時間</label>
+                                    <input type="time" class="form-control" name="sessionEndTime[]" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">場次備註（選填）</label>
+                                    <input type="text" class="form-control" name="sessionNote[]" placeholder="例：特別加場">
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-secondary">
+
+                            <h6 class="mb-3">票種設定</h6>
+                            <div class="ticket-types-container">
+                                <div class="ticket-type-item mb-3 p-3" style="background: #1A1A1A; border-radius: 6px;">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label required">票種名稱</label>
+                                            <input type="text" class="form-control" placeholder="例：全票"
+                                                name="ticketTypeName[]" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label required">原價（NT$）</label>
+                                            <input type="number" class="form-control ticket-original-price"
+                                                placeholder="1500" name="ticketOriginalPrice[]" min="0" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">優惠價（NT$）</label>
+                                            <input type="number" class="form-control ticket-sale-price" placeholder="選填"
+                                                name="ticketSalePrice[]" min="0">
+                                            <small class="text-muted">留空則以原價銷售</small>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label required">數量</label>
+                                            <input type="number" class="form-control" placeholder="500"
+                                                name="ticketQuantity[]" min="1" required>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="button"
+                                                class="btn btn-outline-danger w-100 btn-remove-ticket-type">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- 價格預覽 -->
+                                    <div class="price-preview mt-2 small text-muted d-none">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <span class="preview-text"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-add-ticket-type">
+                                <i class="fas fa-plus"></i> 新增票種
+                            </button>
+                            <div class="alert alert-info bg-info bg-opacity-10 border-info mt-3 py-2">
+                                <small><i class="fas fa-lightbulb me-1"></i>設定優惠價格後，前台將顯示原價劃線效果，突顯優惠力度</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-outline-primary" id="btnAddSession">
+                        <i class="fas fa-plus"></i> 新增場次
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary btn-prev-step" data-prev="1">
+                    <i class="fas fa-arrow-left"></i> 上一步
+                </button>
+                <button type="button" class="btn btn-primary btn-next-step" data-next="3">
+                    下一步 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Details -->
+        <div class="step-content" data-step="3">
+            <div class="card border-secondary bg-dark mb-4">
+                <div class="card-body">
+                    <h5 class="mb-4">活動詳細內容</h5>
+                    <div class="mb-4">
+                        <label class="form-label required">活動簡介</label>
+                        <textarea class="form-control" name="eventSummary" rows="3" maxlength="200"
+                            placeholder="簡短描述活動亮點，吸引觀眾購票（建議 50-200 字）" required></textarea>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">此內容將顯示在活動列表卡片上</small>
+                            <small class="text-muted"><span class="char-count">0</span>/200</small>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label required">詳細說明</label>
+                        <textarea class="form-control" name="eventDescription" rows="8"
+                            placeholder="請詳細描述活動內容、演出者介紹、節目表等..." required></textarea>
+                        <small class="text-muted">支援 Markdown 格式</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-secondary bg-dark mb-4">
+                <div class="card-body">
+                    <h5 class="mb-4">購票須知與注意事項</h5>
+                    <div class="mb-4">
+                        <label class="form-label required">購票注意事項</label>
+                        <textarea class="form-control" name="eventNotice" rows="4"
+                            placeholder="例：每人限購 4 張、需年滿 18 歲入場、禁止攜帶外食..." required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">退票政策</label>
+                        <select class="form-select" name="refundPolicy">
+                            <option value="standard">標準（活動前 7 天可退票）</option>
+                            <option value="flexible">彈性（活動前 3 天可退票）</option>
+                            <option value="strict">嚴格（購票後不可退票）</option>
+                            <option value="custom">自訂</option>
+                        </select>
+                    </div>
+                    <div class="mb-4 custom-refund-policy d-none">
+                        <label class="form-label">自訂退票說明</label>
+                        <textarea class="form-control" name="customRefundPolicy" rows="2"
+                            placeholder="請說明退票條件與時間限制"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-secondary bg-dark">
+                <div class="card-body">
+                    <h5 class="mb-4">開賣設定</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">開賣日期</label>
+                            <input type="date" class="form-control" name="saleStartDate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">開賣時間</label>
+                            <input type="time" class="form-control" name="saleStartTime" value="12:00" required>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enablePresale" name="enablePresale">
+                                <label class="form-check-label" for="enablePresale">
+                                    啟用早鳥優惠
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 presale-settings d-none">
+                            <div class="card bg-black border-secondary p-3">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">早鳥折扣 (%)</label>
+                                        <input type="number" class="form-control" name="presaleDiscount" min="1"
+                                            max="50" value="10" placeholder="10">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">早鳥結束日期</label>
+                                        <input type="date" class="form-control" name="presaleEndDate">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">早鳥限量 (張)</label>
+                                        <input type="number" class="form-control" name="presaleLimit" min="1"
+                                            placeholder="不限">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary btn-prev-step" data-prev="2">
+                    <i class="fas fa-arrow-left"></i> 上一步
+                </button>
+                <button type="button" class="btn btn-primary btn-next-step" data-next="4">
+                    下一步 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Preview -->
+        <div class="step-content" data-step="4">
+            <div class="alert alert-warning mb-4">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>送出前請確認</strong> - 活動送出後將進入審核流程，審核期間無法編輯。
+            </div>
+
+            <div class="card border-secondary bg-dark mb-4">
+                <div class="card-body">
+                    <h5 class="mb-4"><i class="fas fa-eye me-2"></i>活動預覽</h5>
+
+                    <!-- Preview Card -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="preview-image bg-secondary rounded" style="height: 200px;">
+                                <img id="previewImage" src="" class="w-100 h-100 object-fit-cover rounded d-none">
+                                <div class="d-flex align-items-center justify-content-center h-100 text-muted"
+                                    id="previewImagePlaceholder">
+                                    <i class="fas fa-image fa-3x"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge bg-primary mb-2" id="previewCategory">活動類型</span>
+                            <h3 id="previewEventName" class="mb-2">活動名稱</h3>
+                            <p id="previewSummary" class="text-muted mb-3">活動簡介將顯示在這裡...</p>
+                            <div class="d-flex flex-wrap gap-3 text-muted small">
+                                <span><i class="fas fa-map-marker-alt me-1"></i><span id="previewVenue">場地</span></span>
+                                <span><i class="fas fa-calendar me-1"></i><span id="previewDate">日期</span></span>
+                                <span><i class="fas fa-clock me-1"></i><span id="previewTime">時間</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <!-- Preview Details -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="fas fa-ticket-alt me-2"></i>票券資訊</h6>
+                            <div id="previewTickets" class="small">
+                                <p class="text-muted">票種資訊將顯示在這裡</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="fas fa-shopping-cart me-2"></i>開賣設定</h6>
+                            <div id="previewSaleInfo" class="small">
+                                <p class="text-muted">開賣資訊將顯示在這裡</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist -->
+            <div class="card border-secondary bg-dark mb-4">
+                <div class="card-body">
+                    <h5 class="mb-4"><i class="fas fa-clipboard-check me-2"></i>送審確認清單</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item bg-transparent border-secondary d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>已填寫活動基本資訊</span>
+                        </div>
+                        <div class="list-group-item bg-transparent border-secondary d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>已上傳活動主視覺圖片</span>
+                        </div>
+                        <div class="list-group-item bg-transparent border-secondary d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>已設定至少一個場次與票種</span>
+                        </div>
+                        <div class="list-group-item bg-transparent border-secondary d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>已填寫購票注意事項</span>
+                        </div>
+                        <div class="list-group-item bg-transparent border-secondary d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>已設定開賣時間</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary btn-prev-step" data-prev="3">
+                    <i class="fas fa-arrow-left"></i> 上一步
+                </button>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary me-2" id="btnSaveDraft">
+                        <i class="fas fa-save me-1"></i>儲存草稿
+                    </button>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-paper-plane me-1"></i>送出審核
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

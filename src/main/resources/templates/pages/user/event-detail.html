@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動詳情 | 2025新年音樂會｜維也納之夜</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Theme -->
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .event-main img {
+            border-radius: 12px;
+        }
+
+        .thumbnail-row .thumb {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 8px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .thumbnail-row .thumb.active,
+        .thumbnail-row .thumb:hover {
+            opacity: 1;
+            border: 2px solid var(--momento-green);
+        }
+
+        /* 相關商品卡片 */
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .product-card .card-title {
+            transition: color 0.2s;
+        }
+        .product-card:hover .card-title {
+            color: var(--momento-green) !important;
+        }
+
+        .ticket-sidebar {
+            top: 100px;
+            /* Offset for sticky navbar */
+        }
+
+        .step-indicator {
+            position: relative;
+            cursor: default;
+            opacity: 0.5;
+        }
+
+        .step-indicator.active,
+        .step-indicator.completed {
+            opacity: 1;
+        }
+
+        .step-indicator.completed .step-number {
+            background: #10B981;
+            /* Success Color */
+            color: white;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2A2A2A;
+            line-height: 30px;
+            margin-right: 8px;
+            text-align: center;
+        }
+
+        .step-indicator.active .step-number {
+            background: var(--momento-green);
+        }
+
+        .payment-option {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:has(input:checked) {
+            border-color: var(--momento-green);
+            background: rgba(45, 95, 79, 0.1);
+        }
+
+        .checkout-step {
+            display: none;
+        }
+
+        .checkout-step.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand" href="../../index.html">Momento</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prod-list.html">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
+                </ul>
+                <form class="d-flex mx-auto col-lg-4" role="search">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                class="fas fa-search"></i></span>
+                        <input class="form-control" type="search" placeholder="搜尋活動..." aria-label="Search">
+                    </div>
+                </form>
+                <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
+                    <a href="#" class="position-relative text-white text-decoration-none">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                    </a>
+                    <a href="login.html" class="btn btn-primary btn-sm px-4">會員登入</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../../index.html" class="text-decoration-none text-muted">首頁</a>
+                </li>
+                <li class="breadcrumb-item"><a href="event-list.html" class="text-decoration-none text-muted">找活動</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">2025新年音樂會｜維也納之夜</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Left: Event Info -->
+            <div class="col-lg-8 event-main">
+                <!-- Image Gallery -->
+                <div class="gallery mb-4">
+                    <img src="https://via.placeholder.com/800x450" class="main-image img-fluid w-100 mb-2" loading="lazy" alt="活動主視覺">
+                    <div class="thumbnail-row d-flex">
+                        <img src="https://via.placeholder.com/800x450" class="thumb active" loading="lazy" alt="縮圖1">
+                        <img src="https://via.placeholder.com/800x450/333333" class="thumb" loading="lazy" alt="縮圖2">
+                        <img src="https://via.placeholder.com/800x450/444444" class="thumb" loading="lazy" alt="縮圖3">
+                    </div>
+                </div>
+
+                <!-- Event Details -->
+                <h1 class="event-title mb-3">2025新年音樂會｜維也納之夜</h1>
+                <div class="event-meta d-flex flex-wrap gap-3 mb-4 text-muted">
+                    <span><i class="far fa-calendar me-2"></i> 2024/12/31 (二) 19:30</span>
+                    <span><i class="fas fa-map-marker-alt me-2"></i> 中山堂中正廳</span>
+                    <a href="../public/organizer-profile.html" class="text-decoration-none text-muted organizer-link" 
+                       style="transition: color 0.2s;" 
+                       onmouseover="this.style.color='#10B981'" onmouseout="this.style.color=''">
+                        <i class="far fa-user me-2"></i>主辦：<span class="text-white">快樂文創</span>
+                        <i class="fas fa-external-link-alt ms-1 small"></i>
+                    </a>
+                </div>
+
+                <div class="btn-group mb-4">
+                    <button class="btn btn-outline-secondary" id="btnFavorite">
+                        <i class="far fa-heart me-1"></i> 收藏 (234)
+                    </button>
+                    <button class="btn btn-outline-secondary" id="btnShare">
+                        <i class="fas fa-share me-1"></i> 分享
+                    </button>
+                    <button class="btn btn-outline-secondary" id="btnReminder">
+                        <i class="far fa-bell me-1"></i> 開演提醒
+                    </button>
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-3 border-secondary" id="eventTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link active bg-transparent text-white border-0 border-bottom border-success border-3"
+                            data-bs-toggle="tab" data-bs-target="#about" type="button">活動介紹</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+                            data-bs-target="#location" type="button">地點資訊</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+                            data-bs-target="#organizer" type="button">主辦方</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mb-5" id="eventTabContent">
+                    <!-- 活動介紹 Tab -->
+                    <div class="tab-pane fade show active" id="about">
+                        <p class="section-text text-muted">與維也納愛樂管弦樂團一同迎接嶄新的一年。本次音樂會將演奏史特勞斯家族經典圓舞曲、波爾卡舞曲，以及多首膾炙人口的古典名曲。
+                        </p>
+                        <p class="section-text text-muted">在擁有歷史韻味的中山堂中正廳，享受頂級的聲響效果，與愛樂者共度難忘的跨年之夜。現場亦備有精緻茶點與新年福袋。</p>
+                    </div>
+                    
+                    <!-- 地點資訊 Tab -->
+                    <div class="tab-pane fade" id="location">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body p-0">
+                                <!-- Google Maps 嵌入 -->
+                                <div id="eventMap" style="height: 350px; border-radius: 8px 8px 0 0; overflow: hidden;">
+                                    <iframe
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.776637367683!2d121.5085443150066!3d25.04162098396865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a90a8d436785%3A0x6a137882255767f3!2z6Ie65YyX5biC5Lit5bGx5aCC!5e0!3m2!1szh-TW!2stw!4v1628173665561!5m2!1szh-TW!2stw"
+                                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                </div>
+                                <!-- 地點詳細資訊 -->
+                                <div class="p-4">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white mb-1">活動地點</h6>
+                                            <p class="text-muted mb-0">台北市中山堂中正廳</p>
+                                            <p class="text-muted small mb-0">台北市中正區延平南路98號</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-subway text-info"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white mb-1">交通方式</h6>
+                                            <p class="text-muted small mb-1">🚇 捷運：西門站4號出口，步行約5分鐘</p>
+                                            <p class="text-muted small mb-1">🚌 公車：中山堂站（12、205、212路）</p>
+                                            <p class="text-muted small mb-0">🚗 停車：西門町地下停車場</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 mt-3">
+                                        <a href="https://www.google.com/maps/dir//台北市中山堂" target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-directions me-1"></i>導航前往
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="copyAddress()">
+                                            <i class="fas fa-copy me-1"></i>複製地址
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 主辦方 Tab -->
+                    <div class="tab-pane fade" id="organizer">
+                    <div class="d-flex align-items-center gap-3 p-3 border border-secondary rounded-3">
+                        <img loading="lazy" src="https://ui-avatars.com/api/?name=Happy+Creative&background=2D5F4F&color=fff&size=128"
+                            class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-1"><a href="../public/organizer-profile.html"
+                                    class="text-white text-decoration-none">快樂文創</a></h5>
+                            <p class="mb-0 text-muted small">致力於打造最獨特的音樂現場體驗，讓感動無所不在。</p>
+                        </div>
+                        <a href="../public/organizer-profile.html"
+                            class="btn btn-sm btn-outline-primary ms-auto">查看主辦頁面</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Merchandise -->
+            <div class="mt-5 pt-4 border-top border-secondary">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="mb-1"><i class="fas fa-shopping-bag me-2 text-primary"></i>活動相關周邊</h4>
+                        <p class="text-muted small mb-0">同場加映！購買活動專屬周邊商品</p>
+                    </div>
+                    <a href="prod-list.html?organizer=1" class="btn btn-outline-primary btn-sm">
+                        查看全部 <i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a href="prod-detail.html?id=1" class="text-decoration-none">
+                        <div class="card h-100 product-card">
+                            <img loading="lazy" src="https://picsum.photos/seed/tshirt1/300/300" class="card-img-top" alt="2024 紀念 T-shirt">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-white">2024 紀念 T-shirt</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-success fw-bold">NT$ 590</span>
+                                    <button class="btn btn-sm btn-outline-primary rounded-circle btn-add-cart" 
+                                            data-id="1" data-name="2024 紀念 T-shirt" data-price="590"
+                                            onclick="event.preventDefault(); addToCart(this);">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="prod-detail.html?id=2" class="text-decoration-none">
+                        <div class="card h-100 product-card">
+                            <img loading="lazy" src="https://picsum.photos/seed/vinyl1/300/300" class="card-img-top" alt="2024年度音樂會紀念T恤">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-white">2024年度音樂會紀念T恤</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-success fw-bold">NT$ 880</span>
+                                    <button class="btn btn-sm btn-outline-primary rounded-circle btn-add-cart"
+                                            data-id="2" data-name="2024年度音樂會紀念T恤" data-price="880"
+                                            onclick="event.preventDefault(); addToCart(this);">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="prod-detail.html?id=9" class="text-decoration-none">
+                        <div class="card h-100 product-card">
+                            <img loading="lazy" src="https://picsum.photos/seed/totebag1/300/300" class="card-img-top" alt="經典Logo帆布袋">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-white">經典Logo帆布袋</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-success fw-bold">NT$ 450</span>
+                                    <button class="btn btn-sm btn-outline-primary rounded-circle btn-add-cart"
+                                            data-id="9" data-name="經典Logo帆布袋" data-price="450"
+                                            onclick="event.preventDefault(); addToCart(this);">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Ticket Selection (Sticky) -->
+        <div class="col-lg-4">
+            <aside class="ticket-sidebar sticky-top">
+                <div class="card">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0">選擇票券</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Session Selection -->
+                        <label class="form-label">選擇場次</label>
+                        <select class="form-select mb-3" id="sessionSelect">
+                            <option value="1" data-date="2024/12/31" data-time="14:30" data-stock="50">2024/12/31 (二) 14:30 - 下午場</option>
+                            <option value="2" data-date="2024/12/31" data-time="19:30" data-stock="120" selected>2024/12/31 (二) 19:30 - 晚間場</option>
+                            <option value="3" data-date="2025/01/01" data-time="14:30" data-stock="200">2025/01/01 (三) 14:30 - 元旦加場</option>
+                            <option value="4" data-date="2025/01/01" data-time="19:30" data-stock="0" disabled>2025/01/01 (三) 19:30 - 已售完</option>
+                        </select>
+                        <div class="alert alert-info bg-info bg-opacity-10 border-info py-2 mb-3" id="sessionInfo">
+                            <small><i class="fas fa-info-circle me-1"></i>此場次剩餘 <strong id="remainingStock">120</strong> 張票</small>
+                        </div>
+
+                        <!-- Ticket Types -->
+                        <div class="ticket-option mb-3 p-2 rounded" style="background: var(--bg-black);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>VIP 特區</strong>
+                                    <p class="text-muted small mb-0">NT$ 2,800</p>
+                                </div>
+                                <div class="quantity-control d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary px-2">-</button>
+                                    <input type="text" value="0" readonly
+                                        class="form-control form-control-sm text-center bg-dark border-secondary text-white"
+                                        style="width: 40px;">
+                                    <button class="btn btn-sm btn-outline-secondary px-2">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ticket-option mb-3 p-2 rounded" style="background: var(--bg-black);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div>
+                                        <strong>一般座位區</strong>
+                                        <p class="text-muted small mb-0">NT$ 1,800</p>
+                                    </div>
+                                    <div class="quantity-control d-flex align-items-center gap-2">
+                                        <button class="btn btn-sm btn-outline-secondary px-2">-</button>
+                                        <input type="text" value="0" readonly
+                                            class="form-control form-control-sm text-center bg-dark border-secondary text-white"
+                                            style="width: 40px;">
+                                        <button class="btn btn-sm btn-outline-secondary px-2">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="border-secondary">
+
+                            <div class="d-flex justify-content-between mb-2 small">
+                                <span>小計</span>
+                                <strong id="subtotal">NT$ 0</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 small text-muted">
+                                <span>服務費 (5%)</span>
+                                <span id="serviceFee">NT$ 0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>總計</strong>
+                                <strong class="text-success fs-5" id="total">NT$ 0</strong>
+                            </div>
+
+                            <button class="btn btn-primary w-100 btn-lg" id="btnCheckout">立即購票</button>
+
+                            <p class="text-center text-muted small mt-3">
+                                購票即同意 <a href="#" class="text-muted">服務條款</a>
+                            </p>
+                        </div>
+                    </div>
+            </aside>
+        </div>
+    </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="background: var(--card-bg);">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">購票結帳</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Progress Steps -->
+                    <ul class="nav nav-pills mb-4 justify-content-center">
+                        <li class="nav-item">
+                            <span class="nav-link active step-indicator bg-transparent text-white" data-step="1">
+                                <span class="step-number">1</span> 填寫資料
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link step-indicator bg-transparent text-white" data-step="2">
+                                <span class="step-number">2</span> 選擇付款
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link step-indicator bg-transparent text-white" data-step="3">
+                                <span class="step-number">3</span> 完成訂單
+                            </span>
+                        </li>
+                    </ul>
+
+                    <!-- Step 1: User Info -->
+                    <div class="checkout-step active" id="step1">
+                        <h6 class="mb-3 border-bottom border-secondary pb-2">購票人資料</h6>
+                        <form id="checkoutForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">姓名 *</label>
+                                    <input type="text" class="form-control" required value="王小明">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">手機 *</label>
+                                    <input type="tel" class="form-control" required value="0912345678">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" required value="wang@example.com">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="remindMe" checked>
+                                        <label class="form-check-label" for="remindMe">
+                                            活動前一天 Email 提醒我
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button class="btn btn-primary px-4" id="btnNextStep1">
+                                下一步 <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Payment -->
+                    <div class="checkout-step" id="step2">
+                        <h6 class="mb-3 border-bottom border-secondary pb-2">付款方式</h6>
+
+                        <!-- Token Usage -->
+                        <div
+                            class="alert alert-info d-flex justify-content-between align-items-center bg-dark border-info text-info">
+                            <span>可用代幣：<strong>120 元</strong></span>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="useTokens">
+                                <label class="form-check-label" for="useTokens">使用代幣折抵</label>
+                            </div>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="payment-methods">
+                            <div class="form-check payment-option mb-3">
+                                <input type="radio" name="payment" id="payCredit" class="form-check-input" checked>
+                                <label class="form-check-label w-100" for="payCredit">
+                                    <i class="far fa-credit-card me-2"></i> 信用卡 (綠界)
+                                </label>
+                            </div>
+                            <div class="form-check payment-option mb-3">
+                                <input type="radio" name="payment" id="payLine" class="form-check-input">
+                                <label class="form-check-label w-100" for="payLine">
+                                    <i class="fab fa-line me-2 text-success"></i> LINE Pay
+                                </label>
+                            </div>
+                            <div class="form-check payment-option mb-3">
+                                <input type="radio" name="payment" id="payJko" class="form-check-input">
+                                <label class="form-check-label w-100" for="payJko">
+                                    <i class="fas fa-mobile-alt me-2 text-danger"></i> 街口支付
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="card bg-black border-secondary">
+                            <div class="card-body">
+                                <h6>訂單摘要</h6>
+                                <div class="d-flex justify-content-between mb-2 small text-muted">
+                                    <span id="summaryItems">票券</span>
+                                    <span id="summarySubtotal">NT$ 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 small text-muted">
+                                    <span>服務費</span>
+                                    <span id="summaryFee">NT$ 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 text-success small" id="tokenDiscount"
+                                    style="display:none!important;">
+                                    <span>代幣折抵</span>
+                                    <span>- NT$ 120</span>
+                                </div>
+                                <hr class="border-secondary">
+                                <div class="d-flex justify-content-between">
+                                    <strong>應付金額</strong>
+                                    <strong class="text-primary fs-5" id="finalAmount">NT$ 0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-secondary" id="btnBackStep2">
+                                <i class="fas fa-arrow-left ms-1"></i> 上一步
+                            </button>
+                            <button class="btn btn-primary px-4" id="btnConfirmPayment">
+                                確認付款
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Success -->
+                    <div class="checkout-step text-center py-4" id="step3">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 80px;"></i>
+                        </div>
+                        <h4>購票成功！</h4>
+                        <p class="text-muted">訂單編號：#MOM20241231001</p>
+
+                        <div class="alert alert-success d-inline-block text-start mt-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-gift fs-3"></i>
+                                <div>
+                                    <strong>恭喜獲得代幣回饋！</strong><br>
+                                    本次消費滿 $300，已贈送 <strong>5 元代幣</strong> 至您的帳戶
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 col-md-6 mx-auto mt-5">
+                            <a href="dashboard.html" class="btn btn-primary">查看我的訂單</a>
+                            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">繼續瀏覽活動</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Email Reminder Modal -->
+    <div class="modal fade" id="reminderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="fas fa-bell me-2 text-warning"></i>活動提醒設定</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">我們會在活動開始前透過 Email 提醒您，讓您不錯過精彩時刻！</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">提醒 Email</label>
+                        <input type="email" class="form-control bg-dark text-white border-secondary" 
+                            id="reminderEmail" placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">提醒時間</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remind1day" checked>
+                            <label class="form-check-label" for="remind1day">活動前 1 天</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remind3days">
+                            <label class="form-check-label" for="remind3days">活動前 3 天</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remind1week">
+                            <label class="form-check-label" for="remind1week">活動前 1 週</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remind1hour">
+                            <label class="form-check-label" for="remind1hour">活動前 1 小時</label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info bg-info bg-opacity-10 border-info py-2">
+                        <small><i class="fas fa-info-circle me-1"></i>提醒信件會發送至您填寫的 Email</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="btnSetReminder">
+                        <i class="fas fa-bell me-2"></i>設定提醒
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            // --- Session Selection Logic ---
+            $('#sessionSelect').change(function() {
+                const selected = $(this).find(':selected');
+                const stock = parseInt(selected.data('stock')) || 0;
+                $('#remainingStock').text(stock);
+                
+                // 使用安全的方式更新內容
+                const $info = $('#sessionInfo');
+                const $small = $info.find('small');
+                $small.empty();
+                
+                if (stock < 20) {
+                    $info.removeClass('alert-info bg-info').addClass('alert-warning bg-warning');
+                    $small.append($('<i>').addClass('fas fa-exclamation-triangle me-1'))
+                          .append('此場次僅剩 ')
+                          .append($('<strong>').text(stock))
+                          .append(' 張票，請盡快購買！');
+                } else {
+                    $info.removeClass('alert-warning bg-warning').addClass('alert-info bg-info');
+                    $small.append($('<i>').addClass('fas fa-info-circle me-1'))
+                          .append('此場次剩餘 ')
+                          .append($('<strong>').text(stock))
+                          .append(' 張票');
+                }
+            });
+
+            // --- Email Reminder Logic ---
+            $('#btnReminder').click(function() {
+                // Pre-fill email if logged in
+                const user = JSON.parse(localStorage.getItem('momento_user') || '{}');
+                if (user.email) {
+                    $('#reminderEmail').val(user.email);
+                }
+                $('#reminderModal').modal('show');
+            });
+
+            $('#btnSetReminder').click(function() {
+                const email = $('#reminderEmail').val();
+                if (!email || !email.includes('@')) {
+                    showToast('請輸入有效的 Email', 'warning');
+                    return;
+                }
+
+                const btn = $(this);
+                btn.prop('disabled', true)
+                   .empty()
+                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+                   .append('設定中...');
+
+                // Simulate API call
+                setTimeout(function() {
+                    btn.prop('disabled', false)
+                       .empty()
+                       .append($('<i>').addClass('fas fa-check me-2'))
+                       .append('已設定');
+                    
+                    // Update reminder button
+                    $('#btnReminder')
+                        .empty()
+                        .append($('<i>').addClass('fas fa-bell me-1 text-warning'))
+                        .append(' 已設定提醒')
+                        .addClass('btn-outline-warning')
+                        .removeClass('btn-outline-secondary');
+                    
+                    setTimeout(function() {
+                        $('#reminderModal').modal('hide');
+                        btn.empty()
+                           .append($('<i>').addClass('fas fa-bell me-2'))
+                           .append('設定提醒');
+                    }, 1000);
+                }, 1000);
+            });
+
+            // --- Ticket Calculation Logic ---
+            const prices = [2800, 1800]; // Prices for the two ticket types
+            let currentTotal = 0;
+
+            function updateTotal() {
+                let subtotal = 0;
+                let ticketSummary = [];
+
+                $('.quantity-control').each(function (index) {
+                    const qty = parseInt($(this).find('input').val());
+                    if (qty > 0) {
+                        subtotal += qty * prices[index];
+                        ticketSummary.push(`${index === 0 ? 'VIP特區' : '一般座位區'} x${qty}`);
+                    }
+                });
+
+                const serviceFee = Math.ceil(subtotal * 0.05);
+                currentTotal = subtotal + serviceFee;
+
+                $('#subtotal').text('NT$ ' + subtotal.toLocaleString());
+                $('#serviceFee').text('NT$ ' + serviceFee.toLocaleString());
+                $('#total').text('NT$ ' + currentTotal.toLocaleString());
+
+                // Update Modal Summary
+                $('#summarySubtotal').text('NT$ ' + subtotal.toLocaleString());
+                $('#summaryFee').text('NT$ ' + serviceFee.toLocaleString());
+                $('#summaryItems').text(ticketSummary.length ? ticketSummary.join(', ') : '未選擇票券');
+                $('#finalAmount').text('NT$ ' + currentTotal.toLocaleString());
+            }
+
+            $('.quantity-control button').click(function () {
+                const btn = $(this);
+                const input = btn.siblings('input');
+                let val = parseInt(input.val());
+
+                if (btn.text() === '+') {
+                    if (val < 10) val++;
+                } else {
+                    if (val > 0) val--;
+                }
+
+                input.val(val);
+                updateTotal();
+            });
+
+            // --- Checkout Modal Logic ---
+            $('#btnCheckout').click(function () {
+                if (currentTotal === 0) {
+                    showToast('請至少選擇一張票券', 'warning');
+                    return;
+                }
+                $('#checkoutModal').modal('show');
+                showStep(1); // Reset to step 1
+            });
+
+            // Step Navigation
+            function showStep(step) {
+                $('.checkout-step').removeClass('active');
+                $('#step' + step).addClass('active');
+
+                $('.step-indicator').removeClass('active completed');
+                // Mark previous steps as completed
+                for (let i = 1; i < step; i++) {
+                    $('.step-indicator[data-step="' + i + '"]').addClass('completed');
+                }
+                // Mark current step as active
+                $('.step-indicator[data-step="' + step + '"]').addClass('active');
+            }
+
+            $('#btnNextStep1').click(function () {
+                if ($('#checkoutForm')[0].checkValidity()) {
+                    showStep(2);
+                } else {
+                    $('#checkoutForm')[0].reportValidity();
+                }
+            });
+
+            $('#btnBackStep2').click(function () {
+                showStep(1);
+            });
+
+            // Token Toggle
+            $('#useTokens').change(function () {
+                let final = currentTotal;
+                if ($(this).is(':checked')) {
+                    $('#tokenDiscount').show();
+                    final = Math.max(0, final - 120);
+                } else {
+                    $('#tokenDiscount').hide();
+                }
+                $('#finalAmount').text('NT$ ' + final.toLocaleString());
+            });
+
+            // Confirm Payment
+            $('#btnConfirmPayment').click(function () {
+                const btn = $(this);
+                btn.prop('disabled', true)
+                   .empty()
+                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+                   .append('處理中...');
+
+                // Simulate API call
+                setTimeout(function () {
+                    btn.prop('disabled', false).text('確認付款');
+                    showStep(3);
+                    showToast('購票成功！', 'success');
+                }, 1500);
+            });
+
+            // Thumbnail Click
+            $('.thumbnail-row .thumb').click(function () {
+                $('.thumbnail-row .thumb').removeClass('active');
+                $(this).addClass('active');
+                // In a real app, you'd switch the main image source here
+            });
+        });
+
+        // 複製地址功能
+        function copyAddress() {
+            const address = '台北市中正區延平南路98號';
+            navigator.clipboard.writeText(address).then(function() {
+                showToast('地址已複製', 'success');
+            }).catch(function() {
+                showToast('複製失敗，請手動複製', 'warning');
+            });
+        }
+
+        // 加入購物車功能
+        function addToCart(btn) {
+            const $btn = $(btn);
+            const item = {
+                id: $btn.data('id'),
+                name: $btn.data('name'),
+                price: $btn.data('price'),
+                quantity: 1
+            };
+            
+            // 使用 Momento.Cart 或 localStorage
+            let cart = JSON.parse(localStorage.getItem('momento_cart') || '[]');
+            const existingIndex = cart.findIndex(i => i.id === item.id);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity++;
+            } else {
+                cart.push(item);
+            }
+            localStorage.setItem('momento_cart', JSON.stringify(cart));
+            
+            // 按鈕動畫回饋
+            const originalHtml = $btn.html();
+            $btn.html('<i class="fas fa-check"></i>').addClass('btn-success').removeClass('btn-outline-primary');
+            showToast('已加入購物車', 'success');
+            
+            setTimeout(function() {
+                $btn.html(originalHtml).removeClass('btn-success').addClass('btn-outline-primary');
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>

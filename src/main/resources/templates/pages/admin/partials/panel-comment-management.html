@@ -1,0 +1,163 @@
+<div class="content-panel" id="panel-comment-management">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">留言管理</h2>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary btn-sm active">全部</button>
+            <button class="btn btn-outline-secondary btn-sm">待審核</button>
+            <button class="btn btn-outline-danger btn-sm">被檢舉 <span class="badge bg-danger">5</span></button>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">今日留言</p>
+                    <h4 class="mb-0">128</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">待審核</p>
+                    <h4 class="mb-0 text-warning">12</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">被檢舉</p>
+                    <h4 class="mb-0 text-danger">5</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">今日下架</p>
+                    <h4 class="mb-0">2</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between">
+            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                placeholder="搜尋留言內容或會員..." style="width: 300px;">
+            <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 150px;">
+                <option>最新優先</option>
+                <option>最舊優先</option>
+                <option>檢舉數多</option>
+            </select>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>會員</th>
+                        <th>留言內容</th>
+                        <th>來源</th>
+                        <th>時間</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-danger">
+                        <td><input type="checkbox"></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img loading="lazy"
+                                    src="https://ui-avatars.com/api/?name=User1&background=random&size=32"
+                                    class="rounded-circle me-2" style="width: 32px;">
+                                <div>
+                                    <strong>張XX</strong><br>
+                                    <small class="text-muted">user001@email.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width: 300px;">
+                            <span class="text-truncate d-block">這個主辦方是詐騙！大家不要買！（內容含不實指控）</span>
+                            <small class="text-danger"><i class="fas fa-flag"></i> 3 人檢舉</small>
+                        </td>
+                        <td><span class="badge bg-primary">活動</span><br><small>2025新年音樂會</small></td>
+                        <td><small>2024/12/26<br>10:30</small></td>
+                        <td><span class="badge bg-danger">檢舉中</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-warning me-1" title="審核檢舉" data-bs-toggle="modal"
+                                data-bs-target="#reviewReportModal"><i class="fas fa-gavel"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="下架"><i class="fas fa-ban"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="table-warning">
+                        <td><input type="checkbox"></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img loading="lazy"
+                                    src="https://ui-avatars.com/api/?name=User2&background=random&size=32"
+                                    class="rounded-circle me-2" style="width: 32px;">
+                                <div>
+                                    <strong>李XX</strong><br>
+                                    <small class="text-muted">user002@email.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width: 300px;">
+                            <span class="text-truncate d-block">有人要一起組團買票嗎？私訊我（疑似廣告）</span>
+                            <small class="text-danger"><i class="fas fa-flag"></i> 2 人檢舉</small>
+                        </td>
+                        <td><span class="badge bg-info">文章</span><br><small>購票教學指南</small></td>
+                        <td><small>2024/12/26<br>09:15</small></td>
+                        <td><span class="badge bg-warning text-dark">待審核</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-warning me-1" title="審核檢舉" data-bs-toggle="modal"
+                                data-bs-target="#reviewReportModal"><i class="fas fa-gavel"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="下架"><i class="fas fa-ban"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img loading="lazy"
+                                    src="https://ui-avatars.com/api/?name=User3&background=random&size=32"
+                                    class="rounded-circle me-2" style="width: 32px;">
+                                <div>
+                                    <strong>王XX</strong><br>
+                                    <small class="text-muted">user003@email.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width: 300px;">
+                            <span class="text-truncate d-block">期待這場演唱會！已經買好票了～</span>
+                        </td>
+                        <td><span class="badge bg-primary">活動</span><br><small>五月天演唱會</small></td>
+                        <td><small>2024/12/25<br>20:45</small></td>
+                        <td><span class="badge bg-success">正常</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"><i
+                                    class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="下架"><i class="fas fa-ban"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer border-secondary d-flex justify-content-between align-items-center">
+            <span class="text-muted small">顯示 1-20 / 共 128 筆</span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link bg-dark border-secondary" href="#">上一頁</a></li>
+                    <li class="page-item active"><a class="page-link bg-primary border-primary" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="#">下一頁</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

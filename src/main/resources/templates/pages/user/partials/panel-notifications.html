@@ -1,0 +1,227 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">通知中心</h3>
+    <div>
+        <button class="btn btn-outline-light btn-sm me-2"><i class="fas fa-check-double"></i>
+            全部已讀</button>
+        <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> 刪除已讀</button>
+    </div>
+</div>
+
+<div class="card bg-dark border-secondary">
+    <div class="card-header border-secondary">
+        <ul class="nav nav-tabs card-header-tabs flex-nowrap overflow-auto" role="tablist">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#notif-all">全部</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-system">平台公告</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">主辦方通知 <span
+                        class="badge bg-danger ms-1">2</span></a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-orders">訂單更新</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-promo">代幣回饋</a></li>
+        </ul>
+    </div>
+    <div class="card-body p-0">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="notif-all">
+                <div class="list-group list-group-flush">
+                    <!-- Unread: Platform System -->
+                    <a href="#"
+                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+                        <div class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i>
+                                    平台</span>
+                                <h6 class="mb-0 fw-bold">平台維護公告</h6>
+                            </div>
+                            <small class="text-primary">剛剛</small>
+                        </div>
+                        <p class="mb-1 text-muted">Momento 將於 2024/12/31 02:00-04:00
+                            進行系統維護，期間將無法進行購票。</p>
+                        <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
+                    </a>
+
+                    <!-- Unread: Organizer Notification -->
+                    <a href="#"
+                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+                        <div class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-store"></i>
+                                    主辦方</span>
+                                <h6 class="mb-0 fw-bold">活動提醒：跨年演唱會明日開始</h6>
+                            </div>
+                            <small class="text-warning">1 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您購買的「2025 跨年演唱會」將於明日 20:00 開始，請記得攜帶電子票券入場！</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：五月天工作室</small>
+                    </a>
+
+                    <!-- Unread: Organizer Notification -->
+                    <a href="#"
+                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+                        <div class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-store"></i>
+                                    主辦方</span>
+                                <h6 class="mb-0 fw-bold">商品出貨通知</h6>
+                            </div>
+                            <small class="text-warning">2 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您訂購的「限定款應援棒」已出貨，物流單號：SF1234567890</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：演唱會官方商店</small>
+                    </a>
+
+                    <!-- Order Item -->
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-2"><i class="fas fa-box"></i>
+                                    訂單</span>
+                                <h6 class="mb-0">訂單 #MOP20241225001 已出貨</h6>
+                            </div>
+                            <small class="text-muted">2 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您購買的「官方週邊 T-shirt」已經交寄物流，預計 2-3 天內送達。</p>
+                        <small class="text-muted"><i class="fas fa-cog me-1"></i>系統自動通知</small>
+                    </a>
+
+                    <!-- Token Reward Item -->
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-info me-2"><i class="fas fa-coins"></i>
+                                    代幣</span>
+                                <h6 class="mb-0">跨年購物代幣回饋已入帳</h6>
+                            </div>
+                            <small class="text-muted">1 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您上次消費已滿額，我們已贈送 50 元代幣至您的帳戶，可於下次購票或購物時折抵使用。</p>
+                        <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Platform System Notifications -->
+            <div class="tab-pane fade" id="notif-system">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i></span>
+                                <h6 class="mb-0 fw-bold">平台維護公告</h6>
+                            </div>
+                            <small class="text-primary">剛剛</small>
+                        </div>
+                        <p class="mb-1 text-muted">Momento 將於 2024/12/31 02:00-04:00 進行系統維護。</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2"><i class="fas fa-info-circle"></i></span>
+                                <h6 class="mb-0">新功能上線：電子票券錢包</h6>
+                            </div>
+                            <small class="text-muted">3 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">現在您可以在會員中心查看所有電子票券，入場更方便！</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Organizer Notifications -->
+            <div class="tab-pane fade" id="notif-organizer">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i
+                                        class="fas fa-calendar-check"></i></span>
+                                <h6 class="mb-0 fw-bold">活動提醒：跨年演唱會明日開始</h6>
+                            </div>
+                            <small class="text-warning">1 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您購買的「2025 跨年演唱會」將於明日 20:00 開始，請記得攜帶電子票券入場！</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：五月天工作室</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-truck"></i></span>
+                                <h6 class="mb-0 fw-bold">商品出貨通知</h6>
+                            </div>
+                            <small class="text-warning">2 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您訂購的「限定款應援棒」已出貨，物流單號：SF1234567890</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：演唱會官方商店</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i
+                                        class="fas fa-map-marker-alt"></i></span>
+                                <h6 class="mb-0">活動地點異動通知</h6>
+                            </div>
+                            <small class="text-muted">2 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">「春季音樂祭」活動地點由原本的大安森林公園改至台北小巨蛋，敬請留意。</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：春季音樂祭主辦單位</small>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Notifications -->
+            <div class="tab-pane fade" id="notif-orders">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-2"><i class="fas fa-box"></i></span>
+                                <h6 class="mb-0">訂單 #MOP20241225001 已出貨</h6>
+                            </div>
+                            <small class="text-muted">2 小時前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您購買的「官方週邊 T-shirt」已經交寄物流，預計 2-3 天內送達。</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-2"><i class="fas fa-check-circle"></i></span>
+                                <h6 class="mb-0">訂單 #MOT20241220003 付款成功</h6>
+                            </div>
+                            <small class="text-muted">5 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">「2025 跨年演唱會」門票 x2 購買成功，電子票券已存入您的帳戶。</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Token Reward Notifications -->
+            <div class="tab-pane fade" id="notif-promo">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-info me-2"><i class="fas fa-coins"></i></span>
+                                <h6 class="mb-0">跨年購物代幣回饋已入帳</h6>
+                            </div>
+                            <small class="text-muted">1 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">您上次消費已滿額，我們已贈送 50 元代幣至您的帳戶。</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-info me-2"><i class="fas fa-gift"></i></span>
+                                <h6 class="mb-0">首購會員禮 30 元代幣</h6>
+                            </div>
+                            <small class="text-muted">7 天前</small>
+                        </div>
+                        <p class="mb-1 text-muted">感謝您成為 Momento 會員，首購禮 30 元代幣已入帳！</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer border-secondary text-center">
+        <button class="btn btn-sm btn-link text-muted text-decoration-none">查看歷史通知</button>
+    </div>
+</div>

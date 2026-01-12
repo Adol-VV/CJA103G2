@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單詳情 | Momento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .order-status-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .order-status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: var(--border-color);
+        }
+
+        .status-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .status-step.completed .status-icon {
+            background: var(--momento-green);
+        }
+
+        .status-step.active .status-icon {
+            background: var(--momento-green);
+            box-shadow: 0 0 0 4px rgba(45, 95, 79, 0.3);
+        }
+
+        .status-step .status-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .status-step.completed .status-label,
+        .status-step.active .status-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .tracking-card {
+            background: linear-gradient(135deg, rgba(45, 95, 79, 0.1), transparent);
+            border: 1px solid var(--momento-green);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
+            </a>
+            <div class="d-flex align-items-center">
+                <a href="dashboard.html#orders" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>返回訂單列表
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <!-- Order Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
+            <div>
+                <h2 class="mb-2">
+                    <i class="fas fa-receipt me-2 text-success"></i>訂單詳情
+                </h2>
+                <p class="text-muted mb-0">
+                    訂單編號：<span class="text-white fw-bold" id="orderId">MO-20241226-001234</span>
+                    <button class="btn btn-link btn-sm text-muted p-0 ms-2" onclick="copyOrderId()">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-success fs-6 mb-2">已完成</span>
+                <p class="text-muted small mb-0">下單時間：2024/12/26 14:30</p>
+            </div>
+        </div>
+
+        <!-- Order Status Timeline -->
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-0">訂單狀態</h5>
+                <div class="order-status-timeline">
+                    <div class="status-step completed">
+                        <div class="status-icon"><i class="fas fa-shopping-cart text-white"></i></div>
+                        <span class="status-label">訂單成立</span>
+                        <small class="text-muted">12/26 14:30</small>
+                    </div>
+                    <div class="status-step completed">
+                        <div class="status-icon"><i class="fas fa-credit-card text-white"></i></div>
+                        <span class="status-label">付款完成</span>
+                        <small class="text-muted">12/26 14:31</small>
+                    </div>
+                    <div class="status-step completed">
+                        <div class="status-icon"><i class="fas fa-box text-white"></i></div>
+                        <span class="status-label">準備出貨</span>
+                        <small class="text-muted">12/26 18:00</small>
+                    </div>
+                    <div class="status-step active">
+                        <div class="status-icon"><i class="fas fa-truck text-white"></i></div>
+                        <span class="status-label">配送中</span>
+                        <small class="text-muted">12/27 09:00</small>
+                    </div>
+                    <div class="status-step">
+                        <div class="status-icon"><i class="fas fa-check text-muted"></i></div>
+                        <span class="status-label">已送達</span>
+                        <small class="text-muted">-</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Order Items -->
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-box me-2"></i>訂單商品</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Ticket Item -->
+                        <div class="order-item">
+                            <img loading="lazy" src="https://picsum.photos/seed/event1/200" class="order-item-img" alt="Event">
+                            <div class="flex-grow-1">
+                                <span class="badge bg-primary mb-2">票券</span>
+                                <h6 class="mb-1">2025新年音樂會｜維也納之夜</h6>
+                                <p class="text-muted small mb-1">VIP 特區</p>
+                                <p class="text-muted small mb-0">
+                                    <i class="far fa-calendar me-1"></i>2024/12/31 (二) 19:30
+                                    <i class="fas fa-map-marker-alt ms-2 me-1"></i>國家音樂廳
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted small">x 1</div>
+                                <div class="text-success fw-bold">NT$ 2,800</div>
+                                <a href="#" class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#qrModal">
+                                    <i class="fas fa-qrcode me-1"></i>顯示票券
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Product Item -->
+                        <div class="order-item">
+                            <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                            <div class="flex-grow-1">
+                                <span class="badge bg-warning text-dark mb-2">商品</span>
+                                <h6 class="mb-1">經典Logo帆布袋</h6>
+                                <p class="text-muted small mb-0">規格：米白色</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted small">x 1</div>
+                                <div class="text-success fw-bold">NT$ 450</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Tracking -->
+                <div class="card tracking-card mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-truck me-2"></i>物流追蹤</h5>
+                            <span class="badge bg-info">配送中</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <p class="text-muted small mb-1">物流公司</p>
+                                <p class="mb-0 fw-bold">黑貓宅急便</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="text-muted small mb-1">追蹤號碼</p>
+                                <p class="mb-0 fw-bold text-success">
+                                    123456789012
+                                    <button class="btn btn-link btn-sm text-muted p-0 ms-1" onclick="copyTrackingNumber()">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="border-secondary">
+                        
+                        <!-- Tracking History -->
+                        <div class="tracking-history">
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 24px; height: 24px;">
+                                        <i class="fas fa-circle text-white" style="font-size: 8px;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold">貨件配送中</p>
+                                    <p class="text-muted small mb-0">2024/12/27 09:00 - 台北市中正區配送站</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 24px; height: 24px;">
+                                        <i class="fas fa-circle text-white" style="font-size: 8px;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted">貨件已到達配送站</p>
+                                    <p class="text-muted small mb-0">2024/12/27 06:00 - 台北市中正區配送站</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 24px; height: 24px;">
+                                        <i class="fas fa-circle text-white" style="font-size: 8px;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted">貨件運輸中</p>
+                                    <p class="text-muted small mb-0">2024/12/26 22:00 - 北區轉運中心</p>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 24px; height: 24px;">
+                                        <i class="fas fa-circle text-white" style="font-size: 8px;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted">賣家已出貨</p>
+                                    <p class="text-muted small mb-0">2024/12/26 18:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Payment Info -->
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>付款資訊</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="text-muted">付款方式</span>
+                            <span>信用卡</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">卡號末四碼</span>
+                            <span>**** 1234</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">付款時間</span>
+                            <span>2024/12/26 14:31</span>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="info-row">
+                            <span class="text-muted">商品小計</span>
+                            <span>NT$ 3,250</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">運費</span>
+                            <span class="text-success">免運費</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">代幣折抵</span>
+                            <span class="text-danger">-NT$ 0</span>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">實付金額</span>
+                            <span class="fw-bold text-success fs-5">NT$ 3,250</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-success">
+                                <i class="fas fa-coins me-1"></i>已獲得 54 代幣
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Info -->
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>收件資訊</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="text-muted">收件人</span>
+                            <span>林書涵</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">手機</span>
+                            <span>0912-345-678</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">地址</span>
+                            <span>100 台北市中正區忠孝東路一段 100 號</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Info -->
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>發票資訊</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="text-muted">發票類型</span>
+                            <span>個人電子發票</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="text-muted">發票號碼</span>
+                            <span>AB-12345678</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-download me-2"></i>下載訂單明細
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-question-circle me-2"></i>聯繫客服
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-center">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">電子票券</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="bg-white rounded p-4 d-inline-block mb-3">
+                        <canvas id="qrCanvas" width="200" height="200"></canvas>
+                    </div>
+                    <h6 class="mb-1">2025新年音樂會｜維也納之夜</h6>
+                    <p class="text-muted small mb-3">VIP 特區 - 座位：A12</p>
+                    <div class="alert alert-info bg-info bg-opacity-10 border-info text-start small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        請於入場時出示此 QR Code，工作人員將為您驗票
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary justify-content-center">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>下載票券
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-top border-secondary py-4 mt-5">
+        <div class="container text-center text-muted small">
+            &copy; 2024 Momento. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Get order ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id') || 'MO-20241226-001234';
+            $('#orderId').text(orderId);
+
+            // Generate QR Code when modal opens
+            $('#qrModal').on('shown.bs.modal', function () {
+                new QRious({
+                    element: document.getElementById('qrCanvas'),
+                    value: 'MOMENTO:TICKET:' + orderId + ':VIP-A12',
+                    size: 200,
+                    foreground: '#000000',
+                    background: '#ffffff'
+                });
+            });
+        });
+
+        function copyOrderId() {
+            const orderId = $('#orderId').text();
+            navigator.clipboard.writeText(orderId).then(function () {
+                showToast('訂單編號已複製', 'success');
+            });
+        }
+
+        function copyTrackingNumber() {
+            navigator.clipboard.writeText('123456789012').then(function () {
+                showToast('追蹤號碼已複製', 'success');
+            });
+        }
+
+        // Toast helper function
+        function showToast(message, type) {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
+            const bgClass = type === 'success' ? 'bg-success' : 'bg-info';
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white ${bgClass} border-0`;
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas fa-check-circle me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>
+
