@@ -1,10 +1,10 @@
-package com.prod.model;
+package com.momento.prod.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.emp.model.EmpVO;
-import com.organizer.model.OrganizerVO;
+import com.momento.emp.model.EmpVO;
+import com.momento.organizer.model.OrganizerVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +31,7 @@ public class ProdVO implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "SORT_ID")
-	private ProductSort productSort;
+	private ProductSortVO productSort;
 	
 	@ManyToOne
 	@JoinColumn(name = "EMP_ID")
@@ -82,11 +82,11 @@ public class ProdVO implements Serializable {
 		this.organizerVO = organizerVO;
 	}
 
-	public ProductSort getProductSort() {
+	public ProductSortVO getProductSort() {
 		return productSort;
 	}
 
-	public void setProductSort(ProductSort productSort) {
+	public void setProductSort(ProductSortVO productSort) {
 		this.productSort = productSort;
 	}
 

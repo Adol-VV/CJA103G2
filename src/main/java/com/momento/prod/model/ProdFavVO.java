@@ -1,8 +1,8 @@
-package com.prod.model;
+package com.momento.prod.model;
 
 import java.io.Serializable;
 
-import com.member.model.MemberVO;
+import com.momento.member.model.MemberVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "prod_fav")
-public class ProdFav implements Serializable {
+public class ProdFavVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -32,7 +32,7 @@ public class ProdFav implements Serializable {
 	@JoinColumn(name = "PROD_ID")
 	private ProdVO prodVO;
 
-	public ProdFav() {
+	public ProdFavVO() {
 
 	}
 

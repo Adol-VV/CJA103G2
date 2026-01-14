@@ -1,4 +1,4 @@
-package com.prod.model;
+package com.momento.prod.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "prod_image")
-public class ProdImage implements Serializable{
+public class ProdImageVO implements Serializable{
 	private static final long serialVersionUID = 1L;	
 	
 	@Id
@@ -34,7 +34,7 @@ public class ProdImage implements Serializable{
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt;
 	
-	public ProdImage() {
+	public ProdImageVO() {
 		
 	}
 

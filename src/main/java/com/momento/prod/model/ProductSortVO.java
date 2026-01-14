@@ -1,4 +1,4 @@
-package com.prod.model;
+package com.momento.prod.model;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sort")
-public class ProductSort implements Serializable {
+public class ProductSortVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -25,7 +25,7 @@ public class ProductSort implements Serializable {
 	@Column(name = "SORT_DESC")
 	private Integer sortDesc;
 	
-	public ProductSort() {
+	public ProductSortVO() {
 		
 	}
 
