@@ -1,4 +1,4 @@
-package com.momento.prodorder.model;
+package com.momento.prodorderitem.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
