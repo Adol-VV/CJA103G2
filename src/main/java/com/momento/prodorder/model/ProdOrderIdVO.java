@@ -3,6 +3,9 @@ package com.momento.prodorder.model;
 
 import java.util.Date;
 
+import com.momento.member.model.MemberVO;
+import com.momento.organizer.model.OrganizerVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,11 +27,11 @@ public class ProdOrderIdVO {
 	
 	@ManyToOne
 	@JoinColumn(name="MEMBER_ID")
-	private Integer memberId;
+	private MemberVO memberId;
 	
 	@ManyToOne
 	@JoinColumn(name="ORGANIZER_ID")
-	private Integer organizerId;
+	private OrganizerVO organizerId;
 	
 	@Column(name="CREATED_AT",updatable = false)
 	private Date createdDate;
@@ -53,19 +56,19 @@ public class ProdOrderIdVO {
 		this.orderId = orderId;
 	}
 
-	public Integer getMemberId() {
+	public MemberVO getMemberId() {
 		return memberId;
 	}
 
-	public void setMemberId(Integer memberId) {
+	public void setMemberId(MemberVO memberId) {
 		this.memberId = memberId;
 	}
 
-	public Integer getOrganizerId() {
+	public OrganizerVO getOrganizerId() {
 		return organizerId;
 	}
 
-	public void setOrganizerId(Integer organizerId) {
+	public void setOrganizerId(OrganizerVO organizerId) {
 		this.organizerId = organizerId;
 	}
 

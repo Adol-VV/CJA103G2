@@ -1,5 +1,8 @@
 package com.momento.prodsettledetail.model;
 
+import com.momento.prod.model.ProdVO;
+import com.momento.prodsettle.model.ProdSettleVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,11 +25,11 @@ public class ProdSettleDetail {
 	
 	@ManyToOne
 	@JoinColumn(name="PROD_SETTLE_ID")
-	private Integer prodSettleId;
+	private ProdSettleVO prodSettleId;
 	
 	@ManyToOne
 	@JoinColumn(name="PROD_ID")
-	private Integer prodId;
+	private ProdVO prodId;
 	
 	@Column(name="PROD_SALES")
 	@NotNull(message = "銷售金額請勿空白")
@@ -40,16 +43,16 @@ public class ProdSettleDetail {
 	public void setProdSettleDetailId(Integer prodSettleDetailId) {
 		this.prodSettleDetailId = prodSettleDetailId;
 	}
-	public Integer getProdSettleId() {
+	public ProdSettleVO getProdSettleId() {
 		return prodSettleId;
 	}
-	public void setProdSettleId(Integer prodSettleId) {
+	public void setProdSettleId(ProdSettleVO prodSettleId) {
 		this.prodSettleId = prodSettleId;
 	}
-	public Integer getProdId() {
+	public ProdVO getProdId() {
 		return prodId;
 	}
-	public void setProdId(Integer prodId) {
+	public void setProdId(ProdVO prodId) {
 		this.prodId = prodId;
 	}
 	public Integer getProdSales() {

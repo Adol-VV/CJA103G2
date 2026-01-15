@@ -2,6 +2,8 @@ package com.momento.prodsettle.model;
 
 import java.util.Date;
 
+import com.momento.organizer.model.OrganizerVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +26,7 @@ public class ProdSettleVO {
 	
 	@ManyToOne
 	@JoinColumn(name="ORGANIZER_ID")
-	private Integer organizerId;
+	private OrganizerVO organizerId;
 	
 	@Column(name="SALES")
 	@NotNull(message = "銷售金額請勿空白")
@@ -47,11 +49,11 @@ public class ProdSettleVO {
 		this.prodSettleId = prodSettleId;
 	}
 
-	public Integer getOrganizerId() {
+	public OrganizerVO getOrganizerId() {
 		return organizerId;
 	}
 
-	public void setOrganizerId(Integer organizerId) {
+	public void setOrganizerId(OrganizerVO organizerId) {
 		this.organizerId = organizerId;
 	}
 
