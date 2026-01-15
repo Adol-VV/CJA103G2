@@ -1,4 +1,4 @@
-package com;
+package com.momento;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
