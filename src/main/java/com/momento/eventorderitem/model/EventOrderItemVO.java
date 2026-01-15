@@ -1,8 +1,8 @@
-package com.momento.eventOrderItem.model;
+package com.momento.eventorderitem.model;
 
 import java.io.Serializable;
 
-import com.momento.eventOrder.model.EventOrderVO;
+import com.momento.eventorder.model.EventOrderVO;
 import com.momento.ticket.model.TicketVO;
 
 import groovy.transform.ToString;

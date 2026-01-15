@@ -1,8 +1,11 @@
-package com.momento.eventOrder.model;
+package com.momento.eventorder.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Set;
+
+import com.momento.eventorderitem.model.EventOrderItemVO;
+import com.momento.member.model.MemberVO;
 
 import groovy.transform.ToString;
 import jakarta.persistence.CascadeType;
@@ -19,10 +22,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import com.momento.eventOrderItem.model.*;
-import com.momento.member.model.MemberVO;;
+import lombok.Setter;;
 
 @Entity
 @Table(name = "event_order")
@@ -43,9 +43,9 @@ public class EventOrderVO implements Serializable{
     private MemberVO member;
 
     // 等OrganizerVO整合
-    // @ManyToOne
-    // @JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")
-    // private OrganizerVO organizer;
+//     @ManyToOne
+//     @JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")
+//     private OrganizerVO organizer;
 
     // 等EventVO整合
     // @ManyToOne
