@@ -12,8 +12,9 @@ public class EventImageVO {
     @Column(name = "EVENT_IMAGE_ID")
     private Integer eventImageId;
 
-    @Column(name = "EVENT_ID", nullable = false)
-    private Integer eventId;
+    @ManyToOne
+    @JoinColumn(name = "EVENT_ID", nullable = false)
+    private EventVO event;
 
     @Column(name = "IMAGE_URL", nullable = false, length = 500)
     private String imageUrl;
@@ -35,8 +36,8 @@ public class EventImageVO {
     public EventImageVO() {
     }
 
-    public EventImageVO(Integer eventId, String imageUrl) {
-        this.eventId = eventId;
+    public EventImageVO(EventVO event, String imageUrl) {
+        this.event = event;
         this.imageUrl = imageUrl;
     }
 
@@ -50,12 +51,12 @@ public class EventImageVO {
         this.eventImageId = eventImageId;
     }
 
-    public Integer getEventId() {
-        return eventId;
+    public EventVO getEvent() {
+        return event;
     }
 
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
+    public void setEvent(EventVO event) {
+        this.event = event;
     }
 
     public String getImageUrl() {

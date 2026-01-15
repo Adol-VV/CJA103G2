@@ -1,6 +1,8 @@
 package com.momento.eventfav.model;
 
 import jakarta.persistence.*;
+import com.momento.event.model.EventVO;
+// import com.momento.member.model.MemberVO;  // 待 MemberVO 開發完成後再啟用
 
 @Entity
 @Table(name = "EVENT_FAV", uniqueConstraints = {
@@ -13,21 +15,23 @@ public class EventFavVO {
     @Column(name = "EVENT_FAV_ID")
     private Integer eventFavId;
 
-    @Column(name = "EVENT_ID", nullable = false)
-    private Integer eventId;
+    @ManyToOne
+    @JoinColumn(name = "EVENT_ID", nullable = false)
+    private EventVO event;
 
-    @Column(name = "MEMBER_ID", nullable = false)
-    private Integer memberId;
+    // @ManyToOne
+    // @JoinColumn(name = "MEMBER_ID", nullable = false)
+    // private MemberVO member;
 
     // ========== Constructors ==========
 
     public EventFavVO() {
     }
 
-    public EventFavVO(Integer eventId, Integer memberId) {
-        this.eventId = eventId;
-        this.memberId = memberId;
-    }
+    // public EventFavVO(EventVO event, MemberVO member) {
+    // this.event = event;
+    // this.member = member;
+    // }
 
     // ========== Getters & Setters ==========
 
@@ -39,19 +43,19 @@ public class EventFavVO {
         this.eventFavId = eventFavId;
     }
 
-    public Integer getEventId() {
-        return eventId;
+    public EventVO getEvent() {
+        return event;
     }
 
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
+    public void setEvent(EventVO event) {
+        this.event = event;
     }
 
-    public Integer getMemberId() {
-        return memberId;
-    }
+    // public MemberVO getMember() {
+    // return member;
+    // }
 
-    public void setMemberId(Integer memberId) {
-        this.memberId = memberId;
-    }
+    // public void setMember(MemberVO member) {
+    // this.member = member;
+    // }
 }

@@ -12,20 +12,23 @@ public class EventVO {
     @Column(name = "EVENT_ID")
     private Integer eventId;
 
-    @Column(name = "ORGANIZER_ID", nullable = false)
-    private Integer organizerId;
+    // @ManyToOne
+    // @JoinColumn(name = "ORGANIZER_ID", nullable = false)
+    // private OrganizerVO organizer;
 
-    @Column(name = "TYPE_ID", nullable = false)
-    private Integer typeId;
+    @ManyToOne
+    @JoinColumn(name = "TYPE_ID", nullable = false)
+    private TypeVO type;
 
-    @Column(name = "EMP_ID")
-    private Integer empId;
+    // @ManyToOne
+    // @JoinColumn(name = "EMP_ID")
+    // private EmpVO emp;
 
     @Column(name = "STATUS")
-    private Byte status = 0; // 0:未上架 1:已上架
+    private Byte status = 0;
 
     @Column(name = "REVIEW_STATUS")
-    private Byte reviewStatus = 0; // 0:待審核 1:通過 2:未通過
+    private Byte reviewStatus = 0;
 
     @Column(name = "TITLE", nullable = false, length = 100)
     private String title;
@@ -64,29 +67,29 @@ public class EventVO {
         this.eventId = eventId;
     }
 
-    public Integer getOrganizerId() {
-        return organizerId;
+    // public OrganizerVO getOrganizer() {
+    // return organizer;
+    // }
+
+    // public void setOrganizer(OrganizerVO organizer) {
+    // this.organizer = organizer;
+    // }
+
+    public TypeVO getType() {
+        return type;
     }
 
-    public void setOrganizerId(Integer organizerId) {
-        this.organizerId = organizerId;
+    public void setType(TypeVO type) {
+        this.type = type;
     }
 
-    public Integer getTypeId() {
-        return typeId;
-    }
+    // public EmpVO getEmp() {
+    // return emp;
+    // }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-    }
-
-    public Integer getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(Integer empId) {
-        this.empId = empId;
-    }
+    // public void setEmp(EmpVO emp) {
+    // this.emp = emp;
+    // }
 
     public Byte getStatus() {
         return status;
