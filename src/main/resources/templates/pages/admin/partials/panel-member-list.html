@@ -1,0 +1,76 @@
+<div class="content-panel" id="panel-member-list">
+    <h2 class="mb-4">會員管理</h2>
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select class="form-select bg-dark text-white border-secondary">
+                        <option value="">所有狀態</option>
+                        <option value="active">正常</option>
+                        <option value="banned">停權</option>
+                    </select>
+                </div>
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                            placeholder="搜尋會員姓名、Email...">
+                        <button class="btn btn-outline-secondary">搜尋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>會員</th>
+                        <th>Email</th>
+                        <th>註冊日期</th>
+                        <th>訂單數</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img loading="lazy" src="https://ui-avatars.com/api/?name=User+One&background=random"
+                                    class="rounded-circle me-3" width="32" height="32">
+                                <span>User One</span>
+                            </div>
+                        </td>
+                        <td>user1@example.com</td>
+                        <td>2024/01/15</td>
+                        <td>12</td>
+                        <td><span class="badge bg-success">正常</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary btn-view-member" data-id="1">詳情</button>
+                            <button class="btn btn-sm btn-outline-danger">停權</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img loading="lazy" src="https://ui-avatars.com/api/?name=Bad+User&background=random"
+                                    class="rounded-circle me-3" width="32" height="32">
+                                <span>Bad User</span>
+                            </div>
+                        </td>
+                        <td>bad@example.com</td>
+                        <td>2024/03/20</td>
+                        <td>0</td>
+                        <td><span class="badge bg-danger">停權</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary btn-view-member" data-id="2">詳情</button>
+                            <button class="btn btn-sm btn-outline-secondary">復原</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

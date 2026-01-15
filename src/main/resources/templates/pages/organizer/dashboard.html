@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主辦方後台 | Momento</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Theme -->
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link href="../../css/dashboard.css" rel="stylesheet">
+    <link href="../../css/organizer-dashboard.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #121212;">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-dark">
+        <div class="container-fluid px-4">
+            <!-- Mobile Menu Toggle -->
+            <button class="btn btn-link text-white d-md-none me-2" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarOffcanvas">
+                <i class="fas fa-bars fs-5"></i>
+            </button>
+
+            <a class="navbar-brand fw-bold" href="../../index.html">Momento <span class="badge bg-secondary ms-2"
+                    style="font-size: 0.7rem;">Organizer</span></a>
+
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <button class="btn btn-link text-muted position-relative" data-bs-toggle="dropdown">
+                        <i class="far fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem;">3</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" style="width: 300px;">
+                        <li>
+                            <h6 class="dropdown-header">通知中心</h6>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle p-2 me-3"><i
+                                            class="fas fa-ticket-alt text-white"></i></div>
+                                    <div>
+                                        <strong>新訂單成立</strong>
+                                        <div class="small text-muted">五月天演唱會 x2</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Profile -->
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none dropdown-toggle"
+                        data-bs-toggle="dropdown">
+                        <img loading="lazy" src="https://via.placeholder.com/40" class="rounded-circle me-2"
+                            alt="Avatar">
+                        <span>相信音樂</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">企業資料</a></li>
+                        <li><a class="dropdown-item" href="#">設定</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="../../index.html" target="_blank">前往前台</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="login.html">登出</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Partial -->
+            <nav id="organizerSidebar" class="col-md-3 col-lg-2 sidebar pt-3 d-none d-md-block"
+                data-partial="../../pages/organizer/partials/sidebar.html">
+            </nav>
+
+            <!-- Mobile Sidebar Offcanvas -->
+            <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarOffcanvas">
+                <div class="offcanvas-header border-bottom border-secondary">
+                    <h5 class="offcanvas-title">選單</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body p-0 pt-3" data-partial="../../pages/organizer/partials/sidebar.html">
+                    <!-- Mobile content loaded here -->
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
+                <!-- Dashboard Panel -->
+                <div class="content-panel active" id="panel-dashboard"
+                    data-partial="../../pages/organizer/partials/panel-dashboard.html"></div>
+
+                <!-- Notifications Panel -->
+                <div class="content-panel" id="panel-notifications"
+                    data-partial="../../pages/organizer/partials/panel-notifications.html"></div>
+
+                <!-- Notify Members Panel -->
+                <div class="content-panel" id="panel-notify-members"
+                    data-partial="../../pages/organizer/partials/panel-notify-members.html"></div>
+
+                <!-- Events List Panel -->
+                <div class="content-panel" id="panel-events-list"
+                    data-partial="../../pages/organizer/partials/panel-events-list.html"></div>
+
+                <!-- Event Create Panel -->
+                <div class="content-panel" id="panel-event-create"
+                    data-partial="../../pages/organizer/partials/panel-event-create.html"></div>
+
+                <!-- Orders Panel -->
+                <div class="content-panel" id="panel-orders"
+                    data-partial="../../pages/organizer/partials/panel-orders.html"></div>
+
+                <!-- Ticket Scanner Panel -->
+                <div class="content-panel" id="panel-ticket-scanner"
+                    data-partial="../../pages/organizer/partials/panel-ticket-scanner.html"></div>
+
+                <!-- Product List Panel -->
+                <div class="content-panel" id="panel-product-list"
+                    data-partial="../../pages/organizer/partials/panel-product-list.html"></div>
+
+                <!-- Product Create Panel -->
+                <div class="content-panel" id="panel-product-create"
+                    data-partial="../../pages/organizer/partials/panel-product-create.html"></div>
+
+                <!-- Product Orders Panel -->
+                <div class="content-panel" id="panel-product-orders"
+                    data-partial="../../pages/organizer/partials/panel-product-orders.html"></div>
+
+                <!-- Reports Panel -->
+                <div class="content-panel" id="panel-reports"
+                    data-partial="../../pages/organizer/partials/panel-reports.html"></div>
+
+                <!-- Settlement Panel -->
+                <div class="content-panel" id="panel-settlement"
+                    data-partial="../../pages/organizer/partials/panel-settlement.html"></div>
+
+                <!-- Article List Panel -->
+                <div class="content-panel" id="panel-article-list"
+                    data-partial="../../pages/organizer/partials/panel-article-list.html"></div>
+
+                <!-- Article Editor Panel -->
+                <div class="content-panel" id="panel-article-editor"
+                    data-partial="../../pages/organizer/partials/panel-article-editor.html"></div>
+
+                <!-- Settings Panel -->
+                <div class="content-panel" id="panel-settings"
+                    data-partial="../../pages/organizer/partials/panel-settings.html"></div>
+
+                <!-- Modals Partial -->
+                <div data-partial="../../pages/organizer/partials/modals.html"></div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+
+    <!-- Modularized JS -->
+    <script type="module" src="../../js/organizer/index.js"></script>
+    <script type="module" src="../../js/common/index.js"></script>
+</body>
+
+</html>

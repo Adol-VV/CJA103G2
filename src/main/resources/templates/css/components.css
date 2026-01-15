@@ -1,0 +1,500 @@
+/**
+ * Momento Components
+ * 共用元件樣式：Navbar, Cards, Forms, Buttons, Modals, Badges
+ */
+
+/* ========================================
+   Navbar
+   ======================================== */
+.navbar {
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 0;
+}
+
+.navbar-brand {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand:hover {
+    color: var(--text-primary) !important;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color var(--transition-fast);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary) !important;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.btn {
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.btn-primary {
+    background-color: var(--momento-green) !important;
+    border-color: var(--momento-green) !important;
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--momento-green-hover) !important;
+    border-color: var(--momento-green-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-outline-primary {
+    color: var(--momento-green);
+    border-color: var(--momento-green);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--momento-green);
+    border-color: var(--momento-green);
+    color: #fff;
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline-light {
+    color: var(--text-primary);
+    border-color: var(--border-light);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--border-light);
+    color: var(--text-primary);
+}
+
+/* Button Icon */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+}
+
+.btn-icon.btn-sm {
+    width: 28px;
+    height: 28px;
+}
+
+.btn-icon.btn-lg {
+    width: 44px;
+    height: 44px;
+}
+
+/* ========================================
+   Cards
+   ======================================== */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* Static card (no hover effect) */
+.card-static,
+.card-static:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+}
+
+.card-title {
+    color: var(--text-primary);
+    margin-bottom: 0;
+    word-break: break-word;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-footer {
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+}
+
+/* Card Image Overlay */
+.card-img-top {
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
+/* ========================================
+   Forms
+   ======================================== */
+.form-control,
+.form-select {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    padding: 0.625rem 0.875rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg-input);
+    border-color: var(--momento-green);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 3px var(--momento-green-light);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Required Field Indicator */
+.form-label.required::after,
+label.required::after {
+    content: " *";
+    color: var(--color-danger);
+}
+
+/* Form Check */
+.form-check-input {
+    background-color: var(--bg-input);
+    border-color: var(--border-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--momento-green);
+    border-color: var(--momento-green);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px var(--momento-green-light);
+    border-color: var(--momento-green);
+}
+
+/* Input Group */
+.input-group-text {
+    background-color: var(--bg-dark);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   Modals
+   ======================================== */
+.modal-content {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ========================================
+   Badges
+   ======================================== */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: var(--radius-sm);
+}
+
+.badge-hot {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.badge-new {
+    background-color: var(--momento-green);
+    color: white;
+}
+
+/* ========================================
+   Alerts
+   ======================================== */
+.alert {
+    border-radius: var(--radius-md);
+    border: 1px solid;
+}
+
+.alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: var(--color-info);
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--color-success);
+}
+
+.alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--color-warning);
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--color-danger);
+}
+
+.alert-secondary {
+    background-color: var(--bg-dark);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   Tables
+   ======================================== */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.table-dark th {
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: var(--momento-green-light);
+}
+
+/* ========================================
+   Nav Tabs
+   ======================================== */
+.nav-tabs {
+    border-bottom-color: var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary) !important;
+    padding: 0.75rem 1rem;
+    margin-bottom: -1px;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: var(--text-primary) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom-color: var(--momento-green);
+    color: var(--text-primary) !important;
+}
+
+/* ========================================
+   List Group
+   ======================================== */
+.list-group-item {
+    background-color: transparent;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.list-group-item-action:hover {
+    background-color: var(--momento-green-light);
+    color: var(--text-primary);
+}
+
+.list-group-item.active {
+    background-color: var(--momento-green);
+    border-color: var(--momento-green);
+}
+
+/* ========================================
+   Breadcrumb
+   ======================================== */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.breadcrumb-item a {
+    color: var(--text-secondary);
+}
+
+.breadcrumb-item a:hover {
+    color: var(--momento-green);
+}
+
+.breadcrumb-item.active {
+    color: var(--text-primary);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--text-muted);
+}
+
+/* ========================================
+   Pagination
+   ======================================== */
+.pagination .page-link {
+    background-color: var(--bg-dark);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--momento-green);
+    border-color: var(--momento-green);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+footer {
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 0;
+    margin-top: 4rem;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.empty-state .empty-icon {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+/* ========================================
+   Loading Spinner
+   ======================================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(10, 10, 10, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+}
+
+.spinner-momento {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--momento-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Toast Container
+   ======================================== */
+#toastContainer {
+    z-index: var(--z-toast);
+}
+

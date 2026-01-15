@@ -1,0 +1,127 @@
+/* === Layout Fix: Sidebar & Main Content === */
+.member-sidebar {
+    flex-shrink: 0 !important;
+}
+
+.member-content {
+    flex: 1 1 auto !important;
+    max-width: none !important;
+    overflow-x: auto;
+}
+
+/* Fix for zoom/scaling - prevent overlap */
+.container-fluid>.row {
+    flex-wrap: nowrap !important;
+}
+
+@media (min-width: 768px) {
+    .member-sidebar {
+        min-width: 280px !important;
+        width: 280px !important;
+    }
+
+    .member-content {
+        width: calc(100% - 280px) !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .container-fluid>.row {
+        flex-wrap: wrap !important;
+    }
+
+    .member-sidebar {
+        width: 100% !important;
+    }
+
+    .member-content {
+        width: 100% !important;
+    }
+}
+
+/* Page-specific styles */
+.member-sidebar .card {
+    position: sticky;
+    top: 20px;
+}
+
+.list-group-item {
+    border-left: 3px solid transparent;
+}
+
+.list-group-item.active {
+    background: var(--momento-green-light);
+    border-left-color: var(--momento-green);
+    color: var(--momento-green);
+    font-weight: 700;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.event-timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 24px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 24px;
+}
+
+.timeline-item:last-child {
+    border-left: 2px solid transparent;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--momento-green);
+}
+
+.content-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.content-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ticket-card {
+    background: #1A1A1A;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s;
+}
+
+.ticket-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--momento-green);
+}

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員登入/註冊 | Momento</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Theme -->
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: var(--bg-black);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-card {
+            background: #1A1A1A;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            position: relative;
+            background: #1A1A1A;
+            padding: 0 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .nav-pills .nav-link {
+            color: var(--text-muted);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-pills .nav-link.active {
+            background: var(--momento-green);
+            color: #E5E5E5;
+        }
+
+        /* Custom Input Group for Password Toggle */
+        .input-group-text {
+            background-color: #242424;
+            border-color: var(--border-color);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-lg-5 col-md-7">
+
+                <!-- Home Link -->
+                <div class="text-center mb-4">
+                    <a href="../../index.html" class="text-decoration-none text-muted small"><i
+                            class="fas fa-arrow-left me-1"></i> 回到首頁</a>
+                </div>
+
+                <div class="card auth-card">
+                    <div class="card-body p-5">
+                        <!-- Logo -->
+                        <div class="text-center mb-4">
+                            <a href="../../index.html" class="text-decoration-none">
+                                <h2 class="fw-bold mb-3 text-white">Momento</h2>
+                            </a>
+                            <h5 class="text-muted">歡迎來到 Momento</h5>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-pills nav-fill mb-4" id="authTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#loginTab">登入</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#registerTab">註冊</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Login Form -->
+                            <div class="tab-pane fade show active" id="loginTab">
+                                <form id="loginForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" placeholder="your@email.com" required
+                                            value="user@momento.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">密碼</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="loginPassword" required
+                                                value="password123">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="far fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                                            <label class="form-check-label" for="rememberMe">記住我</label>
+                                        </div>
+                                        <a href="forgot-password.html" class="text-primary text-decoration-none">忘記密碼？</a>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">登入</button>
+
+                                    <!-- Social Login -->
+                                    <div class="divider my-4">
+                                        <span>或使用以下方式登入</span>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-outline-secondary">
+                                            <i class="fab fa-google text-danger me-2"></i> Google 登入
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary">
+                                            <i class="fab fa-facebook text-primary me-2"></i> Facebook 登入
+                                        </button>
+                                    </div>
+
+                                    <!-- Demo Credentials Info -->
+                                    <div class="alert alert-secondary mt-4 small">
+                                        <strong><i class="fas fa-info-circle me-1"></i>Demo 測試帳號：</strong>
+                                        <ul class="mb-0 mt-2 ps-3">
+                                            <li><code>user@momento.com</code> → 會員中心</li>
+                                            <li><code>organizer@momento.com</code> → 主辦方後台</li>
+                                            <li><code>admin@momento.com</code> → 平台管理後台</li>
+                                        </ul>
+                                        <small class="text-muted">密碼任意輸入即可</small>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Register Form -->
+                            <div class="tab-pane fade" id="registerTab">
+                                <form id="registerForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">姓名 *</label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">手機號碼 *</label>
+                                        <input type="tel" class="form-control" placeholder="0912-345-678" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">密碼 *</label>
+                                        <input type="password" class="form-control" id="regPassword" required>
+                                        <div class="password-strength mt-2">
+                                            <div class="progress" style="height: 4px; background-color: #333;">
+                                                <div class="progress-bar" id="strengthBar"></div>
+                                            </div>
+                                            <small class="text-muted" id="strengthText">至少 8 字元，包含英文及數字</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">確認密碼 *</label>
+                                        <input type="password" class="form-control" id="regPasswordConfirm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                                            <label class="form-check-label small" for="agreeTerms">
+                                                我同意 <a href="#" class="text-primary">服務條款</a> 及 <a href="#"
+                                                    class="text-primary">隱私政策</a>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 btn-lg">註冊</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Extra Links -->
+                        <div class="text-center mt-4">
+                            <p class="text-muted small mb-0">
+                                企業用戶？ <a href="../organizer/login.html"
+                                    class="text-primary text-decoration-none">申請主辦方帳號</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Toggle password visibility
+            $('.toggle-password').click(function () {
+                const input = $(this).siblings('input');
+                const icon = $(this).find('i');
+
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Password strength meter
+            $('#regPassword').on('input', function () {
+                const password = $(this).val();
+                let strength = 0;
+
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+                const bar = $('#strengthBar');
+                const text = $('#strengthText');
+
+                bar.removeClass('bg-danger bg-warning bg-success');
+
+                if (strength <= 1) {
+                    bar.css('width', '25%').addClass('bg-danger');
+                    text.text('密碼強度：弱').css('color', '#EF4444');
+                } else if (strength === 2) {
+                    bar.css('width', '50%').addClass('bg-warning');
+                    text.text('密碼強度：中等').css('color', '#F59E0B');
+                } else if (strength === 3) {
+                    bar.css('width', '75%').addClass('bg-success');
+                    text.text('密碼強度：強').css('color', '#10B981');
+                } else {
+                    bar.css('width', '100%').addClass('bg-success');
+                    text.text('密碼強度：非常強').css('color', '#10B981');
+                }
+            });
+
+            // Password match validation
+            $('#regPasswordConfirm').on('input', function () {
+                const password = $('#regPassword').val();
+                const confirm = $(this).val();
+
+                if (confirm && password !== confirm) {
+                    $(this).addClass('is-invalid');
+                    if ($(this).next('.invalid-feedback').length === 0) {
+                        $(this).after('<div class="invalid-feedback">密碼不一致</div>');
+                    }
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                }
+            });
+
+            // Login form submit
+            $('#loginForm').submit(function (e) {
+                e.preventDefault();
+
+                // Mock Login
+                const email = $(this).find('input[type="email"]').val().toLowerCase();
+                const btn = $(this).find('button[type="submit"]');
+
+                btn.prop('disabled', true)
+                   .empty()
+                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+                   .append('登入中...');
+
+                setTimeout(() => {
+                    // Determine role based on email pattern (Mock)
+                    // In real app, role would come from API response
+                    let role = 'MEMBER';
+                    let redirectUrl = 'dashboard.html';
+                    let userName = 'Momento 會員';
+
+                    if (email.includes('admin') || email.includes('platform')) {
+                        role = 'ADMIN';
+                        redirectUrl = '../admin/dashboard.html';
+                        userName = '平台管理員';
+                    } else if (email.includes('organizer') || email.includes('host')) {
+                        role = 'ORGANIZER';
+                        redirectUrl = '../organizer/dashboard.html';
+                        userName = '主辦方';
+                    }
+
+                    const user = { email: email, name: userName, role: role };
+                    localStorage.setItem('momento_user', JSON.stringify(user));
+                    localStorage.setItem('momento_token', 'mock-jwt-token');
+
+                    showToast(`歡迎回來，${userName}！`, 'success');
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 500);
+                }, 1000);
+            });
+
+            // Register form submit
+            $('#registerForm').submit(function (e) {
+                e.preventDefault();
+
+                if (!$('#agreeTerms').is(':checked')) {
+                    showToast('請同意服務條款', 'warning');
+                    return;
+                }
+
+                const btn = $(this).find('button[type="submit"]');
+                btn.prop('disabled', true)
+                   .empty()
+                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+                   .append('註冊中...');
+
+                setTimeout(() => {
+                    showToast('註冊成功！請至信箱驗證帳號', 'success');
+                    $('#authTabs a[href="#loginTab"]').tab('show');
+                    btn.prop('disabled', false).text('註冊');
+                    $(this)[0].reset();
+                }, 1500);
+            });
+        });
+
+        // Toast helper (inline for standalone page)
+        function showToast(message, type) {
+            if (typeof Momento !== 'undefined') {
+                Momento.UI.toast(message, type);
+            } else {
+                // Fallback toast
+                let container = document.getElementById('toastContainer');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'toastContainer';
+                    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    container.style.zIndex = '9999';
+                    document.body.appendChild(container);
+                }
+                const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+                const toast = document.createElement('div');
+                toast.className = `toast show align-items-center text-white ${bgClass} border-0`;
+                toast.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

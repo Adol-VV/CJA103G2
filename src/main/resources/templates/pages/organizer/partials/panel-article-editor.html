@@ -1,0 +1,63 @@
+<div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2">編輯文章</h1>
+    <div>
+        <button class="btn btn-outline-secondary me-2 btn-back-article-list">取消</button>
+        <button class="btn btn-outline-success me-2">儲存草稿</button>
+        <button class="btn btn-primary">立即發布</button>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label required">文章標題</label>
+                    <input type="text" class="form-control" placeholder="輸入標題">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label required">內容</label>
+                    <div class="bg-white text-dark rounded" style="min-height: 400px; padding: 1rem;">
+                        <!-- Mock Rich Text Editor Toolbar -->
+                        <div class="border-bottom pb-2 mb-2">
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-bold"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-italic"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-heading"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-list-ul"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-link"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="fas fa-image"></i></button>
+                        </div>
+                        <p>請在此輸入文章內容...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-header border-secondary">設定</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label required">分類</label>
+                    <select class="form-select">
+                        <option>官方公告</option>
+                        <option>人物專訪</option>
+                        <option>幕後花絮</option>
+                        <option>活動報導</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">標籤</label>
+                    <input type="text" class="form-control" placeholder="以逗號分隔">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label required">封面圖片</label>
+                    <div class="upload-zone p-3">
+                        <small class="text-muted d-block mb-2">點擊上傳</small>
+                        <i class="fas fa-image fa-2x text-muted"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

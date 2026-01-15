@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>找商品 | Momento</title>
+    <meta name="description" content="探索 Momento 上的文創設計商品：藝術服飾、音樂出版品、藝術印刷品、手作藝品等，支持在地文創設計。">
+    <meta property="og:title" content="找商品 | Momento">
+    <meta property="og:description" content="探索文創設計商品：藝術服飾、音樂出版品、手作藝品等">
+    <meta property="og:type" content="website">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Theme -->
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .product-filters .list-unstyled a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: color 0.2s;
+        }
+
+        .product-filters .list-unstyled a:hover,
+        .product-filters .list-unstyled a.active {
+            color: var(--momento-green);
+            font-weight: 700;
+        }
+
+        .product-card .product-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+        }
+
+        .product-card .card-img-top {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        .badge-hot {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #EF4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .btn-favorite {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-favorite:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        /* Floating Cart */
+        .btn-floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 16px rgba(45, 95, 79, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 24px;
+            padding: 0 6px;
+        }
+
+        .cart-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand" href="../../index.html">Momento</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="prod-list.html">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
+                </ul>
+                <form class="d-flex mx-auto col-lg-4" role="search">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                class="fas fa-search"></i></span>
+                        <input class="form-control" type="search" placeholder="搜尋商品..." aria-label="Search">
+                    </div>
+                </form>
+                <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
+                    <a href="#" class="position-relative text-white text-decoration-none" id="navCartBtn">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
+                            style="display:none; font-size: 0.6rem;">0</span>
+                    </a>
+                    <a href="login.html" class="btn btn-primary btn-sm px-4">會員登入</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Filters -->
+            <aside class="col-lg-3 mb-4 product-filters">
+                <div class="card p-4 border-0 bg-transparent">
+                    <h5 class="mb-3">商品分類</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li><a href="#" class="active">全部商品</a></li>
+                        <li><a href="#">官方週邊</a></li>
+                        <li><a href="#">服飾配件</a></li>
+                        <li><a href="#">文具書籍</a></li>
+                        <li><a href="#">影音出版</a></li>
+                    </ul>
+
+                    <hr class="border-secondary">
+
+                    <h5 class="my-3">價格區間</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="price1">
+                        <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="price2">
+                        <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="price3">
+                        <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <main class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>全部商品 <span class="text-muted fs-5" id="productCount">(15)</span></h3>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small">排序：</span>
+                        <select class="form-select w-auto bg-dark text-white border-secondary" id="sortSelect">
+                            <option value="popular">依熱銷度</option>
+                            <option value="price-asc">價格：低到高</option>
+                            <option value="price-desc">價格：高到低</option>
+                            <option value="newest">最新上架</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-4" id="productGrid">
+                    <!-- Product 1 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=1" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/tshirt1/400/400" class="card-img-top">
+                                    <span class="badge badge-hot">熱賣</span>
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=1" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">2024年度音樂會紀念T恤</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 880</span>
+                                    <span class="text-muted small">已售 234</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=1" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="1"
+                                        data-name="2024年度音樂會紀念T恤" data-price="880"
+                                        data-image="https://picsum.photos/seed/tshirt1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=2" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/totebag1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=2" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">經典Logo帆布袋</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 450</span>
+                                    <span class="text-muted small">已售 89</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=2" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="2"
+                                        data-name="經典Logo帆布袋" data-price="450"
+                                        data-image="https://picsum.photos/seed/totebag1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=3" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/cup1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=3" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">限量版不鏽鋼保溫杯</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 1,280</span>
+                                    <span class="text-muted small">已售 156</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=3" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="3"
+                                        data-name="限量版不鏽鋼保溫杯" data-price="1280"
+                                        data-image="https://picsum.photos/seed/cup1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=4" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/cap1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=4" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">刺繡老帽</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 680</span>
+                                    <span class="text-muted small">已售 312</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=4" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="4" data-name="刺繡老帽"
+                                        data-price="680" data-image="https://picsum.photos/seed/cap1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 5 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=5" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/towel1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=5" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">應援毛巾</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 350</span>
+                                    <span class="text-muted small">已售 410</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=5" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="5" data-name="應援毛巾"
+                                        data-price="350" data-image="https://picsum.photos/seed/towel1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 6 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=6" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/badge1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=6" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">紀念徽章組</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 250</span>
+                                    <span class="text-muted small">已售 88</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=6" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="6" data-name="紀念徽章組"
+                                        data-price="250" data-image="https://picsum.photos/seed/badge1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 7 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=7" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/vinyl1/400/400" class="card-img-top">
+                                    <span class="badge badge-hot">限量</span>
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=7" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">典藏黑膠唱片</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 1,580</span>
+                                    <span class="text-muted small">已售 50</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=7" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="7" data-name="典藏黑膠唱片"
+                                        data-price="1580" data-image="https://picsum.photos/seed/vinyl1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 8 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=8" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/dvd1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=8" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">巡迴演唱會Live DVD</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 980</span>
+                                    <span class="text-muted small">已售 320</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=8" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="8"
+                                        data-name="巡迴演唱會Live DVD" data-price="980"
+                                        data-image="https://picsum.photos/seed/dvd1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 9 -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=9" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/notebook1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=9" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">創作手稿筆記本</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 380</span>
+                                    <span class="text-muted small">已售 112</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=9" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="9"
+                                        data-name="創作手稿筆記本" data-price="380"
+                                        data-image="https://picsum.photos/seed/notebook1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 10 (Bookmark) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=10" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/bookmark1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=10" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">金屬書籤</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 180</span>
+                                    <span class="text-muted small">已售 205</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=10" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="10" data-name="金屬書籤"
+                                        data-price="180" data-image="https://picsum.photos/seed/bookmark1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 11 (Keychain) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=11" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/keychain1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=11" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">吉他造型鑰匙圈</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 150</span>
+                                    <span class="text-muted small">已售 450</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=11" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="11"
+                                        data-name="吉他造型鑰匙圈" data-price="150"
+                                        data-image="https://picsum.photos/seed/keychain1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 12 (Poster) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=12" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/poster1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=12" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">復古海報組</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 420</span>
+                                    <span class="text-muted small">已售 150</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=12" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="12" data-name="復古海報組"
+                                        data-price="420" data-image="https://picsum.photos/seed/poster1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 13 (Sticker) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=13" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/sticker1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=13" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">樂團專屬貼紙包</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 120</span>
+                                    <span class="text-muted small">已售 600</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=13" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="13"
+                                        data-name="樂團專屬貼紙包" data-price="120"
+                                        data-image="https://picsum.photos/seed/sticker1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 14 (Postcard) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=14" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/postcard1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=14" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">簽名版明信片套組</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 220</span>
+                                    <span class="text-muted small">已售 180</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=14" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="14"
+                                        data-name="簽名版明信片套組" data-price="220"
+                                        data-image="https://picsum.photos/seed/postcard1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 15 (Pillow) -->
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 product-card">
+                            <a href="prod-detail.html?id=15" class="text-decoration-none">
+                                <div class="product-img-wrapper">
+                                    <img loading="lazy" src="https://picsum.photos/seed/pillow1/400/400" class="card-img-top">
+                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <a href="prod-detail.html?id=15" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">造型抱枕</h6>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price">NT$ 780</span>
+                                    <span class="text-muted small">已售 95</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="prod-detail.html?id=15" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="15" data-name="造型抱枕"
+                                        data-price="780" data-image="https://picsum.photos/seed/pillow1/400/400">
+                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
+                    </ul>
+                </nav>
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Cart Button -->
+    <button class="btn btn-primary btn-floating-cart" id="btnOpenCart">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge bg-danger cart-count" style="display:none;">0</span>
+    </button>
+
+    <!-- Cart Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel"
+        style="background: var(--card-bg);">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title" id="cartOffcanvasLabel">購物車 (<span id="cartItemCount">0</span>)</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column" style="background: var(--bg-black);">
+            <!-- Cart Items Container -->
+            <div id="cartItems" class="flex-grow-1 overflow-auto">
+                <!-- Empty State -->
+                <div class="text-center py-5 empty-cart">
+                    <i class="fas fa-shopping-cart mb-3" style="font-size: 60px; opacity: 0.2;"></i>
+                    <p class="text-muted">購物車目前是空的</p>
+                    <button class="btn btn-outline-primary btn-sm mt-2" data-bs-dismiss="offcanvas">去逛逛</button>
+                </div>
+
+                <!-- Template is hidden -->
+                <template id="cartItemTemplate">
+                    <div class="cart-item mb-3 pb-3 border-bottom border-secondary">
+                        <div class="d-flex gap-3">
+                            <img src="" class="cart-item-img"
+                                style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;">
+                            <div class="flex-grow-1">
+                                <h6 class="cart-item-name fs-6 mb-1 text-truncate" style="max-width: 200px;"></h6>
+                                <p class="text-success small mb-2">NT$ <span class="cart-item-price"></span></p>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary btn-qty-minus py-0 px-2">-</button>
+                                    <input type="number"
+                                        class="form-control form-control-sm text-center cart-item-qty bg-dark border-secondary text-white"
+                                        value="1" min="1" style="width: 50px;" readonly>
+                                    <button class="btn btn-sm btn-outline-secondary btn-qty-plus py-0 px-2">+</button>
+                                    <button
+                                        class="btn btn-sm btn-link text-danger ms-auto btn-remove-item p-0 text-decoration-none">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="cart-footer mt-3 pt-3 border-top border-secondary">
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>小計</span>
+                    <strong class="text-white" id="cartSubtotal">NT$ 0</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3 small text-success">
+                    <span><i class="fas fa-coins me-1"></i> 滿$300 贈 5元代幣</span>
+                    <span id="tokenReward">+0 元</span>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" id="btnCheckoutCart">前往結帳</button>
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">繼續購物</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            let cart = [];
+
+            // Load from LocalStorage
+            const saved = localStorage.getItem('momento_cart');
+            if (saved) {
+                try {
+                    cart = JSON.parse(saved);
+                } catch (e) { console.error('Error loading cart', e); }
+            }
+            updateCartUI();
+
+            function updateCartUI() {
+                const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Update Badge
+                if (count > 0) {
+                    $('.cart-count').text(count).show();
+                } else {
+                    $('.cart-count').hide();
+                }
+
+                $('#cartItemCount').text(count);
+                $('#cartSubtotal').text('NT$ ' + subtotal.toLocaleString());
+
+                // Token Reward Calc
+                const tokenReward = Math.floor(subtotal / 300) * 5;
+                $('#tokenReward').text('+' + tokenReward + ' 元'); // Logic per user request
+
+                // Render Items
+                const container = $('#cartItems');
+                // Remove existing items (except empty-cart and template)
+                container.find('.cart-item').remove();
+
+                if (cart.length === 0) {
+                    container.find('.empty-cart').removeClass('d-none').show();
+                    $('.cart-footer button').prop('disabled', true);
+                } else {
+                    container.find('.empty-cart').addClass('d-none').hide();
+                    $('.cart-footer button').prop('disabled', false);
+
+                    const template = document.getElementById('cartItemTemplate');
+
+                    cart.forEach((item, index) => {
+                        const clone = template.content.cloneNode(true);
+                        $(clone).find('.cart-item-img').attr('src', item.image);
+                        $(clone).find('.cart-item-name').text(item.name);
+                        $(clone).find('.cart-item-price').text(item.price);
+                        $(clone).find('.cart-item-qty').val(item.quantity).data('index', index);
+
+                        // Copy data to buttons for easy access
+                        $(clone).find('.btn-qty-minus').data('index', index);
+                        $(clone).find('.btn-qty-plus').data('index', index);
+                        $(clone).find('.btn-remove-item').data('index', index);
+
+                        container.append(clone);
+                    });
+                }
+
+                // Save
+                localStorage.setItem('momento_cart', JSON.stringify(cart));
+            }
+
+            // ADD TO CART
+            $('.btn-add-cart').click(function () {
+                const btn = $(this);
+                const id = btn.data('id');
+                const name = btn.data('name');
+                const price = btn.data('price');
+                const image = btn.data('image');
+
+                const existing = cart.find(item => item.id === id);
+                if (existing) {
+                    existing.quantity++;
+                } else {
+                    cart.push({ id, name, price, quantity: 1, image });
+                }
+
+                updateCartUI();
+
+                // Show simple feedback (safe method)
+                const originalHtml = btn.html();
+                btn.empty()
+                   .append($('<i>').addClass('fas fa-check'))
+                   .append(' 已加入')
+                   .removeClass('btn-primary')
+                   .addClass('btn-success');
+                showToast('已加入購物車', 'success');
+                setTimeout(() => {
+                    btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
+                }, 1500);
+
+                // Open offcanvas automatically (optional, but good UX)
+                // new bootstrap.Offcanvas('#cartOffcanvas').show();
+            });
+
+            // QTY DECREASE
+            $(document).on('click', '.btn-qty-minus', function () {
+                const index = $(this).data('index');
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity--;
+                    updateCartUI();
+                }
+            });
+
+            // QTY INCREASE
+            $(document).on('click', '.btn-qty-plus', function () {
+                const index = $(this).data('index');
+                if (cart[index].quantity < 99) { // Safety limit
+                    cart[index].quantity++;
+                    updateCartUI();
+                }
+            });
+
+            // REMOVE ITEM
+            $(document).on('click', '.btn-remove-item', function () {
+                const index = $(this).data('index');
+                if (confirm('確定要移除此商品嗎？')) {
+                    cart.splice(index, 1);
+                    updateCartUI();
+                }
+            });
+
+            // Open Cart
+            $('#btnOpenCart, #navCartBtn').click(function (e) {
+                e.preventDefault();
+                new bootstrap.Offcanvas('#cartOffcanvas').show();
+            });
+
+            // Checkout
+            $('#btnCheckoutCart').click(function () {
+                if (cart.length === 0) {
+                    showToast('購物車是空的', 'warning');
+                    return;
+                }
+                showToast('正在前往結帳...', 'info');
+                setTimeout(() => {
+                    window.location.href = 'checkout.html';
+                }, 500);
+            });
+
+            // --- 商品排序功能 ---
+            $('#sortSelect').change(function() {
+                const sortBy = $(this).val();
+                const $grid = $('#productGrid');
+                const $products = $grid.children('.col-12, .col-sm-6, .col-lg-4').get();
+                
+                $products.sort(function(a, b) {
+                    // 從 data 屬性或內容中取得價格
+                    const priceA = parseInt($(a).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
+                    const priceB = parseInt($(b).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
+                    
+                    // 取得是否熱銷（有 badge-hot 類別）
+                    const hotA = $(a).find('.badge-hot').length ? 1 : 0;
+                    const hotB = $(b).find('.badge-hot').length ? 1 : 0;
+                    
+                    // 取得 data-date 或假設順序代表新舊
+                    const indexA = $products.indexOf(a);
+                    const indexB = $products.indexOf(b);
+                    
+                    switch(sortBy) {
+                        case 'price-asc':
+                            return priceA - priceB;
+                        case 'price-desc':
+                            return priceB - priceA;
+                        case 'newest':
+                            return indexA - indexB; // 原始順序假設為最新
+                        case 'popular':
+                        default:
+                            return hotB - hotA; // 熱銷的排前面
+                    }
+                });
+                
+                // 重新排列 DOM
+                $.each($products, function(idx, el) {
+                    $grid.append(el);
+                });
+                
+                showToast('已依 ' + $('#sortSelect option:selected').text() + ' 排序', 'success');
+            });
+
+            // --- 分類篩選 ---
+            $('.product-filters .list-unstyled a').click(function(e) {
+                e.preventDefault();
+                $('.product-filters .list-unstyled a').removeClass('active');
+                $(this).addClass('active');
+                
+                const category = $(this).text().trim();
+                const $grid = $('.row.g-4').first();
+                const $products = $grid.find('.col-12, .col-md-6, .col-xl-3');
+                
+                // 模擬篩選（實際應從 API 取得資料）
+                if (category === '全部商品') {
+                    $products.show();
+                    showToast('顯示全部商品', 'info');
+                } else {
+                    // 這裡應該根據實際資料篩選
+                    // 示例：假設沒有符合的商品
+                    const hasResults = false; // 實際應檢查篩選結果
+                    
+                    if (!hasResults) {
+                        Momento.UI.showEmptyState($grid[0], {
+                            icon: 'fas fa-box-open',
+                            title: '此分類暫無商品',
+                            message: `「${category}」分類目前沒有商品，看看其他分類吧`,
+                            actionText: '查看全部商品',
+                            actionCallback: function() {
+                                $('.product-filters .list-unstyled a').first().click();
+                            }
+                        });
+                    } else {
+                        showToast('已篩選：' + category, 'info');
+                    }
+                }
+            });
+
+            // --- 價格區間篩選 ---
+            $('input[id^="price"]').change(function() {
+                const selectedPrices = [];
+                $('input[id^="price"]:checked').each(function() {
+                    selectedPrices.push($(this).next('label').text());
+                });
+                if (selectedPrices.length > 0) {
+                    showToast('價格篩選：' + selectedPrices.join(', '), 'info');
+                }
+                // In real app, filter products by price range
+            });
+        });
+
+        // Toggle Favorite function
+        function toggleFavorite(btn) {
+            const $btn = $(btn);
+            const $icon = $btn.find('i');
+            if ($icon.hasClass('far')) {
+                $icon.removeClass('far').addClass('fas text-danger');
+                showToast('已加入收藏', 'success');
+            } else {
+                $icon.removeClass('fas text-danger').addClass('far');
+                showToast('已取消收藏', 'info');
+            }
+        }
+
+        // Toast helper function
+        function showToast(message, type) {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
+            const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-info';
+            const iconClass = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white ${bgClass} border-0`;
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${iconClass} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>

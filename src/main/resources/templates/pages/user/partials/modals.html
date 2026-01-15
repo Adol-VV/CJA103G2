@@ -1,0 +1,193 @@
+<!-- Order Detail Modal -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-secondary">
+                <h5>訂單詳情 - <span id="orderDetailNumber"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Timeline -->
+                <div class="order-timeline mb-4 px-3">
+                    <h6 class="mb-4 text-white">訂單進度</h6>
+                    <div class="timeline-horizontal d-flex justify-content-between position-relative"
+                        style="z-index:1;">
+                        <div class="position-absolute w-100" style="top:15px; border-top: 2px solid #333; z-index:-1;">
+                        </div>
+                        <div class="timeline-step text-center active" id="stepOrdered">
+                            <div class="step-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width:30px;height:30px;"><i class="fas fa-check"></i></div>
+                            <div class="mt-2 small text-white">已下單</div>
+                            <div class="text-muted" style="font-size:10px;">12/25 10:30</div>
+                        </div>
+                        <div class="timeline-step text-center active" id="stepPaid">
+                            <div class="step-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width:30px;height:30px;"><i class="fas fa-check"></i></div>
+                            <div class="mt-2 small text-white">已付款</div>
+                            <div class="text-muted" style="font-size:10px;">12/25 10:35</div>
+                        </div>
+                        <div class="timeline-step text-center active" id="stepPreparing">
+                            <div class="step-icon bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width:30px;height:30px;">3</div>
+                            <div class="mt-2 small text-white">備貨中</div>
+                        </div>
+                        <div class="timeline-step text-center text-muted" id="stepShipped">
+                            <div class="step-icon bg-dark border border-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width:30px;height:30px;">4</div>
+                            <div class="mt-2 small">已出貨</div>
+                        </div>
+                        <div class="timeline-step text-center text-muted" id="stepDelivered">
+                            <div class="step-icon bg-dark border border-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width:30px;height:30px;">5</div>
+                            <div class="mt-2 small">已送達</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="mb-3 text-white">商品明細</h6>
+                <table class="table table-dark table-sm">
+                    <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>單價</th>
+                            <th>數量</th>
+                            <th>小計</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderDetailItems">
+                        <!-- Populated via JS -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end">小計</td>
+                            <td id="orderSubtotal"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">運費</td>
+                            <td id="orderShipping"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end text-primary"><strong>總額</strong></td>
+                            <td><strong id="orderTotal" class="text-primary"></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-outline-primary"><i class="fas fa-file-invoice"></i> 發票</button>
+                <button type="button" class="btn btn-danger d-none" id="btnRequestRefund">申請退貨</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refund & Cancel Modals Mock -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-body">確認取消訂單 #<span id="cancelOrderNumber"></span>? <br><br> <button
+                    class="btn btn-danger w-100" id="btnConfirmCancelOrder">確認取消</button></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="refundRequestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-body">申請退貨 <br><textarea class="form-control mb-3" placeholder="原因"
+                    id="refundReason"></textarea><button class="btn btn-primary w-100"
+                    id="btnSubmitRefund">提交申請</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Comment Modal -->
+<div class="modal fade" id="editCommentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>編輯留言</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">留言於</label>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-info me-2" id="editCommentType">文章留言</span>
+                        <span class="fw-bold" id="editCommentTarget">文章標題</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">留言內容</label>
+                    <textarea class="form-control bg-dark text-white border-secondary" id="editCommentContent" rows="4"
+                        maxlength="500" placeholder="請輸入留言內容..."></textarea>
+                    <div class="d-flex justify-content-between mt-1">
+                        <small class="text-muted">請遵守社群守則，勿發表不當言論</small>
+                        <small class="text-muted"><span id="editCommentCharCount">0</span>/500</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="btnSaveComment">
+                    <i class="fas fa-save me-1"></i>儲存變更
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Comment Confirmation Modal -->
+<div class="modal fade" id="deleteCommentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content bg-dark text-white border-danger">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-danger"><i class="fas fa-trash-alt me-2"></i>刪除留言</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <p>確定要刪除這則留言嗎？</p>
+                <p class="text-muted small mb-0">此操作無法復原</p>
+                <input type="hidden" id="deleteCommentId">
+            </div>
+            <div class="modal-footer border-secondary justify-content-center">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDeleteComment">
+                    <i class="fas fa-trash me-1"></i>確認刪除
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #1A1A1A;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title">電子票券入場碼</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-5">
+                <h5 class="mb-4 text-white">五月天 [回到那一天]</h5>
+                <div class="bg-white p-3 d-inline-block rounded mb-4">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+                <p class="text-muted mb-1">訂單編號：<span id="qrOrderId" class="text-primary font-monospace"></span></p>
+                <p class="text-muted small">請於入場時出示此 QR Code</p>
+
+                <div class="alert alert-warning d-inline-block text-start mt-3 small">
+                    <i class="fas fa-exclamation-triangle me-1"></i> 此票券為一次性有效，掃描後即失效。
+                </div>
+
+                <div class="mt-4">
+                    <button class="btn btn-outline-light btn-sm" id="btnDownloadQR">
+                        <i class="fas fa-download me-1"></i> 儲存圖片
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
