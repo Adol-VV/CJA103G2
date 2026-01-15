@@ -26,27 +26,27 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EventOrderItemVO implements Serializable{
+public class EventOrderItemVO implements Serializable {
 
-    @Id
-    @Column(name = "event_order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer eventOrderItemId;
+	@Id
+	@Column(name = "event_order_item_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer eventOrderItemId;
 
-    @ManyToOne
-    @JoinColumn(name = "event_order_id", referencedColumnName = "EVENT_ORDER_ID")
-    private EventOrderVO eventOrder;
+	@ManyToOne
+	@JoinColumn(name = "event_order_id", referencedColumnName = "EVENT_ORDER_ID")
+	private EventOrderVO eventOrder;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
-    private TicketVO ticket;
+	@ManyToOne
+	@JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
+	private TicketVO ticket;
 
-    @Column(name = "qrcode")
-    private String qrcode;
+	@Column(name = "qrcode")
+	private String qrcode;
 
-    @Column(name = "price")
-    private Integer price;
+	@Column(name = "price")
+	private Integer price;
 
-    @Column(name = "total")
-    private Integer total;
+	@Column(name = "total")
+	private Integer total;
 }

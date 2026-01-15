@@ -1,4 +1,4 @@
-package com.momento.message_report.model;
+package com.momento.messagereport.model;
 
 import java.sql.Timestamp;
 

@@ -1,4 +1,4 @@
-package com.momento.recommended_prod.model;
+package com.momento.recommendedprod.model;
 
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.prod.model.ProdVO;

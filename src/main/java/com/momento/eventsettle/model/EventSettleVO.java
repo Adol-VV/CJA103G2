@@ -1,16 +1,12 @@
-package com.momento.eventorder.model;
+package com.momento.eventsettle.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Set;
 
 import com.momento.event.model.EventVO;
-import com.momento.eventorderitem.model.EventOrderItemVO;
-import com.momento.member.model.MemberVO;
 import com.momento.organizer.model.OrganizerVO;
 
 import groovy.transform.ToString;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,31 +14,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;;
+import lombok.Setter;
 
 @Entity
-@Table(name = "event_order")
+@Table(name = "event_settle")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EventOrderVO implements Serializable {
+public class EventSettleVO implements Serializable {
 
 	@Id
-	@Column(name = "event_order_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer eventOrderId;
-
-	@ManyToOne
-	@JoinColumn(name = "member_id", referencedColumnName = "member_id")
-	private MemberVO member;
+	@Column(name = "event_settle_id")
+	private Integer eventSettleId;
 
 	@ManyToOne
 	@JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")
@@ -52,22 +42,19 @@ public class EventOrderVO implements Serializable {
 	@JoinColumn(name = "event_id", referencedColumnName = "event_id")
 	private EventVO event;
 
-	@Column(name = "total")
-	private Integer total;
-
-	@Column(name = "token_used")
-	private Integer tokenUsed;
+	@Column(name = "sales")
+	private Integer sales;
 
 	@Column(name = "payable")
 	private Integer payable;
 
-	@Column(name = "pay_status")
-	private Integer payStatus;
+	@Column(name = "status")
+	private Integer status;
 
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private Timestamp createdAt;
 
-	@OneToMany(mappedBy = "eventOrder", cascade = CascadeType.ALL)
-	@OrderBy("event_order_item_id asc")
-	private Set<EventOrderItemVO> eventOrderItems;
+	@Column(name = "paid_at", insertable = false)
+	private Timestamp paidAt;
+
 }
