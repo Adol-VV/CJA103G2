@@ -1,0 +1,126 @@
+<h3 class="mb-4">代幣錢包</h3>
+
+<div class="row g-4 mb-4">
+    <!-- Balance Card -->
+    <div class="col-lg-5">
+        <div class="card bg-gradient-success text-white border-0 shadow-lg h-100"
+            style="background: linear-gradient(135deg, #2D5F4F 0%, #10B981 100%);">
+            <div class="card-body p-4 position-relative overflow-hidden">
+                <i class="fas fa-coins fa-5x position-absolute"
+                    style="right: -20px; bottom: -20px; opacity: 0.2; transform: rotate(-15deg);"></i>
+                <h5 class="text-white-50">目前餘額</h5>
+                <div class="d-flex align-items-baseline mb-2">
+                    <h1 class="display-3 fw-bold mb-0" id="tokenBalanceDisplay">--</h1>
+                    <span class="fs-4 ms-2">Tokens</span>
+                </div>
+                <div class="badge bg-white text-success bg-opacity-75 mb-3">
+                    <i class="fas fa-exclamation-circle"></i> 50 代幣將於 30 天後過期
+                </div>
+                <hr class="border-white opacity-25">
+                <p class="mb-0 small"><i class="fas fa-info-circle"></i> 賺取規則：每消費 NT$300 贈 5 元代幣</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earn Tokens -->
+    <div class="col-lg-7">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0 text-white"><i class="fas fa-star text-warning me-2"></i> 快速賺取代幣
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-white">完成個人檔案</span>
+                        <span class="text-success">+20 Tokens</span>
+                    </div>
+                    <div class="progress bg-secondary" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                    <small class="text-muted"><i class="fas fa-check-circle text-success"></i>
+                        已完成</small>
+                </div>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-white">邀請好友註冊 (2/5)</span>
+                        <span class="text-white">+50 Tokens</span>
+                    </div>
+                    <div class="progress bg-secondary" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: 40%"></div>
+                    </div>
+                    <div class="input-group input-group-sm mt-2">
+                        <input type="text" class="form-control bg-dark border-secondary text-muted"
+                            value="https://momento.tw/r/USER123" readonly id="referralLink">
+                        <button class="btn btn-outline-secondary" id="btnCopyReferral"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction History -->
+<div class="card bg-dark border-secondary">
+    <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white">交易紀錄</h5>
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 120px;">
+                <option>所有類型</option>
+                <option>獲得</option>
+                <option>使用</option>
+                <option>過期</option>
+            </select>
+            <input type="date" class="form-control form-control-sm bg-dark text-white border-secondary"
+                style="width: 130px;">
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>類型</th>
+                    <th>內容</th>
+                    <th>變動</th>
+                    <th>餘額</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-muted">2024/12/25</td>
+                    <td><span class="badge bg-success">獲得</span></td>
+                    <td>購買「五月天演唱會」票券回饋</td>
+                    <td class="text-success fw-bold">+25</td>
+                    <td>150</td>
+                </tr>
+                <tr>
+                    <td class="text-muted">2024/12/20</td>
+                    <td><span class="badge bg-danger">使用</span></td>
+                    <td>折抵「官方週邊 T-shirt」訂單</td>
+                    <td class="text-danger fw-bold">-50</td>
+                    <td>125</td>
+                </tr>
+                <tr>
+                    <td class="text-muted">2024/11/30</td>
+                    <td><span class="badge bg-secondary">過期</span></td>
+                    <td>2023 Q4 活動代幣到期</td>
+                    <td class="text-muted fw-bold">-10</td>
+                    <td>175</td>
+                </tr>
+                <tr>
+                    <td class="text-muted">2024/11/15</td>
+                    <td><span class="badge bg-success">獲得</span></td>
+                    <td>好友推薦獎勵</td>
+                    <td class="text-success fw-bold">+50</td>
+                    <td>185</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer border-secondary text-center">
+        <button class="btn btn-sm btn-link text-muted text-decoration-none">載入更多紀錄 <i
+                class="fas fa-chevron-down"></i></button>
+    </div>
+</div>

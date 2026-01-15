@@ -1,0 +1,196 @@
+<div class="content-panel" id="panel-refund-management">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-undo me-2"></i>退款審核</h2>
+        <div class="d-flex gap-2">
+            <select class="form-select bg-dark text-white border-secondary" style="width: 120px;">
+                <option value="">全部類型</option>
+                <option value="ticket">票券退款</option>
+                <option value="product">商品退貨</option>
+            </select>
+            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="搜尋訂單編號..."
+                style="width: 180px;">
+        </div>
+    </div>
+
+    <!-- 退款統計 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">待審核</p>
+                    <h4 class="mb-0 text-warning">5</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">本週已處理</p>
+                    <h4 class="mb-0 text-success">12</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">退款總額</p>
+                    <h4 class="mb-0 text-info">NT$ 45,600</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-1">已駁回</p>
+                    <h4 class="mb-0 text-danger">2</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退款列表 -->
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#">待審核 <span class="badge bg-warning ms-1">5</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#">處理中</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#">已完成</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#">已駁回</a>
+                </li>
+            </ul>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>申請編號</th>
+                        <th>訂單類型</th>
+                        <th>會員</th>
+                        <th>退款金額</th>
+                        <th>申請原因</th>
+                        <th>申請時間</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>#R20250107001</strong><br>
+                            <small class="text-muted">原訂單：#MOM2025010301</small>
+                        </td>
+                        <td><span class="badge bg-primary">票券</span></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://ui-avatars.com/api/?name=Wang&background=random&size=24"
+                                    class="rounded-circle me-2" style="width: 24px;">
+                                <span>王小明</span>
+                            </div>
+                        </td>
+                        <td class="text-warning"><strong>NT$ 3,600</strong></td>
+                        <td>
+                            <span class="badge bg-secondary">無法出席</span>
+                            <small class="d-block text-muted">臨時有事無法參加</small>
+                        </td>
+                        <td><small>2025/01/07<br>09:30</small></td>
+                        <td><span class="badge bg-warning text-dark">待審核</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" title="查看詳情" data-bs-toggle="modal"
+                                    data-bs-target="#refundDetailModal">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="同意退款">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="駁回">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>#R20250106002</strong><br>
+                            <small class="text-muted">原訂單：#MOM2024123105</small>
+                        </td>
+                        <td><span class="badge bg-success">商品</span></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://ui-avatars.com/api/?name=Lee&background=random&size=24"
+                                    class="rounded-circle me-2" style="width: 24px;">
+                                <span>李小華</span>
+                            </div>
+                        </td>
+                        <td class="text-warning"><strong>NT$ 1,280</strong></td>
+                        <td>
+                            <span class="badge bg-danger">商品瑕疵</span>
+                            <small class="d-block text-muted">收到商品有破損</small>
+                        </td>
+                        <td><small>2025/01/06<br>16:45</small></td>
+                        <td><span class="badge bg-warning text-dark">待審核</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" title="查看詳情">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="同意退款">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="駁回">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="table-info">
+                        <td>
+                            <strong>#R20250106001</strong><br>
+                            <small class="text-muted">原訂單：#MOM2024122801</small>
+                        </td>
+                        <td><span class="badge bg-primary">票券</span></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://ui-avatars.com/api/?name=Chen&background=random&size=24"
+                                    class="rounded-circle me-2" style="width: 24px;">
+                                <span>陳大文</span>
+                            </div>
+                        </td>
+                        <td class="text-info"><strong>NT$ 5,200</strong></td>
+                        <td>
+                            <span class="badge bg-info">活動取消</span>
+                            <small class="d-block text-muted">主辦方取消活動</small>
+                        </td>
+                        <td><small>2025/01/06<br>10:20</small></td>
+                        <td><span class="badge bg-info">處理中</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" title="查看詳情">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 退款說明 -->
+    <div class="alert alert-secondary mt-4">
+        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>退款處理說明</h6>
+        <ul class="mb-0 small">
+            <li><strong>票券退款</strong>：依據主辦方設定的退票政策審核，活動取消則全額退款</li>
+            <li><strong>商品退貨</strong>：需確認商品瑕疵或描述不符，退貨運費依情況判定</li>
+            <li>退款審核通過後，款項將於 3-7 個工作日退回原付款方式</li>
+            <li>駁回需附理由，系統將自動通知會員</li>
+        </ul>
+    </div>
+</div>

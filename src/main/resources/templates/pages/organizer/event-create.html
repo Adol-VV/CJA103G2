@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建立新活動 | Momento 主辦方</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .create-header {
+            background: linear-gradient(135deg, rgba(45, 95, 79, 0.2), transparent);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .stepper-item {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .stepper-item:not(:last-child)::after {
+            content: '';
+            width: 80px;
+            height: 2px;
+            background: var(--border-color);
+            margin: 0 1rem;
+        }
+
+        .stepper-item.completed::after {
+            background: var(--momento-green);
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .stepper-item.active .step-circle,
+        .stepper-item.completed .step-circle {
+            background: var(--momento-green);
+            color: white;
+        }
+
+        .stepper-item .step-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .stepper-item.active .step-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .image-upload-zone:hover {
+            border-color: var(--momento-green);
+            background: rgba(45, 95, 79, 0.1);
+        }
+
+        .image-upload-zone.dragover {
+            border-color: var(--momento-green);
+            background: rgba(45, 95, 79, 0.2);
+        }
+
+        .ticket-zone-card {
+            background: #242424;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-card {
+            background: #1a1a1a;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-banner {
+            height: 200px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rich-editor {
+            min-height: 300px;
+            background: #242424;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .rich-editor-toolbar {
+            background: #1a1a1a;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .rich-editor-toolbar button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .rich-editor-toolbar button:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .rich-editor-content {
+            padding: 1rem;
+            min-height: 250px;
+            color: var(--text-primary);
+        }
+
+        .rich-editor-content:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Header -->
+    <nav class="navbar navbar-dark bg-dark border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
+                <span class="badge bg-secondary ms-2">主辦方</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-outline-secondary btn-sm" id="btnSaveDraft">
+                    <i class="fas fa-save me-2"></i>儲存草稿
+                </button>
+                <a href="dashboard.html" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-times me-2"></i>取消
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Create Header -->
+    <div class="create-header">
+        <div class="container">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-calendar-plus me-2"></i>建立新活動
+            </h2>
+
+            <!-- Stepper -->
+            <div class="stepper">
+                <div class="stepper-item active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label d-none d-md-inline">基本資訊</span>
+                </div>
+                <div class="stepper-item" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label d-none d-md-inline">票券設定</span>
+                </div>
+                <div class="stepper-item" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label d-none d-md-inline">活動內容</span>
+                </div>
+                <div class="stepper-item" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label d-none d-md-inline">預覽送審</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <form id="eventCreateForm">
+            <!-- Step 1: Basic Info -->
+            <div class="step-content active" id="step1">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>基本資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">活動名稱 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        id="eventTitle" placeholder="例如：2025 新年音樂會" required maxlength="100">
+                                    <div class="form-text">最多 100 字</div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">活動類型 <span class="text-danger">*</span></label>
+                                        <select class="form-select bg-dark text-white border-secondary" id="eventType" required>
+                                            <option value="">請選擇</option>
+                                            <option value="1">演唱會</option>
+                                            <option value="2">音樂會</option>
+                                            <option value="3">展覽</option>
+                                            <option value="4">戲劇</option>
+                                            <option value="5">運動賽事</option>
+                                            <option value="6">講座/工作坊</option>
+                                            <option value="7">其他</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">活動地點 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                                            id="eventPlace" placeholder="例如：國家音樂廳" required>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">活動日期 <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control bg-dark text-white border-secondary"
+                                            id="eventDate" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">活動時間 <span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control bg-dark text-white border-secondary"
+                                            id="eventTime" required>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">售票開始 <span class="text-danger">*</span></label>
+                                        <input type="datetime-local" class="form-control bg-dark text-white border-secondary"
+                                            id="saleStart" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">售票截止 <span class="text-danger">*</span></label>
+                                        <input type="datetime-local" class="form-control bg-dark text-white border-secondary"
+                                            id="saleEnd" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">活動簡介 <span class="text-danger">*</span></label>
+                                    <textarea class="form-control bg-dark text-white border-secondary" id="eventSummary"
+                                        rows="3" placeholder="簡短描述活動亮點（100 字內）" maxlength="100" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-image me-2"></i>活動主圖</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="image-upload-zone" id="bannerUpload">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <p class="mb-1">拖曳圖片至此或點擊上傳</p>
+                                    <small class="text-muted">建議尺寸 1920x600，最大 5MB</small>
+                                    <input type="file" class="d-none" id="bannerInput" accept="image/*">
+                                </div>
+                                <div id="bannerPreview" class="mt-3 d-none">
+                                    <img src="" class="img-fluid rounded" id="bannerPreviewImg">
+                                    <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removeBanner">
+                                        <i class="fas fa-trash me-1"></i>移除圖片
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3"><i class="fas fa-lightbulb me-2"></i>小提示</h6>
+                                <ul class="text-muted small mb-0">
+                                    <li class="mb-2">活動名稱要簡潔明確</li>
+                                    <li class="mb-2">選擇正確的活動類型有助於曝光</li>
+                                    <li>主圖會顯示在首頁和搜尋結果</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                        下一步：票券設定<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Ticket Settings -->
+            <div class="step-content" id="step2">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>票券區域設定</h5>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddZone">
+                            <i class="fas fa-plus me-1"></i>新增區域
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="ticketZones">
+                            <!-- Ticket Zone 1 -->
+                            <div class="ticket-zone-card" data-zone="1">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h6 class="mb-0">票券區域 1</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-zone d-none">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">區域名稱</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary zone-name"
+                                            placeholder="例如：VIP 區" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">票價 (NT$)</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary zone-price"
+                                            placeholder="2800" min="0" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">數量</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary zone-qty"
+                                            placeholder="100" min="1" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">每人限購</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary zone-limit"
+                                            value="4" min="1" max="10">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info bg-info bg-opacity-10 border-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            平台將收取票價 5% 作為服務費，由消費者額外支付
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevStep()">
+                        <i class="fas fa-arrow-left me-2"></i>上一步
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                        下一步：活動內容<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Event Content -->
+            <div class="step-content" id="step3">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>活動詳細內容</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="rich-editor">
+                            <div class="rich-editor-toolbar">
+                                <button type="button" title="粗體"><i class="fas fa-bold"></i></button>
+                                <button type="button" title="斜體"><i class="fas fa-italic"></i></button>
+                                <button type="button" title="底線"><i class="fas fa-underline"></i></button>
+                                <span class="border-start border-secondary mx-2"></span>
+                                <button type="button" title="標題"><i class="fas fa-heading"></i></button>
+                                <button type="button" title="項目符號"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" title="編號清單"><i class="fas fa-list-ol"></i></button>
+                                <span class="border-start border-secondary mx-2"></span>
+                                <button type="button" title="插入圖片"><i class="fas fa-image"></i></button>
+                                <button type="button" title="插入連結"><i class="fas fa-link"></i></button>
+                            </div>
+                            <div class="rich-editor-content" contenteditable="true" id="eventContent"
+                                data-placeholder="在此輸入活動詳細說明..."></div>
+                        </div>
+                        <div class="form-text mt-2">
+                            可包含：演出內容、嘉賓介紹、注意事項等
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-images me-2"></i>活動相簿（選填）</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="image-upload-zone" id="galleryUpload">
+                            <i class="fas fa-images fa-2x text-muted mb-2"></i>
+                            <p class="mb-0 small">拖曳或點擊上傳更多活動照片（最多 10 張）</p>
+                            <input type="file" class="d-none" id="galleryInput" accept="image/*" multiple>
+                        </div>
+                        <div class="row g-2 mt-3" id="galleryPreview"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevStep()">
+                        <i class="fas fa-arrow-left me-2"></i>上一步
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                        下一步：預覽送審<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Preview -->
+            <div class="step-content" id="step4">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="preview-card mb-4">
+                            <div class="preview-banner" id="previewBanner">
+                                <span class="text-muted">活動主圖預覽</span>
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <span class="badge bg-primary mb-2" id="previewType">演唱會</span>
+                                        <h3 id="previewTitle">活動名稱</h3>
+                                    </div>
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                                <p class="text-muted" id="previewSummary">活動簡介會顯示在這裡...</p>
+                                <hr class="border-secondary">
+                                <div class="row text-muted small">
+                                    <div class="col-auto">
+                                        <i class="far fa-calendar me-1"></i>
+                                        <span id="previewDate">活動日期</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <span id="previewPlace">活動地點</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0">票券資訊</h5>
+                            </div>
+                            <div class="card-body" id="previewTickets">
+                                <!-- Will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>送審前確認</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="confirmInfo" required>
+                                    <label class="form-check-label" for="confirmInfo">
+                                        我已確認所有資訊正確無誤
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="confirmTerms" required>
+                                    <label class="form-check-label" for="confirmTerms">
+                                        我同意 <a href="#" class="text-success">主辦方服務條款</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning bg-warning bg-opacity-10 border-warning">
+                            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>審核說明</h6>
+                            <p class="small mb-0">活動送審後，平台將於 1-3 個工作天內完成審核。審核通過後活動將自動上架。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevStep()">
+                        <i class="fas fa-arrow-left me-2"></i>上一步
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary btn-lg me-2" id="btnSaveAsDraft">
+                            <i class="fas fa-save me-2"></i>儲存草稿
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg" id="btnSubmit">
+                            <i class="fas fa-paper-plane me-2"></i>送出審核
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function updateStepper() {
+            $('.stepper-item').each(function () {
+                const step = $(this).data('step');
+                $(this).removeClass('active completed');
+                if (step < currentStep) {
+                    $(this).addClass('completed');
+                } else if (step === currentStep) {
+                    $(this).addClass('active');
+                }
+            });
+        }
+
+        function showStep(step) {
+            currentStep = step;
+            $('.step-content').removeClass('active');
+            $('#step' + step).addClass('active');
+            updateStepper();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Update preview if on step 4
+            if (step === 4) {
+                updatePreview();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function updatePreview() {
+            $('#previewTitle').text($('#eventTitle').val() || '活動名稱');
+            $('#previewSummary').text($('#eventSummary').val() || '活動簡介');
+            $('#previewDate').text($('#eventDate').val() + ' ' + $('#eventTime').val());
+            $('#previewPlace').text($('#eventPlace').val() || '活動地點');
+
+            const typeText = $('#eventType option:selected').text();
+            $('#previewType').text(typeText || '活動類型');
+
+            // Update tickets preview
+            let ticketsHtml = '';
+            $('.ticket-zone-card').each(function () {
+                const name = $(this).find('.zone-name').val() || '票區';
+                const price = $(this).find('.zone-price').val() || 0;
+                const qty = $(this).find('.zone-qty').val() || 0;
+                ticketsHtml += `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                        <div>
+                            <strong>${name}</strong>
+                            <span class="text-muted small ms-2">(剩餘 ${qty} 張)</span>
+                        </div>
+                        <span class="text-success fw-bold">NT$ ${parseInt(price).toLocaleString()}</span>
+                    </div>
+                `;
+            });
+            $('#previewTickets').html(ticketsHtml);
+        }
+
+        $(document).ready(function () {
+            // Banner Upload
+            const bannerZone = $('#bannerUpload');
+            const bannerInput = $('#bannerInput');
+
+            bannerZone.click(() => bannerInput.click());
+
+            bannerZone.on('dragover', function (e) {
+                e.preventDefault();
+                $(this).addClass('dragover');
+            }).on('dragleave drop', function (e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+            });
+
+            bannerInput.change(function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#bannerPreviewImg').attr('src', e.target.result);
+                        $('#bannerPreview').removeClass('d-none');
+                        bannerZone.addClass('d-none');
+                        $('#previewBanner').html(`<img src="${e.target.result}" class="w-100 h-100" style="object-fit: cover;">`);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#removeBanner').click(function () {
+                bannerInput.val('');
+                $('#bannerPreview').addClass('d-none');
+                bannerZone.removeClass('d-none');
+                $('#previewBanner').html('<span class="text-muted">活動主圖預覽</span>');
+            });
+
+            // Add Ticket Zone
+            let zoneCount = 1;
+            $('#btnAddZone').click(function () {
+                zoneCount++;
+                const newZone = `
+                    <div class="ticket-zone-card" data-zone="${zoneCount}">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h6 class="mb-0">票券區域 ${zoneCount}</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-zone">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">區域名稱</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary zone-name" placeholder="例如：一般區">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">票價 (NT$)</label>
+                                <input type="number" class="form-control bg-dark text-white border-secondary zone-price" placeholder="1800" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">數量</label>
+                                <input type="number" class="form-control bg-dark text-white border-secondary zone-qty" placeholder="200" min="1">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">每人限購</label>
+                                <input type="number" class="form-control bg-dark text-white border-secondary zone-limit" value="4" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#ticketZones').append(newZone);
+            });
+
+            // Remove Ticket Zone
+            $(document).on('click', '.btn-remove-zone', function () {
+                $(this).closest('.ticket-zone-card').remove();
+            });
+
+            // Form Submit
+            $('#eventCreateForm').submit(function (e) {
+                e.preventDefault();
+
+                if (!$('#confirmInfo').is(':checked') || !$('#confirmTerms').is(':checked')) {
+                    alert('請勾選確認項目');
+                    return;
+                }
+
+                const btn = $('#btnSubmit');
+                btn.html('<span class="spinner-border spinner-border-sm me-2"></span>送出中...').prop('disabled', true);
+
+                // Simulate API call
+                setTimeout(function () {
+                    alert('活動已成功送出審核！');
+                    window.location.href = 'dashboard.html#events-list';
+                }, 2000);
+            });
+
+            // Save Draft
+            $('#btnSaveDraft, #btnSaveAsDraft').click(function () {
+                const btn = $(this);
+                const originalText = btn.html();
+                btn.html('<span class="spinner-border spinner-border-sm me-2"></span>儲存中...').prop('disabled', true);
+
+                setTimeout(function () {
+                    btn.html('<i class="fas fa-check me-2"></i>已儲存').prop('disabled', false);
+                    setTimeout(() => btn.html(originalText), 2000);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+
+</html>
+

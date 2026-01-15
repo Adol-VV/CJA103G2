@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜尋結果 | Momento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .search-header {
+            background: linear-gradient(135deg, rgba(45, 95, 79, 0.2), transparent);
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input-lg {
+            font-size: 1.25rem;
+            padding: 1rem 1.5rem;
+            padding-left: 3rem;
+            border-radius: 50px;
+            background: #1a1a1a;
+            border: 2px solid var(--border-color);
+        }
+
+        .search-input-lg:focus {
+            border-color: var(--momento-green);
+            box-shadow: 0 0 0 4px rgba(45, 95, 79, 0.2);
+        }
+
+        .search-icon-lg {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--momento-green);
+            border-color: var(--momento-green);
+            color: white;
+        }
+
+        .result-card {
+            transition: all 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(45, 95, 79, 0.2);
+        }
+
+        .result-type-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1;
+        }
+
+        .highlight {
+            background: rgba(45, 95, 79, 0.3);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeleton {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .no-results {
+            padding: 4rem 0;
+        }
+
+        .suggestion-tag {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-tag:hover {
+            background: var(--momento-green) !important;
+            border-color: var(--momento-green) !important;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../user/event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../user/prod-list.html">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" href="article-list.html">文章</a></li>
+                </ul>
+                <div class="d-flex ms-3">
+                    <a href="../user/login.html" class="btn btn-outline-light btn-sm me-2">登入</a>
+                    <a href="../user/register.html" class="btn btn-primary btn-sm">註冊</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Header -->
+    <div class="search-header">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="h4 text-center mb-4">
+                        <i class="fas fa-search me-2 text-success"></i>搜尋 Momento
+                    </h1>
+                    <div class="position-relative">
+                        <i class="fas fa-search search-icon-lg"></i>
+                        <input type="text" class="form-control search-input-lg text-white" id="searchInput"
+                            placeholder="搜尋活動、商品、文章..." autofocus>
+                        <button
+                            class="btn btn-primary position-absolute end-0 top-50 translate-middle-y me-2 rounded-pill px-4"
+                            id="btnSearch">
+                            搜尋
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <!-- Filters -->
+        <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+            <span class="text-muted me-2">篩選：</span>
+            <button class="filter-chip active" data-type="all">
+                <i class="fas fa-globe me-1"></i>全部
+            </button>
+            <button class="filter-chip" data-type="event">
+                <i class="fas fa-calendar me-1"></i>活動
+            </button>
+            <button class="filter-chip" data-type="product">
+                <i class="fas fa-box me-1"></i>商品
+            </button>
+            <button class="filter-chip" data-type="article">
+                <i class="fas fa-newspaper me-1"></i>文章
+            </button>
+            <button class="filter-chip" data-type="organizer">
+                <i class="fas fa-building me-1"></i>主辦方
+            </button>
+
+            <div class="ms-auto">
+                <select class="form-select form-select-sm bg-dark text-white border-secondary" id="sortSelect">
+                    <option value="relevance">相關性排序</option>
+                    <option value="newest">最新優先</option>
+                    <option value="popular">熱門優先</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Search Stats -->
+        <div class="mb-4" id="searchStats">
+            <span class="text-muted">搜尋 "<span id="searchKeyword" class="text-white">音樂會</span>" 找到 <span
+                    id="resultCount" class="text-success">24</span> 筆結果</span>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="row g-4" id="resultsGrid">
+            <!-- Event Card -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="event">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-primary result-type-badge">活動</span>
+                        <img loading="lazy" src="https://picsum.photos/seed/event1/400/200" class="card-img-top"
+                            alt="Event" style="height: 160px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate-2">2025新年<span class="highlight">音樂會</span>｜維也納之夜</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="far fa-calendar me-1"></i>2024/12/31
+                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>國家音樂廳
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-success fw-bold">NT$ 800 起</span>
+                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="product">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-warning text-dark result-type-badge">商品</span>
+                        <img loading="lazy" src="https://picsum.photos/seed/prod1/400/200" class="card-img-top"
+                            alt="Product" style="height: 160px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate-2"><span class="highlight">音樂會</span>紀念T恤 - 2025限定版</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-store me-1"></i>快樂文創
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-success fw-bold">NT$ 680</span>
+                            <a href="../user/prod-detail.html" class="btn btn-sm btn-outline-warning">查看商品</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="article">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-info result-type-badge">文章</span>
+                        <img loading="lazy" src="https://picsum.photos/seed/art1/400/200" class="card-img-top"
+                            alt="Article" style="height: 160px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate-2">如何挑選人生第一場<span class="highlight">音樂會</span>？新手指南</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="far fa-clock me-1"></i>2024/12/20
+                            <i class="far fa-eye ms-2 me-1"></i>1,234
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">by Momento 編輯部</span>
+                            <a href="article-detail.html" class="btn btn-sm btn-outline-info">閱讀更多</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Card 2 -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="event">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-primary result-type-badge">活動</span>
+                        <img loading="lazy" src="https://picsum.photos/seed/event2/400/200" class="card-img-top"
+                            alt="Event" style="height: 160px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate-2">春季爵士<span class="highlight">音樂</span>節 2025</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="far fa-calendar me-1"></i>2025/03/15
+                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>華山文創園區
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-success fw-bold">NT$ 1,200 起</span>
+                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organizer Card -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="organizer">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-success result-type-badge">主辦方</span>
+                    </div>
+                    <div class="card-body text-center py-4">
+                        <img loading="lazy"
+                            src="https://ui-avatars.com/api/?name=Classic+Music&background=2D5F4F&color=fff&size=128"
+                            class="rounded-circle mb-3" style="width: 80px; height: 80px;">
+                        <h5 class="card-title">古典<span class="highlight">音樂</span>推廣協會</h5>
+                        <p class="text-muted small mb-3">專注於古典音樂會與藝文活動的推廣</p>
+                        <div class="d-flex justify-content-center gap-4 text-muted small mb-3">
+                            <span><i class="fas fa-calendar me-1"></i>12 場活動</span>
+                            <span><i class="fas fa-users me-1"></i>5.2k 追蹤</span>
+                        </div>
+                        <a href="organizer-profile.html" class="btn btn-sm btn-outline-success">查看主辦</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Card 3 -->
+            <div class="col-md-6 col-lg-4 result-item" data-type="event">
+                <div class="card bg-dark border-secondary result-card h-100">
+                    <div class="position-relative">
+                        <span class="badge bg-primary result-type-badge">活動</span>
+                        <span class="badge bg-danger position-absolute" style="top: 1rem; right: 1rem;">熱賣中</span>
+                        <img loading="lazy" src="https://picsum.photos/seed/event3/400/200" class="card-img-top"
+                            alt="Event" style="height: 160px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate-2">五月天 2025 巡迴<span class="highlight">演唱會</span></h5>
+                        <p class="text-muted small mb-2">
+                            <i class="far fa-calendar me-1"></i>2025/05/01
+                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>台北小巨蛋
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-success fw-bold">NT$ 2,800 起</span>
+                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results State (Hidden) -->
+        <div class="no-results text-center d-none" id="noResults">
+            <i class="fas fa-search fa-4x text-muted mb-4"></i>
+            <h3 class="text-muted">找不到相關結果</h3>
+            <p class="text-muted mb-4">試試其他關鍵字，或瀏覽下方熱門推薦</p>
+            <div class="mb-4">
+                <span class="text-muted me-2">熱門搜尋：</span>
+                <span
+                    class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">五月天</span>
+                <span
+                    class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">音樂節</span>
+                <span class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">展覽</span>
+                <span class="badge bg-secondary bg-opacity-25 border border-secondary p-2 suggestion-tag">周邊商品</span>
+            </div>
+            <a href="../../index.html" class="btn btn-primary">
+                <i class="fas fa-home me-2"></i>回首頁探索
+            </a>
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-5" id="loadMoreSection">
+            <button class="btn btn-outline-secondary px-5" id="btnLoadMore">
+                <i class="fas fa-plus me-2"></i>載入更多結果
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-top border-secondary py-4 mt-5">
+        <div class="container text-center text-muted small">
+            &copy; 2024 Momento. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Modularized JS -->
+    <script type="module" src="../../js/common/index.js"></script>
+    <script type="module" src="../../js/pages/search.js"></script>
+</body>
+
+</html>

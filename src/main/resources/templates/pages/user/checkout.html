@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>結帳 | Momento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .checkout-stepper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            width: 60px;
+            height: 2px;
+            background: var(--border-color);
+            margin: 0 1rem;
+        }
+
+        .step-item.active .step-number,
+        .step-item.completed .step-number {
+            background: var(--momento-green);
+            color: white;
+        }
+
+        .step-item.active .step-label {
+            color: var(--text-primary);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--momento-green);
+        }
+
+        .step-item.completed::after {
+            background: var(--momento-green);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .payment-option {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--momento-green);
+        }
+
+        .payment-option.selected {
+            border-color: var(--momento-green);
+            background: rgba(45, 95, 79, 0.1);
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .success-animation {
+            animation: successPop 0.5s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar (Simplified) -->
+    <nav class="navbar navbar-dark bg-dark border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
+            </a>
+            <a href="cart.html" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>返回購物車
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <!-- Stepper -->
+        <div class="checkout-stepper">
+            <div class="step-item active" data-step="1">
+                <div class="step-number">1</div>
+                <span class="step-label d-none d-md-inline">確認訂單</span>
+            </div>
+            <div class="step-item" data-step="2">
+                <div class="step-number">2</div>
+                <span class="step-label d-none d-md-inline">收件資訊</span>
+            </div>
+            <div class="step-item" data-step="3">
+                <div class="step-number">3</div>
+                <span class="step-label d-none d-md-inline">付款方式</span>
+            </div>
+            <div class="step-item" data-step="4">
+                <div class="step-number">4</div>
+                <span class="step-label d-none d-md-inline">完成</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Step 1: Review Order -->
+                <div class="step-content active" id="step1">
+                    <div class="card bg-dark border-secondary mb-4">
+                        <div class="card-header bg-transparent border-secondary">
+                            <h5 class="mb-0"><i class="fas fa-ticket-alt me-2 text-primary"></i>票券項目</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="order-item">
+                                <img loading="lazy" src="https://picsum.photos/seed/event1/200" class="order-item-img" alt="Event">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">2025新年音樂會｜維也納之夜</h6>
+                                    <p class="text-muted small mb-1">VIP 特區</p>
+                                    <p class="text-muted small mb-0">
+                                        <i class="far fa-calendar me-1"></i>2024/12/31 (二) 19:30
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <div class="text-success fw-bold">NT$ 2,800</div>
+                                    <small class="text-muted">x 1</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-dark border-secondary mb-4">
+                        <div class="card-header bg-transparent border-secondary">
+                            <h5 class="mb-0"><i class="fas fa-box me-2 text-warning"></i>商品項目</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="order-item">
+                                <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">經典Logo帆布袋</h6>
+                                    <p class="text-muted small mb-0">規格：米白色</p>
+                                </div>
+                                <div class="text-end">
+                                    <div class="text-success fw-bold">NT$ 450</div>
+                                    <small class="text-muted">x 1</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="cart.html" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>修改購物車
+                        </a>
+                        <button class="btn btn-primary btn-next" data-next="2">
+                            下一步：填寫資訊<i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Shipping Info -->
+                <div class="step-content" id="step2">
+                    <form id="shippingForm">
+                        <!-- Contact Info -->
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>聯絡資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">姓名 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">手機號碼 <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control bg-dark text-white border-secondary" placeholder="0912-345-678" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">電子郵件 <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control bg-dark text-white border-secondary" required>
+                                        <div class="form-text">票券將寄送至此信箱</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address (for merchandise) -->
+                        <div class="card bg-dark border-secondary mb-4" id="shippingAddressCard">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-truck me-2"></i>配送地址（商品寄送）</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">郵遞區號</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="100">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">縣市 / 區域</label>
+                                        <select class="form-select bg-dark text-white border-secondary">
+                                            <option value="">請選擇</option>
+                                            <option value="taipei">台北市</option>
+                                            <option value="newtaipei">新北市</option>
+                                            <option value="taoyuan">桃園市</option>
+                                            <option value="taichung">台中市</option>
+                                            <option value="tainan">台南市</option>
+                                            <option value="kaohsiung">高雄市</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">詳細地址</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="請輸入完整地址">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">備註（選填）</label>
+                                        <textarea class="form-control bg-dark text-white border-secondary" rows="2" placeholder="例如：請放管理室"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice -->
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>發票資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoicePersonal" checked>
+                                    <label class="form-check-label" for="invoicePersonal">個人電子發票</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoiceCarrier">
+                                    <label class="form-check-label" for="invoiceCarrier">手機載具</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoiceCompany">
+                                    <label class="form-check-label" for="invoiceCompany">公司發票</label>
+                                </div>
+                                <div id="carrierInput" class="d-none">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="/ABC1234">
+                                </div>
+                                <div id="companyInput" class="d-none">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="公司統編">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="公司抬頭">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary btn-prev" data-prev="1">
+                                <i class="fas fa-arrow-left me-2"></i>上一步
+                            </button>
+                            <button type="button" class="btn btn-primary btn-next" data-next="3">
+                                下一步：選擇付款<i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div class="step-content" id="step3">
+                    <div class="card bg-dark border-secondary mb-4">
+                        <div class="card-header bg-transparent border-secondary">
+                            <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>選擇付款方式</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="payment-option selected w-100">
+                                        <input type="radio" name="paymentMethod" value="credit" checked>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-credit-card fa-2x text-primary me-3"></i>
+                                            <div>
+                                                <div class="fw-bold">信用卡</div>
+                                                <small class="text-muted">Visa / Mastercard / JCB</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option w-100">
+                                        <input type="radio" name="paymentMethod" value="atm">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-university fa-2x text-info me-3"></i>
+                                            <div>
+                                                <div class="fw-bold">ATM 轉帳</div>
+                                                <small class="text-muted">需於 24 小時內完成</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option w-100">
+                                        <input type="radio" name="paymentMethod" value="linepay">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fab fa-line fa-2x text-success me-3"></i>
+                                            <div>
+                                                <div class="fw-bold">LINE Pay</div>
+                                                <small class="text-muted">快速安全付款</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option w-100">
+                                        <input type="radio" name="paymentMethod" value="cvs">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-store fa-2x text-warning me-3"></i>
+                                            <div>
+                                                <div class="fw-bold">超商代碼</div>
+                                                <small class="text-muted">7-11 / 全家 / 萊爾富</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Card Form -->
+                    <div class="card bg-dark border-secondary mb-4" id="creditCardForm">
+                        <div class="card-header bg-transparent border-secondary">
+                            <h5 class="mb-0"><i class="fas fa-lock me-2"></i>信用卡資訊</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">卡號</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="1234 5678 9012 3456" maxlength="19">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">有效期限</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">安全碼 (CVV)</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="123" maxlength="4">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">持卡人姓名</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="與卡片上相同">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Token Discount -->
+                    <div class="card bg-dark border-secondary mb-4">
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useTokensCheckout">
+                                <label class="form-check-label" for="useTokensCheckout">
+                                    使用 Momento 代幣折抵
+                                    <span class="badge bg-success ms-2">可用餘額: 1,250</span>
+                                </label>
+                            </div>
+                            <div class="mt-2 d-none" id="tokenSlider">
+                                <input type="range" class="form-range" min="0" max="1250" step="50" value="0" id="tokenAmount">
+                                <div class="d-flex justify-content-between text-muted small">
+                                    <span>0</span>
+                                    <span id="tokenAmountDisplay">使用 0 代幣</span>
+                                    <span>1,250</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Token Reward Notice -->
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success mb-4" id="tokenRewardNotice">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-coins fa-2x text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 text-success">
+                                    <i class="fas fa-gift me-1"></i>消費回饋
+                                </h6>
+                                <p class="mb-0 small">
+                                    單筆消費滿 <strong>NT$ 300</strong> 即贈 <strong class="text-success">5 元代幣</strong>！
+                                    <span id="tokenRewardMsg" class="ms-2">
+                                        此筆訂單將獲得 <span class="badge bg-success">5 代幣</span> 回饋
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary btn-prev" data-prev="2">
+                            <i class="fas fa-arrow-left me-2"></i>上一步
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btnSubmitOrder">
+                            <i class="fas fa-lock me-2"></i>確認付款 NT$ 3,250
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Success -->
+                <div class="step-content" id="step4">
+                    <div class="card bg-dark border-secondary text-center py-5">
+                        <div class="card-body">
+                            <div class="success-animation mb-4">
+                                <i class="fas fa-check-circle fa-5x text-success"></i>
+                            </div>
+                            <h2 class="mb-3">訂單完成！</h2>
+                            <p class="text-muted mb-4">感謝您的購買，訂單確認信已寄送至您的信箱</p>
+                            
+                            <div class="bg-black rounded p-4 mb-4 d-inline-block">
+                                <div class="text-muted small mb-1">訂單編號</div>
+                                <div class="h4 text-success mb-0" id="orderNumber">MO-20241226-001234</div>
+                            </div>
+
+                            <div class="row justify-content-center g-3 mb-4">
+                                <div class="col-auto">
+                                    <div class="text-muted small">票券</div>
+                                    <div class="fw-bold">1 張</div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-muted small">商品</div>
+                                    <div class="fw-bold">1 件</div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-muted small">付款金額</div>
+                                    <div class="fw-bold text-success">NT$ 3,250</div>
+                                </div>
+                            </div>
+
+                            <!-- Token Reward Earned -->
+                            <div class="alert alert-success bg-success bg-opacity-10 border-success mb-4">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-coins fa-2x text-success me-3"></i>
+                                    <div>
+                                        <h6 class="mb-0 text-success">
+                                            🎉 恭喜獲得 <strong>5 代幣</strong> 回饋！
+                                        </h6>
+                                        <small class="text-muted">代幣已自動存入您的錢包，可於下次消費折抵使用</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info bg-info bg-opacity-10 border-info mb-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                電子票券將於活動前 3 天開放下載，届時會以 Email 通知您
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="dashboard.html#orders" class="btn btn-primary">
+                                    <i class="fas fa-list me-2"></i>查看訂單
+                                </a>
+                                <a href="../../index.html" class="btn btn-outline-secondary">
+                                    <i class="fas fa-home me-2"></i>回首頁
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="card bg-dark border-secondary sticky-top" style="top: 100px;">
+                    <div class="card-header bg-transparent border-secondary">
+                        <h5 class="mb-0">訂單摘要</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">票券小計 (1)</span>
+                            <span>NT$ 2,800</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">商品小計 (1)</span>
+                            <span>NT$ 450</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">服務費</span>
+                            <span>NT$ 0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">運費</span>
+                            <span class="text-success">免運費</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 d-none" id="tokenDiscountRow">
+                            <span class="text-muted">代幣折抵</span>
+                            <span class="text-danger" id="tokenDiscountAmount">-NT$ 0</span>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">應付總額</span>
+                            <span class="fw-bold text-success fs-4" id="finalTotal">NT$ 3,250</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-success">
+                                <i class="fas fa-coins me-1"></i>可獲得 54 Momento 代幣
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-secondary">
+                        <div class="d-flex align-items-center text-muted small">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            SSL 安全加密，保護您的交易資訊
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            let currentStep = 1;
+            const totalPrice = 3250;
+
+            // Step Navigation
+            function goToStep(step) {
+                currentStep = step;
+
+                // Update content
+                $('.step-content').removeClass('active');
+                $('#step' + step).addClass('active');
+
+                // Update stepper
+                $('.step-item').each(function () {
+                    const s = $(this).data('step');
+                    $(this).removeClass('active completed');
+                    if (s < step) $(this).addClass('completed');
+                    if (s === step) $(this).addClass('active');
+                });
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Next Step
+            $('.btn-next').click(function () {
+                const next = $(this).data('next');
+                goToStep(next);
+            });
+
+            // Previous Step
+            $('.btn-prev').click(function () {
+                const prev = $(this).data('prev');
+                goToStep(prev);
+            });
+
+            // Payment Option Selection
+            $('.payment-option').click(function () {
+                $('.payment-option').removeClass('selected');
+                $(this).addClass('selected');
+                $(this).find('input[type="radio"]').prop('checked', true);
+
+                const method = $(this).find('input').val();
+                if (method === 'credit') {
+                    $('#creditCardForm').removeClass('d-none');
+                } else {
+                    $('#creditCardForm').addClass('d-none');
+                }
+            });
+
+            // Invoice Type Toggle
+            $('input[name="invoiceType"]').change(function () {
+                $('#carrierInput, #companyInput').addClass('d-none');
+                if ($('#invoiceCarrier').is(':checked')) {
+                    $('#carrierInput').removeClass('d-none');
+                } else if ($('#invoiceCompany').is(':checked')) {
+                    $('#companyInput').removeClass('d-none');
+                }
+            });
+
+            // Token Usage
+            $('#useTokensCheckout').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#tokenSlider').removeClass('d-none');
+                    $('#tokenDiscountRow').removeClass('d-none');
+                } else {
+                    $('#tokenSlider').addClass('d-none');
+                    $('#tokenDiscountRow').addClass('d-none');
+                    $('#tokenAmount').val(0);
+                    updateTotal();
+                }
+            });
+
+            $('#tokenAmount').on('input', function () {
+                const amount = parseInt($(this).val());
+                $('#tokenAmountDisplay').text('使用 ' + amount + ' 代幣');
+                updateTotal();
+            });
+
+            function updateTotal() {
+                const tokenUsed = parseInt($('#tokenAmount').val()) || 0;
+                const final = totalPrice - tokenUsed;
+                $('#tokenDiscountAmount').text('-NT$ ' + tokenUsed.toLocaleString());
+                $('#finalTotal').text('NT$ ' + final.toLocaleString());
+                // 使用安全方式更新按鈕
+                $('#btnSubmitOrder')
+                    .empty()
+                    .append($('<i>').addClass('fas fa-lock me-2'))
+                    .append('確認付款 NT$ ' + final.toLocaleString());
+            }
+
+            // Submit Order
+            $('#btnSubmitOrder').click(function () {
+                const btn = $(this);
+                btn.prop('disabled', true)
+                   .empty()
+                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+                   .append('處理中...');
+
+                // Simulate API call
+                setTimeout(function () {
+                    // Generate order number
+                    const orderNum = 'MO-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(Math.random() * 900000 + 100000);
+                    $('#orderNumber').text(orderNum);
+
+                    // Clear cart
+                    localStorage.removeItem('momento_cart');
+
+                    btn.prop('disabled', false)
+                       .empty()
+                       .append($('<i>').addClass('fas fa-lock me-2'))
+                       .append('確認付款');
+                    showToast('訂單已成功建立！', 'success');
+                    goToStep(4);
+                }, 2000);
+            });
+
+            // Credit Card Number Formatting
+            $('input[placeholder="1234 5678 9012 3456"]').on('input', function () {
+                let value = $(this).val().replace(/\s/g, '').replace(/\D/g, '');
+                let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                $(this).val(formatted);
+            });
+
+            // Expiry Date Formatting
+            $('input[placeholder="MM/YY"]').on('input', function () {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2);
+                }
+                $(this).val(value);
+            });
+        });
+
+        // Toast helper function
+        function showToast(message, type) {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
+            const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white ${bgClass} border-0`;
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas fa-check-circle me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>
+

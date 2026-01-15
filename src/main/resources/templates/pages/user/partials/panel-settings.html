@@ -1,0 +1,156 @@
+<h3 class="mb-4">帳號設定</h3>
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="list-group bg-dark" id="settings-list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action bg-transparent text-white border-secondary active"
+                data-bs-toggle="list" href="#settings-profile">個人資料</a>
+            <a class="list-group-item list-group-item-action bg-transparent text-white border-secondary"
+                data-bs-toggle="list" href="#settings-security">登入與安全</a>
+            <a class="list-group-item list-group-item-action bg-transparent text-white border-secondary"
+                data-bs-toggle="list" href="#settings-preferences">偏好設定</a>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="tab-content" id="nav-tabContent">
+            <!-- Profile Settings -->
+            <div class="tab-pane fade show active" id="settings-profile">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0 text-white">編輯個人資料</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="formProfile">
+                            <div class="row mb-4 align-items-center">
+                                <div class="col-auto">
+                                    <div class="position-relative">
+                                        <img loading="lazy" src="https://via.placeholder.com/100"
+                                            class="rounded-circle border border-secondary" id="avatarPreview"
+                                            width="100" height="100">
+                                        <label for="avatarUpload"
+                                            class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0"
+                                            style="width:32px;height:32px;padding:4px;">
+                                            <i class="fas fa-camera"></i>
+                                        </label>
+                                        <input type="file" id="avatarUpload" hidden accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <h6 class="text-white">更換頭像</h6>
+                                    <small class="text-muted d-block">支援 JPG, PNG (最大 2MB)</small>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">顯示名稱</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        value="Momento User">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">聯絡電話</label>
+                                    <input type="tel" class="form-control bg-dark text-white border-secondary"
+                                        value="0912-345-678">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-white">電子信箱</label>
+                                    <div class="input-group">
+                                        <input type="email" class="form-control bg-dark text-white border-secondary"
+                                            value="user@momento.com" readonly>
+                                        <button class="btn btn-outline-success" type="button"><i
+                                                class="fas fa-check-circle"></i> 已驗證</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="border-secondary my-4">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" id="btnSaveProfile">儲存變更</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="tab-pane fade" id="settings-security">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0 text-white">修改密碼</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label text-white">目前密碼</label>
+                                <input type="password" class="form-control bg-dark text-white border-secondary">
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">新密碼</label>
+                                    <input type="password" class="form-control bg-dark text-white border-secondary"
+                                        id="newPassword">
+                                    <div class="progress mt-2" style="height: 4px;">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 30%"></div>
+                                    </div>
+                                    <small class="text-muted">強度：弱</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">確認新密碼</label>
+                                    <input type="password" class="form-control bg-dark text-white border-secondary">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-light" id="btnUpdatePassword">更新密碼</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0 text-white">二階段驗證 (2FA)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white mb-1">Google Authenticator</h6>
+                                <p class="text-muted small mb-0">使用驗證器應用程式產生一次性密碼，保護帳號安全。</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="tab-pane fade" id="settings-preferences">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0 text-white">通知設定</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" checked>
+                            <label class="form-check-label text-white">接收活動提醒 (Email)</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" checked>
+                            <label class="form-check-label text-white">接收訂單狀態更新</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label text-white">接收行銷優惠資訊</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-danger bg-transparent">
+                    <div class="card-body">
+                        <h5 class="text-danger">危險區域</h5>
+                        <p class="text-muted">刪除帳號後，所有資料（包含票券、代幣）將無法復原。</p>
+                        <button class="btn btn-outline-danger"
+                            onclick="if(confirm('確定要刪除帳號嗎？此動作無法復原。')) alert('帳號已標記刪除，我們將在 7 天後永久移除您的資料。')">刪除帳號</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+<h2 class="h3 mb-4">系統設定</h2>
+<div class="row g-4">
+    <div class="col-lg-3">
+        <div class="list-group bg-dark border-secondary">
+            <a href="#"
+                class="list-group-item list-group-item-action active bg-secondary border-secondary text-white">主辦單位資料</a>
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">銀行帳戶資訊</a>
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">通知設定</a>
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">帳號安全</a>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-header border-secondary">基本資料</div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-12 text-center mb-3">
+                        <div class="position-relative d-inline-block">
+                            <img loading="lazy" src="https://via.placeholder.com/150"
+                                class="rounded-circle border border-secondary p-1" width="100">
+                            <button
+                                class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle border border-secondary">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">顯示名稱 (品牌名)</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" value="相信音樂">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">聯絡 Email</label>
+                        <input type="email" class="form-control bg-dark text-white border-secondary"
+                            value="contact@bin-music.com">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">關於我們</label>
+                        <textarea class="form-control bg-dark text-white border-secondary"
+                            rows="4">我們專注於提供高品質的音樂演出體驗...</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">官方網站</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                            value="https://www.bin-music.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">統一編號</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" value="12345678"
+                            readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer border-secondary text-end">
+                <button class="btn btn-primary">儲存變更</button>
+            </div>
+        </div>
+
+        <div class="card bg-dark border-secondary">
+            <div class="card-header border-secondary">通知設定</div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">接收新訂單通知 (Email)</label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">接收庫存不足提醒</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">接收每週銷售報表</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

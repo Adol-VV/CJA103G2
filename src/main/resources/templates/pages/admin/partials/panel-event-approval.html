@@ -1,0 +1,56 @@
+<div class="content-panel" id="panel-event-approval">
+    <h2 class="mb-4">活動審核</h2>
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item"><a class="nav-link active text-white" href="#">待審核 (2)</a></li>
+                <li class="nav-item"><a class="nav-link text-muted" href="#">需補件</a></li>
+                <li class="nav-item"><a class="nav-link text-muted" href="#">已駁回</a></li>
+            </ul>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>申請日期</th>
+                            <th>活動名稱</th>
+                            <th>主辦單位</th>
+                            <th>預計日期</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventApprovalList">
+                        <tr>
+                            <td>2024/12/26</td>
+                            <td>
+                                <div class="fw-bold">2025 新年音樂會｜維也納之夜</div>
+                                <small class="text-muted">ID: E20250101</small>
+                            </td>
+                            <td>高雄市交響樂團</td>
+                            <td>2025/01/01</td>
+                            <td><span class="badge bg-warning text-dark">待審核</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2024/12/25</td>
+                            <td>
+                                <div class="fw-bold">獨立樂團之夜 - 搖滾篇</div>
+                                <small class="text-muted">ID: E20250115</small>
+                            </td>
+                            <td>地下社會</td>
+                            <td>2025/01/15</td>
+                            <td><span class="badge bg-warning text-dark">待審核</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

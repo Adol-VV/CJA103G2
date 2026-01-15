@@ -1,0 +1,249 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-box-open me-2"></i>新增商品</h2>
+    <button class="btn btn-outline-secondary" onclick="showSection('product-list')">
+        <i class="fas fa-arrow-left me-1"></i>返回列表
+    </button>
+</div>
+<form id="formProductCreate">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Basic Info -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="fas fa-info-circle me-2 text-primary"></i>基本資訊</h5>
+                    <div class="mb-3">
+                        <label class="form-label required">商品名稱</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" name="productName"
+                            maxlength="50" placeholder="例：官方限定版 T-Shirt" required>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">簡潔明瞭的商品名稱</small>
+                            <small class="text-muted"><span class="prod-name-count">0</span>/50</small>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label required">商品分類</label>
+                            <select class="form-select bg-dark text-white border-secondary" name="productCategory"
+                                required>
+                                <option value="">請選擇</option>
+                                <option value="clothing">服飾</option>
+                                <option value="accessory">配件</option>
+                                <option value="poster">海報/寫真</option>
+                                <option value="album">專輯/CD</option>
+                                <option value="stationery">文具</option>
+                                <option value="collectible">收藏品</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">原價 (NT$)</label>
+                            <input type="number" name="productOriginalPrice" min="0"
+                                class="form-control bg-dark text-white border-secondary" placeholder="選填">
+                            <small class="text-muted">留空則不顯示折扣</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label required">售價 (NT$)</label>
+                            <input type="number" name="productPrice" min="1"
+                                class="form-control bg-dark text-white border-secondary" placeholder="590" required>
+                            <small class="text-muted">實際銷售價格</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-info bg-info bg-opacity-10 border-info py-2 mb-3">
+                        <small><i class="fas fa-lightbulb me-1"></i>設定原價後，前台將顯示「<del class="text-muted">原價</del> <strong
+                                class="text-success">售價</strong>」的優惠效果</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">商品描述</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" name="productDescription"
+                            rows="5" placeholder="請詳細描述商品特色、材質、尺寸等資訊..." required></textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">商品標籤</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                name="productTags" placeholder="多個標籤用逗號分隔，如：限量,官方,新品">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">重量 (公克)</label>
+                            <input type="number" class="form-control bg-dark text-white border-secondary"
+                                name="productWeight" min="0" placeholder="用於計算運費">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variants & Stock -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="fas fa-cubes me-2 text-info"></i>規格與庫存</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm mb-0" id="variantTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%">規格名稱</th>
+                                    <th style="width: 25%">庫存數量</th>
+                                    <th style="width: 25%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="text" name="variantName[]"
+                                            class="form-control form-control-sm bg-dark text-white border-secondary"
+                                            placeholder="例：S / 黑色" value="S / 黑">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="variantStock[]" min="0"
+                                            class="form-control form-control-sm bg-dark text-white border-secondary"
+                                            value="50">
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-variant">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-3" id="btnAddVariant">
+                        <i class="fas fa-plus me-1"></i>新增規格
+                    </button>
+                    <div class="alert alert-info small mt-3 mb-0">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        提示：若商品無規格差異，可只保留一個「標準」規格
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Event -->
+            <div class="card bg-dark border-secondary">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="fas fa-link me-2 text-success"></i>關聯活動</h5>
+                    <p class="text-muted small mb-3">將商品與活動關聯，可增加曝光度並在活動頁面顯示相關商品</p>
+                    <select class="form-select bg-dark text-white border-secondary" name="relatedEvent">
+                        <option value="">不關聯活動</option>
+                        <option value="1">2025新年音樂會｜維也納之夜</option>
+                        <option value="2">春季室內樂系列｜弦樂四重奏之夜</option>
+                        <option value="3">五月天 2024 巡迴演唱會</option>
+                    </select>
+                    <div class="related-event-preview d-none mt-3 p-3 bg-black rounded">
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/60x60" class="rounded me-3">
+                            <div>
+                                <h6 class="mb-0" id="relatedEventName">活動名稱</h6>
+                                <small class="text-muted" id="relatedEventDate">活動日期</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Product Images -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="fas fa-images me-2 text-warning"></i>商品圖片</h5>
+
+                    <!-- Main Image Upload -->
+                    <div class="mb-3">
+                        <label class="form-label required">主圖</label>
+                        <div class="upload-zone text-center p-4 border border-secondary border-dashed rounded position-relative"
+                            id="productMainImageZone" style="cursor: pointer;">
+                            <input type="file" class="d-none" id="productMainImageInput" accept="image/*">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                <p class="small text-muted mb-0">點擊上傳主圖</p>
+                                <small class="text-muted">建議 800x800 px</small>
+                            </div>
+                            <div class="upload-preview d-none">
+                                <img src="" id="productMainImagePreview" class="img-fluid rounded"
+                                    style="max-height: 150px;">
+                                <button type="button"
+                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 btn-remove-main-image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Images -->
+                    <label class="form-label">其他圖片（最多 4 張）</label>
+                    <div class="row g-2" id="additionalImagesContainer">
+                        <div class="col-6">
+                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot"
+                                style="cursor: pointer;">
+                                <input type="file" class="d-none additional-image-input" accept="image/*">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-plus text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot"
+                                style="cursor: pointer;">
+                                <input type="file" class="d-none additional-image-input" accept="image/*">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-plus text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot"
+                                style="cursor: pointer;">
+                                <input type="file" class="d-none additional-image-input" accept="image/*">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-plus text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot"
+                                style="cursor: pointer;">
+                                <input type="file" class="d-none additional-image-input" accept="image/*">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-plus text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Settings -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="fas fa-truck me-2 text-secondary"></i>出貨設定</h5>
+                    <div class="mb-3">
+                        <label class="form-label">出貨時間</label>
+                        <select class="form-select bg-dark text-white border-secondary" name="shippingTime">
+                            <option value="3">3 個工作天內出貨</option>
+                            <option value="5">5 個工作天內出貨</option>
+                            <option value="7">7 個工作天內出貨</option>
+                            <option value="14">14 個工作天內出貨</option>
+                            <option value="preorder">預購商品（活動後出貨）</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="freeShipping" name="freeShipping">
+                        <label class="form-check-label" for="freeShipping">免運費</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary btn-lg" type="submit" id="btnPublishProduct">
+                    <i class="fas fa-paper-plane me-1"></i>送出審核
+                </button>
+                <button class="btn btn-outline-secondary" type="button" id="btnSaveProductDraft">
+                    <i class="fas fa-save me-1"></i>儲存草稿
+                </button>
+            </div>
+            <small class="text-muted d-block text-center mt-2">
+                <i class="fas fa-info-circle me-1"></i>商品需經審核後才會上架
+            </small>
+        </div>
+    </div>
+</form>

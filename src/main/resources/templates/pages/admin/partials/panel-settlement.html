@@ -1,0 +1,446 @@
+<div class="content-panel" id="panel-settlement">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice-dollar me-2"></i>結算中心</h2>
+        <div>
+            <div class="btn-group me-2">
+                <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-download me-1"></i>匯出報表
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="exportReport('csv')"><i
+                                class="fas fa-file-csv me-2"></i>CSV 格式</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportReport('excel')"><i
+                                class="fas fa-file-excel me-2"></i>Excel 格式</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportReport('pdf')"><i
+                                class="fas fa-file-pdf me-2"></i>PDF 格式</a></li>
+                </ul>
+            </div>
+            <button class="btn btn-primary" id="btnBatchSettle"><i class="fas fa-money-check me-1"></i>批次結算</button>
+        </div>
+    </div>
+
+    <!-- 結算類型 Tabs -->
+    <ul class="nav nav-tabs mb-4" id="settlementTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="event-settle-tab" data-bs-toggle="tab"
+                data-bs-target="#event-settle-content" type="button" role="tab">
+                <i class="fas fa-ticket-alt me-2"></i>活動票券結算
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="product-settle-tab" data-bs-toggle="tab"
+                data-bs-target="#product-settle-content" type="button" role="tab">
+                <i class="fas fa-box me-2"></i>商品銷售結算
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="settlementTabContent">
+        <!-- 活動票券結算 Tab -->
+        <div class="tab-pane fade show active" id="event-settle-content" role="tabpanel">
+            <!-- 活動結算統計卡片 -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-clock me-1"></i>票券待結算</p>
+                            <h4 class="mb-0 text-warning">NT$ 1,250,000</h4>
+                            <small class="text-muted">3 筆待處理</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-check-circle me-1"></i>本月已撥款</p>
+                            <h4 class="mb-0 text-success">NT$ 4,820,000</h4>
+                            <small class="text-muted">12 筆已完成</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-percentage me-1"></i>平台服務費</p>
+                            <h4 class="mb-0 text-info">NT$ 482,000</h4>
+                            <small class="text-muted">費率 10%</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-exclamation-triangle me-1"></i>異常待處理</p>
+                            <h4 class="mb-0 text-danger">2</h4>
+                            <small class="text-muted">需人工審核</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 篩選工具列 -->
+            <div class="card bg-dark border-secondary mb-3">
+                <div class="card-body py-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-3">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="">所有主辦方</option>
+                                <option>相信音樂</option>
+                                <option>動漫協進會</option>
+                                <option>LiveNation</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="">所有狀態</option>
+                                <option value="pending">待審核</option>
+                                <option value="calculating">計算中</option>
+                                <option value="paid">已撥款</option>
+                                <option value="exception">異常</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                                placeholder="活動名稱/ID 搜尋...">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="month" class="form-control form-control-sm bg-dark text-white border-secondary"
+                                value="2025-01">
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-search me-1"></i>搜尋</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 活動結算列表 -->
+            <div class="card bg-dark border-secondary">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkAllEventSettle"></th>
+                                <th>活動</th>
+                                <th>主辦方</th>
+                                <th>活動日期</th>
+                                <th>售票金額</th>
+                                <th>服務費</th>
+                                <th>應付金額</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="event-settle-chk" value="1"></td>
+                                <td>
+                                    <strong>五月天 2024 巡迴演唱會</strong><br>
+                                    <small class="text-muted">ID: E20241231</small>
+                                </td>
+                                <td>相信音樂</td>
+                                <td>2024/12/31</td>
+                                <td>NT$ 5,000,000</td>
+                                <td class="text-info">NT$ 500,000</td>
+                                <td class="text-success"><strong>NT$ 4,500,000</strong></td>
+                                <td><span class="badge bg-warning text-dark">待審核</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-success" title="確認撥款"><i
+                                                class="fas fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="event-settle-chk" value="2"></td>
+                                <td>
+                                    <strong>2024 動漫節</strong><br>
+                                    <small class="text-muted">ID: E20240201</small>
+                                </td>
+                                <td>動漫協進會</td>
+                                <td>2024/02/01-03</td>
+                                <td>NT$ 2,000,000</td>
+                                <td class="text-info">NT$ 200,000</td>
+                                <td class="text-success"><strong>NT$ 1,800,000</strong></td>
+                                <td><span class="badge bg-info">計算中</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="event-settle-chk" value="3"></td>
+                                <td>
+                                    <strong>跨年電音派對</strong><br>
+                                    <small class="text-muted">ID: E20250101</small>
+                                </td>
+                                <td>夜貓娛樂</td>
+                                <td>2025/01/01</td>
+                                <td>NT$ 850,000</td>
+                                <td class="text-info">NT$ 85,000</td>
+                                <td class="text-success"><strong>NT$ 765,000</strong></td>
+                                <td><span class="badge bg-success">已撥款</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-outline-secondary" title="列印收據"><i
+                                                class="fas fa-print"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-danger">
+                                <td><input type="checkbox" class="event-settle-chk" value="4"></td>
+                                <td>
+                                    <strong>獨立音樂祭</strong><br>
+                                    <small class="text-muted">ID: E20250115</small>
+                                </td>
+                                <td>地下社會</td>
+                                <td>2025/01/15</td>
+                                <td>NT$ 320,000</td>
+                                <td class="text-info">NT$ 32,000</td>
+                                <td class="text-danger"><strong>待確認</strong></td>
+                                <td><span class="badge bg-danger">異常</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-danger" title="處理異常"><i
+                                                class="fas fa-exclamation-circle"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品銷售結算 Tab -->
+        <div class="tab-pane fade" id="product-settle-content" role="tabpanel">
+            <!-- 商品結算統計卡片 -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-clock me-1"></i>商品待結算</p>
+                            <h4 class="mb-0 text-warning">NT$ 385,000</h4>
+                            <small class="text-muted">5 筆待處理</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-check-circle me-1"></i>本月已撥款</p>
+                            <h4 class="mb-0 text-success">NT$ 1,280,000</h4>
+                            <small class="text-muted">28 筆已完成</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-percentage me-1"></i>平台服務費</p>
+                            <h4 class="mb-0 text-info">NT$ 166,500</h4>
+                            <small class="text-muted">費率 13%</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body">
+                            <p class="text-muted mb-1"><i class="fas fa-undo me-1"></i>退款扣除</p>
+                            <h4 class="mb-0 text-danger">NT$ 42,000</h4>
+                            <small class="text-muted">8 筆退款</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 篩選工具列 -->
+            <div class="card bg-dark border-secondary mb-3">
+                <div class="card-body py-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-3">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="">所有主辦方</option>
+                                <option>相信音樂</option>
+                                <option>動漫協進會</option>
+                                <option>藝術工坊</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="">商品類別</option>
+                                <option>服飾配件</option>
+                                <option>專輯唱片</option>
+                                <option>海報印刷</option>
+                                <option>收藏品</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="">結算狀態</option>
+                                <option value="pending">待結算</option>
+                                <option value="processing">處理中</option>
+                                <option value="paid">已撥款</option>
+                                <option value="hold">暫停撥款</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                                placeholder="商品名稱/訂單編號...">
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-search me-1"></i>搜尋</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品結算列表 -->
+            <div class="card bg-dark border-secondary">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkAllProductSettle"></th>
+                                <th>結算週期</th>
+                                <th>主辦方</th>
+                                <th>訂單數</th>
+                                <th>銷售金額</th>
+                                <th>服務費</th>
+                                <th>退款扣除</th>
+                                <th>應付金額</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="product-settle-chk" value="1"></td>
+                                <td>
+                                    <strong>2025/01 第一週</strong><br>
+                                    <small class="text-muted">01/01 - 01/07</small>
+                                </td>
+                                <td>相信音樂</td>
+                                <td>45</td>
+                                <td>NT$ 128,000</td>
+                                <td class="text-info">NT$ 16,640</td>
+                                <td class="text-danger">NT$ 3,200</td>
+                                <td class="text-success"><strong>NT$ 108,160</strong></td>
+                                <td><span class="badge bg-warning text-dark">待審核</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看明細"><i
+                                                class="fas fa-list"></i></button>
+                                        <button class="btn btn-success" title="確認撥款"><i
+                                                class="fas fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="product-settle-chk" value="2"></td>
+                                <td>
+                                    <strong>2025/01 第一週</strong><br>
+                                    <small class="text-muted">01/01 - 01/07</small>
+                                </td>
+                                <td>動漫協進會</td>
+                                <td>82</td>
+                                <td>NT$ 256,500</td>
+                                <td class="text-info">NT$ 33,345</td>
+                                <td class="text-danger">NT$ 8,400</td>
+                                <td class="text-success"><strong>NT$ 214,755</strong></td>
+                                <td><span class="badge bg-warning text-dark">待審核</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看明細"><i
+                                                class="fas fa-list"></i></button>
+                                        <button class="btn btn-success" title="確認撥款"><i
+                                                class="fas fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="product-settle-chk" value="3"></td>
+                                <td>
+                                    <strong>2024/12 第四週</strong><br>
+                                    <small class="text-muted">12/22 - 12/28</small>
+                                </td>
+                                <td>藝術工坊</td>
+                                <td>36</td>
+                                <td>NT$ 89,000</td>
+                                <td class="text-info">NT$ 11,570</td>
+                                <td class="text-danger">NT$ 0</td>
+                                <td class="text-success"><strong>NT$ 77,430</strong></td>
+                                <td><span class="badge bg-success">已撥款</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看明細"><i
+                                                class="fas fa-list"></i></button>
+                                        <button class="btn btn-outline-secondary" title="列印收據"><i
+                                                class="fas fa-print"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="product-settle-chk" value="4"></td>
+                                <td>
+                                    <strong>2024/12 第四週</strong><br>
+                                    <small class="text-muted">12/22 - 12/28</small>
+                                </td>
+                                <td>相信音樂</td>
+                                <td>68</td>
+                                <td>NT$ 185,600</td>
+                                <td class="text-info">NT$ 24,128</td>
+                                <td class="text-danger">NT$ 5,200</td>
+                                <td class="text-success"><strong>NT$ 156,272</strong></td>
+                                <td><span class="badge bg-success">已撥款</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" title="查看明細"><i
+                                                class="fas fa-list"></i></button>
+                                        <button class="btn btn-outline-secondary" title="列印收據"><i
+                                                class="fas fa-print"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-warning">
+                                <td><input type="checkbox" class="product-settle-chk" value="5"></td>
+                                <td>
+                                    <strong>2024/12 第三週</strong><br>
+                                    <small class="text-muted">12/15 - 12/21</small>
+                                </td>
+                                <td>獨立藝人商店</td>
+                                <td>12</td>
+                                <td>NT$ 32,400</td>
+                                <td class="text-info">NT$ 4,212</td>
+                                <td class="text-danger">NT$ 15,600</td>
+                                <td class="text-warning"><strong>NT$ 12,588</strong></td>
+                                <td><span class="badge bg-secondary">暫停撥款</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-warning" title="審核原因"><i
+                                                class="fas fa-exclamation-triangle"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 商品結算說明 -->
+            <div class="alert alert-secondary mt-4">
+                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>商品結算說明</h6>
+                <ul class="mb-0 small">
+                    <li>商品銷售採<strong>週結算</strong>制度，每週一結算上週已完成訂單</li>
+                    <li>平台服務費率為商品銷售金額的 <strong>13%</strong></li>
+                    <li>退款訂單將從當期結算金額中扣除</li>
+                    <li>若退款金額超過當期應付款，差額將於下期結算中扣除</li>
+                    <li>暫停撥款：因退款率過高或其他異常情況，需人工審核後方可撥款</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

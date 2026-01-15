@@ -1,0 +1,117 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">我的留言</h3>
+    <div class="btn-group">
+        <button class="btn btn-outline-secondary btn-sm active" data-filter="all">全部</button>
+        <button class="btn btn-outline-secondary btn-sm" data-filter="article">文章留言</button>
+        <button class="btn btn-outline-secondary btn-sm" data-filter="event">活動留言</button>
+    </div>
+</div>
+
+<div class="card bg-dark border-secondary">
+    <div class="list-group list-group-flush">
+        <!-- Comment Item 1 -->
+        <div class="list-group-item bg-dark text-white border-secondary p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="badge bg-info me-2">文章留言</span>
+                    <a href="../public/article-detail.html" class="text-white text-decoration-none fw-bold">
+                        2025 跨年活動精選推薦
+                    </a>
+                </div>
+                <small class="text-muted">2024/12/25 14:30</small>
+            </div>
+            <p class="text-muted mb-2">
+                這篇整理得很詳細！我已經買好維也納之夜的票了，超期待的～
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="fas fa-heart text-danger me-1"></i> 12 人覺得有幫助
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-edit"></i> 編輯</button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> 刪除</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Item 2 -->
+        <div class="list-group-item bg-dark text-white border-secondary p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="badge bg-primary me-2">活動留言</span>
+                    <a href="event-detail.html" class="text-white text-decoration-none fw-bold">
+                        2025新年音樂會｜維也納之夜
+                    </a>
+                </div>
+                <small class="text-muted">2024/12/20 10:15</small>
+            </div>
+            <p class="text-muted mb-2">
+                請問 VIP 座位區有附贈節目手冊嗎？
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>已獲回覆</span>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-edit"></i> 編輯</button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> 刪除</button>
+                </div>
+            </div>
+            <!-- Reply -->
+            <div class="bg-black rounded p-3 mt-3">
+                <div class="d-flex align-items-center mb-2">
+                    <img loading="lazy"
+                        src="https://ui-avatars.com/api/?name=Momento&background=2D5F4F&color=fff&size=32"
+                        class="rounded-circle me-2" style="width: 24px; height: 24px;">
+                    <strong class="small">Momento 官方</strong>
+                    <span class="badge bg-success ms-2 small">主辦方</span>
+                    <small class="text-muted ms-auto">2024/12/20 15:30</small>
+                </div>
+                <p class="text-muted small mb-0">
+                    您好！VIP 座位區的觀眾將獲得精美節目手冊一本，以及限定版紀念品。感謝您的支持！
+                </p>
+            </div>
+        </div>
+
+        <!-- Comment Item 3 -->
+        <div class="list-group-item bg-dark text-white border-secondary p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="badge bg-info me-2">文章留言</span>
+                    <a href="../public/article-detail.html" class="text-white text-decoration-none fw-bold">
+                        購票新手必看：如何挑選最佳座位
+                    </a>
+                </div>
+                <small class="text-muted">2024/12/15 09:45</small>
+            </div>
+            <p class="text-muted mb-2">
+                謝謝分享！第一次買演唱會的票，這篇文章幫助很大
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="fas fa-heart text-danger me-1"></i> 5 人覺得有幫助
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-edit"></i> 編輯</button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> 刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer border-secondary text-center">
+        <button class="btn btn-sm btn-link text-muted text-decoration-none">
+            載入更多留言 <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Empty State (Hidden) -->
+<div class="card bg-dark border-secondary text-center py-5 d-none" id="emptyComments">
+    <div class="card-body">
+        <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">還沒有留言</h5>
+        <p class="text-muted small">在文章或活動頁面留言，與其他會員互動吧！</p>
+        <a href="../public/article-list.html" class="btn btn-primary">瀏覽文章</a>
+    </div>
+</div>
