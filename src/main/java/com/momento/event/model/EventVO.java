@@ -1,7 +1,19 @@
 package com.momento.event.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import com.momento.emp.model.EmpVO;
+import com.momento.organizer.model.OrganizerVO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "EVENT")

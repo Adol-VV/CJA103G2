@@ -1,6 +1,9 @@
-package com.momento.ticket.model;
+package com.momento.eventorderitem.model;
 
-import com.momento.event.model.EventVO;
+import java.io.Serializable;
+
+import com.momento.eventorder.model.EventOrderVO;
+import com.momento.ticket.model.TicketVO;
 
 import groovy.transform.ToString;
 import jakarta.persistence.Column;
@@ -17,32 +20,33 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "ticket")
+@Table(name = "event_order_item")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TicketVO {
+public class EventOrderItemVO implements Serializable {
 
 	@Id
+	@Column(name = "event_order_item_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ticket_id")
-	private Integer ticketId;
+	private Integer eventOrderItemId;
 
 	@ManyToOne
-	@JoinColumn(name = "event_id", referencedColumnName = "event_id")
-	private EventVO event;
+	@JoinColumn(name = "event_order_id", referencedColumnName = "EVENT_ORDER_ID")
+	private EventOrderVO eventOrder;
+
+	@ManyToOne
+	@JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
+	private TicketVO ticket;
+
+	@Column(name = "qrcode")
+	private String qrcode;
 
 	@Column(name = "price")
 	private Integer price;
 
 	@Column(name = "total")
 	private Integer total;
-
-	@Column(name = "remain")
-	private Integer remain;
-
-	@Column(name = "ticket_name")
-	private String ticketName;
 }
