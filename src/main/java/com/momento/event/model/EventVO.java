@@ -12,17 +12,17 @@ public class EventVO {
     @Column(name = "EVENT_ID")
     private Integer eventId;
 
-    // @ManyToOne
-    // @JoinColumn(name = "ORGANIZER_ID", nullable = false)
-    // private OrganizerVO organizer;
+    @ManyToOne
+    @JoinColumn(name = "ORGANIZER_ID", nullable = false)
+    private OrganizerVO organizer;
 
     @ManyToOne
     @JoinColumn(name = "TYPE_ID", nullable = false)
     private TypeVO type;
 
-    // @ManyToOne
-    // @JoinColumn(name = "EMP_ID")
-    // private EmpVO emp;
+    @ManyToOne
+    @JoinColumn(name = "EMP_ID")
+    private EmpVO emp;
 
     @Column(name = "STATUS")
     private Byte status = 0;
@@ -67,13 +67,13 @@ public class EventVO {
         this.eventId = eventId;
     }
 
-    // public OrganizerVO getOrganizer() {
-    // return organizer;
-    // }
+    public OrganizerVO getOrganizer() {
+        return organizer;
+    }
 
-    // public void setOrganizer(OrganizerVO organizer) {
-    // this.organizer = organizer;
-    // }
+    public void setOrganizer(OrganizerVO organizer) {
+        this.organizer = organizer;
+    }
 
     public TypeVO getType() {
         return type;
@@ -83,13 +83,13 @@ public class EventVO {
         this.type = type;
     }
 
-    // public EmpVO getEmp() {
-    // return emp;
-    // }
+    public EmpVO getEmp() {
+        return emp;
+    }
 
-    // public void setEmp(EmpVO emp) {
-    // this.emp = emp;
-    // }
+    public void setEmp(EmpVO emp) {
+        this.emp = emp;
+    }
 
     public Byte getStatus() {
         return status;

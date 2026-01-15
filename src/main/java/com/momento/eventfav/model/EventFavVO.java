@@ -2,7 +2,7 @@ package com.momento.eventfav.model;
 
 import jakarta.persistence.*;
 import com.momento.event.model.EventVO;
-// import com.momento.member.model.MemberVO;  // 待 MemberVO 開發完成後再啟用
+import com.momento.member.model.MemberVO;
 
 @Entity
 @Table(name = "EVENT_FAV", uniqueConstraints = {
@@ -19,19 +19,19 @@ public class EventFavVO {
     @JoinColumn(name = "EVENT_ID", nullable = false)
     private EventVO event;
 
-    // @ManyToOne
-    // @JoinColumn(name = "MEMBER_ID", nullable = false)
-    // private MemberVO member;
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID", nullable = false)
+    private MemberVO member;
 
     // ========== Constructors ==========
 
     public EventFavVO() {
     }
 
-    // public EventFavVO(EventVO event, MemberVO member) {
-    // this.event = event;
-    // this.member = member;
-    // }
+    public EventFavVO(EventVO event, MemberVO member) {
+        this.event = event;
+        this.member = member;
+    }
 
     // ========== Getters & Setters ==========
 
@@ -51,11 +51,11 @@ public class EventFavVO {
         this.event = event;
     }
 
-    // public MemberVO getMember() {
-    // return member;
-    // }
+    public MemberVO getMember() {
+        return member;
+    }
 
-    // public void setMember(MemberVO member) {
-    // this.member = member;
-    // }
+    public void setMember(MemberVO member) {
+        this.member = member;
+    }
 }
