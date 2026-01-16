@@ -148,25 +148,12 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-bold mb-2">活動類型</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cat-music" checked>
-                            <label class="form-check-label" for="cat-music">音樂演出</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cat-exhibition">
-                            <label class="form-check-label" for="cat-exhibition">藝術展覽</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cat-theater">
-                            <label class="form-check-label" for="cat-theater">戲劇表演</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cat-lecture">
-                            <label class="form-check-label" for="cat-lecture">藝文講座</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="cat-workshop">
-                            <label class="form-check-label" for="cat-workshop">手作工坊</label>
+                        <div class="form-check" th:each="type : ${types}">
+                            <input class="form-check-input" type="checkbox" th:id="'cat-' + ${type.typeId}"
+                                th:value="${type.typeId}"
+                                th:checked="${currentTypeId != null && currentTypeId == type.typeId}">
+                            <label class="form-check-label" th:for="'cat-' + ${type.typeId}"
+                                th:text="${type.typeName}">活動類型</label>
                         </div>
                     </div>
 
@@ -241,7 +228,7 @@
             <main class="col-lg-9">
                 <!-- Sort Bar -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <span class="text-muted">共 10 個活動</span>
+                    <span class="text-muted">共 <span th:text="${page.totalElements}">10</span> 個活動</span>
                     <select class="form-select w-auto">
                         <option>最新上架</option>
                         <option>價格由低到高</option>
@@ -253,8 +240,52 @@
                 <div class="row g-4">
                     <!-- Events populated from SQL Data -->
 
-                    <!-- Event 1 -->
-                    <div class="col-12 col-md-6 col-lg-4">
+                    <!-- Event Loop with Thymeleaf -->
+                    <div class="col-12 col-md-6 col-lg-4" th:each="event : ${events}">
+                        <div class="card h-100 event-card">
+                            <div class="card-img-wrapper">
+                                <img loading="lazy"
+                                    th:src="${event.coverImageUrl != null ? event.coverImageUrl : 'https://picsum.photos/seed/newyear1/800/450'}"
+                                    src="https://picsum.photos/seed/newyear1/800/450" class="card-img-top"
+                                    th:alt="${event.title}">
+                                <span class="badge date-badge"
+                                    th:text="${#temporals.format(event.eventAt, 'MM/dd')}">12/31</span>
+                                <button class="btn-favorite" th:classappend="${event.isFavorited ? 'active' : ''}"
+                                    th:data-event-id="${event.eventId}">
+                                    <i th:class="${event.isFavorited ? 'fas fa-heart' : 'far fa-heart'}"
+                                        class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2" th:text="${event.typeName}">音樂演出</span>
+                                <h5 class="card-title text-truncate-2" th:text="${event.title}">2025新年音樂會｜維也納之夜</h5>
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <span th:text="${event.place}">中山堂中正廳</span>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price">
+                                        NT$ <span
+                                            th:text="${#numbers.formatInteger(event.minPrice, 0, 'COMMA')}">1,800</span>
+                                        起
+                                    </span>
+                                    <a th:href="@{/events/{id}(id=${event.eventId})}" href="event-detail.html"
+                                        class="btn btn-sm btn-primary px-3">查看詳情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 如果沒有活動，顯示空狀態 -->
+                    <div th:if="${#lists.isEmpty(events)}" class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">找不到符合條件的活動</h5>
+                        <p class="text-muted">試試調整篩選條件或搜尋其他關鍵字</p>
+                    </div>
+
+                    <!-- 保留原始假資料作為參考（隱藏） -->
+                    <!-- Event 1 (Original Fake Data) -->
+                    <div class="col-12 col-md-6 col-lg-4" style="display: none;">
                         <div class="card h-100 event-card">
                             <div class="card-img-wrapper">
                                 <img loading="lazy" src="https://picsum.photos/seed/newyear1/800/450"
@@ -274,7 +305,7 @@
                         </div>
                     </div>
 
-                    <!-- Event 2 -->
+                    <!-- Event 2 (Original Fake Data - Hidden) -->
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card h-100 event-card">
                             <div class="card-img-wrapper">
@@ -445,13 +476,26 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav class="mt-5">
+                <nav class="mt-5" th:if="${page.totalPages > 1}">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
+                        <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
+                            <a class="page-link"
+                                th:href="@{/events(page=${page.number - 1}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
+                                href="#">上一頁</a>
+                        </li>
+
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                            th:classappend="${i == page.number ? 'active' : ''}">
+                            <a class="page-link"
+                                th:href="@{/events(page=${i}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
+                                th:text="${i + 1}" href="#">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+                            <a class="page-link"
+                                th:href="@{/events(page=${page.number + 1}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
+                                href="#">下一頁</a>
+                        </li>
                     </ul>
                 </nav>
             </main>
