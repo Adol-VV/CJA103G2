@@ -32,6 +32,11 @@ public class ProdController {
 		return "pages/user/prod-list";
 	}
 	
+	@GetMapping("listOneProd")
+	public String listOneProd(ModelMap model) {
+		return "pages/user/prod-detail";
+	}
+	
 	@ModelAttribute("prodListData")
 	protected List<ProdVO> referenceListData() {
 		// DeptService deptSvc = new DeptService();
