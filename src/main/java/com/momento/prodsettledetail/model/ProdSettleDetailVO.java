@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="prod_settle_detail")
-public class ProdSettleDetail {
+public class ProdSettleDetailVO {
 
 	@Id
 	@Column(name="PROD_SETTLE_DETAIL_ID")
