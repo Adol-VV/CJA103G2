@@ -1,4 +1,4 @@
-package com.momento.notify.model;
+package com.momento.announcement.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

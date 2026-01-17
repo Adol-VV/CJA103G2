@@ -1,4 +1,4 @@
-package com.momento.notify.model;
+package com.momento.announcement.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

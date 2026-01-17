@@ -1,4 +1,4 @@
-package com.momento.article_image.model;
+package com.momento.articleimage.model;
 
 import java.sql.Timestamp;
 
