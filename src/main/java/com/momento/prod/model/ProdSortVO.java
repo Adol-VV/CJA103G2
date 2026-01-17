@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sort")
-public class ProductSortVO implements Serializable {
+public class ProdSortVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -20,12 +20,12 @@ public class ProductSortVO implements Serializable {
 	private Integer sortId;
 	
 	@Column(name = "SORT_NAME")
-	private Integer sortName;
+	private String sortName;
 	
 	@Column(name = "SORT_DESC")
-	private Integer sortDesc;
+	private String sortDesc;
 	
-	public ProductSortVO() {
+	public ProdSortVO() {
 		
 	}
 
@@ -37,19 +37,19 @@ public class ProductSortVO implements Serializable {
 		this.sortId = sortId;
 	}
 
-	public Integer getSortName() {
+	public String getSortName() {
 		return sortName;
 	}
 
-	public void setSortName(Integer sortName) {
+	public void setSortName(String sortName) {
 		this.sortName = sortName;
 	}
 
-	public Integer getSortDesc() {
+	public String getSortDesc() {
 		return sortDesc;
 	}
 
-	public void setSortDesc(Integer sortDesc) {
+	public void setSortDesc(String sortDesc) {
 		this.sortDesc = sortDesc;
 	}
 	
