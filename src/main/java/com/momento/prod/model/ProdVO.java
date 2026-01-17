@@ -31,7 +31,7 @@ public class ProdVO implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "SORT_ID")
-	private ProductSortVO productSort;
+	private ProdSortVO prodSortVO;
 	
 	@ManyToOne
 	@JoinColumn(name = "EMP_ID")
@@ -82,12 +82,12 @@ public class ProdVO implements Serializable {
 		this.organizerVO = organizerVO;
 	}
 
-	public ProductSortVO getProductSort() {
-		return productSort;
+	public ProdSortVO getProdSortVO() {
+		return prodSortVO;
 	}
 
-	public void setProductSort(ProductSortVO productSort) {
-		this.productSort = productSort;
+	public void setProdSortVO(ProdSortVO productSortVO) {
+		this.prodSortVO = productSortVO;
 	}
 
 	public EmpVO getEmpVO() {
