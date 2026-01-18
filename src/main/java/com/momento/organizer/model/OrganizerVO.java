@@ -23,15 +23,27 @@ public class OrganizerVO {
     @Column(name = "NAME", length = 100, nullable = false)
     private String name;
 
-    @Column(name = "ADDRESS", length = 200)
-    private String address;
+    @Column(name = "OWNER_NAME", length = 50, nullable = false)
+    private String ownerName;
 
     @Column(name = "PHONE", length = 20)
     private String phone;
 
+    @Column(name = "EMAIL",  length = 100, nullable = false, unique = true)
+    private String email;
+
     @Lob
     @Column(name = "INTRODUCTION", columnDefinition = "LONGTEXT")
     private String introduction;
+
+    @Column(name = "BANK_CODE", length = 10, nullable = false)
+    private String bankCode;
+
+    @Column(name = "BANK_ACCOUNT", length = 20, nullable = false)
+    private String bankAccount;
+
+    @Column(name = "ACCOUNT_NAME", length = 100, nullable = false)
+    private String accountName;
 
     @Column(name = "STATUS", columnDefinition = "TINYINT DEFAULT 0")
     private Byte status;
@@ -44,15 +56,19 @@ public class OrganizerVO {
     }
 
     public OrganizerVO(Integer organizerId, String account, String password, String name,
-                       String address, String phone, String introduction, Byte status,
-                       LocalDateTime createdAt) {
-        this.organizerId = organizerId;
+                       String ownerName, String phone, String email, String introduction,
+                       String bankCode, String bankAccount, String accountName,
+                       Byte status, LocalDateTime createdAt) {
         this.account = account;
         this.password = password;
         this.name = name;
-        this.address = address;
+        this.ownerName = ownerName;
         this.phone = phone;
+        this.email = email;
         this.introduction = introduction;
+        this.bankCode = bankCode;
+        this.bankAccount = bankAccount;
+        this.accountName = accountName;
         this.status = status;
         this.createdAt = createdAt;
     }
@@ -89,12 +105,12 @@ public class OrganizerVO {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public String getPhone() {
@@ -105,12 +121,44 @@ public class OrganizerVO {
         this.phone = phone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getIntroduction() {
         return introduction;
     }
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
     }
 
     public Byte getStatus() {
@@ -135,6 +183,8 @@ public class OrganizerVO {
                 "organizerId=" + organizerId +
                 ", account='" + account + '\'' +
                 ", name='" + name + '\'' +
+                ", ownerName='" + ownerName + '\'' +
+                ", email='" + email + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 '}';
