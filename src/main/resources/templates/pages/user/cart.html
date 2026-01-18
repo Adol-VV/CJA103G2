@@ -36,7 +36,7 @@
             <!-- Cart Items -->
             <div class="col-lg-8">
                 <!-- Item 1: Ticket -->
-                <div class="card bg-dark border-secondary mb-3">
+<!--                <div class="card bg-dark border-secondary mb-3">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-auto">
@@ -54,32 +54,31 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- Item 2: Merchandise -->
                 <div class="card bg-dark border-secondary mb-3">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
+                    <div class="card-body cart-item">
+                        <div class="Pic">
                                 <img loading="lazy" src="https://via.placeholder.com/100x100" class="rounded" alt="Product">
-                            </div>
-                            <div class="col">
+                        </div>
+                           <div class="item">
                                 <span class="badge bg-warning text-dark mb-1">商品</span>
-                                <h5 class="mb-1">經典Logo帆布袋</h5>
-                                <p class="text-muted small mb-0">米白色 x 1</p>
+                                <h5 class="item">經典Logo帆布袋</h5>
+                                <p class="itemType">米白色 x 1</p>
+                        </div>
+                        <div class="count">
+                            <div class="input-group input-group-sm" style="width: 120px;">
+                                <button class="btn btn-sm cart_reduce">-</button>
+                                <input type="text"
+                                        class="form-control bg-dark text-white text-center border-secondary" 
+                                        value="1">
+                                <button class="btn btn-sm cart_add">+</button>
                             </div>
-                            <div class="col-auto">
-                                <div class="input-group input-group-sm" style="width: 120px;">
-                                    <button class="btn btn-outline-secondary">-</button>
-                                    <input type="text"
-                                        class="form-control bg-dark text-white text-center border-secondary" value="1">
-                                    <button class="btn btn-outline-secondary">+</button>
-                                </div>
-                            </div>
-                            <div class="col-auto text-end">
+                        </div>
+                        <div class="col-auto text-end">
                                 <h5 class="text-success mb-1">NT$ 450</h5>
                                 <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,14 +100,14 @@
                     <div class="card-header border-secondary bg-transparent">
                         <h5 class="mb-0">訂單摘要</h5>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
+                    <div class="card-body-right">
+                        <!--<div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">票券小計</span>
                             <span>NT$ 2,800</span>
-                        </div>
+                        </div>-->
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">商品小計</span>
-                            <span>NT$ 450</span>
+                            <span class="prod_price">NT$ 450</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">運費</span>
@@ -121,11 +120,11 @@
                         </div>
 
                         <!-- Promo Code -->
-                        <div class="input-group mb-3">
+                        <!--<div class="input-group mb-3">
                             <input type="text" class="form-control bg-dark text-white border-secondary"
                                 placeholder="優惠碼">
                             <button class="btn btn-outline-success">套用</button>
-                        </div>
+                        </div>-->
 
                         <!-- Token Usage -->
                         <div class="form-check mb-3">
@@ -157,7 +156,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="../../js/common.js"></script>
+    <script src="../../js/common/cart.js"></script>
 </body>
 
 </html>

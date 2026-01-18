@@ -48,3 +48,11 @@
     background-color: var(--color-danger);
     color: white;
 }
+
+p.itemType{
+    color: white;
+}
+
+span.prod_price{
+    color:rgba(16, 185, 129, 0.3);
+}
