@@ -26,7 +26,7 @@ public class BackendFunction {
 
     // 關聯到權限 (選用)
     @OneToMany(mappedBy = "function", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmpAuthority> authorities = new HashSet<>();
+    private Set<EmpAuthorityVO> authorities = new HashSet<>();
 
     // 無參數建構子
     public BackendFunction() {
@@ -55,11 +55,11 @@ public class BackendFunction {
         this.functionName = functionName;
     }
 
-    public Set<EmpAuthority> getAuthorities() {
+    public Set<EmpAuthorityVO> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<EmpAuthority> authorities) {
+    public void setAuthorities(Set<EmpAuthorityVO> authorities) {
         this.authorities = authorities;
     }
 

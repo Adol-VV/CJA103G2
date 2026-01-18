@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "EMP")
+@Table(name = "emp")
 public class EmpVO {
 
     @Id
@@ -30,17 +30,15 @@ public class EmpVO {
     private LocalDateTime createdAt;
 
     @Column(name = "STATUS", columnDefinition = "TINYINT DEFAULT 1")
-    private Byte status; // 0:離職 1:在職
+    private Byte status;
 
-    // 關聯到權限 (選用，看是否需要雙向關聯)
+
     @OneToMany(mappedBy = "emp", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmpAuthority> authorities = new HashSet<>();
+    private Set<EmpAuthorityVO> authorities = new HashSet<>();
 
-    // 無參數建構子
     public EmpVO() {
     }
 
-    // 全參數建構子
     public EmpVO(Integer empId, String empName, String account, String password,
                  LocalDateTime createdAt, Byte status) {
         this.empId = empId;
@@ -51,7 +49,7 @@ public class EmpVO {
         this.status = status;
     }
 
-    // Getter & Setter
+
     public Integer getEmpId() {
         return empId;
     }
@@ -100,22 +98,20 @@ public class EmpVO {
         this.status = status;
     }
 
-    public Set<EmpAuthority> getAuthorities() {
+    public Set<EmpAuthorityVO> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<EmpAuthority> authorities) {
+    public void setAuthorities(Set<EmpAuthorityVO> authorities) {
         this.authorities = authorities;
     }
 
-    // 便利方法：新增權限，維護雙向關聯
-    public void addAuthority(EmpAuthority authority) {
+    public void addAuthority(EmpAuthorityVO authority) {
         authorities.add(authority);
         authority.setEmp(this);
     }
 
-    // 便利方法：移除權限
-    public void removeAuthority(EmpAuthority authority) {
+    public void removeAuthority(EmpAuthorityVO authority) {
         authorities.remove(authority);
         authority.setEmp(null);
     }
