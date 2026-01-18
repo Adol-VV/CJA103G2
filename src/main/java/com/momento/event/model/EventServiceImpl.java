@@ -3,6 +3,8 @@ package com.momento.event.model;
 import com.momento.event.dto.*;
 import com.momento.eventfav.model.EventFavVO;
 import com.momento.eventfav.model.EventFavRepository;
+import com.momento.ticket.model.TicketService;
+import com.momento.ticket.model.TicketVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class EventServiceImpl implements EventService {
 
         @Autowired
         private EventFavRepository eventFavRepository;
+
+        @Autowired
+        private TicketService ticketService;
 
         // 常數：已上架且審核通過
         private static final Byte STATUS_PUBLISHED = 1;
@@ -112,6 +117,11 @@ public class EventServiceImpl implements EventService {
                 // 查詢相關活動
                 List<EventListItemDTO> relatedEvents = getRelatedEvents(eventId, 3);
 
+                // 查詢票種資訊
+                List<TicketVO> tickets = ticketService.getAvailableTickets(eventId);
+                Integer minPrice = ticketService.getMinPrice(eventId);
+                Integer maxPrice = ticketService.getMaxPrice(eventId);
+
                 // 組裝 DTO
                 EventDetailDTO dto = new EventDetailDTO();
                 dto.setEvent(event);
@@ -120,11 +130,9 @@ public class EventServiceImpl implements EventService {
                 dto.setFavoriteCount(favoriteCount);
                 dto.setIsFavorited(isFavorited);
                 dto.setRelatedEvents(relatedEvents);
-
-                // TODO: 票種資訊由 ticket 模組提供
-                // dto.setTickets(tickets);
-                // dto.setMinPrice(minPrice);
-                // dto.setMaxPrice(maxPrice);
+                dto.setTickets(tickets);
+                dto.setMinPrice(minPrice);
+                dto.setMaxPrice(maxPrice);
 
                 return dto;
         }
@@ -178,15 +186,10 @@ public class EventServiceImpl implements EventService {
                         return false;
                 } else {
                         // 未收藏 → 新增收藏
-                        // 查詢活動
                         EventVO event = eventRepository.findById(eventId)
                                         .orElseThrow(() -> new RuntimeException("活動不存在"));
 
-                        // TODO: 等待 MemberRepository 實作後，改用以下方式查詢會員
-                        // MemberVO member = memberRepository.findById(memberId)
-                        // .orElseThrow(() -> new RuntimeException("會員不存在"));
-
-                        // 臨時方案：創建只包含 ID 的 MemberVO（等待組員完成 Member 模組）
+                        // 臨時方案：創建只包含 ID 的 MemberVO
                         com.momento.member.model.MemberVO member = new com.momento.member.model.MemberVO();
                         member.setMemberId(memberId);
 
@@ -210,6 +213,7 @@ public class EventServiceImpl implements EventService {
 
         /**
          * 將 EventVO 轉換為 EventListItemDTO
+         * 🔥 修改：使用 Picsum 網路圖片
          */
         private EventListItemDTO convertToListItemDTO(EventVO event) {
                 EventListItemDTO dto = new EventListItemDTO();
@@ -220,24 +224,28 @@ public class EventServiceImpl implements EventService {
                 dto.setTypeName(event.getType().getTypeName());
                 dto.setOrganizerName(event.getOrganizer().getName());
 
-                // 查詢封面圖片
-                Optional<EventImageVO> coverImage = eventImageRepository
-                                .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
-                // 將 byte[] 轉換為 Base64 Data URL
-                dto.setCoverImageUrl(coverImage.map(img -> {
-                        if (img.getImage() == null || img.getImage().length == 0) {
-                                return null;
-                        }
-                        return "data:image/jpeg;base64," + java.util.Base64.getEncoder().encodeToString(img.getImage());
-                }).orElse(null));
+                // 🔥 使用 Picsum 假圖（開發階段）
+                dto.setCoverImageUrl("https://picsum.photos/seed/evento" + event.getEventId() + "/800/450");
+
+                // 🔥 原本的圖片處理（已註解，未來可以啟用）
+                /*
+                 * Optional<EventImageVO> coverImage = eventImageRepository
+                 * .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
+                 * 
+                 * dto.setCoverImageUrl(
+                 * coverImage.isPresent() && coverImage.get().getImage() != null
+                 * ? "/events/image/" + event.getEventId()
+                 * : "https://picsum.photos/seed/evento" + event.getEventId() + "/800/450"
+                 * );
+                 */
 
                 // 查詢收藏數量
                 Long favoriteCount = eventFavRepository.countByEvent_EventId(event.getEventId());
                 dto.setFavoriteCount(favoriteCount);
 
-                // TODO: 最低票價由 ticket 模組提供
-                // Integer minPrice = ticketService.findMinPriceByEventId(event.getEventId());
-                // dto.setMinPrice(minPrice);
+                // 查詢最低票價
+                Integer minPrice = ticketService.getMinPrice(event.getEventId());
+                dto.setMinPrice(minPrice);
 
                 return dto;
         }

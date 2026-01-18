@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
     <style>
         .filter-sidebar {
             background-color: var(--card-bg);
@@ -238,239 +238,41 @@
 
                 <!-- Event Grid -->
                 <div class="row g-4">
-                    <!-- Events populated from SQL Data -->
-
-                    <!-- Event Loop with Thymeleaf -->
                     <div class="col-12 col-md-6 col-lg-4" th:each="event : ${events}">
                         <div class="card h-100 event-card">
                             <div class="card-img-wrapper">
-                                <img loading="lazy"
-                                    th:src="${event.coverImageUrl != null ? event.coverImageUrl : 'https://picsum.photos/seed/newyear1/800/450'}"
-                                    src="https://picsum.photos/seed/newyear1/800/450" class="card-img-top"
-                                    th:alt="${event.title}">
+                                <img loading="lazy" th:src="${event.coverImageUrl}" src="https://picsum.photos/800/450"
+                                    class="card-img-top" th:alt="${event.title}">
                                 <span class="badge date-badge"
                                     th:text="${#temporals.format(event.eventAt, 'MM/dd')}">12/31</span>
-                                <button class="btn-favorite" th:classappend="${event.isFavorited ? 'active' : ''}"
-                                    th:data-event-id="${event.eventId}">
-                                    <i th:class="${event.isFavorited ? 'fas fa-heart' : 'far fa-heart'}"
-                                        class="fas fa-heart"></i>
+                                <button class="btn-favorite" th:data-event-id="${event.eventId}">
+                                    <i class="far fa-heart"></i>
                                 </button>
                             </div>
                             <div class="card-body">
                                 <span class="badge bg-primary mb-2" th:text="${event.typeName}">音樂演出</span>
-                                <h5 class="card-title text-truncate-2" th:text="${event.title}">2025新年音樂會｜維也納之夜</h5>
+                                <h5 class="card-title text-truncate-2" th:text="${event.title}">活動標題</h5>
                                 <p class="text-muted small mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>
-                                    <span th:text="${event.place}">中山堂中正廳</span>
+                                    <span th:text="${event.place}">地點</span>
                                 </p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">
-                                        NT$ <span
-                                            th:text="${#numbers.formatInteger(event.minPrice, 0, 'COMMA')}">1,800</span>
-                                        起
-                                    </span>
-                                    <a th:href="@{/events/{id}(id=${event.eventId})}" href="event-detail.html"
+                                    <span class="price">NT$ <span
+                                            th:text="${event.minPrice != null ? #numbers.formatInteger(event.minPrice, 0, 'COMMA') : '0'}">0</span>
+                                        起</span>
+                                    <a th:href="@{/events/{id}(id=${event.eventId})}" href="#"
                                         class="btn btn-sm btn-primary px-3">查看詳情</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 如果沒有活動，顯示空狀態 -->
-                    <div th:if="${#lists.isEmpty(events)}" class="col-12 text-center py-5">
-                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">找不到符合條件的活動</h5>
-                        <p class="text-muted">試試調整篩選條件或搜尋其他關鍵字</p>
-                    </div>
-
-                    <!-- 保留原始假資料作為參考（隱藏） -->
-                    <!-- Event 1 (Original Fake Data) -->
-                    <div class="col-12 col-md-6 col-lg-4" style="display: none;">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/newyear1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">12/31</span>
-                                <button class="btn-favorite active"><i class="fas fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-primary mb-2">音樂演出</span>
-                                <h5 class="card-title text-truncate-2">2025新年音樂會｜維也納之夜</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 中山堂中正廳</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 1,800 起</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 2 (Original Fake Data - Hidden) -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/chamber1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">04/05</span>
-                                <button class="btn-favorite active"><i class="fas fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-primary mb-2">音樂演出</span>
-                                <h5 class="card-title text-truncate-2">春季室內樂系列｜弦樂四重奏之夜</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 國家演奏廳</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 800 起</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 3 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/theater1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">12/15</span>
-                                <button class="btn-favorite"><i class="far fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-danger mb-2">戲劇表演</span>
-                                <h5 class="card-title text-truncate-2">實驗劇場｜記憶的形狀</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 雲門劇場</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 600 起</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 5 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/inkart1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">10/01</span>
-                                <button class="btn-favorite active"><i class="fas fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-info mb-2">藝術展覽</span>
-                                <h5 class="card-title text-truncate-2">島嶼・詩意｜台灣當代水墨特展</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 台北市立美術館</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 280 起</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 6 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/newmedia1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">02/01</span>
-                                <button class="btn-favorite"><i class="far fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-info mb-2">藝術展覽</span>
-                                <h5 class="card-title text-truncate-2">光影交織｜新媒體藝術展</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 臺北流行音樂中心</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 300 起</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 7 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/pottery2/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">05/03</span>
-                                <button class="btn-favorite active"><i class="fas fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-warning text-dark mb-2">手作工坊</span>
-                                <h5 class="card-title text-truncate-2">手捏陶藝｜初學者工作坊</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 鶯歌陶瓷博物館</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 1,500</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Event 8 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/indigo1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">07/15</span>
-                                <button class="btn-favorite"><i class="far fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-warning text-dark mb-2">手作工坊</span>
-                                <h5 class="card-title text-truncate-2">藍染工藝｜夏日手作營</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 迪化街工坊</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 1,200</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 9 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/summer1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">08/01</span>
-                                <button class="btn-favorite"><i class="far fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-primary mb-2">音樂演出</span>
-                                <h5 class="card-title text-truncate-2">仲夏夜之夢｜戶外音樂會</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 大安森林公園</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 500</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Event 10 -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
-                            <div class="card-img-wrapper">
-                                <img loading="lazy" src="https://picsum.photos/seed/novel1/800/450"
-                                    class="card-img-top">
-                                <span class="badge date-badge">06/15</span>
-                                <button class="btn-favorite"><i class="far fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-secondary mb-2">藝文講座</span>
-                                <h5 class="card-title text-truncate-2">與作家對談｜當代小說的可能</h5>
-                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i> 誠品信義店</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price">NT$ 200</span>
-                                    <a href="event-detail.html" class="btn btn-sm btn-primary px-3">查看詳情</a>
-                                </div>
-                            </div>
+                    <div th:if="${events == null || events.isEmpty()}" class="col-12 text-center py-5">
+                        <div class="py-5">
+                            <i class="fas fa-search fa-4x text-white-50 mb-4"></i>
+                            <h3 class="text-white mb-3">找不到符合條件的活動</h3>
+                            <p class="text-white-50 mb-4">目前沒有相關活動</p>
+                            <a th:href="@{/events}" class="btn btn-outline-light px-4"><i
+                                    class="fas fa-redo me-2"></i>清除所有篩選</a>
                         </div>
                     </div>
                 </div>

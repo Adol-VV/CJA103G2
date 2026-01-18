@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
+import com.momento.event.model.EventImageVO;
+import com.momento.event.model.EventImageRepository;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import java.util.Optional;
+
 /**
  * Event Controller - 活動頁面控制器
  * 
@@ -27,6 +33,60 @@ public class EventController {
 
     @Autowired
     private TypeRepository typeRepository;
+
+    @Autowired
+    private EventImageRepository eventImageRepository;
+
+    @GetMapping("/image/{eventId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getEventImage(@PathVariable Integer eventId) {
+        Optional<EventImageVO> image = eventImageRepository
+                .findFirstByEvent_EventIdOrderByEventImageIdAsc(eventId);
+
+        if (image.isEmpty() || image.get().getImage() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image.get().getImage());
+    }
+
+    @GetMapping("/test-json")
+    @ResponseBody
+    public Page<EventListItemDTO> testJson(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        EventFilterDTO filterDTO = new EventFilterDTO();
+        filterDTO.setPage(page);
+        filterDTO.setSize(size);
+
+        return eventService.filterEvents(filterDTO);
+    }
+
+    @GetMapping("/test-data")
+    @ResponseBody
+    public String testData() {
+        EventFilterDTO filterDTO = new EventFilterDTO();
+        filterDTO.setPage(0);
+        filterDTO.setSize(12);
+
+        Page<EventListItemDTO> eventPage = eventService.filterEvents(filterDTO);
+
+        StringBuilder result = new StringBuilder();
+        result.append("總數：").append(eventPage.getTotalElements()).append("<br>");
+        result.append("當前頁數量：").append(eventPage.getContent().size()).append("<br><br>");
+
+        for (EventListItemDTO event : eventPage.getContent()) {
+            result.append("活動：").append(event.getTitle())
+                    .append(" | 價格：").append(event.getMinPrice())
+                    .append(" | 地點：").append(event.getPlace())
+                    .append("<br>");
+        }
+
+        return result.toString();
+    }
 
     /**
      * 活動列表頁面
@@ -52,6 +112,10 @@ public class EventController {
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             Model model) {
+
+        System.out.println("=== EventController.eventList() Executed ===");
+        System.out.println("Page: " + page + ", Size: " + size);
+
         // 建立篩選條件
         EventFilterDTO filterDTO = new EventFilterDTO();
         filterDTO.setPage(page);
@@ -65,8 +129,22 @@ public class EventController {
         // 查詢活動列表
         Page<EventListItemDTO> eventPage = eventService.filterEvents(filterDTO);
 
+        System.out.println("=== Event List Debug ===");
+        System.out.println("總活動數：" + eventPage.getTotalElements());
+        System.out.println("當前頁資料數：" + eventPage.getContent().size());
+        System.out.println("是否為空：" + eventPage.getContent().isEmpty());
+
+        if (!eventPage.getContent().isEmpty()) {
+            EventListItemDTO first = eventPage.getContent().get(0);
+            System.out.println("第一筆活動：" + first.getTitle());
+            System.out.println("價格：" + first.getMinPrice());
+            System.out.println("圖片URL：" + first.getCoverImageUrl());
+        }
+
         // 查詢所有活動類型（用於篩選選單）
         List<TypeVO> types = typeRepository.findAll();
+        System.out.println("活動類型數：" + types.size());
+        System.out.println("=== Debug End ===");
 
         // 傳遞資料到頁面
         model.addAttribute("events", eventPage.getContent());

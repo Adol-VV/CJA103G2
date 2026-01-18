@@ -398,83 +398,159 @@
                             <h5 class="mb-0">選擇票券</h5>
                         </div>
                         <div class="card-body">
-                            <!-- Session Selection -->
-                            <label class="form-label">選擇場次</label>
-                            <select class="form-select mb-3" id="sessionSelect">
-                                <option value="1" data-date="2024/12/31" data-time="14:30" data-stock="50">2024/12/31
-                                    (二) 14:30 - 下午場</option>
-                                <option value="2" data-date="2024/12/31" data-time="19:30" data-stock="120" selected>
-                                    2024/12/31 (二) 19:30 - 晚間場</option>
-                                <option value="3" data-date="2025/01/01" data-time="14:30" data-stock="200">2025/01/01
-                                    (三) 14:30 - 元旦加場</option>
-                                <option value="4" data-date="2025/01/01" data-time="19:30" data-stock="0" disabled>
-                                    2025/01/01 (三) 19:30 - 已售完</option>
-                            </select>
-                            <div class="alert alert-info bg-info bg-opacity-10 border-info py-2 mb-3" id="sessionInfo">
-                                <small><i class="fas fa-info-circle me-1"></i>此場次剩餘 <strong
-                                        id="remainingStock">120</strong> 張票</small>
-                            </div>
-
-                            <!-- Ticket Types -->
-                            <div class="ticket-option mb-3 p-2 rounded" style="background: var(--bg-black);">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>VIP 特區</strong>
-                                        <p class="text-muted small mb-0">NT$ 2,800</p>
-                                    </div>
-                                    <div class="quantity-control d-flex align-items-center gap-2">
-                                        <button class="btn btn-sm btn-outline-secondary px-2">-</button>
-                                        <input type="text" value="0" readonly
-                                            class="form-control form-control-sm text-center bg-dark border-secondary text-white"
-                                            style="width: 40px;">
-                                        <button class="btn btn-sm btn-outline-secondary px-2">+</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="ticket-option mb-3 p-2 rounded" style="background: var(--bg-black);">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
+                            <!-- 票種列表 (動態綁定) -->
+                            <div th:if="${tickets != null and !tickets.isEmpty()}" class="ticket-list">
+                                <div th:each="ticket : ${tickets}" class="ticket-option mb-3 p-3 rounded"
+                                    style="background: var(--bg-black);">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div>
-                                            <strong>一般座位區</strong>
-                                            <p class="text-muted small mb-0">NT$ 1,800</p>
+                                            <strong th:text="${ticket.ticketName}">VIP 特區</strong>
+                                            <p class="text-success mb-0">
+                                                NT$ <span
+                                                    th:text="${ticket.price != null ? #numbers.formatInteger(ticket.price, 0, 'COMMA') : '0'}">2,800</span>
+                                            </p>
+                                            <p class="text-muted small mb-0">
+                                                剩餘 <span th:text="${ticket.remain}">30</span> 張
+                                            </p>
                                         </div>
                                         <div class="quantity-control d-flex align-items-center gap-2">
-                                            <button class="btn btn-sm btn-outline-secondary px-2">-</button>
-                                            <input type="text" value="0" readonly
-                                                class="form-control form-control-sm text-center bg-dark border-secondary text-white"
-                                                style="width: 40px;">
-                                            <button class="btn btn-sm btn-outline-secondary px-2">+</button>
+                                            <button class="btn btn-sm btn-outline-secondary px-2 btn-decrease"
+                                                th:data-ticket-id="${ticket.ticketId}">-</button>
+                                            <input type="number" value="0" min="0" th:max="${ticket.remain}"
+                                                th:data-ticket-id="${ticket.ticketId}" th:data-price="${ticket.price}"
+                                                th:data-name="${ticket.ticketName}"
+                                                class="form-control form-control-sm text-center bg-dark border-secondary text-white ticket-quantity"
+                                                style="width: 60px;">
+                                            <button class="btn btn-sm btn-outline-secondary px-2 btn-increase"
+                                                th:data-ticket-id="${ticket.ticketId}"
+                                                th:data-max="${ticket.remain}">+</button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <hr class="border-secondary">
-
-                                <div class="d-flex justify-content-between mb-2 small">
-                                    <span>小計</span>
-                                    <strong id="subtotal">NT$ 0</strong>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3 small text-muted">
-                                    <span>服務費 (5%)</span>
-                                    <span id="serviceFee">NT$ 0</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3">
-                                    <strong>總計</strong>
-                                    <strong class="text-success fs-5" id="total">NT$ 0</strong>
-                                </div>
-
-                                <button class="btn btn-primary w-100 btn-lg" id="btnCheckout">立即購票</button>
-
-                                <p class="text-center text-muted small mt-3">
-                                    購票即同意 <a href="#" class="text-muted">服務條款</a>
-                                </p>
                             </div>
+
+                            <!-- 無票種提示 -->
+                            <div th:if="${tickets == null or tickets.isEmpty()}" class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                目前暫無可購買的票種
+                            </div>
+
+                            <hr class="border-secondary my-3">
+
+                            <!-- 總計區塊 -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>總計</strong>
+                                <strong class="text-success fs-5" id="totalAmount">NT$ 0</strong>
+                            </div>
+
+                            <button class="btn btn-primary w-100 btn-lg" id="btnPurchase" disabled>
+                                <i class="fas fa-shopping-cart me-2"></i>立即購票
+                            </button>
+
+                            <p class="text-center text-muted small mt-3 mb-0">
+                                購票即同意 <a href="#" class="text-muted">服務條款</a>
+                            </p>
                         </div>
+                    </div>
                 </aside>
             </div>
         </div>
     </div>
+
+    <!-- 票種選擇 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 計算總價
+            function calculateTotal() {
+                let total = 0;
+                let hasSelection = false;
+
+                document.querySelectorAll('.ticket-quantity').forEach(input => {
+                    const quantity = parseInt(input.value) || 0;
+                    const price = parseInt(input.dataset.price) || 0;
+                    total += quantity * price;
+                    if (quantity > 0) hasSelection = true;
+                });
+
+                document.getElementById('totalAmount').textContent = 'NT$ ' + total.toLocaleString();
+                document.getElementById('btnPurchase').disabled = !hasSelection;
+            }
+
+            // 增加數量
+            document.querySelectorAll('.btn-increase').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const ticketId = this.dataset.ticketId;
+                    const max = parseInt(this.dataset.max);
+                    const input = document.querySelector(`.ticket-quantity[data-ticket-id="${ticketId}"]`);
+                    const currentValue = parseInt(input.value) || 0;
+
+                    if (currentValue < max) {
+                        input.value = currentValue + 1;
+                        calculateTotal();
+                    }
+                });
+            });
+
+            // 減少數量
+            document.querySelectorAll('.btn-decrease').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const ticketId = this.dataset.ticketId;
+                    const input = document.querySelector(`.ticket-quantity[data-ticket-id="${ticketId}"]`);
+                    const currentValue = parseInt(input.value) || 0;
+
+                    if (currentValue > 0) {
+                        input.value = currentValue - 1;
+                        calculateTotal();
+                    }
+                });
+            });
+
+            // 監聽手動輸入
+            document.querySelectorAll('.ticket-quantity').forEach(input => {
+                input.addEventListener('input', function () {
+                    const max = parseInt(this.max);
+                    let value = parseInt(this.value) || 0;
+
+                    if (value < 0) value = 0;
+                    if (value > max) value = max;
+
+                    this.value = value;
+                    calculateTotal();
+                });
+            });
+
+            // 前往購票
+            document.getElementById('btnPurchase').addEventListener('click', function () {
+                const selections = [];
+
+                document.querySelectorAll('.ticket-quantity').forEach(input => {
+                    const quantity = parseInt(input.value) || 0;
+                    if (quantity > 0) {
+                        selections.push({
+                            ticketId: input.dataset.ticketId,
+                            ticketName: input.dataset.name,
+                            price: input.dataset.price,
+                            quantity: quantity
+                        });
+                    }
+                });
+
+                if (selections.length === 0) {
+                    alert('請選擇票種');
+                    return;
+                }
+
+                // 儲存到 sessionStorage
+                sessionStorage.setItem('ticketSelections', JSON.stringify(selections));
+
+                // 導向下單頁面 (暫時顯示提示，等待其他人完成下單頁面)
+                alert('票種選擇完成！\n' + JSON.stringify(selections, null, 2) + '\n\n下單頁面由其他模組負責');
+                // window.location.href = '/events/' + [[${event.eventId}]] + '/order';
+            });
+        });
+    </script>
+
+    <!-- Checkout Modal (保留原有的 Modal，供其他人使用) -->
 
     <!-- Checkout Modal -->
     <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
