@@ -4,18 +4,20 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "EMP_AUTHORITY")
-@IdClass(EmpAuthorityId.class)
-public class EmpAuthority {
+public class EmpAuthorityVO {
 
     @Id
-    @Column(name = "EMP_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "AUTHORITY_ID")
+    private Integer authorityId;
+
+    @Column(name = "EMP_ID",nullable = false)
     private Integer empId;
 
-    @Id
-    @Column(name = "FUNCTION_ID")
+    @Column(name = "FUNCTION_ID", nullable = false)
     private Integer functionId;
 
-    // 關聯對應
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EMP_ID", insertable = false, updatable = false)
     private EmpVO emp;
@@ -24,17 +26,22 @@ public class EmpAuthority {
     @JoinColumn(name = "FUNCTION_ID", insertable = false, updatable = false)
     private BackendFunction function;
 
-    // 無參數建構子
-    public EmpAuthority() {
+    public EmpAuthorityVO() {
     }
 
-    // 全參數建構子
-    public EmpAuthority(Integer empId, Integer functionId) {
+    public EmpAuthorityVO(Integer empId, Integer functionId) {
         this.empId = empId;
         this.functionId = functionId;
     }
 
-    // Getter & Setter
+    public Integer getAuthorityId() {
+        return authorityId;
+    }
+
+    public void setAuthorityId(Integer authorityId) {
+        this.authorityId = authorityId;
+    }
+
     public Integer getEmpId() {
         return empId;
     }
@@ -76,7 +83,8 @@ public class EmpAuthority {
     @Override
     public String toString() {
         return "EmpAuthorityVO{" +
-                "empId=" + empId +
+                "authorityId=" + authorityId +
+                ", empId=" + empId +
                 ", functionId=" + functionId +
                 '}';
     }
