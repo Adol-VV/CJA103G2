@@ -11,7 +11,7 @@ import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 
 @Controller
-@RequestMapping("/member")
+@RequestMapping("/admin")
 public class MemberController {
 
 

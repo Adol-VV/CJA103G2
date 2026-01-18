@@ -30,7 +30,7 @@ public class MemberRegisterController {
 	}
 
 	@PostMapping("/register")
-	public String RegisterMember(@Valid @ModelAttribute("member") MemberVO memberVO, BindingResult result) {
+	public String register(@Valid @ModelAttribute("member") MemberVO memberVO, BindingResult result) {
 		
 		memberVO.setToken(0);
 		memberVO.setStatus(1);
@@ -44,7 +44,7 @@ public class MemberRegisterController {
 			return "pages/user/register";
 		}
 		
-		memberSvc.register(memberVO);
+		memberSvc.addMember(memberVO);
 		return "redirect:/";
 	}
 }

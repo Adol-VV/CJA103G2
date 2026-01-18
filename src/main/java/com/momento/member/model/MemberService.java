@@ -13,7 +13,7 @@ public class MemberService {
 	@Autowired
 	MemberRepository repository;
 	
-	public void register(MemberVO memberVO){
+	public void addMember(MemberVO memberVO){
 		repository.save(memberVO);
 	}
 	

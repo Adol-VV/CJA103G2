@@ -20,7 +20,6 @@ export async function loadPartials() {
                         container.innerHTML = html;
                     })
                     .catch(e => {
-                        console.error(e);
                         container.innerHTML = `<div class="text-danger">Error loading ${url}</div>`;
                     })
             );

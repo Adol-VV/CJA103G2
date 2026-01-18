@@ -90,26 +90,24 @@
                     <div class="card-body p-5">
                         <!-- Logo -->
                         <div class="text-center mb-4">
-                            <a href="../../index.html" class="text-decoration-none">
-                                <h2 class="fw-bold mb-3 text-white">Momento</h2>
-                            </a>
+                            <h2 class="fw-bold mb-3 text-white">Momento</h2>
                             <h5 class="text-muted">歡迎來到 Momento</h5>
                         </div>
 
                         <div class="tab-content">
                             <!-- Login Form -->
                             <div class="tab-pane fade show active" id="loginTab">
-                                <form id="loginForm">
+                                <form th:action="@{/member/login}"  id="loginForm" method="post">
                                     <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" placeholder="your@email.com" required
-                                            value="user@momento.com">
+                                        <label class="form-label">帳號</label>
+                                        <span th:if="${accountMsg}" th:text="${accountMsg}" style="color:red"></span>
+                                        <input type="text" name = "account" th:value="${savedAccount}" class="form-control" placeholder="電子信箱">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">密碼</label>
+                                        <span th:if="${passwordMsg}" th:text="${passwordMsg}" style="color:red"></span>
                                         <div class="input-group">
-                                            <input type="password" class="form-control" id="loginPassword" required
-                                                value="password123">
+                                            <input type="password" name = "password" class="form-control" id="loginPassword">
                                             <button class="btn btn-outline-secondary toggle-password" type="button">
                                                 <i class="far fa-eye"></i>
                                             </button>
@@ -181,36 +179,6 @@
                 }
             });
 
-            // Password strength meter
-            $('#regPassword').on('input', function () {
-                const password = $(this).val();
-                let strength = 0;
-
-                if (password.length >= 8) strength++;
-                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-                if (/[0-9]/.test(password)) strength++;
-                if (/[^a-zA-Z0-9]/.test(password)) strength++;
-
-                const bar = $('#strengthBar');
-                const text = $('#strengthText');
-
-                bar.removeClass('bg-danger bg-warning bg-success');
-
-                if (strength <= 1) {
-                    bar.css('width', '25%').addClass('bg-danger');
-                    text.text('密碼強度：弱').css('color', '#EF4444');
-                } else if (strength === 2) {
-                    bar.css('width', '50%').addClass('bg-warning');
-                    text.text('密碼強度：中等').css('color', '#F59E0B');
-                } else if (strength === 3) {
-                    bar.css('width', '75%').addClass('bg-success');
-                    text.text('密碼強度：強').css('color', '#10B981');
-                } else {
-                    bar.css('width', '100%').addClass('bg-success');
-                    text.text('密碼強度：非常強').css('color', '#10B981');
-                }
-            });
-
             // Password match validation
             $('#regPasswordConfirm').on('input', function () {
                 const password = $('#regPassword').val();
@@ -227,69 +195,48 @@
                 }
             });
 
-            // Login form submit
-            $('#loginForm').submit(function (e) {
-                e.preventDefault();
+//             // Login form submit
+//             $('#loginForm').submit(function (e) {
+//                 e.preventDefault();
 
-                // Mock Login
-                const email = $(this).find('input[type="email"]').val().toLowerCase();
-                const btn = $(this).find('button[type="submit"]');
+//                 // Mock Login
+//                 const email = $(this).find('input[type="email"]').val().toLowerCase();
+//                 const btn = $(this).find('button[type="submit"]');
 
-                btn.prop('disabled', true)
-                   .empty()
-                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
-                   .append('登入中...');
+//                 btn.prop('disabled', true)
+//                    .empty()
+//                    .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
+//                    .append('登入中...');
 
-                setTimeout(() => {
-                    // Determine role based on email pattern (Mock)
-                    // In real app, role would come from API response
-                    let role = 'MEMBER';
-                    let redirectUrl = 'dashboard.html';
-                    let userName = 'Momento 會員';
+//                 setTimeout(() => {
+//                     // Determine role based on email pattern (Mock)
+//                     // In real app, role would come from API response
+//                     let role = 'MEMBER';
+//                     let redirectUrl = 'dashboard';
+//                     let userName = 'Momento 會員';
 
-                    if (email.includes('admin') || email.includes('platform')) {
-                        role = 'ADMIN';
-                        redirectUrl = '../admin/dashboard.html';
-                        userName = '平台管理員';
-                    } else if (email.includes('organizer') || email.includes('host')) {
-                        role = 'ORGANIZER';
-                        redirectUrl = '../organizer/dashboard.html';
-                        userName = '主辦方';
-                    }
+//                     if (email.includes('admin') || email.includes('platform')) {
+//                         role = 'ADMIN';
+//                         redirectUrl = '../admin/dashboard.html';
+//                         userName = '平台管理員';
+//                     } else if (email.includes('organizer') || email.includes('host')) {
+//                         role = 'ORGANIZER';
+//                         redirectUrl = '../organizer/dashboard.html';
+//                         userName = '主辦方';
+//                     }
 
-                    const user = { email: email, name: userName, role: role };
-                    localStorage.setItem('momento_user', JSON.stringify(user));
-                    localStorage.setItem('momento_token', 'mock-jwt-token');
+//                     const user = { email: email, name: userName, role: role };
+//                     localStorage.setItem('momento_user', JSON.stringify(user));
+//                     localStorage.setItem('momento_token', 'mock-jwt-token');
 
-                    showToast(`歡迎回來，${userName}！`, 'success');
-                    setTimeout(() => {
-                        window.location.href = redirectUrl;
-                    }, 500);
-                }, 1000);
-            });
+//                     showToast(`歡迎回來，${userName}！`, 'success');
+//                     setTimeout(() => {
+//                         window.location.href = redirectUrl;
+//                     }, 500);
+//                 }, 1000);
+//             });
 
-            // Register form submit
-            $('#registerForm').submit(function (e) {
-                e.preventDefault();
-
-                if (!$('#agreeTerms').is(':checked')) {
-                    showToast('請同意服務條款', 'warning');
-                    return;
-                }
-
-                const btn = $(this).find('button[type="submit"]');
-                btn.prop('disabled', true)
-                   .empty()
-                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
-                   .append('註冊中...');
-
-                setTimeout(() => {
-                    showToast('註冊成功！請至信箱驗證帳號', 'success');
-                    $('#authTabs a[href="#loginTab"]').tab('show');
-                    btn.prop('disabled', false).text('註冊');
-                    $(this)[0].reset();
-                }, 1500);
-            });
+         
         });
 
         // Toast helper (inline for standalone page)
