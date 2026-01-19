@@ -75,7 +75,7 @@
     color: #fff;
 }
 
-.btn-outline-secondary {
+.btn-outline-secondary,.cart_reduce, .cart_add {
     color: var(--text-secondary);
     border-color: var(--border-color);
 }

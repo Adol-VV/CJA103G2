@@ -3,54 +3,57 @@ package com.momento.member.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import groovy.transform.ToString;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "member")
 public class MemberVO implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", updatable = false)
-    private Integer memberId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "member_id", updatable = false)
+	private Integer memberId;
 
+	@NotBlank(message = "電子信箱請勿空白")
+    @Email(message = "電子信箱格式錯誤")
     @Column(name = "account", nullable = false, unique = true)
     private String account;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+	@Column(name = "password", nullable = false)
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", message = "必須包含小寫字母、大寫字母、數字，且須為8碼以上")
+	private String password;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z)]{1,10}$", message = "必須是中文或英文 , 且長度在1到10之間")
+	private String name;
 
-    @Column(name = "address")
-    private String address;
+	@Column(name = "address")
+	private String address;
 
-    @Column(name = "phone")
-    private String phone;
+	@Column(name = "phone")
+	@Pattern(regexp = "^(09)[0-9]{8}$", message = "手機號碼格式不符")
+	private String phone;
 
-    @Column(name = "token")
-    private Integer token;
+	@Column(name = "token")
+	private Integer token;
 
-    @Column(name = "status")
-    private Integer status;
-    
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    public MemberVO() {
-    	super();
-    }
+	@Column(name = "status")
+	private Integer status;
+
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	public MemberVO() {
+		super();
+	}
 
 	public MemberVO(Integer memberId, String account, String password, String name, String address, String phone,
 			Integer token, Integer status, LocalDateTime createdAt) {
@@ -65,8 +68,6 @@ public class MemberVO implements Serializable {
 		this.status = status;
 		this.createdAt = createdAt;
 	}
-
-
 
 	public Integer getMemberId() {
 		return memberId;
@@ -140,13 +141,11 @@ public class MemberVO implements Serializable {
 		this.createdAt = createdAt;
 	}
 
-
-
 	@Override
 	public String toString() {
 		return "MemberVO [memberId=" + memberId + ", account=" + account + ", password=" + password + ", name=" + name
 				+ ", address=" + address + ", phone=" + phone + ", token=" + token + ", status=" + status
 				+ ", createdAt=" + createdAt + "]";
 	}
-	
+
 }
