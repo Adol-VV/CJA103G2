@@ -201,6 +201,11 @@ public class EventServiceImpl implements EventService {
         }
 
         @Override
+        public Long getFavoriteCount(Integer eventId) {
+                return eventFavRepository.countByEvent_EventId(eventId);
+        }
+
+        @Override
         public List<EventListItemDTO> getMemberFavorites(Integer memberId) {
                 List<EventFavVO> favorites = eventFavRepository.findByMember_MemberId(memberId);
 
@@ -224,20 +229,15 @@ public class EventServiceImpl implements EventService {
                 dto.setTypeName(event.getType().getTypeName());
                 dto.setOrganizerName(event.getOrganizer().getName());
 
-                // 🔥 使用 Picsum 假圖（開發階段）
-                dto.setCoverImageUrl("https://picsum.photos/seed/evento" + event.getEventId() + "/800/450");
+                // 查詢封面圖片 URL
+                Optional<EventImageVO> coverImage = eventImageRepository
+                                .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
 
-                // 🔥 原本的圖片處理（已註解，未來可以啟用）
-                /*
-                 * Optional<EventImageVO> coverImage = eventImageRepository
-                 * .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
-                 * 
-                 * dto.setCoverImageUrl(
-                 * coverImage.isPresent() && coverImage.get().getImage() != null
-                 * ? "/events/image/" + event.getEventId()
-                 * : "https://picsum.photos/seed/evento" + event.getEventId() + "/800/450"
-                 * );
-                 */
+                dto.setCoverImageUrl(
+                                coverImage.isPresent() && coverImage.get().getImageUrl() != null
+                                                ? coverImage.get().getImageUrl()
+                                                : "https://picsum.photos/seed/evento" + event.getEventId()
+                                                                + "/800/450");
 
                 // 查詢收藏數量
                 Long favoriteCount = eventFavRepository.countByEvent_EventId(event.getEventId());

@@ -26,9 +26,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../user/event-list.html">活動</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="article-list.html">最新消息</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../user/auth.html">登入 / 註冊</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/member/login}">登入 / 註冊</a></li>
                 </ul>
             </div>
         </div>
@@ -108,7 +107,8 @@
                                     回顧過去一年最震撼的現場演出，從燈光舞美到安可曲的驚喜，我們為您整理了年度十大經典時刻...</p>
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div class="d-flex align-items-center">
-                                        <img loading="lazy" src="https://via.placeholder.com/32" class="rounded-circle me-2">
+                                        <img loading="lazy" src="https://via.placeholder.com/32"
+                                            class="rounded-circle me-2">
                                         <small class="text-muted">Momento 編輯部</small>
                                     </div>
                                     <a href="article-detail.html" class="btn btn-outline-light stretched-link">閱讀更多</a>
@@ -120,148 +120,26 @@
 
                 <!-- Article List -->
                 <div class="row g-4">
-                    <!-- Article 1 -->
-                    <div class="col-md-6">
+                    <div class="col-md-6" th:each="article : ${articleList}">
                         <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1514525253440-b393452e8d26" class="card-img-top"
+                            <img loading="lazy" src="https://via.placeholder.com/600x400" class="card-img-top"
                                 height="200" style="object-fit: cover;">
                             <div class="card-body d-flex flex-column">
                                 <div class="mb-2">
-                                    <span class="badge bg-primary me-1">新人專訪</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/12/20</span>
+                                    <span class="badge bg-primary me-1">專欄</span>
+                                    <span class="text-muted small">
+                                        <i class="far fa-clock"></i>
+                                        <span th:text="${#dates.format(article.createdAt, 'yyyy/MM/dd')}"></span>
+                                    </span>
                                 </div>
-                                <h5 class="card-title fw-bold">專訪「草東沒有派對」：在喧囂中尋找寧靜</h5>
-                                <p class="card-text text-muted small flex-grow-1">深入探訪金曲樂團的創作心路歷程，即使世界不斷改變，他們的音樂依舊...
-                                </p>
-                                <div
-                                    class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 12.5k</small>
-                                    <a href="article-detail.html"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
-                                            class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                <h5 class="card-title fw-bold" th:text="${article.title}">文章標題</h5>
+                                <p class="card-text text-muted small flex-grow-1"
+                                    th:text="${#strings.abbreviate(article.content, 50)}">文章內容...</p>
 
-                    <!-- Article 2 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9" class="card-img-top"
-                                height="200" style="object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <span class="badge bg-warning text-dark me-1">活動公告</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/12/18</span>
-                                </div>
-                                <h5 class="card-title fw-bold">2025 跨年晚會入場須知與交通管制資訊</h5>
-                                <p class="card-text text-muted small flex-grow-1">
-                                    為確保您的觀賞體驗，請務必詳閱入場動線圖與安檢規定，建議搭乘大眾運輸工具...</p>
                                 <div
                                     class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 8.2k</small>
-                                    <a href="article-detail.html"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
-                                            class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Article 3 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14" class="card-img-top"
-                                height="200" style="object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <span class="badge bg-success me-1">主辦專欄</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/12/15</span>
-                                </div>
-                                <h5 class="card-title fw-bold">快樂文創：打造沈浸式音樂體驗的幕後推手</h5>
-                                <p class="card-text text-muted small flex-grow-1">
-                                    不僅僅是聽覺的饗宴，我們致力於將視覺與互動結合，讓每一場演出都成為獨一無二的回憶...</p>
-                                <div
-                                    class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <div class="d-flex align-items-center">
-                                        <img loading="lazy" src="https://ui-avatars.com/api/?name=Happy+Creative&background=random"
-                                            class="rounded-circle me-2" width="24" height="24">
-                                        <small class="text-muted">快樂文創</small>
-                                    </div>
-                                    <a href="article-detail.html?role=organizer"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
-                                            class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Article 4 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a" class="card-img-top"
-                                height="200" style="object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <span class="badge bg-info me-1">幕後花絮</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/12/10</span>
-                                </div>
-                                <h5 class="card-title fw-bold">揭秘：那些令人驚嘆的演唱會舞台是如何搭建的？</h5>
-                                <p class="card-text text-muted small flex-grow-1">
-                                    從設計圖稿到實體搭建，帶你走進舞台製作團隊的日常，看他們如何將夢想化為現實...</p>
-                                <div
-                                    class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 5.6k</small>
-                                    <a href="article-detail.html"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
-                                            class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Article 5 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f" class="card-img-top"
-                                height="200" style="object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <span class="badge bg-danger me-1">官方公告</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/12/05</span>
-                                </div>
-                                <h5 class="card-title fw-bold">Momento 2024 年度服務升級公告</h5>
-                                <p class="card-text text-muted small flex-grow-1">
-                                    為提供更優質的服務體驗，我們將於近期推出全新會員制度與代幣獎勵計畫...</p>
-                                <div
-                                    class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 15.3k</small>
-                                    <a href="article-detail.html"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
-                                            class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Article 6 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7" class="card-img-top"
-                                height="200" style="object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2">
-                                    <span class="badge bg-primary me-1">藝人專訪</span>
-                                    <span class="text-muted small"><i class="far fa-clock"></i> 2024/11/28</span>
-                                </div>
-                                <h5 class="card-title fw-bold">專訪告五人：從街頭到萬人場館的築夢之旅</h5>
-                                <p class="card-text text-muted small flex-grow-1">
-                                    從默默無名到橫掃金曲獎，告五人如何用真誠的音樂打動每一顆心...</p>
-                                <div
-                                    class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 9.8k</small>
-                                    <a href="article-detail.html"
-                                        class="text-success text-decoration-none stretched-link">閱讀全文 <i
+                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 0</small>
+                                    <a href="#" class="text-success text-decoration-none stretched-link">閱讀全文 <i
                                             class="fas fa-arrow-right"></i></a>
                                 </div>
                             </div>
@@ -294,10 +172,10 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // 檢查是否有文章
             const $articles = $('.row > .col-md-6');
-            
+
             if ($articles.length === 0) {
                 // 如果沒有文章，顯示空狀態
                 Momento.UI.showEmptyState('.row.g-4', {

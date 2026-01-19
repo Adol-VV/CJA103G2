@@ -16,9 +16,8 @@ public class EventImageVO {
     @JoinColumn(name = "EVENT_ID", nullable = false)
     private EventVO event;
 
-    @Lob
-    @Column(name = "IMAGE", nullable = false)
-    private byte[] image;
+    @Column(name = "IMAGE_URL", nullable = false, length = 500)
+    private String imageUrl;
 
     @Column(name = "UPLOADED_AT", updatable = false)
     private LocalDateTime uploadedAt;
@@ -37,9 +36,9 @@ public class EventImageVO {
     public EventImageVO() {
     }
 
-    public EventImageVO(EventVO event, byte[] image) {
+    public EventImageVO(EventVO event, String imageUrl) {
         this.event = event;
-        this.image = image;
+        this.imageUrl = imageUrl;
     }
 
     // ========== Getters & Setters ==========
@@ -60,12 +59,12 @@ public class EventImageVO {
         this.event = event;
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDateTime getUploadedAt() {
