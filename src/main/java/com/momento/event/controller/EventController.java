@@ -13,19 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
-import com.momento.event.model.EventImageVO;
-import com.momento.event.model.EventImageRepository;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import java.util.Optional;
-
 /**
  * Event Controller - 活動頁面控制器
  * 
  * 處理活動相關的 Thymeleaf 頁面請求
  */
 @Controller
-@RequestMapping("/events")
+@RequestMapping("/event")
 public class EventController {
 
     @Autowired
@@ -33,24 +27,6 @@ public class EventController {
 
     @Autowired
     private TypeRepository typeRepository;
-
-    @Autowired
-    private EventImageRepository eventImageRepository;
-
-    @GetMapping("/image/{eventId}")
-    @ResponseBody
-    public ResponseEntity<byte[]> getEventImage(@PathVariable Integer eventId) {
-        Optional<EventImageVO> image = eventImageRepository
-                .findFirstByEvent_EventIdOrderByEventImageIdAsc(eventId);
-
-        if (image.isEmpty() || image.get().getImage() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(image.get().getImage());
-    }
 
     @GetMapping("/test-json")
     @ResponseBody
@@ -102,7 +78,7 @@ public class EventController {
      * @param model    Spring MVC Model
      * @return 活動列表頁面
      */
-    @GetMapping
+    @GetMapping("/list")
     public String eventList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
@@ -257,4 +233,5 @@ public class EventController {
 
         return "pages/user/event-list";
     }
+
 }
