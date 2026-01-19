@@ -1,9 +1,13 @@
 package com.momento.article.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.momento.articleimage.model.ArticleImageVO;
 import com.momento.organizer.model.OrganizerVO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -26,6 +32,7 @@ public class ArticleVO implements java.io.Serializable {
 	private String content;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
+	private List<ArticleImageVO> articleImages = new ArrayList<>();
 
 	public ArticleVO() {
 	}
@@ -89,4 +96,14 @@ public class ArticleVO implements java.io.Serializable {
 	public void setUpdatedAt(Timestamp updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+	
+	@OneToMany(mappedBy = "articleVO", cascade = CascadeType.ALL)
+    @OrderBy("articleImageId ASC") // 讓取出的圖片順序固定
+    public List<ArticleImageVO> getArticleImages() {
+        return this.articleImages;
+    }
+
+    public void setArticleImages(List<ArticleImageVO> articleImages) {
+        this.articleImages = articleImages;
+    }
 }
