@@ -137,7 +137,7 @@
                         <a class="nav-link" th:href="@{prod/listAllProd}">找商品</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/public/article-list.html">文章</a>
+                        <a class="nav-link" th:href="@{/article/list}">文章</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="pages/public/about.html">關於我們</a>
@@ -162,13 +162,13 @@
                         </span>
                     </a>
                     <div th:if="${session.loginMember}">
-                    	<a th:text="${session.loginMember.name}"></a>
-                    	<a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
-                    	<a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                        <a th:text="${session.loginMember.name}"></a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
                     </div>
                     <div th:unless="${session.loginMember}">
-                    	<a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
-                    	<a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
                     </div>
                 </div>
             </div>
@@ -805,10 +805,11 @@
                 <h5 class="mb-3">會員服務</h5>
                 <ul class="list-unstyled text-muted small">
                     <li class="mb-2">
-                    	<a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a>
+                        <a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a>
                     </li>
                     <li class="mb-2">
-                    	<a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a></li>
+                        <a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a>
+                    </li>
                     <li class="mb-2"><a href="pages/public/faq.html" class="text-decoration-none text-muted">常見問題</a>
                     </li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-muted">聯絡客服</a></li>
