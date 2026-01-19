@@ -131,7 +131,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="pages/user/event-list.html">找活動</a>
+                        <a class="nav-link active" th:href="@{/events}">找活動</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{prod/listAllProd}">找商品</a>
@@ -162,13 +162,13 @@
                         </span>
                     </a>
                     <div th:if="${session.loginMember}">
-                    	<a th:text="${session.loginMember.name}"></a>
-                    	<a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
-                    	<a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                        <a th:text="${session.loginMember.name}"></a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
                     </div>
                     <div th:unless="${session.loginMember}">
-                    	<a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
-                    	<a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
                     </div>
                 </div>
             </div>
@@ -268,7 +268,7 @@
                 <h2 class="mb-1"><i class="fas fa-fire text-danger me-2"></i>熱門活動</h2>
                 <p class="text-muted mb-0 small">精選近期最受歡迎的藝文活動</p>
             </div>
-            <a href="pages/user/event-list.html" class="btn btn-outline-primary">
+            <a th:href="@{/events}" class="btn btn-outline-primary">
                 探索更多活動 <i class="fas fa-arrow-right ms-1"></i>
             </a>
         </div>
@@ -409,8 +409,7 @@
         <!-- 更多活動快速入口 -->
         <div class="row g-3 mt-4">
             <div class="col-6 col-md-3">
-                <a href="pages/user/event-list.html?cat=music"
-                    class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
+                <a th:href="@{/events}" class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
                     style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'"
                     onmouseout="this.style.transform='translateY(0)'">
                     <i class="fas fa-music text-success fa-2x mb-2"></i>
@@ -419,8 +418,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="pages/user/event-list.html?cat=exhibition"
-                    class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
+                <a th:href="@{/events}" class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
                     style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'"
                     onmouseout="this.style.transform='translateY(0)'">
                     <i class="fas fa-palette text-info fa-2x mb-2"></i>
@@ -429,8 +427,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="pages/user/event-list.html?cat=theater"
-                    class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
+                <a th:href="@{/events}" class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
                     style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'"
                     onmouseout="this.style.transform='translateY(0)'">
                     <i class="fas fa-theater-masks text-warning fa-2x mb-2"></i>
@@ -439,8 +436,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="pages/user/event-list.html?cat=workshop"
-                    class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
+                <a th:href="@{/events}" class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
                     style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'"
                     onmouseout="this.style.transform='translateY(0)'">
                     <i class="fas fa-hands text-danger fa-2x mb-2"></i>
@@ -805,10 +801,11 @@
                 <h5 class="mb-3">會員服務</h5>
                 <ul class="list-unstyled text-muted small">
                     <li class="mb-2">
-                    	<a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a>
+                        <a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a>
                     </li>
                     <li class="mb-2">
-                    	<a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a></li>
+                        <a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a>
+                    </li>
                     <li class="mb-2"><a href="pages/public/faq.html" class="text-decoration-none text-muted">常見問題</a>
                     </li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-muted">聯絡客服</a></li>
