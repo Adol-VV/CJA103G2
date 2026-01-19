@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典Logo帆布袋 | Momento</title>
-    <meta name="description" content="經典Logo帆布袋 - 簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。">
+    <title th:text="${prodVO.prodName}+' | Momento'"></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -78,9 +77,9 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="prod-list.html" class="text-muted text-decoration-none">找商品</a></li>
+                <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a></li>
                 <li class="breadcrumb-item"><a href="prod-list.html?category=clothing" class="text-muted text-decoration-none">服飾配件</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">經典Logo帆布袋</li>
+                <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prodVO.prodName}"></li>
             </ol>
         </nav>
 
@@ -108,22 +107,22 @@
 
             <!-- Product Info -->
             <div class="col-lg-6">
-                <h1 class="h2 mb-2">經典Logo帆布袋</h1>
-                <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p>
+                <h1 class="h2 mb-2" th:text="${prodVO.prodName}"></h1>
+<!--                 <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p> -->
 
                 <div class="mb-4">
-                    <span class="fs-2 fw-bold text-success">NT$ 450</span>
+                    <span class="fs-2 fw-bold text-success" th:text="'NT$ '+ ${prodVO.prodPrice}"></span>
                 </div>
 
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">規格 / 顏色</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-outline-success active">米白色</button>
-                                <button class="btn btn-outline-secondary">黑色</button>
-                            </div>
-                        </div>
+<!--                         <div class="mb-3"> -->
+<!--                             <label class="form-label">規格 / 顏色</label> -->
+<!--                             <div class="d-flex flex-wrap gap-2"> -->
+<!--                                 <button class="btn btn-outline-success active">米白色</button> -->
+<!--                                 <button class="btn btn-outline-secondary">黑色</button> -->
+<!--                             </div> -->
+<!--                         </div> -->
 
                         <div class="mb-4">
                             <label class="form-label">數量</label>
@@ -148,11 +147,11 @@
 
                 <!-- Product Description -->
                 <div class="mb-4">
-                    <h5 class="border-bottom border-secondary pb-2 mb-3">商品詳情</h5>
+                    <h5 class="border-bottom border-secondary pb-2 mb-3">商品介紹</h5>
                     <div class="text-muted">
-                        <p><strong>材質：</strong>100% 純棉帆布</p>
-                        <p><strong>尺寸：</strong>35cm x 40cm</p>
-                        <p>這款帆布袋專為都會生活設計，無論是裝筆電、書籍還是日常雜物都非常適合。簡約的設計風格，輕鬆搭配各種穿著。</p>
+<!--                         <p><strong>材質：</strong>100% 純棉帆布</p> -->
+<!--                         <p><strong>尺寸：</strong>35cm x 40cm</p> -->
+                        <p th:text="${prodVO.prodContent}"></p>
                     </div>
                 </div>
 
