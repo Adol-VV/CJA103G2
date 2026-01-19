@@ -1,5 +1,8 @@
 package com.momento.prodorderitem.model;
 
+import com.momento.prod.model.ProdVO;
+import com.momento.prodorder.model.ProdOrderIdVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,11 +25,11 @@ public class ProdOrderItemVO implements java.io.Serializable{
 	
 	@ManyToOne
 	@JoinColumn(name="PROD_ORDER_ID")
-	private Integer prodOrderId;
+	private ProdOrderIdVO prodOrderId;
 	
 	@ManyToOne
 	@JoinColumn(name="PROD_ID")
-	private Integer prodId;
+	private ProdVO prodId;
 	
 	@Column(name="QUANTITY")
 	@NotNull(message = "數量請勿空白")
@@ -51,16 +54,16 @@ public class ProdOrderItemVO implements java.io.Serializable{
 	public void setProdOrderItemId(int prodOrderItemId) {
 		this.prodOrderItemId = prodOrderItemId;
 	}
-	public int getProdOrderId() {
+	public ProdOrderIdVO getProdOrderId() {
 		return prodOrderId;
 	}
-	public void setProdOrderId(int prodOrderId) {
+	public void setProdOrderId(ProdOrderIdVO prodOrderId) {
 		this.prodOrderId = prodOrderId;
 	}
-	public int getProdId() {
+	public ProdVO getProdId() {
 		return prodId;
 	}
-	public void setProdId(int prodId) {
+	public void setProdId(ProdVO prodId) {
 		this.prodId = prodId;
 	}
 	public int getQuantity() {

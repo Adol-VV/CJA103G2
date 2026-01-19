@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link href="../css/momento-theme.css" rel="stylesheet">
+
     <style>
         .product-filters .list-unstyled a {
             color: var(--text-muted);
@@ -130,14 +131,14 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-lg-5">
-            <a class="navbar-brand" href="../../index.html">Momento</a>
+            <a class="navbar-brand" th:href="@{/}">Momento</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="prod-list.html">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
                 </ul>
@@ -176,21 +177,21 @@
                         <li><a href="#">影音出版</a></li>
                     </ul>
 
-                    <hr class="border-secondary">
+<!--                     <hr class="border-secondary"> -->
 
-                    <h5 class="my-3">價格區間</h5>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="price1">
-                        <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="price2">
-                        <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="price3">
-                        <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label>
-                    </div>
+<!--                     <h5 class="my-3">價格區間</h5> -->
+<!--                     <div class="form-check mb-2"> -->
+<!--                         <input class="form-check-input" type="checkbox" id="price1"> -->
+<!--                         <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label> -->
+<!--                     </div> -->
+<!--                     <div class="form-check mb-2"> -->
+<!--                         <input class="form-check-input" type="checkbox" id="price2"> -->
+<!--                         <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label> -->
+<!--                     </div> -->
+<!--                     <div class="form-check mb-2"> -->
+<!--                         <input class="form-check-input" type="checkbox" id="price3"> -->
+<!--                         <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label> -->
+<!--                     </div> -->
                 </div>
             </aside>
 
@@ -210,26 +211,25 @@
                 </div>
 
                 <div class="row g-4" id="productGrid">
-                    <!-- Product 1 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
+                    <!-- Product -->
+                    <div class="col-12 col-sm-6 col-lg-4" th:if="${prodVO.prodStatus!= 0}" th:each="prodVO : ${prodListData}">
                         <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=1" class="text-decoration-none">
+                            <a th:href="listOneProd" class="text-decoration-none">
                                 <div class="product-img-wrapper">
                                     <img loading="lazy" src="https://picsum.photos/seed/tshirt1/400/400" class="card-img-top">
-                                    <span class="badge badge-hot">熱賣</span>
                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
                                 </div>
                             </a>
                             <div class="card-body">
                                 <a href="prod-detail.html?id=1" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">2024年度音樂會紀念T恤</h6>
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;" th:text="${prodVO.prodName}">2024年度音樂會紀念T恤</h6>
                                 </a>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 880</span>
+                                    <span class="price" th:text="${prodVO.prodPrice}">NT$ 880</span>
                                     <span class="text-muted small">已售 234</span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=1" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                    <a th:href="listOneProd" class="btn btn-outline-secondary btn-sm flex-grow-1">
                                         <i class="fas fa-eye me-1"></i>詳情
                                     </a>
                                     <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="1"
@@ -241,446 +241,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Product 2 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=2" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/totebag1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=2" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">經典Logo帆布袋</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 450</span>
-                                    <span class="text-muted small">已售 89</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=2" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="2"
-                                        data-name="經典Logo帆布袋" data-price="450"
-                                        data-image="https://picsum.photos/seed/totebag1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 3 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=3" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/cup1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=3" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">限量版不鏽鋼保溫杯</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 1,280</span>
-                                    <span class="text-muted small">已售 156</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=3" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="3"
-                                        data-name="限量版不鏽鋼保溫杯" data-price="1280"
-                                        data-image="https://picsum.photos/seed/cup1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 4 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=4" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/cap1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=4" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">刺繡老帽</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 680</span>
-                                    <span class="text-muted small">已售 312</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=4" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="4" data-name="刺繡老帽"
-                                        data-price="680" data-image="https://picsum.photos/seed/cap1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 5 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=5" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/towel1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=5" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">應援毛巾</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 350</span>
-                                    <span class="text-muted small">已售 410</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=5" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="5" data-name="應援毛巾"
-                                        data-price="350" data-image="https://picsum.photos/seed/towel1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 6 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=6" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/badge1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=6" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">紀念徽章組</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 250</span>
-                                    <span class="text-muted small">已售 88</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=6" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="6" data-name="紀念徽章組"
-                                        data-price="250" data-image="https://picsum.photos/seed/badge1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 7 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=7" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/vinyl1/400/400" class="card-img-top">
-                                    <span class="badge badge-hot">限量</span>
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=7" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">典藏黑膠唱片</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 1,580</span>
-                                    <span class="text-muted small">已售 50</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=7" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="7" data-name="典藏黑膠唱片"
-                                        data-price="1580" data-image="https://picsum.photos/seed/vinyl1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 8 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=8" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/dvd1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=8" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">巡迴演唱會Live DVD</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 980</span>
-                                    <span class="text-muted small">已售 320</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=8" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="8"
-                                        data-name="巡迴演唱會Live DVD" data-price="980"
-                                        data-image="https://picsum.photos/seed/dvd1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 9 -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=9" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/notebook1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=9" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">創作手稿筆記本</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 380</span>
-                                    <span class="text-muted small">已售 112</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=9" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="9"
-                                        data-name="創作手稿筆記本" data-price="380"
-                                        data-image="https://picsum.photos/seed/notebook1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 10 (Bookmark) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=10" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/bookmark1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=10" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">金屬書籤</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 180</span>
-                                    <span class="text-muted small">已售 205</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=10" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="10" data-name="金屬書籤"
-                                        data-price="180" data-image="https://picsum.photos/seed/bookmark1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 11 (Keychain) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=11" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/keychain1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=11" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">吉他造型鑰匙圈</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 150</span>
-                                    <span class="text-muted small">已售 450</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=11" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="11"
-                                        data-name="吉他造型鑰匙圈" data-price="150"
-                                        data-image="https://picsum.photos/seed/keychain1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 12 (Poster) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=12" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/poster1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=12" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">復古海報組</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 420</span>
-                                    <span class="text-muted small">已售 150</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=12" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="12" data-name="復古海報組"
-                                        data-price="420" data-image="https://picsum.photos/seed/poster1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 13 (Sticker) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=13" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/sticker1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=13" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">樂團專屬貼紙包</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 120</span>
-                                    <span class="text-muted small">已售 600</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=13" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="13"
-                                        data-name="樂團專屬貼紙包" data-price="120"
-                                        data-image="https://picsum.photos/seed/sticker1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 14 (Postcard) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=14" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/postcard1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=14" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">簽名版明信片套組</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 220</span>
-                                    <span class="text-muted small">已售 180</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=14" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="14"
-                                        data-name="簽名版明信片套組" data-price="220"
-                                        data-image="https://picsum.photos/seed/postcard1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 15 (Pillow) -->
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 product-card">
-                            <a href="prod-detail.html?id=15" class="text-decoration-none">
-                                <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/pillow1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <a href="prod-detail.html?id=15" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;">造型抱枕</h6>
-                                </a>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price">NT$ 780</span>
-                                    <span class="text-muted small">已售 95</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="prod-detail.html?id=15" class="btn btn-outline-secondary btn-sm flex-grow-1">
-                                        <i class="fas fa-eye me-1"></i>詳情
-                                    </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="15" data-name="造型抱枕"
-                                        data-price="780" data-image="https://picsum.photos/seed/pillow1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- Pagination -->
-                <nav class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
-                    </ul>
-                </nav>
             </main>
         </div>
     </div>

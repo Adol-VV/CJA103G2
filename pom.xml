@@ -8,11 +8,11 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa</groupId>
-	<artifactId>0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa</artifactId>
+	<groupId>com.momento</groupId>
+	<artifactId>CJA103G2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa</name>
+	<name>CJA103G2 Maven Webapp</name>
 	<description>0205U_Maven_SpringBootMVC_Thymeleaf_Ver5_SpringData-Jpa</description>
 	<properties>
 		<java.version>17</java.version>
