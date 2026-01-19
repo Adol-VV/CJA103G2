@@ -34,7 +34,8 @@ public class MemberVO implements Serializable {
 	@Column(name = "name", nullable = false)
 	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z)]{1,10}$", message = "必須是中文或英文 , 且長度在1到10之間")
 	private String name;
-
+	
+	@NotBlank(message = "地址請勿空白")
 	@Column(name = "address")
 	private String address;
 
