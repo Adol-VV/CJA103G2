@@ -1,5 +1,7 @@
 package com.momento.notify.model;
 
+import com.momento.emp.model.EmpVO;
+import com.momento.member.model.MemberVO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,11 +24,13 @@ public class SystemNotifyVO implements Serializable {
     @Column(name = "SYS_NOTIFY_ID")
     private Integer sysNotifyId;
 
-    @Column(name = "MEMBER_ID")
-    private Integer memberId;
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private MemberVO memberVO;
 
-    @Column(name = "EMP_ID")
-    private Integer empId;
+    @ManyToOne
+    @JoinColumn(name = "EMP_ID")
+    private EmpVO empVO;
 
     @Column(name = "TITLE")
     private String title;
@@ -40,4 +44,7 @@ public class SystemNotifyVO implements Serializable {
     @Column(name = "CREATED_AT", updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+
+    private Integer notifyStatus;
 }
