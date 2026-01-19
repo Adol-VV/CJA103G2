@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>會員登入/註冊 | Momento</title>
+    <title>會員登入 | Momento</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,7 +109,7 @@
                                         <div class="input-group">
                                             <input type="password" name = "password" class="form-control" id="loginPassword">
                                             <button class="btn btn-outline-secondary toggle-password" type="button">
-                                                <i class="far fa-eye"></i>
+                                                <i class="far fa-eye-slash"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -120,6 +120,7 @@
                                         </div>
                                         <a href="forgot-password.html" class="text-primary text-decoration-none">忘記密碼？</a>
                                     </div>
+                                    <input type="hidden" name="targetUrl" th:value="${backUrl}">
                                     <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">登入</button>
 
                                     <!-- Social Login -->
@@ -169,31 +170,30 @@
             $('.toggle-password').click(function () {
                 const input = $(this).siblings('input');
                 const icon = $(this).find('i');
-
                 if (input.attr('type') === 'password') {
                     input.attr('type', 'text');
-                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 } else {
                     input.attr('type', 'password');
-                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
                 }
             });
 
-            // Password match validation
-            $('#regPasswordConfirm').on('input', function () {
-                const password = $('#regPassword').val();
-                const confirm = $(this).val();
+//             // Password match validation
+//             $('#regPasswordConfirm').on('input', function () {
+//                 const password = $('#regPassword').val();
+//                 const confirm = $(this).val();
 
-                if (confirm && password !== confirm) {
-                    $(this).addClass('is-invalid');
-                    if ($(this).next('.invalid-feedback').length === 0) {
-                        $(this).after('<div class="invalid-feedback">密碼不一致</div>');
-                    }
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
-            });
+//                 if (confirm && password !== confirm) {
+//                     $(this).addClass('is-invalid');
+//                     if ($(this).next('.invalid-feedback').length === 0) {
+//                         $(this).after('<div class="invalid-feedback">密碼不一致</div>');
+//                     }
+//                 } else {
+//                     $(this).removeClass('is-invalid');
+//                     $(this).next('.invalid-feedback').remove();
+//                 }
+//             });
 
 //             // Login form submit
 //             $('#loginForm').submit(function (e) {

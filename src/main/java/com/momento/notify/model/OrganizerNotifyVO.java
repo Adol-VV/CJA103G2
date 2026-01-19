@@ -1,5 +1,7 @@
 package com.momento.notify.model;
 
+import com.momento.emp.model.EmpVO;
+import com.momento.organizer.model.OrganizerVO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,11 +24,13 @@ public class OrganizerNotifyVO implements Serializable {
     @Column(name = "ORG_NOTIFY_ID")
     private Integer organizerNotifyId;
 
-    @Column(name = "ORGANIZER_ID")
-    private Integer organizerId;
+    @ManyToOne
+    @JoinColumn(name = "ORGANIZER_ID")
+    private OrganizerVO organizerVO;
 
-    @Column(name = "EMP_ID")
-    private Integer empId;
+    @ManyToOne
+    @JoinColumn(name = "EMP_ID")
+    private EmpVO empVO;
 
     @Column(name = "TITLE")
     private String title;
