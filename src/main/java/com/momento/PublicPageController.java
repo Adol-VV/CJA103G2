@@ -20,4 +20,9 @@ public class PublicPageController {
     public String privacy() {
         return "pages/public/privacy";
     }
+
+    @GetMapping("/article/list")
+    public String articleList() {
+        return "pages/public/article-list";
+    }
 }
