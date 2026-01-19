@@ -1,6 +1,7 @@
 package com.momento.prod.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,7 +11,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
+import com.momento.prod.model.ProdImageVO;
 import com.momento.prod.model.ProdService;
+import com.momento.prod.model.ProdSortService;
+import com.momento.prod.model.ProdSortVO;
 import com.momento.prod.model.ProdVO;
 
 @Controller
@@ -19,6 +24,9 @@ public class ProdController {
 	
 	@Autowired
 	ProdService prodSvc;
+	
+	@Autowired
+	ProdSortService prodSortSvc;
 	
 	@GetMapping("addProd")
 	public String addProd(ModelMap model) {
@@ -39,11 +47,18 @@ public class ProdController {
 	}
 	
 	@ModelAttribute("prodListData")
-	protected List<ProdVO> referenceListData() {
-		// DeptService deptSvc = new DeptService();
-		List<ProdVO> list = prodSvc.getAll();
-		return list;
+	protected List<ProdVO> prodListData() {
+		List<ProdVO> prodlist = prodSvc.getAll();
+		return prodlist;
 	}
+	
+	@ModelAttribute("prodSortList")
+	protected List<ProdSortVO> prodSortList() {
+		List<ProdSortVO> prodSortlist = prodSortSvc.getAll();
+		return prodSortlist;
+	}
+	
+	
 	
 	
 	//單一查詢
@@ -60,11 +75,13 @@ public class ProdController {
 		/***************************2.開始查詢資料*********************************************/
 //		EmpService empSvc = new EmpService();
 		ProdVO prodVO = prodSvc.getOneProd(Integer.valueOf(prodId));
+		List<ProdImageVO> imageList = prodSvc.getProdImagesByProdId(prodVO.getProdId());
 		
 		/***************************3.查詢完成,準備轉交(Send the Success view)*****************/
-		model.addAttribute("prodVO", prodVO); // for1 --> listOneEmp.html 的第37~44行用
-                                            // for2 --> select_page.html的第156用
-		return "pages/user/prod-detail";  // 查詢完成後轉交select_page.html由其第158行insert listOneEmp.html內的th:fragment="listOneEmp-div
+		model.addAttribute("prodVO", prodVO); 
+		model.addAttribute("prodImages", imageList);
+                                           
+		return "pages/user/prod-detail"; 
 	}
 	
 	

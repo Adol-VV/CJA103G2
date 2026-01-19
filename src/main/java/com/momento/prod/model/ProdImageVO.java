@@ -29,7 +29,7 @@ public class ProdImageVO implements Serializable{
 	
 	
 	@Column(name = "IMAGE_URL")
-	private byte[] imageUrl;
+	private String imageUrl;
 	
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt;
@@ -56,11 +56,12 @@ public class ProdImageVO implements Serializable{
 	}
 
 
-	public byte[] getImageUrl() {
+
+	public String getImageUrl() {
 		return imageUrl;
 	}
 
-	public void setImageUrl(byte[] imageUrl) {
+	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 

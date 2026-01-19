@@ -2,6 +2,7 @@ package com.momento.prod.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class ProdService {
 	
 	public List<ProdVO> getAll(){
 		return repository.findAll();
+	}
+	
+	public List<ProdImageVO> getProdImagesByProdId(Integer prodId) {
+		return getOneProd(prodId).getProdImages();
 	}
 	
 }

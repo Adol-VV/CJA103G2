@@ -137,7 +137,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
@@ -156,7 +156,15 @@
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
                             style="display:none; font-size: 0.6rem;">0</span>
                     </a>
-                    <a href="login.html" class="btn btn-primary btn-sm px-4">會員登入</a>
+                    <div th:if="${session.loginMember}">
+                        <a th:text="${session.loginMember.name}"></a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                    </div>
+                    <div th:unless="${session.loginMember}">
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,27 +179,8 @@
                     <h5 class="mb-3">商品分類</h5>
                     <ul class="list-unstyled mb-4">
                         <li><a href="#" class="active">全部商品</a></li>
-                        <li><a href="#">官方週邊</a></li>
-                        <li><a href="#">服飾配件</a></li>
-                        <li><a href="#">文具書籍</a></li>
-                        <li><a href="#">影音出版</a></li>
+                        <li th:each="ProdsortVO:${prodSortList}"><a href="#" th:text="${ProdsortVO.getSortName()}"></a></li>
                     </ul>
-
-<!--                     <hr class="border-secondary"> -->
-
-<!--                     <h5 class="my-3">價格區間</h5> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price1"> -->
-<!--                         <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label> -->
-<!--                     </div> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price2"> -->
-<!--                         <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label> -->
-<!--                     </div> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price3"> -->
-<!--                         <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label> -->
-<!--                     </div> -->
                 </div>
             </aside>
 
