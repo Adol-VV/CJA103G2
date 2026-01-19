@@ -22,7 +22,7 @@ public class SystemNotifyVO implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SYS_NOTIFY_ID")
-    private Integer sysNotifyId;
+    private Integer systemNotifyId;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")

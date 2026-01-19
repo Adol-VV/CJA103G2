@@ -25,12 +25,20 @@ public class OrganizerNotifyService {
         }
     }
 
-    public OrganizerNotifyVO getOneNotify(Integer organizerNotifyId) {
+    public OrganizerNotifyVO getOneOrganizerNotify(Integer organizerNotifyId) {
         Optional<OrganizerNotifyVO> optional = repository.findById(organizerNotifyId);
         return optional.orElse(null); // 如果找不到就回傳 null
     }
 
+    public List<OrganizerNotifyVO> getByOrgId(Integer organizerId){
+        return repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+    }
+
     public List<OrganizerNotifyVO> getAll() {
         return repository.findAll();
+    }
+
+//    @Transactional
+    public void updateReadStatus(Integer systemNotifyId, Integer status){
     }
 }
