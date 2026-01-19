@@ -78,6 +78,14 @@ public interface EventService {
     boolean toggleFavorite(Integer eventId, Integer memberId);
 
     /**
+     * 查詢活動的收藏數量
+     * 
+     * @param eventId 活動 ID
+     * @return 收藏數量
+     */
+    Long getFavoriteCount(Integer eventId);
+
+    /**
      * 查詢會員的收藏活動
      * 
      * @param memberId 會員 ID
