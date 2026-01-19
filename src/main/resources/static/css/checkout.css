@@ -1,0 +1,116 @@
+ .fw-bold,.prod_price_T,.form-check-label{
+            color:rgba(16, 185, 129,0.5)
+        }
+        .checkout-stepper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            width: 60px;
+            height: 2px;
+            background: var(--border-color);
+            margin: 0 1rem;
+        }
+
+        .step-item.active .step-number,
+        .step-item.completed .step-number {
+            background: var(--momento-green);
+            color: white;
+        }
+
+        .step-item.active .step-label {
+            color: var(--text-primary);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--momento-green);
+        }
+
+        .step-item.completed::after {
+            background: var(--momento-green);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .payment-option {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--momento-green);
+        }
+
+        .payment-option.selected {
+            border-color: var(--momento-green);
+            background: rgba(45, 95, 79, 0.1);
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .success-animation {
+            animation: successPop 0.5s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
