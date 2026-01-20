@@ -1,77 +1,237 @@
+<style>
+    /* 設定頁面導航按鈕樣式 */
+    .nav-pills .nav-link {
+        background-color: #212529;
+        color: #6c757d;
+        border: 1px solid #495057;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #6c757d !important;
+        color: #fff !important;
+        border-color: #6c757d !important;
+    }
+</style>
+
 <h2 class="h3 mb-4">系統設定</h2>
 <div class="row g-4">
+    <!-- 左側導航 -->
     <div class="col-lg-3">
-        <div class="list-group bg-dark border-secondary">
-            <a href="#"
-                class="list-group-item list-group-item-action active bg-secondary border-secondary text-white">主辦單位資料</a>
-            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">銀行帳戶資訊</a>
-            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">通知設定</a>
-            <a href="#" class="list-group-item list-group-item-action bg-dark text-muted border-secondary">帳號安全</a>
+        <div class="nav flex-column nav-pills" role="tablist">
+            <button class="nav-link active text-start mb-2" data-bs-toggle="pill" data-bs-target="#basic-info"
+                type="button" role="tab">
+                <i class="fas fa-building me-2"></i> 主辦單位資料
+            </button>
+            <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#bank-info" type="button"
+                role="tab">
+                <i class="fas fa-university me-2"></i> 銀行帳戶資訊
+            </button>
+            <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#notification-settings"
+                type="button" role="tab">
+                <i class="fas fa-bell me-2"></i> 通知設定
+            </button>
+            <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#security-settings"
+                type="button" role="tab">
+                <i class="fas fa-lock me-2"></i> 帳號安全
+            </button>
         </div>
     </div>
+
+    <!-- 右側內容區 -->
     <div class="col-lg-9">
-        <div class="card bg-dark border-secondary mb-4">
-            <div class="card-header border-secondary">基本資料</div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-12 text-center mb-3">
-                        <div class="position-relative d-inline-block">
-                            <img loading="lazy" src="https://via.placeholder.com/150"
-                                class="rounded-circle border border-secondary p-1" width="100">
-                            <button
-                                class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle border border-secondary">
-                                <i class="fas fa-camera"></i>
+        <div class="tab-content">
+            <!-- Tab 1: 基本資料 -->
+            <div class="tab-pane fade show active" id="basic-info" role="tabpanel">
+                <form th:action="@{/organizer/settings/update}" method="post">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-header border-secondary">
+                            <i class="fas fa-building"></i> 基本資料
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">主辦單位名稱 <span class="text-danger">*</span></label>
+                                    <input type="text" name="name"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.name}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">負責人姓名 <span class="text-danger">*</span></label>
+                                    <input type="text" name="ownerName"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.ownerName}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">聯絡電話</label>
+                                    <input type="tel" name="phone"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.phone}" placeholder="0912-345-678">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">聯絡 Email <span class="text-danger">*</span></label>
+                                    <input type="email" name="email"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.email}" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">關於我們</label>
+                                    <textarea name="introduction"
+                                        class="form-control bg-dark text-white border-secondary" rows="4"
+                                        th:text="${organizer.introduction}" placeholder="介紹您的品牌、經營理念..."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label"><i class="fas fa-lock me-1"></i> 登入帳號</label>
+                                    <input type="text" class="form-control text-white border-secondary"
+                                        style="background-color: rgba(220, 53, 69, 0.15); cursor: not-allowed;"
+                                        th:value="${organizer.account}" readonly>
+                                    <small class="text-muted">帳號無法修改</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label"><i class="fas fa-lock me-1"></i> 註冊時間</label>
+                                    <input type="text" class="form-control text-white border-secondary"
+                                        style="background-color: rgba(220, 53, 69, 0.15); cursor: not-allowed;"
+                                        th:value="${#temporals.format(organizer.createdAt, 'yyyy-MM-dd HH:mm')}"
+                                        readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 儲存變更
                             </button>
                         </div>
                     </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">顯示名稱 (品牌名)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" value="相信音樂">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">聯絡 Email</label>
-                        <input type="email" class="form-control bg-dark text-white border-secondary"
-                            value="contact@bin-music.com">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">關於我們</label>
-                        <textarea class="form-control bg-dark text-white border-secondary"
-                            rows="4">我們專注於提供高品質的音樂演出體驗...</textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">官方網站</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
-                            value="https://www.bin-music.com">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">統一編號</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" value="12345678"
-                            readonly>
-                    </div>
-                </div>
+                </form>
             </div>
-            <div class="card-footer border-secondary text-end">
-                <button class="btn btn-primary">儲存變更</button>
-            </div>
-        </div>
 
-        <div class="card bg-dark border-secondary">
-            <div class="card-header border-secondary">通知設定</div>
-            <div class="card-body">
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" checked>
-                    <label class="form-check-label">接收新訂單通知 (Email)</label>
+            <!-- Tab 2: 銀行帳戶資訊 -->
+            <div class="tab-pane fade" id="bank-info" role="tabpanel">
+                <form th:action="@{/organizer/settings/update_bank}" method="post">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-header border-secondary">
+                            <i class="fas fa-university"></i> 銀行帳戶資訊
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info bg-dark border-secondary text-white mb-4">
+                                <i class="fas fa-info-circle"></i> 此資訊用於平台結算款項,請務必填寫正確
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">銀行代碼 <span class="text-danger">*</span></label>
+                                    <input type="text" name="bankCode"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.bankCode}" placeholder="例: 004 (台灣銀行)" maxlength="10"
+                                        required>
+                                    <small class="text-muted">3碼銀行代碼</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">銀行帳號 <span class="text-danger">*</span></label>
+                                    <input type="text" name="bankAccount"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.bankAccount}" placeholder="請輸入完整帳號" maxlength="20"
+                                        required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">戶名 <span class="text-danger">*</span></label>
+                                    <input type="text" name="accountName"
+                                        class="form-control bg-dark text-white border-secondary"
+                                        th:value="${organizer.accountName}" placeholder="須與登記名稱一致" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 更新銀行資訊
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 3: 通知設定 -->
+            <div class="tab-pane fade" id="notification-settings" role="tabpanel">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header border-secondary">
+                        <i class="fas fa-bell"></i> 通知設定
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="notifyNewOrder" checked>
+                            <label class="form-check-label" for="notifyNewOrder">
+                                <strong>接收新訂單通知 (Email)</strong>
+                                <div class="small text-muted">當有新的票券或商品訂單時,立即發送通知</div>
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="notifyLowStock" checked>
+                            <label class="form-check-label" for="notifyLowStock">
+                                <strong>接收庫存不足提醒</strong>
+                                <div class="small text-muted">商品庫存低於 10 件時提醒</div>
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="notifyWeeklyReport">
+                            <label class="form-check-label" for="notifyWeeklyReport">
+                                <strong>接收每週銷售報表</strong>
+                                <div class="small text-muted">每週一早上 9:00 寄送上週銷售統計</div>
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="notifySystemUpdate">
+                            <label class="form-check-label" for="notifySystemUpdate">
+                                <strong>接收系統更新通知</strong>
+                                <div class="small text-muted">平台功能更新或維護通知</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-footer border-secondary text-end">
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 儲存設定
+                        </button>
+                    </div>
                 </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" checked>
-                    <label class="form-check-label">接收庫存不足提醒</label>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label">接收每週銷售報表</label>
-                </div>
+            </div>
+
+            <!-- Tab 4: 帳號安全 -->
+            <div class="tab-pane fade" id="security-settings" role="tabpanel">
+                <form th:action="@{/organizer/settings/change_password}" method="post">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-header border-secondary">
+                            <i class="fas fa-lock"></i> 變更密碼
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">目前密碼 <span class="text-danger">*</span></label>
+                                    <input type="password" name="currentPassword"
+                                        class="form-control bg-dark text-white border-secondary" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">新密碼 <span class="text-danger">*</span></label>
+                                    <input type="password" name="newPassword"
+                                        class="form-control bg-dark text-white border-secondary" minlength="8" required>
+                                    <small class="text-muted">至少 8 個字元,建議包含大小寫字母與數字</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">確認新密碼 <span class="text-danger">*</span></label>
+                                    <input type="password" name="confirmPassword"
+                                        class="form-control bg-dark text-white border-secondary" minlength="8" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary text-end">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-key"></i> 變更密碼
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -133,4 +133,140 @@ public class OrganizerCenterController {
         }
         return "pages/organizer/settings";
     }
+
+    /* 更新基本資料 */
+    @PostMapping("/settings/update")
+    public String updateBasicInfo(
+            @RequestParam String name,
+            @RequestParam String ownerName,
+            @RequestParam(required = false) String phone,
+            @RequestParam String email,
+            @RequestParam(required = false) String introduction,
+            HttpSession session,
+            Model model) {
+
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+
+        try {
+            // 更新資料
+            organizer.setName(name);
+            organizer.setOwnerName(ownerName);
+            organizer.setPhone(phone);
+            organizer.setEmail(email);
+            organizer.setIntroduction(introduction);
+
+            // 儲存到資料庫
+            OrganizerVO updated = organizerService.updateOrganizer(organizer);
+
+            // 更新 Session
+            session.setAttribute("loginOrganizer", updated);
+
+            // TODO: 顯示成功訊息
+            model.addAttribute("successMsg", "基本資料已更新");
+
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "更新失敗: " + e.getMessage());
+        }
+
+        return "redirect:/organizer/dashboard#settings";
+    }
+
+    /* 更新銀行帳戶資訊 */
+    @PostMapping("/settings/update_bank")
+    public String updateBankInfo(
+            @RequestParam String bankCode,
+            @RequestParam String bankAccount,
+            @RequestParam String accountName,
+            HttpSession session,
+            Model model) {
+
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+
+        try {
+            // 驗證銀行代碼格式 (3碼數字)
+            if (!bankCode.matches("^\\d{3}$")) {
+                model.addAttribute("errorMsg", "銀行代碼格式錯誤,應為3碼數字");
+                return "redirect:/organizer/dashboard#settings";
+            }
+
+            // 更新銀行資訊
+            organizer.setBankCode(bankCode);
+            organizer.setBankAccount(bankAccount);
+            organizer.setAccountName(accountName);
+
+            // 儲存到資料庫
+            OrganizerVO updated = organizerService.updateOrganizer(organizer);
+
+            // 更新 Session
+            session.setAttribute("loginOrganizer", updated);
+
+            // TODO: 顯示成功訊息
+            model.addAttribute("successMsg", "銀行資訊已更新");
+
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "更新失敗: " + e.getMessage());
+        }
+
+        return "redirect:/organizer/dashboard#settings";
+    }
+
+    /* 變更密碼 */
+    @PostMapping("/settings/change_password")
+    public String changePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            HttpSession session,
+            Model model) {
+
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+
+        try {
+            // 驗證目前密碼
+            if (!organizer.getPassword().equals(currentPassword)) {
+                model.addAttribute("errorMsg", "目前密碼錯誤");
+                return "redirect:/organizer/dashboard#settings";
+            }
+
+            // 驗證新密碼與確認密碼是否一致
+            if (!newPassword.equals(confirmPassword)) {
+                model.addAttribute("errorMsg", "新密碼與確認密碼不一致");
+                return "redirect:/organizer/dashboard#settings";
+            }
+
+            // 驗證新密碼長度
+            if (newPassword.length() < 8) {
+                model.addAttribute("errorMsg", "新密碼至少需要8個字元");
+                return "redirect:/organizer/dashboard#settings";
+            }
+
+            // 更新密碼
+            organizer.setPassword(newPassword);
+            // TODO: 應該要加密密碼
+            // organizer.setPassword(passwordEncoder.encode(newPassword));
+
+            // 儲存到資料庫
+            OrganizerVO updated = organizerService.updateOrganizer(organizer);
+
+            // 更新 Session
+            session.setAttribute("loginOrganizer", updated);
+
+            // TODO: 顯示成功訊息
+            model.addAttribute("successMsg", "密碼已變更");
+
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "變更失敗: " + e.getMessage());
+        }
+
+        return "redirect:/organizer/dashboard#settings";
+    }
 }
