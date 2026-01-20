@@ -39,7 +39,7 @@ $(function(){
             `;
 
             item_list.append(item_el);
-        });
+        });}
 
         //減少數量
     $(document).on("click",".cart_reduce", function(){
@@ -104,5 +104,5 @@ $(function(){
     }
     checkCartCount();
     }
-});
+);
 

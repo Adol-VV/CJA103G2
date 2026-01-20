@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,5 +35,9 @@ public class ArticleService {
 
 	public List<ArticleVO> getAll() {
 		return repository.findAll();
+	}
+
+	public Page<ArticleVO> getAll(int pageNumber, int pageSize) {
+		return repository.findAll(PageRequest.of(pageNumber, pageSize));
 	}
 }

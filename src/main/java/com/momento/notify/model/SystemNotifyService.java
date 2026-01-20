@@ -18,15 +18,24 @@ public class SystemNotifyService {
         repository.save(systemNotifyVO);
     }
 
-    public void deleteNotify(Integer systemNotifiId){
-        repository.existsById(systemNotifiId);
+    public void deleteNotify(Integer systemNotify){
+        repository.existsById(systemNotify);
     }
 
     public SystemNotifyVO getOneSystemNotify(Integer systemNotifyId) {
         return repository.findById(systemNotifyId).orElse(null);
     }
 
+    public void updateReadStatus(Integer sysNotifyId, Integer status){
+
+    }
+
+    public List<SystemNotifyVO> getByMemId(Integer memberId){
+        return repository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
+    }
+
     public List<SystemNotifyVO> getAll() {
+
         return repository.findAll();
     }
 }

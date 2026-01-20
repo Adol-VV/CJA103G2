@@ -1,5 +1,6 @@
 package com.momento.announcement.model;
 
+import com.momento.emp.model.EmpVO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,9 @@ public class AnnouncementVO implements Serializable {
     @Column(name = "ANNOUNCEMENT_ID")
     private Integer announcementId;
 
-    @Column(name = "EMP_ID")
-    private Integer empId;
+    @ManyToOne
+    @JoinColumn(name = "EMP_ID")
+    private EmpVO empVO;
 
     @Column(name = "TITLE")
     private String title;
