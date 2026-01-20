@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典Logo帆布袋 | Momento</title>
-    <meta name="description" content="經典Logo帆布袋 - 簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。">
+    <title th:text="${prodVO.prodName}+' | Momento'"></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -58,8 +57,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" href="../public/organizer-apply.html">主辦專區</a></li>
                 </ul>
@@ -68,7 +67,15 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">2</span>
                     </a>
-                    <a href="login.html" class="btn btn-primary">登入</a>
+                    <div th:if="${session.loginMember}">
+                        <a th:text="${session.loginMember.name}"></a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                    </div>
+                    <div th:unless="${session.loginMember}">
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,9 +85,9 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="prod-list.html" class="text-muted text-decoration-none">找商品</a></li>
+                <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a></li>
                 <li class="breadcrumb-item"><a href="prod-list.html?category=clothing" class="text-muted text-decoration-none">服飾配件</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">經典Logo帆布袋</li>
+                <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prodVO.prodName}"></li>
             </ol>
         </nav>
 
@@ -88,42 +95,36 @@
             <!-- Product Images -->
             <div class="col-lg-6">
                 <div class="bg-dark rounded-3 overflow-hidden mb-3" style="aspect-ratio: 1/1;">
-                    <img loading="lazy" src="https://picsum.photos/seed/totebag1/800/800" 
+                    <img loading="lazy" th:src="${prodImages[0].getImageUrl()}" 
                          class="w-100 h-100" style="object-fit: cover;" 
-                         alt="經典Logo帆布袋"
+                         alt="商品"
                          id="mainProductImage">
                 </div>
                 <div class="d-flex gap-2 overflow-auto pb-2">
-                    <div class="product-thumb active" onclick="changeMainImage(this, 'https://picsum.photos/seed/totebag1/800/800')">
-                        <img loading="lazy" src="https://picsum.photos/seed/totebag1/160/160" alt="縮圖1">
-                    </div>
-                    <div class="product-thumb" onclick="changeMainImage(this, 'https://picsum.photos/seed/totebag2/800/800')">
-                        <img loading="lazy" src="https://picsum.photos/seed/totebag2/160/160" alt="縮圖2">
-                    </div>
-                    <div class="product-thumb" onclick="changeMainImage(this, 'https://picsum.photos/seed/totebag3/800/800')">
-                        <img loading="lazy" src="https://picsum.photos/seed/totebag3/160/160" alt="縮圖3">
+                    <div th:each="prodImage : ${prodImages}">
+                        <img class="product-thumb"  loading="lazy" th:src="${prodImage.getImageUrl()}" alt="縮圖">
                     </div>
                 </div>
             </div>
 
             <!-- Product Info -->
             <div class="col-lg-6">
-                <h1 class="h2 mb-2">經典Logo帆布袋</h1>
-                <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p>
+                <h1 class="h2 mb-2" th:text="${prodVO.prodName}"></h1>
+<!--                 <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p> -->
 
                 <div class="mb-4">
-                    <span class="fs-2 fw-bold text-success">NT$ 450</span>
+                    <span class="fs-2 fw-bold text-success" th:text="'NT$ '+ ${prodVO.prodPrice}"></span>
                 </div>
 
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">規格 / 顏色</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-outline-success active">米白色</button>
-                                <button class="btn btn-outline-secondary">黑色</button>
-                            </div>
-                        </div>
+<!--                         <div class="mb-3"> -->
+<!--                             <label class="form-label">規格 / 顏色</label> -->
+<!--                             <div class="d-flex flex-wrap gap-2"> -->
+<!--                                 <button class="btn btn-outline-success active">米白色</button> -->
+<!--                                 <button class="btn btn-outline-secondary">黑色</button> -->
+<!--                             </div> -->
+<!--                         </div> -->
 
                         <div class="mb-4">
                             <label class="form-label">數量</label>
@@ -148,11 +149,11 @@
 
                 <!-- Product Description -->
                 <div class="mb-4">
-                    <h5 class="border-bottom border-secondary pb-2 mb-3">商品詳情</h5>
+                    <h5 class="border-bottom border-secondary pb-2 mb-3">商品介紹</h5>
                     <div class="text-muted">
-                        <p><strong>材質：</strong>100% 純棉帆布</p>
-                        <p><strong>尺寸：</strong>35cm x 40cm</p>
-                        <p>這款帆布袋專為都會生活設計，無論是裝筆電、書籍還是日常雜物都非常適合。簡約的設計風格，輕鬆搭配各種穿著。</p>
+<!--                         <p><strong>材質：</strong>100% 純棉帆布</p> -->
+<!--                         <p><strong>尺寸：</strong>35cm x 40cm</p> -->
+                        <p th:text="${prodVO.prodContent}"></p>
                     </div>
                 </div>
 
@@ -244,14 +245,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
-        function changeMainImage(thumb, src) {
-            document.getElementById('mainProductImage').src = src;
-            document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
+//點擊下方小圖會替換上方大圖
+        let MainImage = document.getElementById("mainProductImage");
+        let images = document.querySelectorAll(".product-thumb");
+
+        function removeActive(){
+           images.forEach(function(image,i){
+                image.classList.remove("active");
+            }) 
         }
+        images.forEach(function(image,i){
+            image.addEventListener("click", function(){
+                MainImage.src = image.src;
+                removeActive();
+                image.classList.add("active");
+            })
+        })
+
+// -----------------------------------------------------------------------
 
         $(document).ready(function() {
-            let qty = 1;
+            images[0].classList.add("active");
+        	
+        	let qty = 1;
             
             $('#btnMinus').click(function() {
                 if (qty > 1) {

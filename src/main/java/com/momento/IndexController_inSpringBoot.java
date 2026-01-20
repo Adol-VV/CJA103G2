@@ -1,15 +1,21 @@
 package com.momento;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-import java.util.*;
+import com.momento.article.model.ArticleRepository;
+import com.momento.article.model.ArticleVO;
 
 
 
@@ -21,6 +27,10 @@ public class IndexController_inSpringBoot {
 	// 目前自動裝配了EmpService --> 供第66使用
 
 	
+	// 注入 ArticleRepository 以便在首頁撈取文章資料
+    @Autowired
+    private ArticleRepository articleRepository;
+	
     // inject(注入資料) via application.properties
     @Value("${welcome.message}")
     private String message;
@@ -30,6 +40,13 @@ public class IndexController_inSpringBoot {
     public String index(Model model) {
     	model.addAttribute("message", message);
         model.addAttribute("myList", myList);
+        
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+        Page<ArticleVO> page = articleRepository.findAll(pageable);
+        
+     // 將撈到的文章列表放入 Model，名稱為 "hotArticles"
+        model.addAttribute("hotArticles", page.getContent());
+        
         return "index"; //view
     }
     
