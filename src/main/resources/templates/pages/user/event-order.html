@@ -108,6 +108,34 @@
                     </div>
                 </div>
 
+                <!-- Token Discount -->
+                <div class="card mb-4">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0"><i class="fas fa-coins me-2 text-warning"></i>代幣折抵</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info bg-dark border-info mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>可用代幣：<strong id="availableTokens">0</strong> 元</span>
+                                <button type="button" class="btn btn-sm btn-warning" id="btnUseTokens">
+                                    <i class="fas fa-magic me-1"></i>一鍵使用
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary">
+                                <i class="fas fa-coins text-warning"></i>
+                            </span>
+                            <input type="number" class="form-control" id="tokenAmount" placeholder="輸入使用代幣數量" min="0"
+                                value="0">
+                            <span class="input-group-text bg-dark border-secondary">元</span>
+                        </div>
+
+                        <div id="tokenMessage" class="mt-2 small text-muted"></div>
+                    </div>
+                </div>
+
                 <!-- Payment Method -->
                 <div class="card mb-4">
                     <div class="card-header border-secondary bg-transparent">
@@ -176,6 +204,11 @@
                             <span class="text-muted">小計</span>
                             <strong id="subtotal">NT$ 0</strong>
                         </div>
+                        <div class="d-flex justify-content-between mb-2" id="tokenDiscountRow"
+                            style="display: none !important;">
+                            <span class="text-success"><i class="fas fa-coins me-1"></i>代幣折抵</span>
+                            <strong class="text-success" id="tokenDiscount">- NT$ 0</strong>
+                        </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">總計</span>
                             <strong class="text-success fs-4" id="totalAmount">NT$ 0</strong>
@@ -194,6 +227,69 @@
                             您的付款資訊將受到保護
                         </p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Section (預設隱藏) -->
+    <div class="container py-5" id="orderSuccessSection" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- 成功訊息 -->
+                <div class="card bg-dark border-secondary text-center mb-4">
+                    <div class="card-body py-5">
+                        <div class="success-animation mb-4">
+                            <i class="fas fa-check-circle fa-5x text-success"></i>
+                        </div>
+                        <h2 class="mb-3">購票成功！</h2>
+                        <p class="text-muted mb-4">感謝您的購買，訂單確認信已寄送至您的信箱</p>
+
+                        <div class="bg-black rounded p-4 mb-4 d-inline-block">
+                            <div class="text-muted small mb-1">訂單編號</div>
+                            <div class="h4 text-success mb-0" id="successOrderNumber">MOM-20240120-001234</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code 顯示 -->
+                <div class="card bg-dark border-secondary text-center mb-4">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i>電子票券</h5>
+                    </div>
+                    <div class="card-body py-4">
+                        <p class="text-muted small mb-3">請出示此 QR Code 入場</p>
+                        <img id="qrCodeImage" src="" alt="QR Code" class="img-fluid" style="max-width: 300px;">
+                        <p class="text-muted small mt-3 mb-0">
+                            <i class="fas fa-info-circle me-1"></i>票券已同步寄送至您的信箱
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 代幣回饋通知 (滿 300 才顯示) -->
+                <div id="tokenRewardNotice" class="alert alert-success bg-success bg-opacity-10 border-success mb-4"
+                    style="display: none;">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-coins fa-2x text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-0 text-success">
+                                🎉 恭喜獲得 <strong id="tokenRewardAmount">5</strong> 元代幣回饋！
+                            </h6>
+                            <small class="text-muted">
+                                代幣已自動存入您的帳戶，可於下次消費折抵使用
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按鈕 -->
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="/member/order/history" class="btn btn-primary">
+                        <i class="fas fa-list me-2"></i>查看我的訂單
+                    </a>
+                    <a href="/event/list" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>繼續瀏覽活動
+                    </a>
                 </div>
             </div>
         </div>
@@ -254,6 +350,86 @@
             document.getElementById('subtotal').textContent = 'NT$ ' + total.toLocaleString();
             document.getElementById('totalAmount').textContent = 'NT$ ' + total.toLocaleString();
 
+            // === 代幣折抵功能 ===
+            const availableTokens = 150; // TODO: 從後端取得會員可用代幣
+            document.getElementById('availableTokens').textContent = availableTokens;
+
+            let currentTokenDiscount = 0;
+            let orderSubtotal = total;
+
+            // 計算應付金額
+            function calculateTotal() {
+                const finalAmount = Math.max(0, orderSubtotal - currentTokenDiscount);
+                document.getElementById('totalAmount').textContent = 'NT$ ' + finalAmount.toLocaleString();
+
+                // 顯示/隱藏代幣折抵行
+                const discountRow = document.getElementById('tokenDiscountRow');
+                if (currentTokenDiscount > 0) {
+                    discountRow.style.display = 'flex';
+                    document.getElementById('tokenDiscount').textContent = '- NT$ ' + currentTokenDiscount.toLocaleString();
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
+
+            // 一鍵使用代幣
+            document.getElementById('btnUseTokens').addEventListener('click', function () {
+                // 智能計算應使用的代幣數量
+                let tokenToUse = 0;
+                const messageEl = document.getElementById('tokenMessage');
+
+                if (availableTokens >= orderSubtotal) {
+                    // 情況1: 代幣 >= 訂單金額 → 只折抵訂單金額
+                    tokenToUse = orderSubtotal;
+                    messageEl.innerHTML = `<i class="fas fa-check-circle text-success"></i> 已使用 ${tokenToUse} 元代幣，剩餘 ${availableTokens - tokenToUse} 元`;
+                    messageEl.className = 'mt-2 small text-success';
+                } else {
+                    // 情況2: 代幣 < 訂單金額 → 全部用完
+                    tokenToUse = availableTokens;
+                    messageEl.innerHTML = `<i class="fas fa-check-circle text-success"></i> 已使用全部 ${tokenToUse} 元代幣，還需支付 ${orderSubtotal - tokenToUse} 元`;
+                    messageEl.className = 'mt-2 small text-success';
+                }
+
+                // 更新輸入框和折抵金額
+                document.getElementById('tokenAmount').value = tokenToUse;
+                currentTokenDiscount = tokenToUse;
+                calculateTotal();
+            });
+
+            // 手動輸入代幣數量
+            document.getElementById('tokenAmount').addEventListener('input', function () {
+                let inputValue = parseInt(this.value) || 0;
+                const messageEl = document.getElementById('tokenMessage');
+
+                // 驗證輸入
+                if (inputValue < 0) {
+                    inputValue = 0;
+                    this.value = 0;
+                }
+
+                if (inputValue > availableTokens) {
+                    inputValue = availableTokens;
+                    this.value = availableTokens;
+                    messageEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 超過可用代幣，已自動調整為 ${availableTokens} 元`;
+                    messageEl.className = 'mt-2 small text-warning';
+                } else if (inputValue > orderSubtotal) {
+                    inputValue = orderSubtotal;
+                    this.value = orderSubtotal;
+                    messageEl.innerHTML = `<i class="fas fa-info-circle"></i> 超過訂單金額，已自動調整為 ${orderSubtotal} 元`;
+                    messageEl.className = 'mt-2 small text-info';
+                } else if (inputValue > 0) {
+                    const remaining = availableTokens - inputValue;
+                    const toPay = orderSubtotal - inputValue;
+                    messageEl.innerHTML = `<i class="fas fa-check-circle"></i> 使用 ${inputValue} 元代幣，剩餘 ${remaining} 元，還需支付 ${toPay} 元`;
+                    messageEl.className = 'mt-2 small text-success';
+                } else {
+                    messageEl.innerHTML = '';
+                }
+
+                currentTokenDiscount = inputValue;
+                calculateTotal();
+            });
+
             // 提交訂單
             document.getElementById('btnSubmitOrder').addEventListener('click', function () {
                 const form = document.getElementById('orderForm');
@@ -279,20 +455,10 @@
                     buyerPhone: form.buyerPhone.value,
                     buyerEmail: form.buyerEmail.value,
                     paymentMethod: paymentMethod,
-                    totalAmount: total
+                    tokenDiscount: currentTokenDiscount,
+                    totalAmount: orderSubtotal - currentTokenDiscount
                 };
 
-                // 顯示訂單資料（實際應該提交到後端）
-                console.log('訂單資料：', orderData);
-
-                alert('訂單資料已準備完成！\n\n' +
-                    '訂購人：' + orderData.buyerName + '\n' +
-                    'Email：' + orderData.buyerEmail + '\n' +
-                    '付款方式：' + (paymentMethod === 'ECPAY' ? '綠界科技' : 'LINE Pay') + '\n' +
-                    '總金額：NT$ ' + total.toLocaleString() + '\n\n' +
-                    '⚠️ 訂單處理、付款流程由其他模組負責');
-
-                // 實際應該呼叫後端 API
                 // fetch('/api/orders/create', {
                 //     method: 'POST',
                 //     headers: { 'Content-Type': 'application/json' },

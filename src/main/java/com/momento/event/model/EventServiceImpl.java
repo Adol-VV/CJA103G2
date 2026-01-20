@@ -104,8 +104,8 @@ public class EventServiceImpl implements EventService {
                 EventVO event = eventRepository.findById(eventId)
                                 .orElseThrow(() -> new RuntimeException("活動不存在"));
 
-                // 查詢圖片
-                List<EventImageVO> images = eventImageRepository.findByEvent_EventId(eventId);
+                // 查詢圖片 (按 ID 排序,確保與列表頁一致)
+                List<EventImageVO> images = eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId);
 
                 // 查詢收藏數量
                 Long favoriteCount = eventFavRepository.countByEvent_EventId(eventId);

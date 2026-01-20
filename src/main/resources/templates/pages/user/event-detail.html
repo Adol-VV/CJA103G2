@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +16,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
+
+
     <style>
         .event-main img {
             border-radius: 12px;
@@ -133,6 +137,26 @@
                 opacity: 1;
             }
         }
+
+        /* ========================================
+   強制修正並排問題
+   ======================================== */
+        @media (min-width: 768px) {
+            .container>.row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+            }
+
+            .col-md-8.event-main {
+                flex: 0 0 auto !important;
+                width: 66.666667% !important;
+            }
+
+            .col-md-4 {
+                flex: 0 0 auto !important;
+                width: 33.333333% !important;
+            }
+        }
     </style>
 </head>
 
@@ -183,9 +207,9 @@
             </ol>
         </nav>
 
-        <div class="row">
+        <div class="row g-4 g-lg-5">
             <!-- Left: Event Info -->
-            <div class="col-lg-8 event-main">
+            <div class="col-md-8 event-main">
                 <!-- Image Gallery -->
                 <div class="gallery mb-4">
                     <!-- Main Image -->
@@ -408,7 +432,7 @@
             </div>
 
             <!-- Right: Ticket Selection (Sticky) -->
-            <div class="col-lg-4">
+            <div class="col-md-4">
                 <aside class="ticket-sidebar sticky-top">
                     <div class="card">
                         <div class="card-header border-secondary bg-transparent">
@@ -433,11 +457,11 @@
                                         <div class="quantity-control d-flex align-items-center gap-2">
                                             <button class="btn btn-sm btn-outline-secondary px-2 btn-decrease"
                                                 th:data-ticket-id="${ticket.ticketId}">-</button>
-                                            <input type="number" value="0" min="0" th:max="${ticket.remain}"
-                                                th:data-ticket-id="${ticket.ticketId}" th:data-price="${ticket.price}"
-                                                th:data-name="${ticket.ticketName}"
+                                            <input type="text" value="0" readonly th:data-ticket-id="${ticket.ticketId}"
+                                                th:data-price="${ticket.price}" th:data-name="${ticket.ticketName}"
+                                                th:data-max="${ticket.remain}"
                                                 class="form-control form-control-sm text-center bg-dark border-secondary text-white ticket-quantity"
-                                                style="width: 60px;">
+                                                style="width: 60px; cursor: default;">
                                             <button class="btn btn-sm btn-outline-secondary px-2 btn-increase"
                                                 th:data-ticket-id="${ticket.ticketId}"
                                                 th:data-max="${ticket.remain}">+</button>
@@ -495,7 +519,8 @@
 
             // 增加數量
             document.querySelectorAll('.btn-increase').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function (event) {
+                    event.preventDefault(); // 防止頁面跳轉
                     const ticketId = this.dataset.ticketId;
                     const max = parseInt(this.dataset.max);
                     const input = document.querySelector(`.ticket-quantity[data-ticket-id="${ticketId}"]`);
@@ -510,7 +535,8 @@
 
             // 減少數量
             document.querySelectorAll('.btn-decrease').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function (event) {
+                    event.preventDefault(); // 防止頁面跳轉
                     const ticketId = this.dataset.ticketId;
                     const input = document.querySelector(`.ticket-quantity[data-ticket-id="${ticketId}"]`);
                     const currentValue = parseInt(input.value) || 0;
@@ -522,17 +548,10 @@
                 });
             });
 
-            // 監聽手動輸入
+            // 防止鍵盤輸入（包括上下左右鍵）
             document.querySelectorAll('.ticket-quantity').forEach(input => {
-                input.addEventListener('input', function () {
-                    const max = parseInt(this.max);
-                    let value = parseInt(this.value) || 0;
-
-                    if (value < 0) value = 0;
-                    if (value > max) value = max;
-
-                    this.value = value;
-                    calculateTotal();
+                input.addEventListener('keydown', function (event) {
+                    event.preventDefault(); // 阻止所有鍵盤輸入
                 });
             });
 
@@ -566,172 +585,6 @@
             });
         });
     </script>
-
-    <!-- Checkout Modal (保留原有的 Modal，供其他人使用) -->
-
-    <!-- Checkout Modal -->
-    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="background: var(--card-bg);">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">購票結帳</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Progress Steps -->
-                    <ul class="nav nav-pills mb-4 justify-content-center">
-                        <li class="nav-item">
-                            <span class="nav-link active step-indicator bg-transparent text-white" data-step="1">
-                                <span class="step-number">1</span> 填寫資料
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link step-indicator bg-transparent text-white" data-step="2">
-                                <span class="step-number">2</span> 選擇付款
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link step-indicator bg-transparent text-white" data-step="3">
-                                <span class="step-number">3</span> 完成訂單
-                            </span>
-                        </li>
-                    </ul>
-
-                    <!-- Step 1: User Info -->
-                    <div class="checkout-step active" id="step1">
-                        <h6 class="mb-3 border-bottom border-secondary pb-2">購票人資料</h6>
-                        <form id="checkoutForm">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">姓名 *</label>
-                                    <input type="text" class="form-control" required value="王小明">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">手機 *</label>
-                                    <input type="tel" class="form-control" required value="0912345678">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Email *</label>
-                                    <input type="email" class="form-control" required value="wang@example.com">
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="remindMe" checked>
-                                        <label class="form-check-label" for="remindMe">
-                                            活動前一天 Email 提醒我
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="d-flex justify-content-end mt-4">
-                            <button class="btn btn-primary px-4" id="btnNextStep1">
-                                下一步 <i class="fas fa-arrow-right ms-1"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Payment -->
-                    <div class="checkout-step" id="step2">
-                        <h6 class="mb-3 border-bottom border-secondary pb-2">付款方式</h6>
-
-                        <!-- Token Usage -->
-                        <div
-                            class="alert alert-info d-flex justify-content-between align-items-center bg-dark border-info text-info">
-                            <span>可用代幣：<strong>120 元</strong></span>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="useTokens">
-                                <label class="form-check-label" for="useTokens">使用代幣折抵</label>
-                            </div>
-                        </div>
-
-                        <!-- Payment Methods -->
-                        <div class="payment-methods">
-                            <div class="form-check payment-option mb-3">
-                                <input type="radio" name="payment" id="payCredit" class="form-check-input" checked>
-                                <label class="form-check-label w-100" for="payCredit">
-                                    <i class="far fa-credit-card me-2"></i> 信用卡 (綠界)
-                                </label>
-                            </div>
-                            <div class="form-check payment-option mb-3">
-                                <input type="radio" name="payment" id="payLine" class="form-check-input">
-                                <label class="form-check-label w-100" for="payLine">
-                                    <i class="fab fa-line me-2 text-success"></i> LINE Pay
-                                </label>
-                            </div>
-                            <div class="form-check payment-option mb-3">
-                                <input type="radio" name="payment" id="payJko" class="form-check-input">
-                                <label class="form-check-label w-100" for="payJko">
-                                    <i class="fas fa-mobile-alt me-2 text-danger"></i> 街口支付
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Order Summary -->
-                        <div class="card bg-black border-secondary">
-                            <div class="card-body">
-                                <h6>訂單摘要</h6>
-                                <div class="d-flex justify-content-between mb-2 small text-muted">
-                                    <span id="summaryItems">票券</span>
-                                    <span id="summarySubtotal">NT$ 0</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2 small text-muted">
-                                    <span>服務費</span>
-                                    <span id="summaryFee">NT$ 0</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2 text-success small" id="tokenDiscount"
-                                    style="display:none!important;">
-                                    <span>代幣折抵</span>
-                                    <span>- NT$ 120</span>
-                                </div>
-                                <hr class="border-secondary">
-                                <div class="d-flex justify-content-between">
-                                    <strong>應付金額</strong>
-                                    <strong class="text-primary fs-5" id="finalAmount">NT$ 0</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <button class="btn btn-outline-secondary" id="btnBackStep2">
-                                <i class="fas fa-arrow-left ms-1"></i> 上一步
-                            </button>
-                            <button class="btn btn-primary px-4" id="btnConfirmPayment">
-                                確認付款
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Success -->
-                    <div class="checkout-step text-center py-4" id="step3">
-                        <div class="mb-4">
-                            <i class="fas fa-check-circle text-success" style="font-size: 80px;"></i>
-                        </div>
-                        <h4>購票成功！</h4>
-                        <p class="text-muted">訂單編號：#MOM20241231001</p>
-
-                        <div class="alert alert-success d-inline-block text-start mt-2">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-gift fs-3"></i>
-                                <div>
-                                    <strong>恭喜獲得代幣回饋！</strong><br>
-                                    本次消費滿 $300，已贈送 <strong>5 元代幣</strong> 至您的帳戶
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 col-md-6 mx-auto mt-5">
-                            <a href="dashboard.html" class="btn btn-primary">查看我的訂單</a>
-                            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">繼續瀏覽活動</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <!-- Email Reminder Modal -->
     <div class="modal fade" id="reminderModal" tabindex="-1">
@@ -893,20 +746,8 @@
                 $('#finalAmount').text('NT$ ' + currentTotal.toLocaleString());
             }
 
-            $('.quantity-control button').click(function () {
-                const btn = $(this);
-                const input = btn.siblings('input');
-                let val = parseInt(input.val());
-
-                if (btn.text() === '+') {
-                    if (val < 10) val++;
-                } else {
-                    if (val > 0) val--;
-                }
-
-                input.val(val);
-                updateTotal();
-            });
+            // 注意：票種數量的增減已由上方的 vanilla JS 處理 (line 520-549)
+            // 此處不需要重複綁定事件監聽器
 
             // --- Checkout Modal Logic ---
             $('#btnCheckout').click(function () {
