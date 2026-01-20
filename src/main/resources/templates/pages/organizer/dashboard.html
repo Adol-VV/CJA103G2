@@ -14,9 +14,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link href="../../css/momento-theme.css" rel="stylesheet">
-    <link href="../../css/dashboard.css" rel="stylesheet">
-    <link href="../../css/organizer-dashboard.css" rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}"  rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/organizer-dashboard.css}" rel="stylesheet">
 </head>
 
 <body style="background-color: #121212;">
@@ -109,16 +109,19 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
                 <!-- Dashboard Panel -->
-                <div class="content-panel active" id="panel-dashboard"
-                    th:insert="pages/organizer/partials/panel-dashboard"></div>
+                <div class="content-panel" id="panel-dashboard"
+                    th:classappend="${targetPanel == null || targetPanel == 'dashboard'} ? 'active' : ''"
+                    th:insert="~{pages/organizer/partials/panel-dashboard}"></div>
 
                 <!-- Notifications Panel -->
                 <div class="content-panel" id="panel-notifications"
-                    th:insert="pages/organizer/partials/panel-notifications"></div>
+                    th:classappend="${targetPanel == 'notifications'} ? 'active' : ''"
+                    th:insert="~{pages/organizer/partials/panel-notifications}"></div>
 
                 <!-- Notify Members Panel -->
                 <div class="content-panel" id="panel-notify-members"
-                    th:insert="pages/organizer/partials/panel-notify-members"></div>
+                     th:classappend="${targetPanel == 'send-page'} ? 'active' : ''"
+                    th:insert="~{pages/organizer/partials/panel-notify-members}"></div>
 
                 <!-- Events List Panel -->
                 <div class="content-panel" id="panel-events-list"
@@ -180,8 +183,11 @@
     <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
 
     <!-- Modularized JS -->
-    <script type="module" src="../../js/organizer/index.js"></script>
-    <script type="module" src="../../js/common/index.js"></script>
+    <script type="module" th:src="@{/js/organizer/index.js}"></script>
+    <script type="module" th:src="@{/js/common/index.js}"></script>
+
+
+
 </body>
 
 </html>
