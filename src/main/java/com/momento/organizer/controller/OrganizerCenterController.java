@@ -16,14 +16,14 @@ public class OrganizerCenterController {
     @Autowired
     private OrganizerService organizerService;
 
-    /*顯示登入頁面（公開） */
+
 
     @GetMapping("/login")
     public String showLoginPage() {
         return "pages/organizer/login";
     }
 
-    /*處理登入（公開）*/
+
 
     @PostMapping("/login")
     public String login(@RequestParam String account,
@@ -60,7 +60,6 @@ public class OrganizerCenterController {
         }
     }
 
-    /*登出 */
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
@@ -68,7 +67,6 @@ public class OrganizerCenterController {
         return "redirect:/";
     }
 
-    /* 主辦方後台首頁（需要登入）*/
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -80,7 +78,6 @@ public class OrganizerCenterController {
         return "pages/organizer/dashboard";
     }
 
-    /* 活動管理頁面（需要登入）*/
 
     @GetMapping("/events")
     public String events(HttpSession session) {
@@ -90,7 +87,6 @@ public class OrganizerCenterController {
         return "pages/organizer/events";
     }
 
-    /*商品管理頁面（需要登入）*/
 
     @GetMapping("/products")
     public String products(HttpSession session) {
@@ -100,7 +96,6 @@ public class OrganizerCenterController {
         return "pages/organizer/products";
     }
 
-    /*訂單管理頁面（需要登入）*/
 
     @GetMapping("/orders")
     public String orders(HttpSession session) {
@@ -110,7 +105,6 @@ public class OrganizerCenterController {
         return "pages/organizer/orders";
     }
 
-    /** 結算管理頁面
 
     @GetMapping("/settlements")
     public String settlements(HttpSession session) {

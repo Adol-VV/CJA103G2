@@ -75,4 +75,24 @@ public class OrganizerApplyController {
             return "pages/public/organizer-apply";
         }
     }
+
+    /**
+     * 檢查帳號是否已存在（AJAX API）
+     * GET /organizer/account/exists?account=xxx
+     */
+    @GetMapping("/account/exists")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public Boolean accountExists(@org.springframework.web.bind.annotation.RequestParam String account) {
+        return organizerService.existsByAccount(account);
+    }
+
+    /**
+     * 檢查 Email 是否已存在（AJAX API）
+     * GET /organizer/email/exists?email=xxx
+     */
+    @GetMapping("/email/exists")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public Boolean emailExists(@org.springframework.web.bind.annotation.RequestParam String email) {
+        return organizerService.existsByEmail(email);
+    }
 }
