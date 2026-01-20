@@ -137,10 +137,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/about}">關於我們</a></li>
                 </ul>
                 <form class="d-flex mx-auto col-lg-4" role="search">
                     <div class="input-group">
@@ -156,7 +156,7 @@
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
                             style="display:none; font-size: 0.6rem;">0</span>
                     </a>
-                    <a href="login.html" class="btn btn-primary btn-sm px-4">會員登入</a>
+                    <a th:href="@{/login}" class="btn btn-primary btn-sm px-4">會員登入</a>
                 </div>
             </div>
         </div>
@@ -177,21 +177,21 @@
                         <li><a href="#">影音出版</a></li>
                     </ul>
 
-<!--                     <hr class="border-secondary"> -->
+                    <!--                     <hr class="border-secondary"> -->
 
-<!--                     <h5 class="my-3">價格區間</h5> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price1"> -->
-<!--                         <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label> -->
-<!--                     </div> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price2"> -->
-<!--                         <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label> -->
-<!--                     </div> -->
-<!--                     <div class="form-check mb-2"> -->
-<!--                         <input class="form-check-input" type="checkbox" id="price3"> -->
-<!--                         <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label> -->
-<!--                     </div> -->
+                    <!--                     <h5 class="my-3">價格區間</h5> -->
+                    <!--                     <div class="form-check mb-2"> -->
+                    <!--                         <input class="form-check-input" type="checkbox" id="price1"> -->
+                    <!--                         <label class="form-check-label text-muted" for="price1">NT$ 0 - 500</label> -->
+                    <!--                     </div> -->
+                    <!--                     <div class="form-check mb-2"> -->
+                    <!--                         <input class="form-check-input" type="checkbox" id="price2"> -->
+                    <!--                         <label class="form-check-label text-muted" for="price2">NT$ 500 - 1,000</label> -->
+                    <!--                     </div> -->
+                    <!--                     <div class="form-check mb-2"> -->
+                    <!--                         <input class="form-check-input" type="checkbox" id="price3"> -->
+                    <!--                         <label class="form-check-label text-muted" for="price3">NT$ 1,000+</label> -->
+                    <!--                     </div> -->
                 </div>
             </aside>
 
@@ -212,17 +212,22 @@
 
                 <div class="row g-4" id="productGrid">
                     <!-- Product -->
-                    <div class="col-12 col-sm-6 col-lg-4" th:if="${prodVO.prodStatus!= 0}" th:each="prodVO : ${prodListData}">
+                    <div class="col-12 col-sm-6 col-lg-4" th:if="${prodVO.prodStatus!= 0}"
+                        th:each="prodVO : ${prodListData}">
                         <div class="card h-100 product-card">
                             <a th:href="listOneProd" class="text-decoration-none">
                                 <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/tshirt1/400/400" class="card-img-top">
-                                    <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
+                                    <img loading="lazy" src="https://picsum.photos/seed/tshirt1/400/400"
+                                        class="card-img-top">
+                                    <button class="btn-favorite"
+                                        onclick="event.preventDefault(); toggleFavorite(this);"><i
+                                            class="far fa-heart"></i></button>
                                 </div>
                             </a>
                             <div class="card-body">
                                 <a href="prod-detail.html?id=1" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;" th:text="${prodVO.prodName}">2024年度音樂會紀念T恤</h6>
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;"
+                                        th:text="${prodVO.prodName}">2024年度音樂會紀念T恤</h6>
                                 </a>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="price" th:text="${prodVO.prodPrice}">NT$ 880</span>
@@ -403,10 +408,10 @@
                 // Show simple feedback (safe method)
                 const originalHtml = btn.html();
                 btn.empty()
-                   .append($('<i>').addClass('fas fa-check'))
-                   .append(' 已加入')
-                   .removeClass('btn-primary')
-                   .addClass('btn-success');
+                    .append($('<i>').addClass('fas fa-check'))
+                    .append(' 已加入')
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
                 showToast('已加入購物車', 'success');
                 setTimeout(() => {
                     btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
@@ -462,25 +467,25 @@
             });
 
             // --- 商品排序功能 ---
-            $('#sortSelect').change(function() {
+            $('#sortSelect').change(function () {
                 const sortBy = $(this).val();
                 const $grid = $('#productGrid');
                 const $products = $grid.children('.col-12, .col-sm-6, .col-lg-4').get();
-                
-                $products.sort(function(a, b) {
+
+                $products.sort(function (a, b) {
                     // 從 data 屬性或內容中取得價格
                     const priceA = parseInt($(a).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
                     const priceB = parseInt($(b).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
-                    
+
                     // 取得是否熱銷（有 badge-hot 類別）
                     const hotA = $(a).find('.badge-hot').length ? 1 : 0;
                     const hotB = $(b).find('.badge-hot').length ? 1 : 0;
-                    
+
                     // 取得 data-date 或假設順序代表新舊
                     const indexA = $products.indexOf(a);
                     const indexB = $products.indexOf(b);
-                    
-                    switch(sortBy) {
+
+                    switch (sortBy) {
                         case 'price-asc':
                             return priceA - priceB;
                         case 'price-desc':
@@ -492,25 +497,25 @@
                             return hotB - hotA; // 熱銷的排前面
                     }
                 });
-                
+
                 // 重新排列 DOM
-                $.each($products, function(idx, el) {
+                $.each($products, function (idx, el) {
                     $grid.append(el);
                 });
-                
+
                 showToast('已依 ' + $('#sortSelect option:selected').text() + ' 排序', 'success');
             });
 
             // --- 分類篩選 ---
-            $('.product-filters .list-unstyled a').click(function(e) {
+            $('.product-filters .list-unstyled a').click(function (e) {
                 e.preventDefault();
                 $('.product-filters .list-unstyled a').removeClass('active');
                 $(this).addClass('active');
-                
+
                 const category = $(this).text().trim();
                 const $grid = $('.row.g-4').first();
                 const $products = $grid.find('.col-12, .col-md-6, .col-xl-3');
-                
+
                 // 模擬篩選（實際應從 API 取得資料）
                 if (category === '全部商品') {
                     $products.show();
@@ -519,14 +524,14 @@
                     // 這裡應該根據實際資料篩選
                     // 示例：假設沒有符合的商品
                     const hasResults = false; // 實際應檢查篩選結果
-                    
+
                     if (!hasResults) {
                         Momento.UI.showEmptyState($grid[0], {
                             icon: 'fas fa-box-open',
                             title: '此分類暫無商品',
                             message: `「${category}」分類目前沒有商品，看看其他分類吧`,
                             actionText: '查看全部商品',
-                            actionCallback: function() {
+                            actionCallback: function () {
                                 $('.product-filters .list-unstyled a').first().click();
                             }
                         });
@@ -537,9 +542,9 @@
             });
 
             // --- 價格區間篩選 ---
-            $('input[id^="price"]').change(function() {
+            $('input[id^="price"]').change(function () {
                 const selectedPrices = [];
-                $('input[id^="price"]:checked').each(function() {
+                $('input[id^="price"]:checked').each(function () {
                     selectedPrices.push($(this).next('label').text());
                 });
                 if (selectedPrices.length > 0) {

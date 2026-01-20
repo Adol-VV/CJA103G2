@@ -18,14 +18,15 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold text-success" href="../"><i class="fas fa-ticket-alt me-2"></i>Momento</a>
+            <a class="navbar-brand fw-bold text-success" th:href="@{/}"><i
+                    class="fas fa-ticket-alt me-2"></i>Momento</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">活動</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/member/login}">登入 / 註冊</a></li>
                 </ul>
             </div>
@@ -55,25 +56,25 @@
                             <div class="form-check">
                                 <input class="form-check-input bg-dark border-secondary" type="checkbox" checked
                                     id="catAll">
-                                <label class="form-check-label" for="catAll">全部顯示</label>
+                                <label class="form-check-label" for="catAll" style="color: white;">全部顯示</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input bg-dark border-secondary" type="checkbox" id="catNews">
-                                <label class="form-check-label" for="catNews">官方公告</label>
+                                <label class="form-check-label" for="catNews" style="color: white;">官方公告</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input bg-dark border-secondary" type="checkbox"
                                     id="catInterview">
-                                <label class="form-check-label" for="catInterview">藝人專訪</label>
+                                <label class="form-check-label" for="catInterview" style="color: white;">藝人專訪</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input bg-dark border-secondary" type="checkbox"
                                     id="catOrganizer">
-                                <label class="form-check-label" for="catOrganizer">主辦專欄</label>
+                                <label class="form-check-label" for="catOrganizer" style="color: white;">主辦專欄</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input bg-dark border-secondary" type="checkbox" id="catBehind">
-                                <label class="form-check-label" for="catBehind">幕後花絮</label>
+                                <label class="form-check-label" for="catBehind" style="color: white;">幕後花絮</label>
                             </div>
                         </div>
                         <div class="mb-3">
