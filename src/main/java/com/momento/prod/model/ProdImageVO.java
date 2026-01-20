@@ -55,6 +55,8 @@ public class ProdImageVO implements Serializable{
 		this.prodVO = prodVO;
 	}
 
+
+
 	public String getImageUrl() {
 		return imageUrl;
 	}
