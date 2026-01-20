@@ -70,7 +70,6 @@
 </head>
 
 <body>
-
     <div class="container">
         <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
             <div class="col-lg-5 col-md-7">
@@ -95,25 +94,30 @@
                         </div>
 
                         <!-- Login Form -->
-                        <form id="organizerLoginForm" class="mt-4">
+                        <form id="organizerLoginForm" th:action="@{/organizer/login}" method="post" class="mt-4">
+                            <!-- 通用錯誤訊息 -->
+                            <div class="alert alert-danger" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+
                             <div class="mb-3">
-                                <label class="form-label">主辦方帳號 (Email)</label>
+                                <label class="form-label">主辦方帳號</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                    <input type="email" class="form-control" id="orgEmail"
-                                        placeholder="organizer@example.com" required value="organizer@momento.com">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" name="account" th:value="${savedAccount}"
+                                        placeholder="請輸入帳號" required>
                                 </div>
+                                <small class="text-danger" th:if="${accountMsg}" th:text="${accountMsg}"></small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">密碼</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" class="form-control" id="orgPassword" required
-                                        value="password123">
+                                    <input type="password" class="form-control" name="password" id="orgPassword"
+                                        placeholder="請輸入密碼" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="far fa-eye"></i>
                                     </button>
                                 </div>
+                                <small class="text-danger" th:if="${passwordMsg}" th:text="${passwordMsg}"></small>
                             </div>
                             <div class="d-flex justify-content-between mb-4">
                                 <div class="form-check">
@@ -179,47 +183,9 @@
                     icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
-
-            // Login form submit
-            $('#organizerLoginForm').submit(function (e) {
-                e.preventDefault();
-                const email = $('#orgEmail').val().toLowerCase();
-                const btn = $(this).find('button[type="submit"]');
-
-                btn.prop('disabled', true)
-                    .empty()
-                    .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
-                    .append('驗證中...');
-
-                setTimeout(() => {
-                    // 驗證是否為主辦方帳號（模擬）
-                    if (!email.includes('organizer') && !email.includes('host') && !email.includes('org')) {
-                        btn.prop('disabled', false)
-                            .empty()
-                            .append($('<i>').addClass('fas fa-sign-in-alt me-2'))
-                            .append('登入主辦方後台');
-                        showToast('此帳號不是主辦方帳號，請確認後重試', 'warning');
-                        return;
-                    }
-
-                    const user = {
-                        email: email,
-                        name: '快樂文創',
-                        role: 'ORGANIZER',
-                        organizerId: 'ORG001'
-                    };
-                    localStorage.setItem('momento_user', JSON.stringify(user));
-                    localStorage.setItem('momento_token', 'mock-organizer-jwt-token');
-                    localStorage.setItem('momento_organizer_logged_in', 'true');
-
-                    showToast('登入成功！正在進入主辦方後台...', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/organizer/dashboard';
-                    }, 800);
-                }, 1200);
-            });
         });
 
+        // Toast 通知函數（獨立於 document.ready 之外）
         function showToast(message, type) {
             let container = document.getElementById('toastContainer');
             if (!container) {

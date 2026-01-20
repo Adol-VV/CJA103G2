@@ -600,7 +600,7 @@
 
             // 延遲 500ms 後才檢查（避免每次輸入都發送請求）
             accountCheckTimeout = setTimeout(function () {
-                $.get('/api/organizer/check-account', { account: account }, function (exists) {
+                $.get('/organizer/account/exists', { account: account }, function (exists) {
                     if (exists) {
                         $('#accountErrorMsg').text('此帳號已被使用');
                         $('#accountError').removeClass('d-none');
@@ -635,7 +635,7 @@
 
             // 延遲 500ms 後才檢查
             emailCheckTimeout = setTimeout(function () {
-                $.get('/api/organizer/check-email', { email: email }, function (exists) {
+                $.get('/organizer/email/exists', { email: email }, function (exists) {
                     if (exists) {
                         $('#emailErrorMsg').text('此 Email 已被使用');
                         $('#emailError').removeClass('d-none');
