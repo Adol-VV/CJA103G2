@@ -22,6 +22,16 @@ public class PublicPageController {
         return "pages/public/privacy";
     }
 
+    @GetMapping("/about")
+    public String about() {
+        return "pages/public/about";
+    }
+
+    @GetMapping("/faq")
+    public String faq() {
+        return "pages/public/faq";
+    }
+
     @GetMapping("cart")
     public String listaalEmp(Model model) {
         return "pages/user/cart";

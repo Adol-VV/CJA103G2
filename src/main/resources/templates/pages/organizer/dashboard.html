@@ -92,7 +92,7 @@
         <div class="row">
             <!-- Sidebar Partial -->
             <nav id="organizerSidebar" class="col-md-3 col-lg-2 sidebar pt-3 d-none d-md-block"
-                data-partial="../../pages/organizer/partials/sidebar.html">
+                th:insert="pages/organizer/partials/sidebar">
             </nav>
 
             <!-- Mobile Sidebar Offcanvas -->
@@ -101,7 +101,7 @@
                     <h5 class="offcanvas-title">選單</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
                 </div>
-                <div class="offcanvas-body p-0 pt-3" data-partial="../../pages/organizer/partials/sidebar.html">
+                <div class="offcanvas-body p-0 pt-3" th:insert="pages/organizer/partials/sidebar">
                     <!-- Mobile content loaded here -->
                 </div>
             </div>
@@ -110,66 +110,64 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
                 <!-- Dashboard Panel -->
                 <div class="content-panel active" id="panel-dashboard"
-                    data-partial="../../pages/organizer/partials/panel-dashboard.html"></div>
+                    th:insert="pages/organizer/partials/panel-dashboard"></div>
 
                 <!-- Notifications Panel -->
                 <div class="content-panel" id="panel-notifications"
-                    data-partial="../../pages/organizer/partials/panel-notifications.html"></div>
+                    th:insert="pages/organizer/partials/panel-notifications"></div>
 
                 <!-- Notify Members Panel -->
                 <div class="content-panel" id="panel-notify-members"
-                    data-partial="../../pages/organizer/partials/panel-notify-members.html"></div>
+                    th:insert="pages/organizer/partials/panel-notify-members"></div>
 
                 <!-- Events List Panel -->
                 <div class="content-panel" id="panel-events-list"
-                    data-partial="../../pages/organizer/partials/panel-events-list.html"></div>
+                    th:insert="pages/organizer/partials/panel-events-list"></div>
 
                 <!-- Event Create Panel -->
                 <div class="content-panel" id="panel-event-create"
-                    data-partial="../../pages/organizer/partials/panel-event-create.html"></div>
+                    th:insert="pages/organizer/partials/panel-event-create"></div>
 
                 <!-- Orders Panel -->
-                <div class="content-panel" id="panel-orders"
-                    data-partial="../../pages/organizer/partials/panel-orders.html"></div>
+                <div class="content-panel" id="panel-orders" th:insert="pages/organizer/partials/panel-orders"></div>
 
                 <!-- Ticket Scanner Panel -->
                 <div class="content-panel" id="panel-ticket-scanner"
-                    data-partial="../../pages/organizer/partials/panel-ticket-scanner.html"></div>
+                    th:insert="pages/organizer/partials/panel-ticket-scanner"></div>
 
                 <!-- Product List Panel -->
                 <div class="content-panel" id="panel-product-list"
-                    data-partial="../../pages/organizer/partials/panel-product-list.html"></div>
+                    th:insert="pages/organizer/partials/panel-product-list"></div>
 
                 <!-- Product Create Panel -->
                 <div class="content-panel" id="panel-product-create"
-                    data-partial="../../pages/organizer/partials/panel-product-create.html"></div>
+                    th:insert="pages/organizer/partials/panel-product-create"></div>
 
                 <!-- Product Orders Panel -->
                 <div class="content-panel" id="panel-product-orders"
-                    data-partial="../../pages/organizer/partials/panel-product-orders.html"></div>
+                    th:insert="pages/organizer/partials/panel-product-orders"></div>
 
                 <!-- Reports Panel -->
-                <div class="content-panel" id="panel-reports"
-                    data-partial="../../pages/organizer/partials/panel-reports.html"></div>
+                <div class="content-panel" id="panel-reports" th:insert="pages/organizer/partials/panel-reports"></div>
 
                 <!-- Settlement Panel -->
-                <div class="content-panel" id="panel-settlement"
-                    data-partial="../../pages/organizer/partials/panel-settlement.html"></div>
+                <div class="content-panel" id="panel-settlement" th:insert="pages/organizer/partials/panel-settlement">
+                </div>
 
                 <!-- Article List Panel -->
                 <div class="content-panel" id="panel-article-list"
-                    data-partial="../../pages/organizer/partials/panel-article-list.html"></div>
+                    th:insert="pages/organizer/partials/panel-article-list"></div>
 
                 <!-- Article Editor Panel -->
                 <div class="content-panel" id="panel-article-editor"
-                    data-partial="../../pages/organizer/partials/panel-article-editor.html"></div>
+                    th:insert="pages/organizer/partials/panel-article-editor"></div>
 
                 <!-- Settings Panel -->
-                <div class="content-panel" id="panel-settings"
-                    data-partial="../../pages/organizer/partials/panel-settings.html"></div>
+                <div class="content-panel" id="panel-settings" th:insert="pages/organizer/partials/panel-settings">
+                </div>
 
                 <!-- Modals Partial -->
-                <div data-partial="../../pages/organizer/partials/modals.html"></div>
+                <div th:insert="pages/organizer/partials/modals"></div>
 
             </main>
         </div>
