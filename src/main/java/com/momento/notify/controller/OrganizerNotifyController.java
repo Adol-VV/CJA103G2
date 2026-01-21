@@ -4,6 +4,7 @@ import com.momento.emp.model.EmpVO;
 import com.momento.notify.model.OrganizerNotifyService;
 import com.momento.notify.model.OrganizerNotifyVO;
 import com.momento.organizer.model.OrganizerVO;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Digits;
@@ -14,7 +15,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -76,35 +79,79 @@ public class OrganizerNotifyController {
 //        return "redirect:/organizer/notify/send-page";
 //    }
     @PostMapping("/addNotify")
-    public String addNotify(@ModelAttribute("organizerNotifyVO") OrganizerNotifyVO vo) {
+    public String addNotify(@ModelAttribute("organizerNotifyVO") OrganizerNotifyVO vo, RedirectAttributes redirect) {
+        if (vo.getEmpVO() == null){
+            // 塞資料庫裡已有的員工編號 (ex  1)
+            EmpVO tempEmp = new EmpVO();
+            tempEmp.setEmpId(1);
+            vo.setEmpVO(tempEmp);
+        }
 
-        // 1. 解決 EMP_ID 不能為 null 的問題
-        // 因為資料庫規定一定要有員工 ID，我們先暫時塞一個資料庫裡已經有的員工編號 (例如 1)
-        EmpVO tempEmp = new EmpVO();
-        tempEmp.setEmpId(1); // 請確認資料庫 EMP 表中是否有編號 1 的員工
-        vo.setEmpVO(tempEmp);
+        if (vo.getOrganizerVO() == null){
+            // 塞入主辦方 ID (ORGANIZER_ID)
+            OrganizerVO tempOrg = new OrganizerVO();
+            tempOrg.setOrganizerId(1);
+            vo.setOrganizerVO(tempOrg);
+        }
 
-        // 2. 同時也要塞入主辦方 ID (ORGANIZER_ID)
-        // 否則接下來可能會換成報 ORGANIZER_ID cannot be null
-        OrganizerVO tempOrg = new OrganizerVO();
-        tempOrg.setOrganizerId(1); // 假設目前登入的主辦方編號是 1
-        vo.setOrganizerVO(tempOrg);
-
-        // 3. 執行儲存
+        //  執行儲存
         orgNotifySvc.addNotify(vo);
+
+        // 發送成功訊息提示
+        redirect.addFlashAttribute("successMessage", "成功發送通知");
 
         return "redirect:/organizer/notify/send-page";
     }
 
     @GetMapping("/send-page")
-    public String showSendPage(ModelMap model){
-        List<OrganizerNotifyVO> list = orgNotifySvc.getByOrgId(1); // 假設目前主辦方 ID 為 1
-        model.addAttribute("notifyListData", list);
-        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
-        model.addAttribute("targetPanel", "send-page");
+    public String showSendPage(ModelMap model, HttpSession session){
+        // 串接登入後, 改為Integer organizerId = (Integer) session.getAttribute("organizerId");
+        Integer organizerId = 1; // 假設目前主辦方 ID 為 1
+        OrganizerVO organizer = new OrganizerVO();
+        organizer.setOrganizerId(organizerId);
+        organizer.setName("測試主辦方(ID:1)");
 
+        model.addAttribute("targetPanel", "send-page");
+        model.addAttribute("organizer", organizer);
+        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
+
+        try {
+
+            List<OrganizerNotifyVO> list = orgNotifySvc.getByOrgId(organizerId);
+            model.addAttribute("notifyListData", list);
+        } catch (Exception e) {
+            model.addAttribute("notifyListData", new ArrayList<OrganizerNotifyVO>());
+        }
+
+//        model.addAttribute("notifyListData", list);
+//        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
+//        model.addAttribute("targetPanel", "send-page");
 //        model.addAttribute("notifyListData", orgNotifySvc.getAll());
         return "pages/organizer/dashboard";
+    }
+
+    @GetMapping("/countMembers")
+    @ResponseBody
+    public Integer countMembers(@RequestParam String targetId){
+
+        if ("event-1".equals(targetId)){
+            return 856; // 假資料: 維也納之夜的人數
+        } else if ("event-2".equals(targetId)){
+            return 234; // 假資料: 弦樂四重奏的人數
+        } else if ("prod-1".equals(targetId)){
+            return 156; // 假資料:  官方周邊T-SHIRT
+        } else if ("prod-2".equals(targetId)){
+            return 89; // 假資料: 限定版海報組
+        }
+
+        //        if (targetId == null || !targetId.contains("-")) return 0;
+//        String[] parts = targetId.split("-");
+//        String type = parts[0]; // "event" 或 "prod"
+//        Integer id = Integer.valueOf(parts[1]);
+//
+//        // 呼叫您剛剛在 Service 寫的動態查詢方法
+//        return orgNotifySvc.countTargetMembers(type, id);
+        return (int)(Math.random()*100);  // 不是以上活動, 回傳隨機數字
     }
 
     @GetMapping("/getOrganizerNotify")
@@ -113,8 +160,17 @@ public class OrganizerNotifyController {
         List<OrganizerNotifyVO> list = orgNotifySvc.getByOrgId(Integer.valueOf(organizerId));
         model.addAttribute("notifyListData", list);
         model.addAttribute("targetPanel", "notifications"); // 讓通知中心亮起
+
+        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
+        OrganizerVO organizer = new OrganizerVO();
+        organizer.setOrganizerId(Integer.valueOf(organizerId));
+        organizer.setName("測試主辦方");
+        model.addAttribute("organizer", organizer);
+
         return "pages/organizer/dashboard";
     }
+
+
 
     // 錯誤處理
     @ExceptionHandler(value = {ConstraintViolationException.class})

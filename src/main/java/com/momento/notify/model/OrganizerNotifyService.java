@@ -1,5 +1,7 @@
 package com.momento.notify.model;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,9 @@ import java.util.Optional;
 public class OrganizerNotifyService {
     @Autowired
     private OrganizerNotifyRepository repository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public void addNotify(OrganizerNotifyVO organizerNotifyVO){
         repository.save(organizerNotifyVO);
@@ -29,6 +34,8 @@ public class OrganizerNotifyService {
         Optional<OrganizerNotifyVO> optional = repository.findById(organizerNotifyId);
         return optional.orElse(null); // 如果找不到就回傳 null
     }
+
+
 
     public List<OrganizerNotifyVO> getByOrgId(Integer organizerId){
         return repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
