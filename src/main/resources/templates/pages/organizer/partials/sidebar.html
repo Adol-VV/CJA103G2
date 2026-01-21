@@ -1,7 +1,7 @@
-<ul class="nav flex-column">
+<ul class="nav flex-column" th:fragment="organizerSidebar">
     <!-- 總覽 -->
     <li class="nav-item">
-        <a class="nav-link active" href="#dashboard" data-section="dashboard">
+        <a class="nav-link active" th:href="@{/organizer/dashboard}">
             <i class="fas fa-th-large"></i> 總覽
         </a>
     </li>
@@ -10,13 +10,15 @@
     <h6 class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase"
         style="font-size: 0.75rem; letter-spacing: 1px;">通知管理</h6>
     <li class="nav-item">
-        <a class="nav-link" href="#notifications" data-section="notifications">
+        <a class="nav-link" th:href="@{/organizer/notify/getOrganizerNotifications(organizerId=1)}">
             <i class="fas fa-bell"></i> 通知中心
-            <span class="badge bg-danger float-end" id="notificationBadge">3</span>
+            <span class="badge bg-danger float-end" id="notificationBadge" th:text="${notifyListData != null ? notifyListData.size() : 0}">0</span>
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#notify-members" data-section="notify-members">
+        <a class="nav-link"
+           th:href="@{/organizer/notify/send-page}" data-section="notify-members"
+           th:classappend="${targetPanel == 'notify-members'} ? 'active' : ''">
             <i class="fas fa-bullhorn"></i> 通知會員
         </a>
     </li>
