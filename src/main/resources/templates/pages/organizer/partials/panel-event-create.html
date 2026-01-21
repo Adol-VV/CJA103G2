@@ -203,15 +203,6 @@
                 <div class="card-body">
                     <h5 class="mb-4">活動詳細內容</h5>
                     <div class="mb-4">
-                        <label class="form-label required">活動簡介</label>
-                        <textarea class="form-control" id="eventSummary" name="eventSummary" rows="3" maxlength="200"
-                            placeholder="簡短描述活動亮點,吸引觀眾購票 (建議 50-200 字)" required></textarea>
-                        <div class="d-flex justify-content-between mt-1">
-                            <small class="text-muted">此內容將顯示在活動列表卡片上</small>
-                            <small class="text-muted"><span class="char-count">0</span>/200</small>
-                        </div>
-                    </div>
-                    <div class="mb-4">
                         <label class="form-label required">詳細說明</label>
                         <div id="eventContent"
                             style="min-height: 200px; background: #1a1a1a; border: 1px solid #444; border-radius: 4px; padding: 10px;">
@@ -434,11 +425,6 @@
             }
         });
 
-        // ========== 字數統計 ==========
-        $('#eventSummary').on('input', function () {
-            $('.char-count').text($(this).val().length);
-        });
-
         // ========== 儲存草稿 ==========
         $('#btnSaveDraft').click(function () {
             const btn = $(this);
@@ -463,11 +449,9 @@
                 title: $('[name="eventName"]').val(),
                 typeId: parseInt($('#eventType').val()),
                 place: $('[name="eventVenue"]').val(),
-                address: $('[name="eventAddress"]').val(),
                 eventAt: $('#eventDate').val() + 'T' + $('#eventTime').val() + ':00',
                 startedAt: $('#saleStart').val() + ':00',
                 endedAt: $('#saleEnd').val() + ':00',
-                summary: $('#eventSummary').val(),
                 content: $('#eventContent').html() || $('#eventContent').text() || '',
                 bannerUrl: uploadedBannerUrl || null,
                 imageUrls: [], // TODO: 相簿功能

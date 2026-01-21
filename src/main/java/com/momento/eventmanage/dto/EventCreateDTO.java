@@ -16,9 +16,8 @@ public class EventCreateDTO {
     // 基本資訊
     private String title; // 活動名稱
     private Integer typeId; // 活動類型 ID
-    private String place; // 活動地點
+    private String place; // 活動地點 (對應 PLACE 欄位)
     private LocalDateTime eventAt; // 活動舉辦時間
-    private String summary; // 活動簡介
 
     // 售票時間
     private LocalDateTime startedAt; // 售票開始時間
@@ -131,14 +130,6 @@ public class EventCreateDTO {
 
     public void setEventAt(LocalDateTime eventAt) {
         this.eventAt = eventAt;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 
     public LocalDateTime getStartedAt() {
