@@ -19,21 +19,21 @@ import com.momento.prod.model.ProdVO;
 
 
 
-@SpringBootApplication
-public class Test_Application_CommandLineRunner implements CommandLineRunner {
+//@SpringBootApplication
+//public class Test_Application_CommandLineRunner implements CommandLineRunner {
     
-	@Autowired
-	ProdRepository repository ;
-	
-	@Autowired
-    private SessionFactory sessionFactory;
-	
-	public static void main(String[] args) {
-        SpringApplication.run(Test_Application_CommandLineRunner.class);
-    }
-
-    @Override
-    public void run(String...args) throws Exception {
+//	@Autowired
+//	ProdRepository repository ;
+//	
+//	@Autowired
+//    private SessionFactory sessionFactory;
+//	
+//	public static void main(String[] args) {
+//        SpringApplication.run(Test_Application_CommandLineRunner.class);
+//    }
+//
+//    @Override
+//    public void run(String...args) throws Exception {
 
     	//● 新增
 //		ProdVO prodVO = new ProdVO();
@@ -68,20 +68,20 @@ public class Test_Application_CommandLineRunner implements CommandLineRunner {
 //		System.out.println("--------------------------------");
 
     	//● 查詢-findByPrimaryKey (多方emp2.hbm.xml必須設為lazy="false")(優!)
-    	Optional<ProdVO> optional = repository.findById(1);
-		ProdVO prodVO = optional.get();
-		System.out.print(prodVO.getProdId() + ",");
-		System.out.print(prodVO.getOrganizerVO().getOrganizerId() + ",");
-		System.out.print(prodVO.getProdSortVO().getSortId() + ",");
-		System.out.print(prodVO.getEmpVO().getEmpId() + ",");
-		System.out.print(prodVO.getProdName() + ",");
-		System.out.print(prodVO.getProdPrice() + ",");
-		System.out.print(prodVO.getProdStock() + ",");
-		System.out.print(prodVO.getCreatedAt() + ",");
-		System.out.print(prodVO.getUpdatedAt() + ",");
-		System.out.print(prodVO.getProdStatus() + ",");
-		System.out.print(prodVO.getReviewStatus() + ",");
-		System.out.println("\n---------------------");
+//    	Optional<ProdVO> optional = repository.findById(1);
+//		ProdVO prodVO = optional.get();
+//		System.out.print(prodVO.getProdId() + ",");
+//		System.out.print(prodVO.getOrganizerVO().getOrganizerId() + ",");
+//		System.out.print(prodVO.getProdSortVO().getSortId() + ",");
+//		System.out.print(prodVO.getEmpVO().getEmpId() + ",");
+//		System.out.print(prodVO.getProdName() + ",");
+//		System.out.print(prodVO.getProdPrice() + ",");
+//		System.out.print(prodVO.getProdStock() + ",");
+//		System.out.print(prodVO.getCreatedAt() + ",");
+//		System.out.print(prodVO.getUpdatedAt() + ",");
+//		System.out.print(prodVO.getProdStatus() + ",");
+//		System.out.print(prodVO.getReviewStatus() + ",");
+//		System.out.println("\n---------------------");
       
     	
 		//● 查詢-getAll (多方emp2.hbm.xml必須設為lazy="false")(優!)
@@ -148,5 +148,5 @@ public class Test_Application_CommandLineRunner implements CommandLineRunner {
 //		} else System.out.print("查無資料\n");
 //		System.out.println("--------------------------------");
 
-    }
-}
+//    }
+//}

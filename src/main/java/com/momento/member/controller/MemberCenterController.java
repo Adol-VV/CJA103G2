@@ -81,6 +81,14 @@ public class MemberCenterController {
 	public String showModals() {
 		return "pages/user/partials/modals";
 	}
+	
+	@GetMapping("/dashboard/overview")
+	public String showDashboardOverview(HttpSession session, Model model) {
+		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		Integer loginMemberToken = loginMember.getToken();
+		model.addAttribute("loginMemberToken", loginMemberToken);
+		return "pages/user/partials/panel-overview";
+	}
 
 	@GetMapping("/dashboard/settings")
 	public String showSettings() {
@@ -149,7 +157,7 @@ public class MemberCenterController {
 		memberSvc.updateMember(loginMember);
 		session.setAttribute("loginMember", loginMember);
 
-		return "redirect:/member/dashboard#settings";
+		return "redirect:/member/dashboard?resetInformation#settings";
 	}
 
 	@PostMapping("/dashboard/editPassword")
@@ -180,13 +188,12 @@ public class MemberCenterController {
 		}
 
 		if (hasErrors) {
-			System.out.println("新密碼" + newPassword);
 			return "redirect:/member/dashboard#settings";
 		} else {
 			loginMember.setPassword(confirmedPassword);
 		}
 
 		memberSvc.updateMember(loginMember);
-		return "redirect:/member/dashboard#settings";
+		return "redirect:/member/dashboard?resetPassword#settings";
 	}
 }
