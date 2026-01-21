@@ -4,14 +4,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
+import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdImageVO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
@@ -36,8 +42,21 @@ public class ProdController {
 	}
 	
 	
+//	@GetMapping("listAllProd")
+//	public String listAllProd(@PageableDefault(size = 9, sort = "prodId", direction = Sort.Direction.ASC) Pageable pageable, ModelMap model) {
+//		Slice<ProdDTO> prodList = prodSvc.getAllProds(pageable);
+//		
+//		model.addAttribute("prodList", prodList);
+//		model.addAttribute("prodSortList", prodSortSvc.getAll());
+//		return "pages/user/prod-list";
+//	}
+	
+	
+	
 	@GetMapping("listAllProd")
 	public String listAllProd(ModelMap model) {
+		model.addAttribute("prodList", prodSvc.getAllProds());
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
 		return "pages/user/prod-list";
 	}
 	
@@ -46,34 +65,14 @@ public class ProdController {
 		return "pages/user/prod-detail";
 	}
 	
-	@ModelAttribute("prodListData")
-	protected List<ProdVO> prodListData() {
-		List<ProdVO> prodlist = prodSvc.getAll();
-		return prodlist;
-	}
-	
-	@ModelAttribute("prodSortList")
-	protected List<ProdSortVO> prodSortList() {
-		List<ProdSortVO> prodSortlist = prodSortSvc.getAll();
-		return prodSortlist;
-	}
-	
-	
-	
 	
 	//單一查詢
 	@GetMapping("getOne_For_Display")
 	public String getOne_For_Display(
 		/***************************1.接收請求參數 - 輸入格式的錯誤處理*************************/
-//		@NotEmpty(message="員工編號: 請勿空白")
-//		@Digits(integer = 4, fraction = 0, message = "員工編號: 請填數字-請勿超過{integer}位數")
-//		@Min(value = 7001, message = "員工編號: 不能小於{value}")
-//		@Max(value = 7777, message = "員工編號: 不能超過{value}")
 		@RequestParam("prodId") String prodId,
-		ModelMap model) {
-		
+		ModelMap model) {	
 		/***************************2.開始查詢資料*********************************************/
-//		EmpService empSvc = new EmpService();
 		ProdVO prodVO = prodSvc.getOneProd(Integer.valueOf(prodId));
 		List<ProdImageVO> imageList = prodSvc.getProdImagesByProdId(prodVO.getProdId());
 		
@@ -84,6 +83,11 @@ public class ProdController {
 		return "pages/user/prod-detail"; 
 	}
 	
-	
+	@GetMapping("searchProds")
+	public String searchProds(@RequestParam("prodNameLike") String s,ModelMap model) {
+		model.addAttribute("prodList",prodSvc.searchProds(s));
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
+		return "pages/user/prod-list";
+	}
 	
 }
