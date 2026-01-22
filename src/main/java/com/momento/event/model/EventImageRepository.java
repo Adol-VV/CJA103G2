@@ -32,6 +32,15 @@ public interface EventImageRepository extends JpaRepository<EventImageVO, Intege
     Optional<EventImageVO> findFirstByEvent_EventIdOrderByEventImageIdAsc(Integer eventId);
 
     /**
+     * 查詢特定活動的所有圖片（按 ID 排序）
+     * 確保與封面圖的順序一致
+     * 
+     * @param eventId 活動 ID
+     * @return 活動圖片列表（按 ID 升序）
+     */
+    List<EventImageVO> findByEvent_EventIdOrderByEventImageIdAsc(Integer eventId);
+
+    /**
      * 查詢活動的圖片數量
      * 
      * @param eventId 活動 ID

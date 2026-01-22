@@ -84,50 +84,50 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-4">
-        <!-- 發送對象統計 -->
-        <div class="card bg-dark border-secondary mb-4">
-            <div class="card-body text-center">
-                <h6 class="text-muted mb-3">發送對象</h6>
-                <h2 class="text-primary mb-0" id="notifyTargetCount">0</h2>
-                <small class="text-muted">位會員將收到此通知</small>
-            </div>
-        </div>
-
-        <!-- 預覽 -->
-        <div class="card bg-dark border-secondary mb-4">
-            <div class="card-header border-secondary">
-                <h6 class="mb-0"><i class="fas fa-eye me-2"></i>通知預覽</h6>
-            </div>
-            <div class="card-body">
-                <div class="bg-black rounded p-3">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bg-primary rounded-circle p-2 me-2">
-                            <i class="fas fa-bell text-white small"></i>
-                        </div>
-                        <div>
-                            <strong class="small" id="previewNotifyTitle">通知標題</strong>
-                            <br><small class="text-muted">剛剛</small>
-                        </div>
-                    </div>
-                    <p class="text-muted small mb-0" id="previewNotifyContent">通知內容預覽...</p>
+        <div class="col-lg-4">
+            <!-- 發送對象統計 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-3">發送對象</h6>
+                    <h2 class="text-primary mb-0" id="notifyTargetCount">0</h2>
+                    <small class="text-muted">位會員將收到此通知</small>
                 </div>
             </div>
-        </div>
 
-        <!-- 發送按鈕 -->
-        <div class="d-grid gap-2">
-            <button class="btn btn-primary btn-lg" id="btnSendMemberNotify">
-                <i class="fas fa-paper-plane me-1"></i>發送通知
-            </button>
-            <button class="btn btn-outline-secondary">
-                <i class="fas fa-clock me-1"></i>排程發送
-            </button>
+            <!-- 預覽 -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary">
+                    <h6 class="mb-0"><i class="fas fa-eye me-2"></i>通知預覽</h6>
+                </div>
+                <div class="card-body">
+                    <div class="bg-black rounded p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="bg-primary rounded-circle p-2 me-2">
+                                <i class="fas fa-bell text-white small"></i>
+                            </div>
+                            <div>
+                                <strong class="small" id="previewNotifyTitle">通知標題</strong>
+                                <br><small class="text-muted">剛剛</small>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0" id="previewNotifyContent">通知內容預覽...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 發送按鈕 -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg" id="btnSendMemberNotify">
+                    <i class="fas fa-paper-plane me-1"></i>發送通知
+                </button>
+                <button class="btn btn-outline-secondary">
+                    <i class="fas fa-clock me-1"></i>排程發送
+                </button>
+            </div>
         </div>
     </div>
-</div>
+</form>
 
 <!-- 歷史通知紀錄 -->
 <div class="card bg-dark border-secondary mt-4">
@@ -146,6 +146,13 @@
                 </tr>
             </thead>
             <tbody>
+                <tr th:each="notify : ${notifyListData}">
+                    <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
+                    <td><span class="badge bg-info" th:text="${notify.notifyStatus == 1 ? '活動提醒' : '一般通知'}">活動提醒</span></td>
+                    <td th:text="${notify.title}">標題</td>
+                    <td>所有人</td>
+                    <td><span class="badge bg-success" th:text="${notify.isRead == 1 ? '已發送' : '處理中'}">狀態</span></td>
+                </tr>
                 <tr>
                     <td>2024/12/28 10:30</td>
                     <td><span class="badge bg-info">活動提醒</span></td>

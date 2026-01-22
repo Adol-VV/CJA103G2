@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PublicPageController {
+	
+	@GetMapping("/index")
+	public String index() {
+		return "index";
+	}
 
     @GetMapping("/user/login")
     public String userLogin() {
@@ -20,6 +25,16 @@ public class PublicPageController {
     @GetMapping("/privacy")
     public String privacy() {
         return "pages/public/privacy";
+    }
+
+    @GetMapping("/about")
+    public String about() {
+        return "pages/public/about";
+    }
+
+    @GetMapping("/faq")
+    public String faq() {
+        return "pages/public/faq";
     }
 
     @GetMapping("cart")
