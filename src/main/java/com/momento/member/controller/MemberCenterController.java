@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,7 +48,7 @@ public class MemberCenterController {
 		if (member != null && member.getPassword().equals(password)) {
 
 			session.setAttribute("loginMember", member);
-			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/login")) {
+			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/login") || targetUrl.contains("/forgot-password")) {
 
 				targetUrl = "/index"; // 設定一個預設的跳轉頁面
 
@@ -72,9 +73,11 @@ public class MemberCenterController {
 		return "pages/user/dashboard";
 	}
 
-	@GetMapping("/dashboard/sidebar")
-	public String showDashboardSidebar() {
-		return "pages/user/partials/sidebar";
+	@GetMapping("/dashboard/{pageName}")
+	public String showDashboardPage(@PathVariable String pageName) {
+	    // 假設你的檔案都放在 pages/user/ 目錄下
+	    // 例如：點擊「我的票券」網址為 /dashboard/myTickets -> 回傳 pages/user/myTickets
+	    return "pages/user/partials/" + pageName;
 	}
 
 	@GetMapping("/dashboard/modals")
