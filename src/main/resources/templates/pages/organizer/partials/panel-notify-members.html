@@ -127,7 +127,7 @@
             </div>
         </div>
     </div>
-</form>
+</div>
 
 <!-- 歷史通知紀錄 -->
 <div class="card bg-dark border-secondary mt-4">
@@ -148,7 +148,8 @@
             <tbody>
                 <tr th:each="notify : ${notifyListData}">
                     <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
-                    <td><span class="badge bg-info" th:text="${notify.notifyStatus == 1 ? '活動提醒' : '一般通知'}">活動提醒</span></td>
+                    <td><span class="badge bg-info" th:text="${notify.notifyStatus == 1 ? '活動提醒' : '一般通知'}">活動提醒</span>
+                    </td>
                     <td th:text="${notify.title}">標題</td>
                     <td>所有人</td>
                     <td><span class="badge bg-success" th:text="${notify.isRead == 1 ? '已發送' : '處理中'}">狀態</span></td>
