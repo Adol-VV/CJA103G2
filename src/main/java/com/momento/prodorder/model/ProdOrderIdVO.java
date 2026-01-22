@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @org.hibernate.annotations.DynamicInsert
@@ -36,6 +37,7 @@ public class ProdOrderIdVO {
 	@Column(name="CREATED_AT",updatable = false)
 	private Date createdDate;
 	
+	@NotNull(message = "總額請勿空白")
 	@Column(name="TOTAL")
 	private Integer total;
 	

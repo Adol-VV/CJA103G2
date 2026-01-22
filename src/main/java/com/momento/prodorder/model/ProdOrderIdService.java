@@ -1,11 +1,14 @@
 package com.momento.prodorder.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("prodOrderIdService")
+@Transactional
 public class ProdOrderIdService {
 	
 	@Autowired
@@ -28,7 +31,7 @@ public class ProdOrderIdService {
 		return repository.findAll();
 	}
 	
-	public ProdOrderIdVO getOne(Integer orderID) {
-		return repository.findById(orderID).orElse(null);
+	public Optional<ProdOrderIdVO> getOne(Integer orderID) {
+		return repository.findById(orderID);
 	}
 }

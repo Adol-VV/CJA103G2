@@ -1,10 +1,11 @@
 $(document).ready(function () {
-    let currentStep = 1;
-    let totalPrice = 3250;
+    let current_step = 1;
+    let total_price = 3250;
+    let token_used = 0;
 
     // Step Navigation
     function goToStep(step) {
-        currentStep = step;
+        current_step = step;
 
         // Update content
         $('.step-content').removeClass('active');
@@ -89,7 +90,31 @@ $(document).ready(function () {
             .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
             .append('處理中...');
 
-        // Simulate API call
+
+            //ajax
+            let shopData = JSON.parse(localStorage.getItem('cart') || '[]');
+            let token = parseInt($('#tokenAmount').text()) || 0;
+            $.ajax({
+                url: '/member/prod_order/insertOrder',
+                method: 'POST',
+                contentType: 'application/json',
+                data:JSON.stringify({memberId:{memberId:1},organizerId:{organizerId:1},total:total_price,
+                                    token:token_used,payable:total_price - token_used,status:1},
+                    //prodOrderItemVO:{}
+                ),
+                success: function (response) {
+                    // 成功後的動作
+                    showToast('訂單已成功建立！', 'success');
+                    localStorage.removeItem('momento_cart');
+                    goToStep(4);
+                },
+                error: function (xhr) {
+                    // 失敗後的動作 (例如：總額空白觸發了 @NotNull)
+                    showToast('失敗：' + xhr.responseText, 'error');
+                    btn.prop('disabled', false).html('<i class="fas fa-lock me-2"></i>確認付款');
+                }
+            });
+        /*// Simulate API call
         setTimeout(function () {
             // Generate order number
             const orderNum = 'MO-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(Math.random() * 900000 + 100000);
@@ -105,7 +130,7 @@ $(document).ready(function () {
                 .append('確認付款');
             showToast('訂單已成功建立！', 'success');
             goToStep(4);
-        }, 2000);
+        }, 2000);*/
     });
 
     // Credit Card Number Formatting
@@ -155,11 +180,12 @@ $(document).ready(function () {
     function updateTotal(useToken=false) {
         if(useToken){
             const token = parseInt($('#tokenAmount').text()) || 0;
-            const tokenUsed = (totalPrice - token)>=0?token:totalPrice;
-            const final = (totalPrice - token)>=0?(totalPrice - token):0;
+            const final = (total_price - token)>=0?(total_price - token):0;
+
+            token_used = (total_price - token)>=0?token:total_price;
             
             $('#finalPrice').text("NT$ " + final);
-            $('#tokenDiscountAmount').text('-NT$ ' + tokenUsed.toLocaleString());
+            $('#tokenDiscountAmount').text('-NT$ ' + token_used.toLocaleString());
             
             $('#finalTotal').text('NT$ ' + final.toLocaleString());
             // 使用安全方式更新按鈕
@@ -169,6 +195,7 @@ $(document).ready(function () {
                 .append('確認付款 NT$ ' + final.toLocaleString());
         }else{
             let total = 0;
+            token_used=0;
             $(".cart-item").each(function(item){
                 let price = parseInt($(this).data("price"));
                 let quantity = parseInt($(this).data("qty"));
@@ -176,7 +203,7 @@ $(document).ready(function () {
                 total += price * quantity;
             });
             
-            totalPrice = total;
+            total_price = total;
             $("#finalTotal").text("NT$ " + total);
             $(".prod_price_T").text("NT$ " + total);
             $('#finalPrice').text("NT$ " + total);

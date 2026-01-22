@@ -2,7 +2,8 @@ $(function(){
 
     
     //localstroge
-    localStorage.setItem('cart', JSON.stringify([{"id":1,"name":"商品A","price":100,"quantity":2},{"id":2,"name":"商品B","price":200,"quantity":1}]));
+    localStorage.setItem('cart', JSON.stringify([{"id":1,"name":"商品A","price":100,"quantity":2},
+        {"id":2,"name":"商品B","price":200,"quantity":1}]));
 
     //更新購物車
     updateCart();
