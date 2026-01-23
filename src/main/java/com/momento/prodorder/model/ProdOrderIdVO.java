@@ -1,11 +1,15 @@
 package com.momento.prodorder.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.momento.member.model.MemberVO;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.prodorderitem.model.ProdOrderItemVO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -49,6 +54,18 @@ public class ProdOrderIdVO {
 	
 	@Column(name="PAY_STATUS")
 	private Byte  status;
+	
+	// 新增一對多關聯
+    @OneToMany(mappedBy = "prodOrderId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProdOrderItemVO> orderItems = new ArrayList<>();
+
+	public List<ProdOrderItemVO> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<ProdOrderItemVO> orderItems) {
+		this.orderItems = orderItems;
+	}
 
 	public Integer getOrderId() {
 		return orderId;

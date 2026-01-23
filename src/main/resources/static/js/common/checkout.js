@@ -83,54 +83,64 @@ $(document).ready(function () {
     
 
     // Submit Order
-    $('#btnSubmitOrder').click(function () {
+    $('#btnSubmitOrder').click( async function () {
         const btn = $(this);
         btn.prop('disabled', true)
             .empty()
             .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
             .append('處理中...');
 
-
+        
             //ajax
             let shopData = JSON.parse(localStorage.getItem('cart') || '[]');
             let token = parseInt($('#tokenAmount').text()) || 0;
-            $.ajax({
-                url: '/member/prod_order/insertOrder',
-                method: 'POST',
-                contentType: 'application/json',
-                data:JSON.stringify({memberId:{memberId:1},organizerId:{organizerId:1},total:total_price,
-                                    token:token_used,payable:total_price - token_used,status:1},
-                    //prodOrderItemVO:{}
-                ),
-                success: function (response) {
-                    // 成功後的動作
-                    showToast('訂單已成功建立！', 'success');
-                    localStorage.removeItem('momento_cart');
-                    goToStep(4);
-                },
-                error: function (xhr) {
-                    // 失敗後的動作 (例如：總額空白觸發了 @NotNull)
-                    showToast('失敗：' + xhr.responseText, 'error');
-                    btn.prop('disabled', false).html('<i class="fas fa-lock me-2"></i>確認付款');
-                }
-            });
-        /*// Simulate API call
-        setTimeout(function () {
-            // Generate order number
-            const orderNum = 'MO-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(Math.random() * 900000 + 100000);
-            $('#orderNumber').text(orderNum);
-            //Closs right
-            $(".col-lg-4").addClass("d-none");
-            // Clear cart
-            localStorage.removeItem('momento_cart');
+            
+            // 根據 organizerId 分組
+            let groupedData = shopData.reduce((acc, item) => {
+            let orgId = item.organizerId;
+            if (!acc[orgId]) acc[orgId] = [];
+            acc[orgId].push(item);
+            return acc;
+            }, {});
 
-            btn.prop('disabled', false)
-                .empty()
-                .append($('<i>').addClass('fas fa-lock me-2'))
-                .append('確認付款');
-            showToast('訂單已成功建立！', 'success');
-            goToStep(4);
-        }, 2000);*/
+            for (let orgId of Object.keys(groupedData)) {
+            let items = groupedData[orgId];
+            let subTotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+            // 轉換為 ProdOrderItemVO格式
+            let subOrderItems = items.map(i => ({
+                prodId: { prodId: i.id },
+                quantity: i.quantity,
+                price: i.price,
+                total: i.quantity * i.price
+            }));
+
+            // 3. 發送打包 Ajax 
+            try {
+                await $.ajax({
+                    url: '/member/prod_order/insertOrder',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        memberId: { memberId: 1 }, 
+                        organizerId: { organizerId: parseInt(orgId) }, 
+                        total: subTotal,
+                        token: token_used, 
+                        payable: subTotal,
+                        status: 1,
+                        orderItems: subOrderItems 
+                    })
+                });
+            } catch (err) {
+                showToast('訂單送出失敗，請檢查資料', 'error');
+                return; 
+            }
+        }
+
+        // 所有商家的訂單都跑完後
+        showToast('恭喜！所有訂單已建立成功', 'success');
+        localStorage.removeItem('momento_cart');
+        goToStep(4);
     });
 
     // Credit Card Number Formatting

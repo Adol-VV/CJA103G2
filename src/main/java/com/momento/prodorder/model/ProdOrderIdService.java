@@ -15,6 +15,9 @@ public class ProdOrderIdService {
 	private ProdOrderIdRepository repository;
 	
 	public void addProdOrder(ProdOrderIdVO prodOrderIdVO) {
+		if(prodOrderIdVO.getOrderItems() !=null) {
+			prodOrderIdVO.getOrderItems().forEach(item->item.setProdOrderId(prodOrderIdVO));
+		}
 		repository.save(prodOrderIdVO);
 	}
 	
