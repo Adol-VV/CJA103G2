@@ -1,6 +1,7 @@
 package com.momento.prodsettle.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class ProdSettleService {
 	public List<ProdSettleVO>getAll() {
 		return repository.findAll();
 	}
-	public ProdSettleVO getOne(Integer settleID) {
-		return repository.findById(settleID).orElse(null);
+	public Optional<ProdSettleVO> getOne(Integer settleID) {
+		return repository.findById(settleID);
 	}
 	
 }

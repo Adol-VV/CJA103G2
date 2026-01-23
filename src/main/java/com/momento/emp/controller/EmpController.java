@@ -3,6 +3,7 @@ package com.momento.emp.controller;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
 import com.momento.prod.model.ProdService;
+import com.momento.prod.model.ProdSortService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,10 @@ public class EmpController {
 
     @Autowired
     private ProdService prodSvc;
-
+    
+    @Autowired
+    private ProdSortService prodSortSvc;
+    
     /**
      * 顯示登入頁面
      */
@@ -91,7 +95,8 @@ public class EmpController {
 
         model.addAttribute("loginEmp", loginEmp);
         model.addAttribute("isSuperAdmin", empSvc.isSuperAdmin(loginEmp.getEmpId()));
-
+		model.addAttribute("prodList", prodSvc.getAllProds());
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
         return "pages/admin/dashboard";
     }
 

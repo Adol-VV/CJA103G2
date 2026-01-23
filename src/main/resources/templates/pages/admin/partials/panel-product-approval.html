@@ -47,7 +47,7 @@
                     <thead>
                         <tr>
                             <th width="80">圖片</th>
-                            <th>商品資訊</th>
+                            <th>商品名稱</th>
                             <th>主辦方</th>
                             <th>類別</th>
                             <th>售價</th>
@@ -57,23 +57,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr th:each="prod : ${prodList}">
                             <td>
-                                <img loading="lazy" src="https://picsum.photos/seed/prod1/60/60" class="rounded"
+                                <img loading="lazy" th:src="${prod.imageUrl}" class="rounded"
                                     alt="商品圖片">
                             </td>
                             <td>
-                                <div class="fw-bold">10週年紀念黑膠套裝</div>
-                                <small class="text-muted">ID: P20241001</small>
+                                <div class="fw-bold" th:text="${prod.prodName}"></div>
+                                <small class="text-muted" th:text="|ID: ${prod.prodId}|"></small>
                             </td>
-                            <td>藝響樂團文化基金會</td>
-                            <td><span class="badge bg-secondary">收藏藝品</span></td>
-                            <td>NT$ 3,200</td>
-                            <td>2024/12/26</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
+                            <td th:text="${prod.organizerName}">藝響樂團文化基金會</td>
+                            <td><span class="badge bg-secondary" th:text="${prod.sortName}">收藏藝品</span></td>
+                            <td th:text="|NT$ ${prod.prodPrice}|">NT$ 3,200</td>
+                            <td th:text="${prod.createdAt}">2024/12/26</td>
+                            <td><span class="badge bg-warning text-dark" th:text="${prod.reviewStatus}">待審核</span></td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(1)">
+                                    <button class="btn btn-outline-info btn-review-product" title="查看詳情" onclick="viewProductDetail(1)">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="btn btn-outline-success" title="通過" onclick="approveProduct(1)">
@@ -85,90 +85,90 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <img loading="lazy" src="https://picsum.photos/seed/prod2/60/60" class="rounded"
-                                    alt="商品圖片">
-                            </td>
-                            <td>
-                                <div class="fw-bold">劇場香氛蠟燭組</div>
-                                <small class="text-muted">ID: P20241005</small>
-                            </td>
-                            <td>當代劇場工作室</td>
-                            <td><span class="badge bg-secondary">文創生活用品</span></td>
-                            <td>NT$ 1,200</td>
-                            <td>2024/12/25</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(2)">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-success" title="通過" onclick="approveProduct(2)">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(2)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img loading="lazy" src="https://picsum.photos/seed/prod3/60/60" class="rounded"
-                                    alt="商品圖片">
-                            </td>
-                            <td>
-                                <div class="fw-bold">手工陶藝花瓶</div>
-                                <small class="text-muted">ID: P20241010</small>
-                            </td>
-                            <td>手作文創工坊</td>
-                            <td><span class="badge bg-secondary">收藏藝品</span></td>
-                            <td>NT$ 2,500</td>
-                            <td>2024/12/24</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(3)">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-success" title="通過" onclick="approveProduct(3)">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(3)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img loading="lazy" src="https://picsum.photos/seed/prod4/60/60" class="rounded"
-                                    alt="商品圖片">
-                            </td>
-                            <td>
-                                <div class="fw-bold">文學沙龍限定筆記本</div>
-                                <small class="text-muted">ID: P20241012</small>
-                            </td>
-                            <td>文學沙龍協會</td>
-                            <td><span class="badge bg-secondary">藝術印刷品</span></td>
-                            <td>NT$ 380</td>
-                            <td>2024/12/23</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(4)">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-success" title="通過" onclick="approveProduct(4)">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(4)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+<!--                         <tr> -->
+<!--                             <td> -->
+<!--                                 <img loading="lazy" src="https://picsum.photos/seed/prod2/60/60" class="rounded" -->
+<!--                                     alt="商品圖片"> -->
+<!--                             </td> -->
+<!--                             <td> -->
+<!--                                 <div class="fw-bold">劇場香氛蠟燭組</div> -->
+<!--                                 <small class="text-muted">ID: P20241005</small> -->
+<!--                             </td> -->
+<!--                             <td>當代劇場工作室</td> -->
+<!--                             <td><span class="badge bg-secondary">文創生活用品</span></td> -->
+<!--                             <td>NT$ 1,200</td> -->
+<!--                             <td>2024/12/25</td> -->
+<!--                             <td><span class="badge bg-warning text-dark">待審核</span></td> -->
+<!--                             <td> -->
+<!--                                 <div class="btn-group btn-group-sm"> -->
+<!--                                     <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(2)"> -->
+<!--                                         <i class="fas fa-eye"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-success" title="通過" onclick="approveProduct(2)"> -->
+<!--                                         <i class="fas fa-check"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(2)"> -->
+<!--                                         <i class="fas fa-times"></i> -->
+<!--                                     </button> -->
+<!--                                 </div> -->
+<!--                             </td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                             <td> -->
+<!--                                 <img loading="lazy" src="https://picsum.photos/seed/prod3/60/60" class="rounded" -->
+<!--                                     alt="商品圖片"> -->
+<!--                             </td> -->
+<!--                             <td> -->
+<!--                                 <div class="fw-bold">手工陶藝花瓶</div> -->
+<!--                                 <small class="text-muted">ID: P20241010</small> -->
+<!--                             </td> -->
+<!--                             <td>手作文創工坊</td> -->
+<!--                             <td><span class="badge bg-secondary">收藏藝品</span></td> -->
+<!--                             <td>NT$ 2,500</td> -->
+<!--                             <td>2024/12/24</td> -->
+<!--                             <td><span class="badge bg-warning text-dark">待審核</span></td> -->
+<!--                             <td> -->
+<!--                                 <div class="btn-group btn-group-sm"> -->
+<!--                                     <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(3)"> -->
+<!--                                         <i class="fas fa-eye"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-success" title="通過" onclick="approveProduct(3)"> -->
+<!--                                         <i class="fas fa-check"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(3)"> -->
+<!--                                         <i class="fas fa-times"></i> -->
+<!--                                     </button> -->
+<!--                                 </div> -->
+<!--                             </td> -->
+<!--                         </tr> -->
+<!--                         <tr> -->
+<!--                             <td> -->
+<!--                                 <img loading="lazy" src="https://picsum.photos/seed/prod4/60/60" class="rounded" -->
+<!--                                     alt="商品圖片"> -->
+<!--                             </td> -->
+<!--                             <td> -->
+<!--                                 <div class="fw-bold">文學沙龍限定筆記本</div> -->
+<!--                                 <small class="text-muted">ID: P20241012</small> -->
+<!--                             </td> -->
+<!--                             <td>文學沙龍協會</td> -->
+<!--                             <td><span class="badge bg-secondary">藝術印刷品</span></td> -->
+<!--                             <td>NT$ 380</td> -->
+<!--                             <td>2024/12/23</td> -->
+<!--                             <td><span class="badge bg-warning text-dark">待審核</span></td> -->
+<!--                             <td> -->
+<!--                                 <div class="btn-group btn-group-sm"> -->
+<!--                                     <button class="btn btn-outline-info" title="查看詳情" onclick="viewProductDetail(4)"> -->
+<!--                                         <i class="fas fa-eye"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-success" title="通過" onclick="approveProduct(4)"> -->
+<!--                                         <i class="fas fa-check"></i> -->
+<!--                                     </button> -->
+<!--                                     <button class="btn btn-outline-danger" title="駁回" onclick="rejectProduct(4)"> -->
+<!--                                         <i class="fas fa-times"></i> -->
+<!--                                     </button> -->
+<!--                                 </div> -->
+<!--                             </td> -->
+<!--                         </tr> -->
                     </tbody>
                 </table>
             </div>

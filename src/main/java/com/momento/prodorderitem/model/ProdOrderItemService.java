@@ -1,6 +1,7 @@
 package com.momento.prodorderitem.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class ProdOrderItemService {
 		return repository.findAll();
 	}
 	
-	public ProdOrderItemVO getOne(Integer orderID) {
-		return repository.findById(orderID).orElse(null);
+	public Optional<ProdOrderItemVO> getOne(Integer orderID) {
+		return repository.findById(orderID);
 	}
 }
