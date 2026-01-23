@@ -206,7 +206,7 @@
                         <div class="card h-100 product-card">
                             <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
                                 <div class="product-img-wrapper">
-                                    <img loading="lazy" th:src="${prod.getImageUrl}" class="card-img-top">
+                                    <img loading="lazy" th:src="${prod.imageUrl}" class="card-img-top">
                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
                                 </div>
                             </a>
@@ -222,10 +222,12 @@
                                     <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="btn btn-outline-secondary btn-sm flex-grow-1">
                                         <i class="fas fa-eye me-1"></i>詳情
                                     </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="1"
-                                        data-name="2024年度音樂會紀念T恤" data-price="880"
-                                        data-image="https://picsum.photos/seed/tshirt1/400/400">
-                                        <i class="fas fa-cart-plus me-1"></i>加入
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" 
+                                            th:data-id="${prod.prodId}"
+                                            th:data-name="${prod.prodName}" 
+                                            th:data-price="${prod.prodPrice}"
+                                            th:data-image="${prod.imageUrl}"
+                                            th:data-organizer="${prod.organizerId}"> <i class="fas fa-cart-plus me-1"></i>加入
                                     </button>
                                 </div>
                             </div>
@@ -454,12 +456,14 @@
                 const name = btn.data('name');
                 const price = btn.data('price');
                 const image = btn.data('image');
-
+                const organizerId = btn.data('organizer');
+                
                 const existing = cart.find(item => item.id === id);
+                
                 if (existing) {
                     existing.quantity++;
                 } else {
-                    cart.push({ id, name, price, quantity: 1, image });
+                    cart.push({ id, name, price, quantity: 1, image, organizerId });
                 }
 
                 updateCartUI();
@@ -521,7 +525,7 @@
                 }
                 showToast('正在前往結帳...', 'info');
                 setTimeout(() => {
-                    window.location.href = 'checkout.html';
+                    window.location.href = '/member/cart';
                 }, 500);
             });
 

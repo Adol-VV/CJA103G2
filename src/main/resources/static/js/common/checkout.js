@@ -92,8 +92,7 @@ $(document).ready(function () {
 
         
             //ajax
-            let shopData = JSON.parse(localStorage.getItem('cart') || '[]');
-            let token = parseInt($('#tokenAmount').text()) || 0;
+            let shopData = JSON.parse(localStorage.getItem('momento_cart') || '[]');
             
             // 根據 organizerId 分組
             let groupedData = shopData.reduce((acc, item) => {
@@ -114,6 +113,7 @@ $(document).ready(function () {
                 price: i.price,
                 total: i.quantity * i.price
             }));
+            
 
             // 3. 發送打包 Ajax 
             try {
@@ -162,14 +162,14 @@ $(document).ready(function () {
     //更新購物車
     updateCart();
     function updateCart() {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cart = JSON.parse(localStorage.getItem('momento_cart') || '[]');
         let item_list = $(".card-body.p-0");
         item_list.empty();
         
         cart.forEach(item => {
             let item_el=`
                 <div class="order-item cart-item" data-id="${item.id}" data-price="${item.price}" data-qty="${item.quantity}">
-                <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                <img loading="lazy" src="${item.image}" class="order-item-img" alt="Product">
                 <div class="flex-grow-1">
                     <h6 class="mb-1">${item.name}</h6>
                     <p class="text-muted small mb-0">規格：米白色</p>

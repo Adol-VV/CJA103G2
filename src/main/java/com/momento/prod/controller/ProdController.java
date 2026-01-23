@@ -90,4 +90,9 @@ public class ProdController {
 		return "pages/user/prod-list";
 	}
 	
+	@GetMapping("/member/prod/getOne")
+	public ProdVO getOne(@RequestParam Integer prodId) {
+	    return prodSvc.getOneProd(prodId);
+	}
+	
 }

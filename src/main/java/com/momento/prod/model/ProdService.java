@@ -68,6 +68,7 @@ public class ProdService {
             dto.setProdName(prod.getProdName());
             dto.setProdPrice(prod.getProdPrice());
             dto.setProdStock(prod.getProdStock());
+            dto.setOrganizerId(prod.getOrganizerVO().getOrganizerId());
             dto.setOrganizerName(prod.getOrganizerVO().getName());
             dto.setSortId(prod.getProdSortVO().getSortId());
             dto.setSortName(prod.getProdSortVO().getSortName());

@@ -7,6 +7,7 @@ public class ProdDTO {
     private String prodName;
     private Integer prodPrice;
     private Integer prodStock;
+    private Integer organizerId;
     private String organizerName;
     private Integer sortId;
     private String sortName;
@@ -17,6 +18,14 @@ public class ProdDTO {
     private String imageUrl; // 存儲第一張圖片
     
     
+
+	public Integer getOrganizerId() {
+		return organizerId;
+	}
+
+	public void setOrganizerId(Integer organizerId) {
+		this.organizerId = organizerId;
+	}
 
 	public Integer getProdId() {
 		return prodId;
