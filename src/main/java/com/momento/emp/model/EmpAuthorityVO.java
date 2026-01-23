@@ -24,7 +24,7 @@ public class EmpAuthorityVO {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FUNCTION_ID", insertable = false, updatable = false)
-    private BackendFunction function;
+    private BackendFunctionVO function;
 
     public EmpAuthorityVO() {
     }
@@ -69,11 +69,11 @@ public class EmpAuthorityVO {
         }
     }
 
-    public BackendFunction getFunction() {
+    public BackendFunctionVO getFunction() {
         return function;
     }
 
-    public void setFunction(BackendFunction function) {
+    public void setFunction(BackendFunctionVO function) {
         this.function = function;
         if (function != null) {
             this.functionId = function.getFunctionId();
