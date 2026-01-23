@@ -2,7 +2,9 @@ $(function(){
 
     
     //localstroge
-    localStorage.setItem('cart', JSON.stringify([{"id":1,"name":"商品A","price":100,"quantity":2},{"id":2,"name":"商品B","price":200,"quantity":1}]));
+    localStorage.setItem('cart', JSON.stringify([{"id":1,"organizerId":1,"name":"商品A","price":100,"quantity":2},
+        {"id":2,"organizerId":1,"name":"商品B","price":200,"quantity":1},
+        {"id":3,"organizerId":2,"name":"商品bb","price":1000,"quantity":5}]));
 
     //更新購物車
     updateCart();
