@@ -150,12 +150,12 @@
 /* ========================================
    Content Panels
    ======================================== */
-.panel {
+.content-panel {
     display: none;
     animation: fadeIn 0.3s ease;
 }
 
-.panel.active {
+.content-panel.active {
     display: block;
 }
 
@@ -662,4 +662,9 @@
     border-radius: 4px;
     width: 0;
     /* Initial width */
+}
+
+img.rounded{
+	width: 60px;
+    height: 60px;
 }

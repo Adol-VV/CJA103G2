@@ -1,10 +1,11 @@
 $(document).ready(function () {
-    let currentStep = 1;
-    let totalPrice = 3250;
+    let current_step = 1;
+    let total_price = 3250;
+    let token_used = 0;
 
     // Step Navigation
     function goToStep(step) {
-        currentStep = step;
+        current_step = step;
 
         // Update content
         $('.step-content').removeClass('active');
@@ -82,30 +83,64 @@ $(document).ready(function () {
     
 
     // Submit Order
-    $('#btnSubmitOrder').click(function () {
+    $('#btnSubmitOrder').click( async function () {
         const btn = $(this);
         btn.prop('disabled', true)
             .empty()
             .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
             .append('處理中...');
 
-        // Simulate API call
-        setTimeout(function () {
-            // Generate order number
-            const orderNum = 'MO-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(Math.random() * 900000 + 100000);
-            $('#orderNumber').text(orderNum);
-            //Closs right
-            $(".col-lg-4").addClass("d-none");
-            // Clear cart
-            localStorage.removeItem('momento_cart');
+        
+            //ajax
+            let shopData = JSON.parse(localStorage.getItem('momento_cart') || '[]');
+            
+            // 根據 organizerId 分組
+            let groupedData = shopData.reduce((acc, item) => {
+            let orgId = item.organizerId;
+            if (!acc[orgId]) acc[orgId] = [];
+            acc[orgId].push(item);
+            return acc;
+            }, {});
 
-            btn.prop('disabled', false)
-                .empty()
-                .append($('<i>').addClass('fas fa-lock me-2'))
-                .append('確認付款');
-            showToast('訂單已成功建立！', 'success');
-            goToStep(4);
-        }, 2000);
+            for (let orgId of Object.keys(groupedData)) {
+            let items = groupedData[orgId];
+            let subTotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+            // 轉換為 ProdOrderItemVO格式
+            let subOrderItems = items.map(i => ({
+                prodId: { prodId: i.id },
+                quantity: i.quantity,
+                price: i.price,
+                total: i.quantity * i.price
+            }));
+            
+
+            // 3. 發送打包 Ajax 
+            try {
+                await $.ajax({
+                    url: '/member/prod_order/insertOrder',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        memberId: { memberId: 1 }, 
+                        organizerId: { organizerId: parseInt(orgId) }, 
+                        total: subTotal,
+                        token: token_used, 
+                        payable: subTotal,
+                        status: 1,
+                        orderItems: subOrderItems 
+                    })
+                });
+            } catch (err) {
+                showToast('訂單送出失敗，請檢查資料', 'error');
+                return; 
+            }
+        }
+
+        // 所有商家的訂單都跑完後
+        showToast('恭喜！所有訂單已建立成功', 'success');
+        localStorage.removeItem('momento_cart');
+        goToStep(4);
     });
 
     // Credit Card Number Formatting
@@ -127,14 +162,14 @@ $(document).ready(function () {
     //更新購物車
     updateCart();
     function updateCart() {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cart = JSON.parse(localStorage.getItem('momento_cart') || '[]');
         let item_list = $(".card-body.p-0");
         item_list.empty();
         
         cart.forEach(item => {
             let item_el=`
                 <div class="order-item cart-item" data-id="${item.id}" data-price="${item.price}" data-qty="${item.quantity}">
-                <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                <img loading="lazy" src="${item.image}" class="order-item-img" alt="Product">
                 <div class="flex-grow-1">
                     <h6 class="mb-1">${item.name}</h6>
                     <p class="text-muted small mb-0">規格：米白色</p>
@@ -155,11 +190,12 @@ $(document).ready(function () {
     function updateTotal(useToken=false) {
         if(useToken){
             const token = parseInt($('#tokenAmount').text()) || 0;
-            const tokenUsed = (totalPrice - token)>=0?token:totalPrice;
-            const final = (totalPrice - token)>=0?(totalPrice - token):0;
+            const final = (total_price - token)>=0?(total_price - token):0;
+
+            token_used = (total_price - token)>=0?token:total_price;
             
             $('#finalPrice').text("NT$ " + final);
-            $('#tokenDiscountAmount').text('-NT$ ' + tokenUsed.toLocaleString());
+            $('#tokenDiscountAmount').text('-NT$ ' + token_used.toLocaleString());
             
             $('#finalTotal').text('NT$ ' + final.toLocaleString());
             // 使用安全方式更新按鈕
@@ -169,6 +205,7 @@ $(document).ready(function () {
                 .append('確認付款 NT$ ' + final.toLocaleString());
         }else{
             let total = 0;
+            token_used=0;
             $(".cart-item").each(function(item){
                 let price = parseInt($(this).data("price"));
                 let quantity = parseInt($(this).data("qty"));
@@ -176,7 +213,7 @@ $(document).ready(function () {
                 total += price * quantity;
             });
             
-            totalPrice = total;
+            total_price = total;
             $("#finalTotal").text("NT$ " + total);
             $(".prod_price_T").text("NT$ " + total);
             $('#finalPrice').text("NT$ " + total);
