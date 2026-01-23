@@ -1,5 +1,6 @@
 package com.momento.prod.model;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +73,7 @@ public class ProdService {
             dto.setOrganizerName(prod.getOrganizerVO().getName());
             dto.setSortId(prod.getProdSortVO().getSortId());
             dto.setSortName(prod.getProdSortVO().getSortName());
-            dto.setCreatedAt(prod.getCreatedAt());
+            dto.setCreatedAt(prod.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             dto.setProdStatus(prod.getProdStatus());
             
             //將審核狀態由數字變更為字串存進DTO

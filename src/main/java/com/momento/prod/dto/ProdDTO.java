@@ -11,7 +11,7 @@ public class ProdDTO {
     private String organizerName;
     private Integer sortId;
     private String sortName;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private byte prodStatus;
     private String reviewStatus;
     
@@ -43,12 +43,15 @@ public class ProdDTO {
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
 	}
-	public LocalDateTime getCreatedAt() {
+
+	public String getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(LocalDateTime createdAt) {
+
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
+
 	public Integer getProdStock() {
 		return prodStock;
 	}
