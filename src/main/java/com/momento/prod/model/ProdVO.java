@@ -74,6 +74,9 @@ public class ProdVO implements Serializable {
 	@OrderBy("prodImageId asc")	
 	private List<ProdImageVO> prodImages = new ArrayList<ProdImageVO>();
 	
+	
+	
+	
 	public ProdVO() {
 		
 	}

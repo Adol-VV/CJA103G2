@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "`FUNCTION`")
-public class BackendFunction {
+public class BackendFunctionVO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,11 +29,11 @@ public class BackendFunction {
     private Set<EmpAuthorityVO> authorities = new HashSet<>();
 
     // 無參數建構子
-    public BackendFunction() {
+    public BackendFunctionVO() {
     }
 
     // 全參數建構子
-    public BackendFunction(Integer functionId, String functionName) {
+    public BackendFunctionVO(Integer functionId, String functionName) {
         this.functionId = functionId;
         this.functionName = functionName;
     }

@@ -58,7 +58,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" href="../public/organizer-apply.html">主辦專區</a></li>
                 </ul>
@@ -86,7 +86,7 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a></li>
-                <li class="breadcrumb-item"><a href="prod-list.html?category=clothing" class="text-muted text-decoration-none">服飾配件</a></li>
+                <li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:text=${prodVO.prodSortVO.sortName}>服飾配件</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prodVO.prodName}"></li>
             </ol>
         </nav>
@@ -95,7 +95,7 @@
             <!-- Product Images -->
             <div class="col-lg-6">
                 <div class="bg-dark rounded-3 overflow-hidden mb-3" style="aspect-ratio: 1/1;">
-                    <img loading="lazy" th:src="${prodImages[0].getImageUrl()}" 
+                    <img loading="lazy" th:src="${!prodImages.isEmpty()}  ? ${prodImages[0].getImageUrl()} : @{/images/default.png}" 
                          class="w-100 h-100" style="object-fit: cover;" 
                          alt="商品"
                          id="mainProductImage">
@@ -118,13 +118,6 @@
 
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-body">
-<!--                         <div class="mb-3"> -->
-<!--                             <label class="form-label">規格 / 顏色</label> -->
-<!--                             <div class="d-flex flex-wrap gap-2"> -->
-<!--                                 <button class="btn btn-outline-success active">米白色</button> -->
-<!--                                 <button class="btn btn-outline-secondary">黑色</button> -->
-<!--                             </div> -->
-<!--                         </div> -->
 
                         <div class="mb-4">
                             <label class="form-label">數量</label>
@@ -265,8 +258,10 @@
 // -----------------------------------------------------------------------
 
         $(document).ready(function() {
-            images[0].classList.add("active");
-        	
+            if(images[0] != null){
+        	images[0].classList.add("active");
+            }
+            
         	let qty = 1;
             
             $('#btnMinus').click(function() {

@@ -33,6 +33,7 @@
         .product-filters .list-unstyled a.active {
             color: var(--momento-green);
             font-weight: 700;
+            cursor: pointer;
         }
 
         .product-card .product-img-wrapper {
@@ -137,16 +138,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/events}">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{listAllProd}">找商品</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
                 </ul>
-                <form class="d-flex mx-auto col-lg-4" role="search">
+                <form class="d-flex mx-auto col-lg-4" role="search" method="get" th:action="@{searchProds}">
                     <div class="input-group">
                         <span class="input-group-text bg-dark border-secondary text-secondary"><i
                                 class="fas fa-search"></i></span>
-                        <input class="form-control" type="search" placeholder="搜尋商品..." aria-label="Search">
+                        <input class="form-control" type="search" placeholder="搜尋商品..." aria-label="Search" name="prodNameLike">
                     </div>
                 </form>
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
@@ -178,8 +179,8 @@
                 <div class="card p-4 border-0 bg-transparent">
                     <h5 class="mb-3">商品分類</h5>
                     <ul class="list-unstyled mb-4">
-                        <li><a href="#" class="active">全部商品</a></li>
-                        <li th:each="ProdsortVO:${prodSortList}"><a href="#" th:text="${ProdsortVO.getSortName()}"></a></li>
+                        <li><a class="sort active" sortid="all" th:href="@{listAllProd}">全部商品</a></li>
+                        <li th:each="prodSort:${prodSortList}" ><a class="sort" th:text="${prodSort.getSortName()}" th:attr="sortid=${prodSort.sortId}"></a></li>
                     </ul>
                 </div>
             </aside>
@@ -187,38 +188,38 @@
             <!-- Products Grid -->
             <main class="col-lg-9">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3>全部商品 <span class="text-muted fs-5" id="productCount">(15)</span></h3>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="text-muted small">排序：</span>
-                        <select class="form-select w-auto bg-dark text-white border-secondary" id="sortSelect">
-                            <option value="popular">依熱銷度</option>
-                            <option value="price-asc">價格：低到高</option>
-                            <option value="price-desc">價格：高到低</option>
-                            <option value="newest">最新上架</option>
-                        </select>
-                    </div>
+                    <h3 id="sortTitle">全部商品 <span class="text-muted fs-5" id="productCount"></span></h3>
+<!--                     <div class="d-flex align-items-center gap-2"> -->
+<!--                         <span class="text-muted small">排序：</span> -->
+<!--                         <select class="form-select w-auto bg-dark text-white border-secondary" id="sortSelect"> -->
+<!--                             <option value="popular">預設</option> -->
+<!--                             <option value="price-asc">價格：低到高</option> -->
+<!--                             <option value="price-desc">價格：高到低</option> -->
+<!--                             <option value="newest">最新上架</option> -->
+<!--                         </select> -->
+<!--                     </div> -->
                 </div>
 
                 <div class="row g-4" id="productGrid">
                     <!-- Product -->
-                    <div class="col-12 col-sm-6 col-lg-4" th:if="${prodVO.prodStatus!= 0}" th:each="prodVO : ${prodListData}">
+                    <div class="col-12 col-sm-6 col-lg-4 prod" style="display:block;" th:each="prod : ${prodList}" th:attr="sortid=${prod.sortId}">
                         <div class="card h-100 product-card">
-                            <a th:href="@{/prod/getOne_For_Display(prodId=${prodVO.prodId})}" class="text-decoration-none">
+                            <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
                                 <div class="product-img-wrapper">
-                                    <img loading="lazy" src="https://picsum.photos/seed/tshirt1/400/400" class="card-img-top">
+                                    <img loading="lazy" th:src="${prod.getImageUrl}" class="card-img-top">
                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
                                 </div>
                             </a>
                             <div class="card-body">
-                                <a th:href="@{/prod/getOne_For_Display(prodId=${prodVO.prodId})}" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;" th:text="${prodVO.prodName}"></h6>
+                                <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;" th:text="${prod.prodName}"></h6>
                                 </a>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="price" th:text="${prodVO.prodPrice}"></span>
-                                    <span class="text-muted small">已售 234</span>
+                                    <span class="price" th:text="'NT$ '+${prod.prodPrice}"></span>
+                                    <span class="text-muted small" th:text="'庫存 '+${prod.prodStock}"></span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a th:href="@{/prod/getOne_For_Display(prodId=${prodVO.prodId})}" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                    <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="btn btn-outline-secondary btn-sm flex-grow-1">
                                         <i class="fas fa-eye me-1"></i>詳情
                                     </a>
                                     <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" data-id="1"
@@ -234,7 +235,31 @@
             </main>
         </div>
     </div>
+	
+<!-- 	<!-- 分頁導覽區域 -->
+<!--     <div class="pagination-wrapper"> -->
+<!--         <hr> -->
+<!--         上一頁：只有在不是第一頁時顯示 -->
+<!--         <a th:if="${prodList.hasPrevious()}"  -->
+<!--            th:href="@{listAllProd(page=${prodList.number - 1}, size=${prodList.size})}"> -->
+<!--            &laquo; 上一頁 -->
+<!--         </a> -->
 
+<!--         顯示當前頁碼 (從1開始) -->
+<!--         <span>第 <span th:text="${prodList.number + 1}">1</span> 頁</span> -->
+
+<!--         下一頁：關鍵在於使用 hasNext() -->
+<!--         <a th:if="${prodList.hasNext()}"  -->
+<!--            th:href="@{listAllProd(page=${prodList.number + 1}, size=${prodList.size})}"> -->
+<!--            下一頁 &raquo; -->
+<!--         </a> -->
+<!--     </div> -->
+
+<!--     <p th:if="${!prodList.hasNext()}">已經到底囉！沒有更多商品了。</p> -->
+
+	
+	
+	
     <!-- Floating Cart Button -->
     <button class="btn btn-primary btn-floating-cart" id="btnOpenCart">
         <i class="fas fa-shopping-cart"></i>
@@ -308,7 +333,57 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
-        $(document).ready(function () {
+		
+    //商品分類顯示    
+        let sorts = document.querySelectorAll("a.sort");
+        let prods = document.querySelectorAll("div.prod");
+		let sortTitle = document.getElementById("sortTitle");
+		
+		
+        function removeActive(){
+           sorts.forEach(function(sort,i){
+                sort.classList.remove("active");
+            }) 
+        }
+
+        sorts.forEach(function(sort,i){
+            sort.addEventListener("click", function(){
+                //點擊的類別要加綠色
+                removeActive();
+                sort.classList.add("active");
+
+
+                
+                let count = 0;
+                prods.forEach(function(prod, j){
+                    if(prod.getAttribute("sortid") === sort.getAttribute("sortid") || sort.getAttribute("sortid")==="all"){
+                        prod.style.display="block";
+                    }else{
+                        prod.style.display="none";
+                    }
+
+                    if(prod.style.display === "block"){
+                        count += 1;
+                    }
+                })
+                sortTitle.innerHTML = `${sort.innerHTML} <span class="text-muted fs-5" id="productCount">(${count})</span>`; 
+
+            })
+        })
+
+    	
+    
+    //--------------------------------------------------------------
+    	$(document).ready(function () {
+            let count_el = document.getElementById("productCount");
+            let count = 0;
+                prods.forEach(function(prod, j){
+                    if(prod.style.display === "block"){
+                        count += 1;
+                    }
+                })
+                count_el.innerHTML = `(${count})`; 
+            
             let cart = [];
 
             // Load from LocalStorage
@@ -450,92 +525,6 @@
                 }, 500);
             });
 
-            // --- 商品排序功能 ---
-            $('#sortSelect').change(function() {
-                const sortBy = $(this).val();
-                const $grid = $('#productGrid');
-                const $products = $grid.children('.col-12, .col-sm-6, .col-lg-4').get();
-                
-                $products.sort(function(a, b) {
-                    // 從 data 屬性或內容中取得價格
-                    const priceA = parseInt($(a).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
-                    const priceB = parseInt($(b).find('.text-success.fw-bold').text().replace(/[^\d]/g, '')) || 0;
-                    
-                    // 取得是否熱銷（有 badge-hot 類別）
-                    const hotA = $(a).find('.badge-hot').length ? 1 : 0;
-                    const hotB = $(b).find('.badge-hot').length ? 1 : 0;
-                    
-                    // 取得 data-date 或假設順序代表新舊
-                    const indexA = $products.indexOf(a);
-                    const indexB = $products.indexOf(b);
-                    
-                    switch(sortBy) {
-                        case 'price-asc':
-                            return priceA - priceB;
-                        case 'price-desc':
-                            return priceB - priceA;
-                        case 'newest':
-                            return indexA - indexB; // 原始順序假設為最新
-                        case 'popular':
-                        default:
-                            return hotB - hotA; // 熱銷的排前面
-                    }
-                });
-                
-                // 重新排列 DOM
-                $.each($products, function(idx, el) {
-                    $grid.append(el);
-                });
-                
-                showToast('已依 ' + $('#sortSelect option:selected').text() + ' 排序', 'success');
-            });
-
-            // --- 分類篩選 ---
-            $('.product-filters .list-unstyled a').click(function(e) {
-                e.preventDefault();
-                $('.product-filters .list-unstyled a').removeClass('active');
-                $(this).addClass('active');
-                
-                const category = $(this).text().trim();
-                const $grid = $('.row.g-4').first();
-                const $products = $grid.find('.col-12, .col-md-6, .col-xl-3');
-                
-                // 模擬篩選（實際應從 API 取得資料）
-                if (category === '全部商品') {
-                    $products.show();
-                    showToast('顯示全部商品', 'info');
-                } else {
-                    // 這裡應該根據實際資料篩選
-                    // 示例：假設沒有符合的商品
-                    const hasResults = false; // 實際應檢查篩選結果
-                    
-                    if (!hasResults) {
-                        Momento.UI.showEmptyState($grid[0], {
-                            icon: 'fas fa-box-open',
-                            title: '此分類暫無商品',
-                            message: `「${category}」分類目前沒有商品，看看其他分類吧`,
-                            actionText: '查看全部商品',
-                            actionCallback: function() {
-                                $('.product-filters .list-unstyled a').first().click();
-                            }
-                        });
-                    } else {
-                        showToast('已篩選：' + category, 'info');
-                    }
-                }
-            });
-
-            // --- 價格區間篩選 ---
-            $('input[id^="price"]').change(function() {
-                const selectedPrices = [];
-                $('input[id^="price"]:checked').each(function() {
-                    selectedPrices.push($(this).next('label').text());
-                });
-                if (selectedPrices.length > 0) {
-                    showToast('價格篩選：' + selectedPrices.join(', '), 'info');
-                }
-                // In real app, filter products by price range
-            });
         });
 
         // Toggle Favorite function

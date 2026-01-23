@@ -1,9 +1,7 @@
-<!--/*@thymeselftype type="com.momento.notify.model.OrganizerNotifyVO"*/-->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="h3"><i class="fas fa-bullhorn me-2"></i>通知會員</h2>
 </div>
 
-<form  id="notifyForm" th:action="@{/organizer/notify/addNotify}" th:object="${organizerNotifyVO}" method="post">
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card bg-dark border-secondary mb-4">
@@ -12,18 +10,18 @@
 
                 <div class="mb-3">
                     <label class="form-label required">通知類型</label>
-                    <select class="form-select bg-dark text-white border-secondary" th:field="*{notifyStatus}">
-                        <option value="1">活動提醒</option>
-                        <option value="2">活動異動通知</option>
-                        <option value="3">活動取消通知</option>
-                        <option value="4">商品出貨通知</option>
-                        <option value="0">自訂通知</option>
+                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyType">
+                        <option value="event_reminder">活動提醒</option>
+                        <option value="event_change">活動異動通知</option>
+                        <option value="event_cancel">活動取消通知</option>
+                        <option value="merchandise">商品出貨通知</option>
+                        <option value="custom">自訂通知</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label required">選擇活動/商品</label>
-                    <select class="form-select bg-dark text-white border-secondary" th:field="*{targetId}">
+                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyTarget">
                         <option value="">請選擇</option>
                         <optgroup label="進行中活動">
                             <option value="event-1">2025新年音樂會｜維也納之夜 (購票人數: 856)</option>
@@ -38,14 +36,14 @@
 
                 <div class="mb-3">
                     <label class="form-label required">通知標題</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary js-notify-title" th:field="*{title}"
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="memberNotifyTitle"
                         placeholder="例：活動入場提醒" maxlength="50">
                     <small class="text-muted">50 字以內</small>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label required">通知內容</label>
-                    <textarea class="form-control bg-dark text-white border-secondary js-notify-content" rows="6" th:field="*{content}"
+                    <textarea class="form-control bg-dark text-white border-secondary" rows="6" id="memberNotifyContent"
                         placeholder="請輸入要通知會員的內容..."></textarea>
                 </div>
 
@@ -86,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
         <div class="col-lg-4">
             <!-- 發送對象統計 -->
             <div class="card bg-dark border-secondary mb-4">
@@ -129,7 +127,7 @@
             </div>
         </div>
     </div>
-</form>
+</div>
 
 <!-- 歷史通知紀錄 -->
 <div class="card bg-dark border-secondary mt-4">
@@ -149,24 +147,12 @@
             </thead>
             <tbody>
                 <tr th:each="notify : ${notifyListData}">
-                    <td class="align-middle text-muted" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
-                    <td class="align-middle">
-                        <span th:switch="${notify.notifyStatus}" class="badge rounded-pill px-3">
-                            <span th:case="1" class="bg-info text-dark">活動提醒</span>
-                            <span th:case="2" class="bg-warning text-dark">活動異動通知</span>
-                            <span th:case="3" class="bg-danger text-white">活動取消通知</span>
-                            <span th:case="4" class="bg-primary text-white">商品出貨通知</span>
-                            <span th:case="0" class="bg-secondary text-white">自訂通知</span>
-                            <span th:case="*" class="bg-secondary text-white">一般通知</span>
-                        </span>
+                    <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
+                    <td><span class="badge bg-info" th:text="${notify.notifyStatus == 1 ? '活動提醒' : '一般通知'}">活動提醒</span>
                     </td>
-                    <td class="align-middle text-white" th:text="${notify.title}">標題</td>
-                    <td class="align-middle text-muted">所有人</td>
-                    <td class="align-middle">
-                        <span class="badge" th:classappend="${notify.notifyStatus != 0 ? 'bg-success' : 'bg-secondary'}"
-                                     th:text="${notify.notifyStatus != 0 ? '已發送' : '處理中'}">狀態
-                        </span>
-                    </td>
+                    <td th:text="${notify.title}">標題</td>
+                    <td>所有人</td>
+                    <td><span class="badge bg-success" th:text="${notify.isRead == 1 ? '已發送' : '處理中'}">狀態</span></td>
                 </tr>
                 <tr>
                     <td>2024/12/28 10:30</td>
@@ -176,11 +162,11 @@
                     <td><span class="badge bg-success">已發送</span></td>
                 </tr>
                 <tr>
-                    <td class="align-middle text-muted">2024/12/25 14:00</td>
-                    <td class="align-middle"><span class="badge bg-primary text-white rounded-pill px-3">出貨通知</span></td>
-                    <td class="align-middle text-white">商品已出貨通知</td>
-                    <td class="align-middle text-muted">45 人</td>
-                    <td class="align-middle"><span class="badge bg-success">已發送</span></td>
+                    <td>2024/12/25 14:00</td>
+                    <td><span class="badge bg-warning">出貨通知</span></td>
+                    <td>商品已出貨通知</td>
+                    <td>45 人</td>
+                    <td><span class="badge bg-success">已發送</span></td>
                 </tr>
             </tbody>
         </table>

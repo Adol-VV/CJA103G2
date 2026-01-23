@@ -14,7 +14,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link th:href="@{/css/momento-theme.css}"  rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
     <link th:href="@{/css/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/organizer-dashboard.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css">
@@ -110,19 +110,16 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
                 <!-- Dashboard Panel -->
-                <div class="content-panel" id="panel-dashboard"
-                    th:classappend="${targetPanel == null || targetPanel == 'dashboard'} ? 'active' : ''"
-                    th:insert="~{pages/organizer/partials/panel-dashboard}"></div>
+                <div class="content-panel active" id="panel-dashboard"
+                    th:insert="pages/organizer/partials/panel-dashboard"></div>
 
                 <!-- Notifications Panel -->
                 <div class="content-panel" id="panel-notifications"
-                    th:classappend="${targetPanel == 'notifications'} ? 'active' : ''"
-                    th:insert="~{pages/organizer/partials/panel-notifications}"></div>
+                    th:insert="pages/organizer/partials/panel-notifications"></div>
 
                 <!-- Notify Members Panel -->
                 <div class="content-panel" id="panel-notify-members"
-                     th:classappend="${targetPanel == 'send-page'} ? 'active' : ''"
-                    th:insert="~{pages/organizer/partials/panel-notify-members}"></div>
+                    th:insert="pages/organizer/partials/panel-notify-members"></div>
 
                 <!-- Events List Panel -->
                 <div class="content-panel" id="panel-events-list"
@@ -152,7 +149,8 @@
                     th:insert="pages/organizer/partials/panel-product-orders"></div>
 
                 <!-- Reports Panel -->
-                <div class="content-panel" id="panel-reports" th:insert="pages/organizer/partials/panel-reports"></div>
+                <div class="content-panel" id="panel-reports" th:insert="pages/organizer/partials/panel-reports">
+                </div>
 
                 <!-- Settlement Panel -->
                 <div class="content-panel" id="panel-settlement" th:insert="pages/organizer/partials/panel-settlement">
@@ -185,7 +183,6 @@
 
     <!-- Modularized JS -->
     <script type="module" th:src="@{/js/organizer/index.js}"></script>
-    <script type="module" th:src="@{/js/common/index.js}"></script>
 
     <script th:inline="javascript">
         $(document).ready(function() {
