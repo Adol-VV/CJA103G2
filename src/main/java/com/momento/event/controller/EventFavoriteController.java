@@ -1,68 +1,35 @@
 package com.momento.event.controller;
 
-import com.momento.event.dto.*;
 import com.momento.event.model.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
- * Member Event Controller - 會員活動功能控制器
+ * Event Favorite Controller - 活動收藏功能控制器
  * 
- * 處理需要登入才能使用的活動相關功能
- * 基底路徑: /member/event
+ * 處理活動收藏相關的 API
+ * 基底路徑: /api/event/favorite
  */
-@Controller
-@RequestMapping("/member/event")
-public class MemberEventController {
+@RestController
+@RequestMapping("/api/event/favorite")
+public class EventFavoriteController {
 
     @Autowired
     private EventService eventService;
 
     /**
-     * 下單頁面（需登入）
-     * GET /member/event/order/{id}
-     * 
-     * @param id      活動 ID
-     * @param session HTTP Session
-     * @param model   Spring MVC Model
-     * @return 下單頁面
-     */
-    @GetMapping("/order/{id}")
-    public String orderPage(
-            @PathVariable Integer id,
-            HttpSession session,
-            Model model) {
-
-        // 取得當前登入會員 ID（從 session）
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        // 查詢活動詳情（包含票種資訊）
-        EventDetailDTO eventDetail = eventService.getEventDetail(id, memberId);
-
-        // 傳遞資料到頁面
-        model.addAttribute("event", eventDetail.getEvent());
-        model.addAttribute("tickets", eventDetail.getTickets());
-        model.addAttribute("organizer", eventDetail.getOrganizer());
-
-        return "pages/user/event-order";
-    }
-
-    /**
      * 新增/取消收藏（需登入）
-     * POST /member/event/favorite/{id}
+     * POST /api/event/favorite/{id}
      * 
      * @param id      活動 ID
      * @param session HTTP Session
      * @return JSON 回應 {success, isFavorited, favoriteCount}
      */
-    @PostMapping("/favorite/{id}")
-    @ResponseBody
+    @PostMapping("/{id}")
     public ResponseEntity<Map<String, Object>> toggleFavorite(
             @PathVariable Integer id,
             HttpSession session) {

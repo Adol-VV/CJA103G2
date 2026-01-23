@@ -5,17 +5,18 @@ import com.momento.eventmanage.dto.EventCreateDTO;
 import com.momento.ticket.model.TicketVO;
 import com.momento.ticket.model.TicketRepository;
 import com.momento.organizer.model.OrganizerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -280,5 +281,37 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     public java.util.List<EventVO> getAllEvents() {
         return eventRepository.findAll();
+    }
+
+    /**
+     * 查詢主辦方的活動列表 (支援篩選和分頁)
+     */
+    @Override
+    public Page<EventVO> getOrganizerEvents(
+            Integer organizerId,
+            Byte status,
+            String keyword,
+            Pageable pageable) {
+
+        // 情況 1: 有狀態 + 有關鍵字
+        if (status != null && keyword != null && !keyword.trim().isEmpty()) {
+            return eventRepository.findByOrganizer_OrganizerIdAndStatusAndTitleContaining(
+                    organizerId, status, keyword.trim(), pageable);
+        }
+
+        // 情況 2: 只有狀態
+        if (status != null) {
+            return eventRepository.findByOrganizer_OrganizerIdAndStatus(
+                    organizerId, status, pageable);
+        }
+
+        // 情況 3: 只有關鍵字
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return eventRepository.findByOrganizer_OrganizerIdAndTitleContaining(
+                    organizerId, keyword.trim(), pageable);
+        }
+
+        // 情況 4: 無篩選條件
+        return eventRepository.findByOrganizer_OrganizerId(organizerId, pageable);
     }
 }

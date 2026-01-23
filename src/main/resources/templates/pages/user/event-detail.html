@@ -882,7 +882,7 @@
             $btn.prop('disabled', true);
 
             // 呼叫收藏 API
-            fetch(`/member/event/favorite/${eventId}`, {
+            fetch(`/api/event/favorite/${eventId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

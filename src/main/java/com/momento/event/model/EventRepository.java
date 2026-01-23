@@ -176,6 +176,47 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
                         Byte status,
                         Byte reviewStatus);
 
+        /**
+         * 查詢特定主辦方的活動 (依狀態篩選)
+         * 
+         * @param organizerId 主辦方 ID
+         * @param status      活動狀態
+         * @param pageable    分頁參數
+         * @return 活動分頁列表
+         */
+        Page<EventVO> findByOrganizer_OrganizerIdAndStatus(
+                        Integer organizerId,
+                        Byte status,
+                        Pageable pageable);
+
+        /**
+         * 查詢特定主辦方的活動 (依標題關鍵字搜尋)
+         * 
+         * @param organizerId 主辦方 ID
+         * @param keyword     標題關鍵字
+         * @param pageable    分頁參數
+         * @return 活動分頁列表
+         */
+        Page<EventVO> findByOrganizer_OrganizerIdAndTitleContaining(
+                        Integer organizerId,
+                        String keyword,
+                        Pageable pageable);
+
+        /**
+         * 查詢特定主辦方的活動 (依狀態 + 標題關鍵字)
+         * 
+         * @param organizerId 主辦方 ID
+         * @param status      活動狀態
+         * @param keyword     標題關鍵字
+         * @param pageable    分頁參數
+         * @return 活動分頁列表
+         */
+        Page<EventVO> findByOrganizer_OrganizerIdAndStatusAndTitleContaining(
+                        Integer organizerId,
+                        Byte status,
+                        String keyword,
+                        Pageable pageable);
+
         // ========== 統計查詢 ==========
 
         /**

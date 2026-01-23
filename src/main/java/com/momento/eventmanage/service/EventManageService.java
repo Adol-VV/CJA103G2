@@ -55,8 +55,18 @@ public interface EventManageService {
      */
     java.util.List<com.momento.event.model.EventVO> getAllEvents();
 
-    // TODO: 其他方法
-    // - listEventsByOrganizer()
-    // - getEventDetail()
-    // - resubmitEvent()
+    /**
+     * 查詢主辦方的活動列表 (支援篩選和分頁)
+     * 
+     * @param organizerId 主辦方 ID
+     * @param status      活動狀態 (可選)
+     * @param keyword     搜尋關鍵字 (可選)
+     * @param pageable    分頁參數
+     * @return 活動分頁列表
+     */
+    org.springframework.data.domain.Page<com.momento.event.model.EventVO> getOrganizerEvents(
+            Integer organizerId,
+            Byte status,
+            String keyword,
+            org.springframework.data.domain.Pageable pageable);
 }

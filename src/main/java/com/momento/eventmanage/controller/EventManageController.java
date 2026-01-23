@@ -32,6 +32,24 @@ public class EventManageController {
     @Autowired
     private TypeRepository typeRepository;
 
+    @Autowired
+    private com.momento.event.model.EventRepository eventRepository;
+
+    /**
+     * 檢查活動是否屬於該主辦方
+     * 
+     * @param eventId     活動 ID
+     * @param organizerId 主辦方 ID
+     * @return true 如果活動屬於該主辦方
+     */
+    private boolean isEventOwner(Integer eventId, Integer organizerId) {
+        com.momento.event.model.EventVO event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            return false;
+        }
+        return event.getOrganizer().getOrganizerId().equals(organizerId);
+    }
+
     /**
      * 建立活動頁面 (返回 Dashboard,由前端切換到 panel-event-create)
      * GET /organizer/event/create
@@ -42,8 +60,12 @@ public class EventManageController {
      */
     @GetMapping("/create")
     public String createEventPage(Model model, HttpSession session) {
-        // TODO: 檢查主辦方登入狀態
-        // Integer organizerId = (Integer) session.getAttribute("organizerId");
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
 
         // 載入活動類型列表
         List<TypeVO> types = typeRepository.findAll();
@@ -67,10 +89,17 @@ public class EventManageController {
             @RequestBody EventCreateDTO dto,
             HttpSession session) {
 
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "請先登入"));
+        }
+
         try {
-            // TODO: 從 session 取得主辦方 ID
-            // Integer organizerId = (Integer) session.getAttribute("organizerId");
-            // dto.setOrganizerId(organizerId);
+            // 從 session 取得主辦方 ID
+            dto.setOrganizerId(organizer.getOrganizerId());
 
             // 建立活動
             Integer eventId = eventManageService.createEvent(dto);
@@ -101,6 +130,14 @@ public class EventManageController {
     public ResponseEntity<Map<String, Object>> uploadImage(
             @RequestParam("file") MultipartFile file,
             HttpSession session) {
+
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "請先登入"));
+        }
 
         try {
             // 上傳圖片並取得 URL
@@ -139,14 +176,29 @@ public class EventManageController {
             Model model,
             HttpSession session) {
 
-        // TODO: 從 session 取得主辦方 ID
-        // Integer organizerId = (Integer) session.getAttribute("organizerId");
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
 
-        // TODO: 實作分頁和篩選邏輯
-        // 暫時返回所有活動 (測試用)
-        List<com.momento.event.model.EventVO> events = eventManageService.getAllEvents();
+        // 建立分頁參數 (依活動日期降冪排序)
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
+                org.springframework.data.domain.Sort.by("eventAt").descending());
 
-        model.addAttribute("events", events);
+        // 取得該主辦方的活動列表
+        org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
+                .getOrganizerEvents(
+                        organizer.getOrganizerId(),
+                        status,
+                        keyword,
+                        pageable);
+
+        model.addAttribute("events", eventPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", eventPage.getTotalPages());
+        model.addAttribute("totalEvents", eventPage.getTotalElements());
         model.addAttribute("currentStatus", status);
         model.addAttribute("keyword", keyword);
 
@@ -169,7 +221,19 @@ public class EventManageController {
             Model model,
             HttpSession session) {
 
-        // TODO: 檢查主辦方權限
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+
+        // 檢查活動是否屬於該主辦方
+        if (!isEventOwner(id, organizer.getOrganizerId())) {
+            // 活動不屬於該主辦方,返回錯誤頁面或 dashboard
+            return "redirect:/organizer/dashboard";
+        }
+
         // TODO: 載入活動資料
         // TODO: 載入活動類型列表
 
@@ -192,9 +256,20 @@ public class EventManageController {
             @RequestBody EventUpdateDTO dto,
             HttpSession session) {
 
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "請先登入"));
+        }
+
         try {
-            // TODO: 檢查主辦方權限
-            // Integer organizerId = (Integer) session.getAttribute("organizerId");
+            // 檢查活動是否屬於該主辦方
+            if (!isEventOwner(id, organizer.getOrganizerId())) {
+                return ResponseEntity.status(403)
+                        .body(Map.of("success", false, "message", "無權限編輯此活動"));
+            }
 
             // 設定活動 ID
             dto.setEventId(id);
@@ -230,12 +305,23 @@ public class EventManageController {
             @RequestBody Map<String, Object> request,
             HttpSession session) {
 
+        // 檢查主辦方登入狀態
+        com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                .getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "請先登入"));
+        }
+
         try {
             Byte status = ((Number) request.get("status")).byteValue();
             String reason = (String) request.get("reason");
 
-            // TODO: 檢查主辦方權限
-            // Integer organizerId = (Integer) session.getAttribute("organizerId");
+            // 檢查活動是否屬於該主辦方
+            if (!isEventOwner(id, organizer.getOrganizerId())) {
+                return ResponseEntity.status(403)
+                        .body(Map.of("success", false, "message", "無權限變更此活動狀態"));
+            }
 
             // 變更狀態
             eventManageService.changeStatus(id, status, reason);
