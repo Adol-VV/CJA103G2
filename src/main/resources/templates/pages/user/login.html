@@ -114,11 +114,11 @@
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between mb-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                                            <label class="form-check-label" for="rememberMe">記住我</label>
-                                        </div>
-                                        <a href="forgot-password.html" class="text-primary text-decoration-none">忘記密碼？</a>
+<!--                                         <div class="form-check"> -->
+<!--                                             <input type="checkbox" class="form-check-input" id="rememberMe"> -->
+<!--                                             <label class="form-check-label" for="rememberMe">記住我</label> -->
+<!--                                         </div> -->
+                                        <a href="/member/forgot-password" class="text-primary text-decoration-none" style="margin-left:auto">忘記密碼？</a>
                                     </div>
                                     <input type="hidden" name="targetUrl" th:value="${backUrl}">
                                     <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">登入</button>
@@ -259,6 +259,16 @@
                 toast.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
                 container.appendChild(toast);
                 setTimeout(() => toast.remove(), 3000);
+            }
+        }
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('resetSuccess')) {
+                alert("密碼重設成功，請重新登入！");
+                
+                // 清理網址參數
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
             }
         }
     </script>

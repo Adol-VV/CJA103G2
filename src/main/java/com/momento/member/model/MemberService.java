@@ -32,8 +32,8 @@ public class MemberService {
 	}
 	
 	public MemberVO findOneMember(Integer memberId) {
-		Optional<MemberVO> optional = repository.findById(memberId);
-		return optional.orElse(null);
+		Optional<MemberVO> member = repository.findById(memberId);
+		return member.orElseThrow(() -> new RuntimeException("找不到該會員"));
 	}
 	
 	public List<MemberVO> findByNameLike(String name){
