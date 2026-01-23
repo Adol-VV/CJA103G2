@@ -1,20 +1,44 @@
 package com.momento.prod.dto;
 
-
+import java.time.LocalDateTime;
 
 public class ProdDTO {
 	private Integer prodId;
     private String prodName;
     private Integer prodPrice;
     private Integer prodStock;
+    private String organizerName;
     private Integer sortId;
+    private String sortName;
+    private LocalDateTime createdAt;
     private byte prodStatus;
+    private String reviewStatus;
     
     private String imageUrl; // 存儲第一張圖片
     
     
+
 	public Integer getProdId() {
 		return prodId;
+	}
+
+	public String getOrganizerName() {
+		return organizerName;
+	}
+	public void setOrganizerName(String organizerName) {
+		this.organizerName = organizerName;
+	}
+	public String getSortName() {
+		return sortName;
+	}
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 	public Integer getProdStock() {
 		return prodStock;
@@ -45,6 +69,14 @@ public class ProdDTO {
 	public Integer getSortId() {
 		return sortId;
 	}
+	public String getReviewStatus() {
+		return reviewStatus;
+	}
+
+	public void setReviewStatus(String reviewStatus) {
+		this.reviewStatus = reviewStatus;
+	}
+
 	public void setSortId(Integer sortId) {
 		this.sortId = sortId;
 	}

@@ -68,8 +68,23 @@ public class ProdService {
             dto.setProdName(prod.getProdName());
             dto.setProdPrice(prod.getProdPrice());
             dto.setProdStock(prod.getProdStock());
+            dto.setOrganizerName(prod.getOrganizerVO().getName());
             dto.setSortId(prod.getProdSortVO().getSortId());
+            dto.setSortName(prod.getProdSortVO().getSortName());
+            dto.setCreatedAt(prod.getCreatedAt());
             dto.setProdStatus(prod.getProdStatus());
+            
+            //將審核狀態由數字變更為字串存進DTO
+            switch(prod.getReviewStatus()) {
+            default:
+            	dto.setReviewStatus("待審核");
+            case 1:
+            	dto.setReviewStatus("通過");
+            	break;
+            case 2:
+            	dto.setReviewStatus("未通過");
+            	break;
+            }
             
             // 取出第一張圖片作為主圖
             if (prod.getProdImages() == null || prod.getProdImages().isEmpty()) {
@@ -87,6 +102,7 @@ public class ProdService {
             dto.setProdId(prod.getProdId());
             dto.setProdName(prod.getProdName());
             dto.setProdPrice(prod.getProdPrice());
+            dto.setProdStock(prod.getProdStock());
             dto.setSortId(prod.getProdSortVO().getSortId());
             dto.setProdStatus(prod.getProdStatus());
             
