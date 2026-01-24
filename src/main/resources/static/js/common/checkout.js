@@ -122,11 +122,11 @@ $(document).ready(function () {
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
-                        memberId: { memberId: 1 }, 
+                        memberId: { memberId: sessionStorage.getItem('memberId') }, 
                         organizerId: { organizerId: parseInt(orgId) }, 
                         total: subTotal,
                         token: token_used, 
-                        payable: subTotal,
+                        payable: subTotal-token_used,
                         status: 1,
                         orderItems: subOrderItems 
                     })
