@@ -6,26 +6,49 @@
 </div>
 
 <div class="card bg-dark border-secondary mb-4">
+    <div class="card-header border-secondary">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${param.status == null} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list">全部</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.status != null and param.status[0] == '1'} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=1">待審核</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.status != null and param.status[0] == '2'} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=2">已上架</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.reviewStatus != null and param.reviewStatus[0] == '2'} ? 'active text-danger' : 'text-muted'"
+                    href="/organizer/event/list?status=0&reviewStatus=2">審核未過</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.status != null and param.status[0] == '0' and param.reviewStatus == null} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=0">草稿夾</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.status != null and param.status[0] == '3'} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=3">已下架</a>
+            </li>
+        </ul>
+    </div>
     <div class="card-body">
-        <form method="get" action="/organizer/event/list">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <select name="status" class="form-select bg-dark text-white border-secondary">
-                        <option value="">所有狀態</option>
-                        <option value="0" th:selected="${param.status != null and param.status[0] == '0'}">草稿</option>
-                        <option value="1" th:selected="${param.status != null and param.status[0] == '1'}">待審核</option>
-                        <option value="2" th:selected="${param.status != null and param.status[0] == '2'}">已上架</option>
-                        <option value="3" th:selected="${param.status != null and param.status[0] == '3'}">已下架</option>
-                        <option value="4" th:selected="${param.status != null and param.status[0] == '4'}">已取消</option>
-                    </select>
-                </div>
-                <div class="col-md-9">
-                    <div class="input-group">
-                        <input type="text" name="keyword" class="form-control bg-dark text-white border-secondary"
-                            placeholder="搜尋活動名稱..." th:value="${param.keyword}">
-                        <button type="submit" class="btn btn-outline-secondary">搜尋</button>
-                    </div>
-                </div>
+        <form method="get" action="/organizer/event/list" class="d-flex">
+            <!-- Hidden inputs to keep current status filter when searching -->
+            <input type="hidden" name="status" th:value="${param.status}">
+            <input type="hidden" name="reviewStatus" th:value="${param.reviewStatus}">
+
+            <div class="input-group">
+                <input type="text" name="keyword" class="form-control bg-dark text-white border-secondary"
+                    placeholder="搜尋活動名稱..." th:value="${param.keyword}">
+                <button type="submit" class="btn btn-outline-secondary">搜尋</button>
             </div>
         </form>
     </div>

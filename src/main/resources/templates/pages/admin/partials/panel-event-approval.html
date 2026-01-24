@@ -2,10 +2,10 @@
     <h2 class="mb-4">活動審核</h2>
     <div class="card bg-dark border-secondary">
         <div class="card-header border-secondary">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item"><a class="nav-link active text-white" href="#">待審核 (2)</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#">需補件</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#">已駁回</a></li>
+            <ul class="nav nav-tabs card-header-tabs" id="eventReviewTabs">
+                <li class="nav-item"><a class="nav-link active text-white" href="#" data-status="pending">待審核</a></li>
+                <li class="nav-item"><a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a></li>
+                <li class="nav-item"><a class="nav-link text-muted" href="#" data-status="approved">已通過</a></li>
             </ul>
         </div>
         <div class="card-body p-0">
@@ -22,34 +22,39 @@
                         </tr>
                     </thead>
                     <tbody id="eventApprovalList">
-                        <tr>
-                            <td>2024/12/26</td>
-                            <td>
-                                <div class="fw-bold">2025 新年音樂會｜維也納之夜</div>
-                                <small class="text-muted">ID: E20250101</small>
-                            </td>
-                            <td>高雄市交響樂團</td>
-                            <td>2025/01/01</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2024/12/25</td>
-                            <td>
-                                <div class="fw-bold">獨立樂團之夜 - 搖滾篇</div>
-                                <small class="text-muted">ID: E20250115</small>
-                            </td>
-                            <td>地下社會</td>
-                            <td>2025/01/15</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
-                            </td>
-                        </tr>
+                        <!-- Data will be loaded via JS -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Review Modal (Self-Contained) -->
+    <div class="modal fade" id="eventReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">審核活動</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="eventReviewDetails">
+                        <!-- Event details to be populated here -->
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <div class="mb-3">
+                        <label class="form-label">駁回原因 (若駁回必填)</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" id="rejectReason"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmReject">駁回</button>
+                    <button type="button" class="btn btn-success" id="btnConfirmApprove">批准上架</button>
+                </div>
             </div>
         </div>
     </div>
