@@ -1,4 +1,4 @@
-package com.momento.eventmanage.service;
+package com.momento.eventmanage.model;
 
 import com.momento.eventmanage.dto.EventCreateDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +67,7 @@ public interface EventManageService {
     org.springframework.data.domain.Page<com.momento.event.model.EventVO> getOrganizerEvents(
             Integer organizerId,
             Byte status,
+            Byte reviewStatus,
             String keyword,
             org.springframework.data.domain.Pageable pageable);
 }
