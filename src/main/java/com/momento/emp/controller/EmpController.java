@@ -2,8 +2,12 @@ package com.momento.emp.controller;
 
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
+import com.momento.prod.dto.ProdDTO;
+import com.momento.prod.model.ProdImageVO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
+import com.momento.prod.model.ProdVO;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +16,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -95,8 +103,11 @@ public class EmpController {
 
         model.addAttribute("loginEmp", loginEmp);
         model.addAttribute("isSuperAdmin", empSvc.isSuperAdmin(loginEmp.getEmpId()));
-		model.addAttribute("prodList", prodSvc.getAllProds());
 		model.addAttribute("prodSortList", prodSortSvc.getAll());
+		if (!model.containsAttribute("prodList")) {
+			model.addAttribute("prodList", prodSvc.getAllProds());
+		}
+		
         return "pages/admin/dashboard";
     }
 
@@ -192,4 +203,35 @@ public class EmpController {
 
         return "redirect:/admin/listAllEmp";
     }
+    
+    //商品審核裡面的搜尋商品
+	@PostMapping("/searchProds")
+	public String searchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return "redirect:/admin/login";
+        }
+        
+		ra.addFlashAttribute("prodList",prodSvc.searchProds(s));
+
+		return "redirect:/admin/dashboard#product-approval";
+	}
+	
+	//審核商品詳頁
+	@GetMapping("/api/getOneProd")
+	@ResponseBody
+	public ProdDTO getOneProd(@RequestParam("prodId") String prodId) {
+
+		ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
+		
+		return prod;
+	}
+	
+	//變更商品審核狀態
+	@PostMapping("/changeReviewStatus")
+	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("reviewStatus") Byte reviewStatus) {
+		System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
+		prodSvc.updateProdReviewStatus(prodId, reviewStatus);
+		return "redirect:/admin/dashboard#product-approval";
+	}
 }

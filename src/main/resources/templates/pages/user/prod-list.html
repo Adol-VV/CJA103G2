@@ -206,7 +206,7 @@
                         <div class="card h-100 product-card">
                             <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
                                 <div class="product-img-wrapper">
-                                    <img loading="lazy" th:src="${prod.imageUrl}" class="card-img-top">
+                                    <img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img-top">
                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button>
                                 </div>
                             </a>
@@ -226,7 +226,7 @@
                                             th:data-id="${prod.prodId}"
                                             th:data-name="${prod.prodName}" 
                                             th:data-price="${prod.prodPrice}"
-                                            th:data-image="${prod.imageUrl}"
+                                            th:data-image="${prod.mainImageUrl}"
                                             th:data-organizer="${prod.organizerId}"> <i class="fas fa-cart-plus me-1"></i>加入
                                     </button>
                                 </div>

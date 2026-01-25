@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${prodVO.prodName}+' | Momento'"></title>
+    <title th:text="${prod.prodName}+' | Momento'"></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -86,8 +86,8 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a></li>
-                <li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:text=${prodVO.prodSortVO.sortName}>服飾配件</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prodVO.prodName}"></li>
+                <li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:text=${prod.sortName}>服飾配件</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prod.prodName}"></li>
             </ol>
         </nav>
 
@@ -95,25 +95,25 @@
             <!-- Product Images -->
             <div class="col-lg-6">
                 <div class="bg-dark rounded-3 overflow-hidden mb-3" style="aspect-ratio: 1/1;">
-                    <img loading="lazy" th:src="${!prodImages.isEmpty()}  ? ${prodImages[0].getImageUrl()} : @{/images/default.png}" 
+                    <img loading="lazy" th:src="${prod.mainImageUrl != null}  ? ${prod.mainImageUrl} : @{/images/default.png}" 
                          class="w-100 h-100" style="object-fit: cover;" 
                          alt="商品"
                          id="mainProductImage">
                 </div>
                 <div class="d-flex gap-2 overflow-auto pb-2">
-                    <div th:each="prodImage : ${prodImages}">
-                        <img class="product-thumb"  loading="lazy" th:src="${prodImage.getImageUrl()}" alt="縮圖">
+                    <div th:each="prodImage : ${prod.prodImages}">
+                        <img class="product-thumb"  loading="lazy" th:src="${prodImage}" alt="縮圖">
                     </div>
                 </div>
             </div>
 
             <!-- Product Info -->
             <div class="col-lg-6">
-                <h1 class="h2 mb-2" th:text="${prodVO.prodName}"></h1>
+                <h1 class="h2 mb-2" th:text="${prod.prodName}"></h1>
 <!--                 <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p> -->
 
                 <div class="mb-4">
-                    <span class="fs-2 fw-bold text-success" th:text="'NT$ '+ ${prodVO.prodPrice}"></span>
+                    <span class="fs-2 fw-bold text-success" th:text="'NT$ '+ ${prod.prodPrice}"></span>
                 </div>
 
                 <div class="card bg-dark border-secondary mb-4">
@@ -146,7 +146,7 @@
                     <div class="text-muted">
 <!--                         <p><strong>材質：</strong>100% 純棉帆布</p> -->
 <!--                         <p><strong>尺寸：</strong>35cm x 40cm</p> -->
-                        <p th:text="${prodVO.prodContent}"></p>
+                        <p th:text="${prod.prodContent}"></p>
                     </div>
                 </div>
 
