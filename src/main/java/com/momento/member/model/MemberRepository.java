@@ -20,4 +20,8 @@ public interface MemberRepository extends JpaRepository<MemberVO, Integer>{
 	public MemberVO findByAccount(String account);
 	
 	public List<MemberVO> findByName(String name);
+	
+	@Modifying
+	@Query("UPDATE MemberVO m SET m.token = :newToken WHERE m.memberId = :id")
+	void updateToken(Integer newToken,Integer id);
 }

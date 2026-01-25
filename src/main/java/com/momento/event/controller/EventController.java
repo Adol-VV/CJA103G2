@@ -1,17 +1,26 @@
 package com.momento.event.controller;
 
-import com.momento.event.dto.*;
-import com.momento.event.model.EventService;
-import com.momento.event.model.TypeVO;
-import com.momento.event.model.TypeRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.momento.event.dto.EventDetailDTO;
+import com.momento.event.dto.EventFilterDTO;
+import com.momento.event.dto.EventListItemDTO;
+import com.momento.event.model.EventService;
+import com.momento.event.model.TypeRepository;
+import com.momento.event.model.TypeVO;
+import com.momento.eventorder.dto.SelectionFormDTO;
 
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * Event Controller - 活動頁面控制器
@@ -162,6 +171,9 @@ public class EventController {
         model.addAttribute("favoriteCount", eventDetail.getFavoriteCount());
         model.addAttribute("isFavorited", eventDetail.getIsFavorited());
         model.addAttribute("relatedEvents", eventDetail.getRelatedEvents());
+        
+        // 傳到結帳頁面
+        model.addAttribute("selectionForm", new SelectionFormDTO());
 
         return "pages/user/event-detail";
     }
