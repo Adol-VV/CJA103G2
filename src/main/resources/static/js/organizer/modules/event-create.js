@@ -1,228 +1,265 @@
 export function initEventCreate() {
-    let currentStep = 1;
+    let uploadedBannerUrl = '';
 
-    window.showStep = function (step) {
-        currentStep = step;
-        $('.step-content').removeClass('active');
-        $(`.step-content[data-step="${step}"]`).addClass('active');
-
-        $('.stepper-wrapper').attr('data-progress', step);
-        $('.stepper-item').removeClass('active completed');
-        for (let i = 1; i < step; i++) {
-            $(`.stepper-item[data-step="${i}"]`).addClass('completed');
-        }
-        $(`.stepper-item[data-step="${step}"]`).addClass('active');
-        window.scrollTo(0, 0);
-    };
-
-    $(document).on('click', '.btn-next-step', function () {
-        const next = $(this).data('next');
-        if (!validateStep(currentStep)) return;
-        if (next === 4) populatePreview();
-        showStep(next);
+    // ========== 圖片上傳 ==========
+    $(document).on('click', '#mainImageUpload', function () {
+        $('#mainImageInput').click();
     });
 
-    $(document).on('click', '.btn-prev-step', function () {
-        showStep($(this).data('prev'));
-    });
-
-    $(document).on('change', 'select[name="refundPolicy"]', function () {
-        if ($(this).val() === 'custom') {
-            $('.custom-refund-policy').removeClass('d-none');
-        } else {
-            $('.custom-refund-policy').addClass('d-none');
-        }
-    });
-
-    $(document).on('change', '#enablePresale', function () {
-        if ($(this).is(':checked')) {
-            $('.presale-settings').removeClass('d-none');
-        } else {
-            $('.presale-settings').addClass('d-none');
-        }
-    });
-
-    $(document).on('input', 'textarea[maxlength]', function () {
-        const max = $(this).attr('maxlength');
-        const current = $(this).val().length;
-        $(this).closest('.mb-4').find('.char-count').text(current);
-    });
-
-    $(document).on('click', '#btnSaveDraft', function () {
-        if (window.Momento && window.Momento.Toast) {
-            window.Momento.Toast.show('草稿已儲存', 'success');
-        } else if (window.showToast) {
-            window.showToast('草稿已儲存', 'success');
-        }
-    });
-
-    $(document).on('submit', '#eventCreateForm', function (e) {
-        e.preventDefault();
-        if (validateStep(currentStep)) {
-            const eventData = {
-                name: $('input[name="eventName"]').val().trim(),
-                category: $('select[name="eventCategory"]').val(),
-                venue: $('input[name="eventVenue"]').val().trim(),
-                date: $('input[name="sessionDate[]"]').first().val(),
-                startTime: $('input[name="sessionStartTime[]"]').first().val(),
-                tickets: []
-            };
-
-            $('.ticket-type-item').each(function () {
-                eventData.tickets.push({
-                    name: $(this).find('input[name="ticketTypeName[]"]').val(),
-                    price: $(this).find('input[name="ticketPrice[]"]').val(),
-                    qty: $(this).find('input[name="ticketQuantity[]"]').val()
-                });
-            });
-
-            if (window.MockDB) {
-                MockDB.events.create(eventData);
-            }
-
-            if (window.showToast) window.showToast('活動已送出審核，請等待審核結果', 'success');
-            setTimeout(() => {
-                if (window.showSection) window.showSection('events-list');
-            }, 2000);
-        }
-    });
-
-    $(document).on('click', '#mainImageUpload', function () { $('#mainImageInput').click(); });
     $(document).on('change', '#mainImageInput', function (e) {
-        if (e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                $('#mainImagePreview').attr('src', e.target.result);
-                $('#mainImageUpload .upload-placeholder').addClass('d-none');
-                $('#mainImageUpload .upload-preview').removeClass('d-none');
-            };
-            reader.readAsDataURL(e.target.files[0]);
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/organizer/event/upload-image',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    uploadedBannerUrl = response.imageUrl;
+                    $('#mainImagePreview').attr('src', response.imageUrl);
+                    $('.upload-placeholder').addClass('d-none');
+                    $('.upload-preview').removeClass('d-none');
+                } else {
+                    alert('上傳失敗: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('圖片上傳失敗');
+            }
+        });
+    });
+
+    // ========== 新增票種 ==========
+    $(document).on('click', '#btnAddTicketZone', function () {
+        const count = $('#ticketZones .ticket-zone-card').length + 1;
+        const newZone = `
+            <div class="ticket-zone-card mb-3 p-3" style="background: #1A1A1A; border-radius: 6px;">
+                <div class="d-flex justify-content-between mb-3">
+                    <h6>票種 #${count}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-zone">
+                        <i class="fas fa-trash"></i> 刪除
+                    </button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label required">票種名稱</label>
+                        <input type="text" class="form-control zone-name" placeholder="例如:全票" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label required">票價 (NT$)</label>
+                        <input type="number" class="form-control zone-price" placeholder="1800" min="0" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label required">數量</label>
+                        <input type="number" class="form-control zone-qty" placeholder="200" min="1" required>
+                    </div>
+                </div>
+            </div>
+        `;
+        $('#ticketZones').append(newZone);
+    });
+
+    $(document).on('click', '.btn-remove-zone', function () {
+        if ($('#ticketZones .ticket-zone-card').length > 1) {
+            $(this).closest('.ticket-zone-card').remove();
+        } else {
+            alert('至少需要一個票種');
         }
     });
-}
 
-function validateStep(step) {
-    let isValid = true;
-    let errorMsg = '';
+    // ========== 資料收集 ==========
+    function collectFormData() {
+        const eventAtVal = $('#eventDateTime').val();
+        const startedAtVal = $('#saleStart').val();
+        const endedAtVal = $('#saleEnd').val();
 
-    if (step === 1) {
-        const eventName = $('input[name="eventName"]').val().trim();
-        const eventCategory = $('select[name="eventCategory"]').val();
-        const eventVenue = $('input[name="eventVenue"]').val().trim();
-        const eventAddress = $('input[name="eventAddress"]').val().trim();
-
-        if (!eventName || eventName.length < 5) {
-            errorMsg = '活動名稱至少需要 5 個字';
-            isValid = false;
-        } else if (eventName.length > 50) {
-            errorMsg = '活動名稱不能超過 50 個字';
-            isValid = false;
-        } else if (!eventCategory) {
-            errorMsg = '請選擇活動類型';
-            isValid = false;
-        } else if (!eventVenue) {
-            errorMsg = '請填寫活動地點';
-            isValid = false;
-        } else if (!eventAddress) {
-            errorMsg = '請填寫詳細地址';
-            isValid = false;
+        if (!eventAtVal || !startedAtVal || !endedAtVal) {
+            alert('請完整填寫所有時間欄位');
+            return null;
         }
-    } else if (step === 2) {
-        const sessionDate = $('input[name="sessionDate[]"]').first().val();
-        const sessionStart = $('input[name="sessionStartTime[]"]').first().val();
-        const sessionEnd = $('input[name="sessionEndTime[]"]').first().val();
-        const ticketName = $('input[name="ticketTypeName[]"]').first().val();
-        const ticketPrice = $('input[name="ticketPrice[]"]').first().val();
-        const ticketQty = $('input[name="ticketQuantity[]"]').first().val();
 
-        if (!sessionDate) {
-            errorMsg = '請設定活動日期';
-            isValid = false;
-        } else if (new Date(sessionDate) < new Date()) {
-            errorMsg = '活動日期不能早於今天';
-            isValid = false;
-        } else if (!sessionStart || !sessionEnd) {
-            errorMsg = '請設定活動時間';
-            isValid = false;
-        } else if (sessionStart >= sessionEnd) {
-            errorMsg = '結束時間必須晚於開始時間';
-            isValid = false;
-        } else if (!ticketName || !ticketPrice || !ticketQty) {
-            errorMsg = '請完整填寫票種資訊';
-            isValid = false;
-        } else if (ticketPrice < 0) {
-            errorMsg = '票價不能為負數';
-            isValid = false;
-        } else if (ticketQty < 1) {
-            errorMsg = '票券數量至少為 1';
-            isValid = false;
-        }
-    } else if (step === 3) {
-        const summary = $('textarea[name="eventSummary"]').val().trim();
-        const description = $('textarea[name="eventDescription"]').val().trim();
-        const notice = $('textarea[name="eventNotice"]').val().trim();
-        const saleDate = $('input[name="saleStartDate"]').val();
+        const eventAt = new Date(eventAtVal);
+        const startedAt = new Date(startedAtVal);
+        const endedAt = new Date(endedAtVal);
 
-        if (!summary || summary.length < 20) {
-            errorMsg = '活動簡介至少需要 20 個字';
-            isValid = false;
-        } else if (!description || description.length < 50) {
-            errorMsg = '詳細說明至少需要 50 個字';
-            isValid = false;
-        } else if (!notice) {
-            errorMsg = '請填寫購票注意事項';
-            isValid = false;
-        } else if (!saleDate) {
-            errorMsg = '請設定開賣日期';
-            isValid = false;
+        if (startedAt >= endedAt) {
+            alert('售票開始時間必須早於售票結束時間');
+            return null;
         }
+
+        if (endedAt > eventAt) {
+            alert('售票結束時間不能晚於活動舉辦時間');
+            return null;
+        }
+
+        const typeIdVal = $('#eventType').val();
+        if (!typeIdVal) {
+            alert('請選擇活動類型');
+            return null;
+        }
+
+        const formData = {
+            title: $('[name="eventName"]').val(),
+            typeId: parseInt(typeIdVal),
+            place: $('[name="eventVenue"]').val(),
+            eventAt: eventAtVal + ':00',
+            startedAt: startedAtVal + ':00',
+            endedAt: endedAtVal + ':00',
+            content: $('#eventContent').val(),
+            bannerUrl: uploadedBannerUrl || null,
+            imageUrls: [],
+            tickets: []
+        };
+
+        $('.ticket-zone-card').each(function () {
+            formData.tickets.push({
+                name: $(this).find('.zone-name').val(),
+                price: parseInt($(this).find('.zone-price').val()),
+                total: parseInt($(this).find('.zone-qty').val())
+            });
+        });
+
+        return formData;
     }
 
-    if (!isValid && window.showToast) {
-        window.showToast(errorMsg, 'error');
-    }
-    return isValid;
-}
+    // ========== 儲存草稿 ==========
+    $(document).on('click', '#btnSaveDraft', function () {
+        const formData = collectFormData();
+        if (!formData) return;
 
-function populatePreview() {
-    $('#previewEventName').text($('input[name="eventName"]').val() || '活動名稱');
-    $('#previewSummary').text($('textarea[name="eventSummary"]').val() || '活動簡介');
-    $('#previewVenue').text($('input[name="eventVenue"]').val() || '未設定');
+        const btn = $(this);
+        const originalText = btn.html();
+        btn.html('<span class="spinner-border spinner-border-sm me-2"></span>儲存中...').prop('disabled', true);
 
-    const categoryText = $('select[name="eventCategory"] option:selected').text();
-    $('#previewCategory').text(categoryText || '未分類');
-
-    const sessionDate = $('input[name="sessionDate[]"]').first().val();
-    const sessionStart = $('input[name="sessionStartTime[]"]').first().val();
-    $('#previewDate').text(sessionDate || '未設定');
-    $('#previewTime').text(sessionStart || '未設定');
-
-    const imgSrc = $('#mainImagePreview').attr('src');
-    if (imgSrc) {
-        $('#previewImage').attr('src', imgSrc).removeClass('d-none');
-        $('#previewImagePlaceholder').addClass('d-none');
-    }
-
-    let ticketsHtml = '';
-    $('.ticket-type-item').each(function (i) {
-        const name = $(this).find('input[name="ticketTypeName[]"]').val() || '票種 ' + (i + 1);
-        const price = $(this).find('input[name="ticketPrice[]"]').val() || 0;
-        const qty = $(this).find('input[name="ticketQuantity[]"]').val() || 0;
-        ticketsHtml += `<div class="d-flex justify-content-between mb-1">
-            <span>${name}</span>
-            <span>NT$ ${Number(price).toLocaleString()} × ${qty} 張</span>
-        </div>`;
+        $.ajax({
+            url: '/organizer/event/create',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                if (response.success) {
+                    btn.html('<i class="fas fa-check me-2"></i>已儲存');
+                    setTimeout(() => {
+                        window.location.href = '/organizer/event/edit/' + response.eventId;
+                    }, 1000);
+                } else {
+                    alert('儲存失敗: ' + response.message);
+                    btn.html(originalText).prop('disabled', false);
+                }
+            },
+            error: function (xhr) {
+                alert('儲存失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                btn.html(originalText).prop('disabled', false);
+            }
+        });
     });
-    $('#previewTickets').html(ticketsHtml || '<p class="text-muted">尚未設定票種</p>');
 
-    const saleDate = $('input[name="saleStartDate"]').val();
-    const saleTime = $('input[name="saleStartTime"]').val();
-    const hasPresale = $('#enablePresale').is(':checked');
-    let saleHtml = `<p>開賣時間：${saleDate} ${saleTime}</p>`;
-    if (hasPresale) {
-        const discount = $('input[name="presaleDiscount"]').val();
-        const presaleEnd = $('input[name="presaleEndDate"]').val();
-        saleHtml += `<p class="text-success"><i class="fas fa-tags me-1"></i>早鳥優惠 ${discount}% OFF (至 ${presaleEnd})</p>`;
-    }
-    $('#previewSaleInfo').html(saleHtml);
+    // ========== 送出審核 ==========
+    $(document).on('click', '#btnSubmitReview', function () {
+        if (!confirm('確定要送出審核嗎？送出後將無法編輯。')) return;
+
+        const formData = collectFormData();
+        if (!formData) return;
+
+        const btn = $(this);
+        const originalText = btn.html();
+        btn.html('<span class="spinner-border spinner-border-sm me-2"></span>處理中...').prop('disabled', true);
+
+        $.ajax({
+            url: '/organizer/event/create',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (createRes) {
+                if (createRes.success) {
+                    $.ajax({
+                        url: '/organizer/event/submit/' + createRes.eventId,
+                        type: 'POST',
+                        success: function (submitRes) {
+                            if (submitRes.success) {
+                                alert('活動已送出審核！');
+                                window.location.href = '/organizer/event/list';
+                            } else {
+                                alert('送審失敗: ' + submitRes.message);
+                                btn.html(originalText).prop('disabled', false);
+                            }
+                        },
+                        error: function (xhr) {
+                            alert('送審失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    });
+                } else {
+                    alert('建立失敗: ' + createRes.message);
+                    btn.html(originalText).prop('disabled', false);
+                }
+            },
+            error: function (xhr) {
+                alert('建立失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                btn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // ========== 草稿 Modal ==========
+    $(document).on('show.bs.modal', '#draftsModal', function () {
+        const tbody = $('#draftsTable tbody');
+        tbody.html('<tr><td colspan="3" class="text-center text-muted">正在載入...</td></tr>');
+
+        $.ajax({
+            url: '/organizer/event/drafts',
+            type: 'GET',
+            success: function (drafts) {
+                tbody.empty();
+                if (!drafts || drafts.length === 0) {
+                    tbody.html('<tr><td colspan="3" class="text-center text-muted">目前沒有草稿</td></tr>');
+                    return;
+                }
+
+                drafts.forEach(function (event) {
+                    const dateStr = event.eventAt ? new Date(event.eventAt).toLocaleDateString() : '未設定';
+                    tbody.append(`
+                        <tr>
+                            <td>${event.title || '未命名活動'}</td>
+                            <td>${dateStr}</td>
+                            <td class="text-end">
+                                <a href="/organizer/event/edit/${event.eventId}" class="btn btn-sm btn-outline-light me-2">
+                                    <i class="fas fa-edit"></i> 編輯
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDraft(${event.eventId})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function () {
+                tbody.html('<tr><td colspan="3" class="text-center text-danger">載入失敗</td></tr>');
+            }
+        });
+    });
+
+    // ========== 刪除草稿 ==========
+    window.deleteDraft = function (id) {
+        if (!confirm('確定要刪除此草稿嗎？')) return;
+        $.ajax({
+            url: '/organizer/event/' + id,
+            type: 'DELETE',
+            success: function (res) {
+                if (res.success) {
+                    $('#draftsModal').modal('hide');
+                    setTimeout(() => $('#draftsModal').modal('show'), 100);
+                } else {
+                    alert('刪除失敗: ' + res.message);
+                }
+            }
+        });
+    };
 }

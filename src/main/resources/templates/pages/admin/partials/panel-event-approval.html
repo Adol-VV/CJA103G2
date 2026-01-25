@@ -3,9 +3,15 @@
     <div class="card bg-dark border-secondary">
         <div class="card-header border-secondary">
             <ul class="nav nav-tabs card-header-tabs" id="eventReviewTabs">
-                <li class="nav-item"><a class="nav-link active text-white" href="#" data-status="pending">待審核</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#" data-status="approved">已通過</a></li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#" data-status="pending">待審核</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="approved">已通過</a>
+                </li>
             </ul>
         </div>
         <div class="card-body p-0">
@@ -22,16 +28,18 @@
                         </tr>
                     </thead>
                     <tbody id="eventApprovalList">
-                        <!-- Data will be loaded via JS -->
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">正在載入...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Event Review Modal (Self-Contained) -->
+    <!-- 審核 Modal -->
     <div class="modal fade" id="eventReviewModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content bg-dark text-white border-secondary">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">審核活動</h5>
@@ -39,15 +47,15 @@
                 </div>
                 <div class="modal-body">
                     <div id="eventReviewDetails">
-                        <!-- Event details to be populated here -->
+                        <!-- 動態載入 -->
                     </div>
 
-                    <hr class="border-secondary">
+                    <hr class="border-secondary my-4">
 
                     <div class="mb-3">
                         <label class="form-label">駁回原因 (若駁回必填)</label>
-                        <textarea class="form-control bg-dark text-white border-secondary" id="rejectReason"
-                            rows="3"></textarea>
+                        <textarea class="form-control bg-dark text-white border-secondary" id="rejectReason" rows="3"
+                            placeholder="請說明駁回原因..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">

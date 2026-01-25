@@ -26,7 +26,7 @@ export function initEventList() {
         }
     });
 
-    // --- Draft Operations (transferred from dashboard.js) ---
+    // --- Draft Operations ---
     $(document).on('click', '.btn-publish-event', function () {
         const $row = $(this).closest('tr');
         const eventName = $row.find('.fw-bold').first().text();
@@ -70,4 +70,67 @@ export function initEventList() {
             $('input[name="eventName"]').val(eventName);
         }, 500);
     });
+
+    // --- Global Submit Event Function ---
+    window.submitEvent = function (eventId) {
+        if (!confirm('確定要送出審核嗎？')) return;
+
+        $.ajax({
+            url: '/organizer/event/submit/' + eventId,
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    alert('活動已送出審核！');
+                    location.reload();
+                } else {
+                    alert('送審失敗: ' + response.message);
+                }
+            },
+            error: function (xhr) {
+                alert('操作失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+            }
+        });
+    };
+
+    // --- Global Withdraw Event Function ---
+    window.withdrawEvent = function (eventId) {
+        if (!confirm('確定要撤回審核嗎？')) return;
+
+        $.ajax({
+            url: '/organizer/event/withdraw/' + eventId,
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    alert('活動已撤回！');
+                    location.reload();
+                } else {
+                    alert('撤回失敗: ' + response.message);
+                }
+            },
+            error: function (xhr) {
+                alert('操作失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+            }
+        });
+    };
+
+    // --- Global Delete Event Function ---
+    window.deleteEvent = function (eventId) {
+        if (!confirm('確定要刪除此活動嗎？此操作無法復原！')) return;
+
+        $.ajax({
+            url: '/organizer/event/' + eventId,
+            type: 'DELETE',
+            success: function (response) {
+                if (response.success) {
+                    alert('活動已刪除！');
+                    location.reload();
+                } else {
+                    alert('刪除失敗: ' + response.message);
+                }
+            },
+            error: function (xhr) {
+                alert('操作失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+            }
+        });
+    };
 }

@@ -32,6 +32,27 @@ public interface EventManageService {
     void updateEvent(com.momento.eventmanage.dto.EventUpdateDTO dto);
 
     /**
+     * 送審活動
+     * 
+     * @param eventId 活動 ID
+     */
+    void submitEvent(Integer eventId);
+
+    /**
+     * 撤回活動 (待審核 -> 草稿)
+     * 
+     * @param eventId 活動 ID
+     */
+    void withdrawEvent(Integer eventId);
+
+    /**
+     * 刪除活動 (僅限草稿)
+     * 
+     * @param eventId 活動 ID
+     */
+    void deleteEvent(Integer eventId);
+
+    /**
      * 檢查票種是否可以編輯
      * 
      * @param ticketId 票種 ID
@@ -70,4 +91,12 @@ public interface EventManageService {
             Byte reviewStatus,
             String keyword,
             org.springframework.data.domain.Pageable pageable);
+
+    /**
+     * 取得主辦方統計數據
+     * 
+     * @param organizerId 主辦方 ID
+     * @return 統計 DTO
+     */
+    com.momento.eventmanage.dto.EventStatsDTO getOrganizerStats(Integer organizerId);
 }

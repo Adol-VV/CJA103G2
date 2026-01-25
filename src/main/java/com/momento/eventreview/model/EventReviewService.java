@@ -9,7 +9,6 @@ import com.momento.event.model.EventVO;
 import com.momento.notify.model.OrganizerNotifyRepository;
 import com.momento.notify.model.OrganizerNotifyVO;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,47 +22,27 @@ public class EventReviewService {
     private OrganizerNotifyRepository organizerNotifyRepository;
 
     /**
-     * 取得所有待審核的活動
-     * status = 0 (草稿/下架) AND reviewStatus = 1 (待審核)
+     * 根據 Tab 類型取得活動列表
+     * type: pending, rejected, approved
      */
     /**
      * 根據 Tab 類型取得活動列表
      * type: pending, rejected, approved
      */
     public List<EventVO> getEventsByTab(String tabType) {
-        List<EventVO> allEvents = eventRepository.findAll();
-
         switch (tabType) {
             case "pending":
-                return allEvents.stream()
-                        .filter(this::isPending)
-                        .toList();
+                // 待審核: S=0, R=0, P!=null
+                return eventRepository.findByStatusAndReviewStatusAndPublishedAtIsNotNull((byte) 0, (byte) 0);
             case "rejected":
-                return allEvents.stream()
-                        .filter(this::isRejected)
-                        .toList();
+                // 已駁回: S=0, R=2
+                return eventRepository.findByStatusAndReviewStatus((byte) 0, (byte) 2);
             case "approved":
-                return allEvents.stream()
-                        .filter(this::isApproved)
-                        .toList();
+                // 已通過: S=1, R=1
+                return eventRepository.findByStatusAndReviewStatus((byte) 1, (byte) 1);
             default:
                 return List.of();
         }
-    }
-
-    private boolean isPending(EventVO e) {
-        // 專案慣例: status=1 為待審核
-        return e.getStatus() != null && e.getStatus() == 1 && (e.getReviewStatus() == null || e.getReviewStatus() == 0);
-    }
-
-    private boolean isRejected(EventVO e) {
-        // 專案慣例: status=0 且 reviewStatus=2 為已駁回
-        return e.getStatus() != null && e.getStatus() == 0 && e.getReviewStatus() != null && e.getReviewStatus() == 2;
-    }
-
-    private boolean isApproved(EventVO e) {
-        // 專案慣例: status=2 為已上架 (已通過)
-        return e.getStatus() != null && e.getStatus() == 2;
     }
 
     public EventVO getEventById(Integer id) {
@@ -78,9 +57,8 @@ public class EventReviewService {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
-            event.setStatus((byte) 2); // 2: 已上架
-            event.setReviewStatus((byte) 1); // 1: 審核通過
-            event.setPublishedAt(LocalDateTime.now());
+            event.setStatus((byte) 1); // 已上架
+            event.setReviewStatus((byte) 1); // 審核通過
             eventRepository.save(event);
         } else {
             throw new RuntimeException("活動不存在: " + eventId);
@@ -95,8 +73,9 @@ public class EventReviewService {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
-            event.setStatus((byte) 0); // 0: 草稿 (退回修改)
-            event.setReviewStatus((byte) 2); // 2: 審核未通過 (已駁回)
+            event.setStatus((byte) 0);
+            event.setReviewStatus((byte) 2);
+            event.setPublishedAt(null); // 清空送審時間
             eventRepository.save(event);
 
             // 發送通知
@@ -104,11 +83,8 @@ public class EventReviewService {
             notify.setOrganizerVO(event.getOrganizer());
             notify.setTitle("活動審核未通過通知: " + event.getTitle());
             notify.setContent("您的活動「" + event.getTitle() + "」未能通過審核。\n退回原因: " + reason);
-            notify.setNotifyStatus(0); // 0: 正常
-            // targetId 可以存 eventId 方便前端跳轉，但 VO 定義是 String
+            notify.setNotifyStatus(0);
             notify.setTargetId(String.valueOf(eventId));
-
-            // EmpVO 暫時不設，或是需要從 Controller 傳入當前登入 Admin (這裡先略過)
 
             organizerNotifyRepository.save(notify);
 
@@ -121,12 +97,16 @@ public class EventReviewService {
      * 取得各審核狀態的統計數量
      */
     public java.util.Map<String, Long> getReviewStats() {
-        List<EventVO> allEvents = eventRepository.findAll();
         java.util.Map<String, Long> stats = new java.util.HashMap<>();
 
-        stats.put("pending", allEvents.stream().filter(this::isPending).count());
-        stats.put("rejected", allEvents.stream().filter(this::isRejected).count());
-        stats.put("approved", allEvents.stream().filter(this::isApproved).count());
+        // Pending: S=0, R=0, P!=null
+        stats.put("pending", eventRepository.countByStatusAndReviewStatusAndPublishedAtIsNotNull((byte) 0, (byte) 0));
+
+        // Rejected: S=0, R=2
+        stats.put("rejected", eventRepository.countByStatusAndReviewStatus((byte) 0, (byte) 2));
+
+        // Approved: S=1, R=1
+        stats.put("approved", eventRepository.countByStatusAndReviewStatus((byte) 1, (byte) 1));
 
         return stats;
     }

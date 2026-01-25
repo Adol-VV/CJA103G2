@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.momento.event.model.EventVO;
 import com.momento.eventreview.model.EventReviewService;
+import com.momento.ticket.model.TicketRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,9 @@ public class EventReviewController {
     @Autowired
     private EventReviewService eventReviewService;
 
+    @Autowired
+    private TicketRepository ticketRepository;
+
     /**
      * 取得待審核活動列表 (支援 tab 參數)
      * tab: pending (預設), rejected, approved
@@ -29,7 +33,11 @@ public class EventReviewController {
             return ResponseEntity.status(401).body(null);
         }
         List<EventVO> list = eventReviewService.getEventsByTab(tab);
-        return ResponseEntity.ok(list);
+
+        // Convert to DTO
+        List<com.momento.eventreview.dto.EventReviewDTO> dtos = list.stream().map(this::convertToDTO).toList();
+
+        return ResponseEntity.ok(dtos);
     }
 
     /**
@@ -42,10 +50,50 @@ public class EventReviewController {
         }
         EventVO event = eventReviewService.getEventById(id);
         if (event != null) {
-            return ResponseEntity.ok(event);
+            return ResponseEntity.ok(convertToDTO(event));
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private com.momento.eventreview.dto.EventReviewDTO convertToDTO(EventVO event) {
+        com.momento.eventreview.dto.EventReviewDTO dto = new com.momento.eventreview.dto.EventReviewDTO();
+        dto.setEventId(event.getEventId());
+        dto.setTitle(event.getTitle());
+        dto.setContent(event.getContent());
+        dto.setPlace(event.getPlace());
+        dto.setStartedAt(event.getStartedAt());
+        dto.setEndedAt(event.getEndedAt());
+        dto.setEventAt(event.getEventAt());
+        dto.setPublishedAt(event.getPublishedAt());
+        dto.setStatus(event.getStatus());
+        dto.setReviewStatus(event.getReviewStatus());
+
+        if (event.getOrganizer() != null) {
+            dto.setOrganizer(new com.momento.eventreview.dto.EventReviewDTO.OrganizerDTO(
+                    event.getOrganizer().getOrganizerId(),
+                    event.getOrganizer().getName(),
+                    event.getOrganizer().getAccountName()));
+        }
+
+        if (event.getType() != null) {
+            dto.setType(new com.momento.eventreview.dto.EventReviewDTO.TypeDTO(
+                    event.getType().getTypeName()));
+        }
+
+        // Map Tickets
+        List<com.momento.ticket.model.TicketVO> tickets = ticketRepository.findByEvent_EventId(event.getEventId());
+        if (tickets != null && !tickets.isEmpty()) {
+            List<com.momento.eventreview.dto.EventReviewDTO.TicketDTO> ticketDTOs = tickets.stream()
+                    .map(t -> new com.momento.eventreview.dto.EventReviewDTO.TicketDTO(
+                            t.getTicketName(),
+                            t.getPrice(),
+                            t.getTotal()))
+                    .toList();
+            dto.setTickets(ticketDTOs);
+        }
+
+        return dto;
     }
 
     /**

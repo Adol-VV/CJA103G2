@@ -13,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
-import java.util.List;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +49,14 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     @Transactional
     public Integer createEvent(EventCreateDTO dto) {
+        // 時間邏輯驗證
+        if (dto.getStartedAt() != null && dto.getEndedAt() != null && !dto.getStartedAt().isBefore(dto.getEndedAt())) {
+            throw new RuntimeException("售票開始時間必須早於售票結束時間");
+        }
+        if (dto.getEndedAt() != null && dto.getEventAt() != null && dto.getEndedAt().isAfter(dto.getEventAt())) {
+            throw new RuntimeException("售票結束時間不能晚於活動舉辦時間");
+        }
+
         // 1. 建立活動實體
         EventVO event = new EventVO();
 
@@ -75,9 +81,10 @@ public class EventManageServiceImpl implements EventManageService {
         event.setStartedAt(dto.getStartedAt());
         event.setEndedAt(dto.getEndedAt());
 
-        // 設定狀態 (待審核)
-        event.setStatus((byte) 1); // 待審核
-        event.setReviewStatus((byte) 0); // 未審核
+        // 設定狀態 (草稿)
+        event.setStatus((byte) 0); // 草稿
+        event.setReviewStatus((byte) 0); // 初始狀態
+        event.setPublishedAt(null); // 尚未發布
 
         // 儲存活動
         EventVO savedEvent = eventRepository.save(event);
@@ -168,14 +175,71 @@ public class EventManageServiceImpl implements EventManageService {
     }
 
     /**
+     * 撤回活動
+     */
+    @Override
+    @Transactional
+    public void withdrawEvent(Integer eventId) {
+        EventVO event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        // 只能撤回待審核的活動 (P!=null) 且 S=0 (非已上架)
+        if (event.getPublishedAt() == null || event.getStatus() != 0) {
+            throw new RuntimeException("活動狀態不正確，無法撤回");
+        }
+
+        // 清空送審時間 -> 變回草稿
+        event.setPublishedAt(null);
+        eventRepository.save(event);
+    }
+
+    /**
+     * 刪除活動
+     */
+    @Override
+    @Transactional
+    public void deleteEvent(Integer eventId) {
+        EventVO event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        // 只能刪除草稿 (S=0, P=null)
+        if (event.getStatus() != 0 || event.getPublishedAt() != null) {
+            throw new RuntimeException("只能刪除草稿狀態的活動");
+        }
+
+        // TODO: 刪除關聯資料 (圖片、票種)
+        // 目前 Cascade 設定不明，若有 FK 限制需先刪除子表
+        // 假設 JPA Cascade 已設定或無限制
+        // 先刪票種?
+        ticketRepository.deleteAll(ticketRepository.findByEvent_EventId(eventId));
+        eventImageRepository.deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId));
+
+        eventRepository.delete(event);
+    }
+
+    /**
      * 更新活動
      */
     @Override
     @Transactional
     public void updateEvent(com.momento.eventmanage.dto.EventUpdateDTO dto) {
+        // 時間邏輯驗證
+        if (dto.getStartedAt() != null && dto.getEndedAt() != null && !dto.getStartedAt().isBefore(dto.getEndedAt())) {
+            throw new RuntimeException("售票開始時間必須早於售票結束時間");
+        }
+        if (dto.getEndedAt() != null && dto.getEventAt() != null && dto.getEndedAt().isAfter(dto.getEventAt())) {
+            throw new RuntimeException("售票結束時間不能晚於活動舉辦時間");
+        }
+
         // 1. 查詢活動
         EventVO event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        // 嚴格檢查：只能編輯草稿 (S=0, P=null)
+        // 若是駁回狀態 (R=2)，P=null，所以也符合草稿定義，可以編輯
+        if (event.getStatus() != 0 || event.getPublishedAt() != null) {
+            throw new RuntimeException("活動狀態不允許編輯 (僅限草稿)");
+        }
 
         // 2. 更新基本資訊 (永遠可以修改)
         event.setTitle(dto.getTitle());
@@ -237,6 +301,34 @@ public class EventManageServiceImpl implements EventManageService {
     }
 
     /**
+     * 送審活動
+     */
+    @Override
+    @Transactional
+    public void submitEvent(Integer eventId) {
+        EventVO event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        // 只允許草稿狀態送審
+        // S=0 (草稿), R=0 (初始), R=2 (被駁回)
+        // 為了寬容性，只要是 S=0 都可以送
+        if (event.getStatus() != 0) {
+            throw new RuntimeException("活動狀態不正確，無法送審");
+        }
+
+        // 更新狀態: 標記送審時間 -> 變為待審核
+        event.setPublishedAt(java.time.LocalDateTime.now());
+        // 保持 S=0, R=0
+
+        // 若之前是駁回狀態 (R=2)，送審後重置為 R=0?
+        // 邏輯: 待審核 = S=0, R=0, P!=null
+        // 所以送審要重置 R=0
+        event.setReviewStatus((byte) 0);
+
+        eventRepository.save(event);
+    }
+
+    /**
      * 檢查票種是否可以編輯
      */
     @Override
@@ -285,12 +377,6 @@ public class EventManageServiceImpl implements EventManageService {
         return eventRepository.findAll();
     }
 
-    /**
-     * 查詢主辦方的活動列表 (支援篩選和分頁)
-     */
-    /**
-     * 查詢主辦方的活動列表 (支援篩選和分頁)
-     */
     @Override
     public Page<EventVO> getOrganizerEvents(
             Integer organizerId,
@@ -299,81 +385,34 @@ public class EventManageServiceImpl implements EventManageService {
             String keyword,
             Pageable pageable) {
 
-        // 情況 1: 指定 ReviewStatus (例如: 查詢已駁回)
-        if (reviewStatus != null) {
-            // 目前只支援 Status=0 (草稿) + ReviewStatus=2 (未通過)
-            // 若未來有其他需求可再擴充
-            // 使用 findAll + Filter 或者 Repository 新增方法
-            // Repository 已有 findByOrganizer_OrganizerIdAndStatusAndReviewStatus 但回傳 List
-            // 這裡使用 findAll Example 或者需要新增 Page 版本的方法
-            // 暫時使用 Stream 過濾 (為了快速實作且資料量不大)
-            // 更好的方式是在 EventRepository 新增
-            // findByOrganizer_OrganizerIdAndStatusAndReviewStatus(..., Pageable)
+        // 使用 Repository 的複合查詢方法直接在資料庫層級進行篩選和分頁
+        return eventRepository.searchOrganizerEvents(
+                organizerId,
+                status,
+                reviewStatus,
+                keyword,
+                pageable);
+    }
 
-            // 假設 Repository 沒有 Pageable 版本，我們先用 status 查詢再過濾 (比較沒效率但可行)
-            // 但 EventRepository 似乎沒有 findByOrganizer...AndReviewStatus 的 Page 版本
-            // 我們先新增一個 Repository 方法比較好，但為了不更動 Repository (User Requirement)，
-            // 我們改用 findByOrganizer_OrganizerIdAndStatus 查出 Status=0 的，再過濾 ReviewStatus
+    @Autowired
+    private com.momento.eventfav.model.EventFavRepository eventFavRepository;
 
-            if (status != null) {
-                Page<EventVO> page = eventRepository.findByOrganizer_OrganizerIdAndStatus(organizerId, status,
-                        pageable);
-                // 這裡 Page 無法直接過濾，必須在 Repository 層做
-                // 既然 User 說 "不更動 DB"，沒說不更動 JPQL
-                // 但前面看 EventRepository 其實已經有很完整的查詢了
-                // 讓我們看看 step 2427 output...
-                // findByStatusAndReviewStatus 有 Pageable
-                // findByOrganizer_OrganizerIdAndStatus 有 Pageable
-                // 但沒有 findByOrganizer_OrganizerIdAndStatusAndReviewStatus (Pageable)
-                // 只有 List 版本 line 174
+    /**
+     * 取得主辦方統計數據
+     */
+    @Override
+    public com.momento.eventmanage.dto.EventStatsDTO getOrganizerStats(Integer organizerId) {
+        // 1. 進行中活動 (Status = 1: 已上架)
+        // 嚴格來說 ReviewStatus 應該也是 2，但通常上架隱含已通過
+        long activeCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(organizerId, (byte) 1);
 
-                // 替代方案:
-                // 1. 新增 Repository 方法 (最乾淨)
-                // 2. 用 existing methods 拼裝
+        // 2. 待審核活動 (S=0, R=0, P!=null)
+        long pendingCount = eventRepository.countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNotNull(
+                organizerId, (byte) 0, (byte) 0);
 
-                // 鑑於 Phase 3 原則，我們假設可以加 Repository 方法?
-                // USER said: "不更動 DB Schema"。沒說不能加 query。
-                // 但為了保險，我先用 List 版本轉 Page，或是直接不做 Page 邏輯 (只顯示前 N 筆?)
-                // 不，分頁很重要。
+        // 3. 總收藏數
+        long totalFavorites = eventFavRepository.countByOrganizerId(organizerId);
 
-                // 讓我們回頭看 EventRepository 是否有彈性的 filter?
-                // filterEvents (Line 142) @Query ...
-                // 它的 WHERE 條件: e.status = :status AND e.reviewStatus = :reviewStatus ...
-                // 但它沒有 filter by OrganizerId !!
-
-                // 所以我必須在 Repository 增加方法，或者在 Service 硬幹。
-                // 硬幹:
-                List<EventVO> all = eventRepository.findByOrganizer_OrganizerIdAndStatusAndReviewStatus(organizerId,
-                        status, reviewStatus);
-                int start = (int) pageable.getOffset();
-                int end = Math.min((start + pageable.getPageSize()), all.size());
-                if (start > all.size())
-                    return new org.springframework.data.domain.PageImpl<>(java.util.Collections.emptyList(), pageable,
-                            all.size());
-                return new org.springframework.data.domain.PageImpl<>(all.subList(start, end), pageable, all.size());
-            }
-        }
-
-        // 以下為其餘舊邏輯 (Delegate to original method or inline it)
-        // 情況 1: 有狀態 + 有關鍵字
-        if (status != null && keyword != null && !keyword.trim().isEmpty()) {
-            return eventRepository.findByOrganizer_OrganizerIdAndStatusAndTitleContaining(
-                    organizerId, status, keyword.trim(), pageable);
-        }
-
-        // 情況 2: 只有狀態
-        if (status != null) {
-            return eventRepository.findByOrganizer_OrganizerIdAndStatus(
-                    organizerId, status, pageable);
-        }
-
-        // 情況 3: 只有關鍵字
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            return eventRepository.findByOrganizer_OrganizerIdAndTitleContaining(
-                    organizerId, keyword.trim(), pageable);
-        }
-
-        // 情況 4: 無篩選條件
-        return eventRepository.findByOrganizer_OrganizerId(organizerId, pageable);
+        return new com.momento.eventmanage.dto.EventStatsDTO(activeCount, pendingCount, totalFavorites);
     }
 }

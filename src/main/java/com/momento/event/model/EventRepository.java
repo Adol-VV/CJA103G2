@@ -240,4 +240,72 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
                         Byte status,
                         Byte reviewStatus,
                         Integer typeId);
+        // ========== 主辦方統計查詢 ==========
+
+        /**
+         * 計算主辦方的特定狀態活動數量
+         * 
+         * @param organizerId 主辦方 ID
+         * @param status      活動狀態
+         * @return 數量
+         */
+        long countByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status);
+
+        /**
+         * 計算主辦方的特定狀態與審核狀態活動數量
+         * 
+         * @param organizerId  主辦方 ID
+         * @param status       活動狀態
+         * @param reviewStatus 審核狀態
+         * @return 數量
+         */
+        long countByOrganizer_OrganizerIdAndStatusAndReviewStatus(Integer organizerId, Byte status, Byte reviewStatus);
+
+        /**
+         * 計算主辦方的待審核活動數量 (S=0, R=0, P!=null)
+         */
+        /**
+         * 計算主辦方的待審核活動數量 (S=0, R=0, P!=null)
+         */
+        long countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNotNull(
+                        Integer organizerId, Byte status, Byte reviewStatus);
+
+        /**
+         * 查詢待審核活動 (S=0, R=0, P!=null)
+         */
+        List<EventVO> findByStatusAndReviewStatusAndPublishedAtIsNotNull(Byte status, Byte reviewStatus);
+
+        /**
+         * 計算待審核活動數量 (S=0, R=0, P!=null)
+         */
+        long countByStatusAndReviewStatusAndPublishedAtIsNotNull(Byte status, Byte reviewStatus);
+
+        /**
+         * 查詢草稿：S=0, R=0, P=null
+         */
+        List<EventVO> findByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(
+                        Integer organizerId,
+                        Byte status,
+                        Byte reviewStatus);
+
+        /**
+         * 搜尋主辦方活動 (複合篩選)
+         * 
+         * @param organizerId  主辦方 ID (必填)
+         * @param status       活動狀態 (可選)
+         * @param reviewStatus 審核狀態 (可選)
+         * @param keyword      關鍵字 (可選)
+         * @param pageable     分頁參數
+         * @return 活動分頁
+         */
+        @Query("SELECT e FROM EventVO e WHERE e.organizer.organizerId = :organizerId " +
+                        "AND (:status IS NULL OR e.status = :status) " +
+                        "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
+                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+        Page<EventVO> searchOrganizerEvents(
+                        @Param("organizerId") Integer organizerId,
+                        @Param("status") Byte status,
+                        @Param("reviewStatus") Byte reviewStatus,
+                        @Param("keyword") String keyword,
+                        Pageable pageable);
 }

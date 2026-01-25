@@ -122,6 +122,43 @@ public class EventManageController {
         }
 
         /**
+         * 送審活動 (AJAX)
+         * POST /organizer/event/submit/{id}
+         */
+        @PostMapping("/submit/{id}")
+        @ResponseBody
+        public ResponseEntity<Map<String, Object>> submitEvent(
+                        @PathVariable Integer id,
+                        HttpSession session) {
+
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401)
+                                        .body(Map.of("success", false, "message", "請先登入"));
+                }
+
+                try {
+                        // 檢查活動是否屬於該主辦方
+                        if (!isEventOwner(id, organizer.getOrganizerId())) {
+                                return ResponseEntity.status(403)
+                                                .body(Map.of("success", false, "message", "無權限操作此活動"));
+                        }
+
+                        // 送審
+                        eventManageService.submitEvent(id);
+
+                        return ResponseEntity.ok(
+                                        Map.of("success", true, "message", "活動已送出審核"));
+
+                } catch (Exception e) {
+                        return ResponseEntity.badRequest()
+                                        .body(Map.of("success", false, "message", e.getMessage()));
+                }
+        }
+
+        /**
          * 上傳活動圖片 (AJAX)
          * POST /organizer/event/upload-image
          * 
@@ -212,6 +249,62 @@ public class EventManageController {
 
                 // 返回 Dashboard,前端會顯示 panel-events-list
                 return "pages/organizer/dashboard";
+        }
+
+        /**
+         * 取得活動列表 (JSON) - 用於 AJAX (如草稿列表)
+         * GET /organizer/event/list-json
+         */
+        @GetMapping("/list-json")
+        @ResponseBody
+        public ResponseEntity<List<com.momento.event.model.EventVO>> listEventsJson(
+                        @RequestParam(required = false) Byte status,
+                        @RequestParam(required = false) Byte reviewStatus,
+                        @RequestParam(required = false) String keyword,
+                        HttpSession session) {
+
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401).build();
+                }
+
+                // 查詢該主辦方的活動 (不分頁)
+                // 這裡複用 Service 的邏輯，傳入 Pageable.unpaged()
+                org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
+                                .getOrganizerEvents(
+                                                organizer.getOrganizerId(),
+                                                status,
+                                                reviewStatus,
+                                                keyword,
+                                                org.springframework.data.domain.Pageable.unpaged());
+
+                return ResponseEntity.ok(eventPage.getContent());
+        }
+
+        /**
+         * 取得草稿列表 (AJAX)
+         * GET /organizer/event/drafts
+         */
+        @GetMapping("/drafts")
+        @ResponseBody
+        public ResponseEntity<List<com.momento.event.model.EventVO>> getDrafts(HttpSession session) {
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401).build();
+                }
+
+                // 查詢草稿：S=0, R=0, P=null
+                List<com.momento.event.model.EventVO> drafts = eventRepository
+                                .findByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(
+                                                organizer.getOrganizerId(),
+                                                (byte) 0,
+                                                (byte) 0);
+
+                return ResponseEntity.ok(drafts);
         }
 
         /**
@@ -355,6 +448,80 @@ public class EventManageController {
                                         .body(Map.of(
                                                         "success", false,
                                                         "message", e.getMessage()));
+                }
+        }
+
+        /**
+         * 撤回審核 (AJAX)
+         * POST /organizer/event/withdraw/{id}
+         */
+        @PostMapping("/withdraw/{id}")
+        @ResponseBody
+        public ResponseEntity<Map<String, Object>> withdrawEvent(
+                        @PathVariable Integer id,
+                        HttpSession session) {
+
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401)
+                                        .body(Map.of("success", false, "message", "請先登入"));
+                }
+
+                try {
+                        // 檢查活動是否屬於該主辦方
+                        if (!isEventOwner(id, organizer.getOrganizerId())) {
+                                return ResponseEntity.status(403)
+                                                .body(Map.of("success", false, "message", "無權限操作此活動"));
+                        }
+
+                        // 撤回
+                        eventManageService.withdrawEvent(id);
+
+                        return ResponseEntity.ok(
+                                        Map.of("success", true, "message", "活動已成功撤回審核"));
+
+                } catch (Exception e) {
+                        return ResponseEntity.badRequest()
+                                        .body(Map.of("success", false, "message", e.getMessage()));
+                }
+        }
+
+        /**
+         * 刪除活動 (AJAX)
+         * DELETE /organizer/event/{id}
+         */
+        @DeleteMapping("/{id}")
+        @ResponseBody
+        public ResponseEntity<Map<String, Object>> deleteEvent(
+                        @PathVariable Integer id,
+                        HttpSession session) {
+
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401)
+                                        .body(Map.of("success", false, "message", "請先登入"));
+                }
+
+                try {
+                        // 檢查活動是否屬於該主辦方
+                        if (!isEventOwner(id, organizer.getOrganizerId())) {
+                                return ResponseEntity.status(403)
+                                                .body(Map.of("success", false, "message", "無權限操作此活動"));
+                        }
+
+                        // 刪除
+                        eventManageService.deleteEvent(id);
+
+                        return ResponseEntity.ok(
+                                        Map.of("success", true, "message", "活動已成功刪除"));
+
+                } catch (Exception e) {
+                        return ResponseEntity.badRequest()
+                                        .body(Map.of("success", false, "message", e.getMessage()));
                 }
         }
 }

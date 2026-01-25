@@ -1,9 +1,4 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3">活動管理列表</h2>
-    <a href="/organizer/event/create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> 建立新活動
-    </a>
-</div>
+<h2 class="h3 mb-4">活動管理列表</h2>
 
 <div class="card bg-dark border-secondary mb-4">
     <div class="card-header border-secondary">
@@ -14,37 +9,25 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link"
+                    th:classappend="${param.status != null and param.status[0] == '0' and param.reviewStatus != null and param.reviewStatus[0] == '0'} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=0&reviewStatus=0">待審核</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    th:classappend="${param.reviewStatus != null and param.reviewStatus[0] == '2'} ? 'active text-white' : 'text-muted'"
+                    href="/organizer/event/list?status=0&reviewStatus=2">已駁回</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
                     th:classappend="${param.status != null and param.status[0] == '1'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=1">待審核</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.status != null and param.status[0] == '2'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=2">已上架</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.reviewStatus != null and param.reviewStatus[0] == '2'} ? 'active text-danger' : 'text-muted'"
-                    href="/organizer/event/list?status=0&reviewStatus=2">審核未過</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.status != null and param.status[0] == '0' and param.reviewStatus == null} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=0">草稿夾</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.status != null and param.status[0] == '3'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=3">已下架</a>
+                    href="/organizer/event/list?status=1&reviewStatus=1">已上架</a>
             </li>
         </ul>
     </div>
     <div class="card-body">
         <form method="get" action="/organizer/event/list" class="d-flex">
-            <!-- Hidden inputs to keep current status filter when searching -->
             <input type="hidden" name="status" th:value="${param.status}">
             <input type="hidden" name="reviewStatus" th:value="${param.reviewStatus}">
-
             <div class="input-group">
                 <input type="text" name="keyword" class="form-control bg-dark text-white border-secondary"
                     placeholder="搜尋活動名稱..." th:value="${param.keyword}">
@@ -61,75 +44,95 @@
                 <tr>
                     <th>活動名稱</th>
                     <th>日期</th>
-                    <th>已售出</th>
-                    <th>營收</th>
                     <th>狀態</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Thymeleaf 動態渲染活動列表 -->
-                <tr th:each="event : ${events}" th:attr="data-event-id=${event.eventId}">
+                <tr th:each="event : ${events}">
                     <td>
                         <div class="fw-bold" th:text="${event.title}">活動名稱</div>
                         <small class="text-muted" th:text="${event.place}">活動地點</small>
                     </td>
                     <td th:text="${#temporals.format(event.eventAt, 'yyyy/MM/dd')}">2024/12/31</td>
                     <td>
-                        <!-- TODO: 已售出票數需要其他成員提供 -->
-                        <div class="progress" style="height: 6px; width: 100px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
-                        </div>
-                        <small class="text-muted">待整合</small>
+                        <!-- 草稿: S=0, R=0, P=null -->
+                        <span th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt == null}"
+                            class="badge bg-secondary">草稿</span>
+
+                        <!-- 待審核: S=0, R=0, P!=null -->
+                        <span th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}"
+                            class="badge bg-warning text-dark">待審核</span>
+
+                        <!-- 駁回: S=0, R=2 -->
+                        <span th:if="${event.status == 0 && event.reviewStatus == 2}" class="badge bg-danger">已駁回</span>
+
+                        <!-- 已上架: S=1, R=1 -->
+                        <span th:if="${event.status == 1 && event.reviewStatus == 1}"
+                            class="badge bg-success">已上架</span>
                     </td>
-                    <td>
-                        <!-- TODO: 營收需要其他成員提供 -->
-                        <span class="text-muted">待整合</span>
-                    </td>
-                    <td>
-                        <span th:if="${event.status == 0}" class="badge bg-secondary">草稿</span>
-                        <span th:if="${event.status == 1}" class="badge bg-warning">待審核</span>
-                        <span th:if="${event.status == 2}" class="badge bg-success">已上架</span>
-                        <span th:if="${event.status == 3}" class="badge bg-dark">已下架</span>
-                        <span th:if="${event.status == 4}" class="badge bg-danger">已取消</span>
-                    </td>
-                    <td>
+                    <td class="text-end">
                         <div class="btn-group">
-                            <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
-                                class="btn btn-sm btn-outline-light" title="編輯活動">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-sm btn-outline-warning" th:if="${event.status == 2}"
-                                th:onclick="'changeEventStatus(' + ${event.eventId} + ', 3)'" title="下架活動">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger"
-                                th:onclick="'changeEventStatus(' + ${event.eventId} + ', 4)'" title="取消活動">
-                                <i class="fas fa-times"></i>
-                            </button>
+                            <!-- 草稿 (S=0, R=0, P=null): 編輯、送審、刪除 -->
+                            <th:block
+                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt == null}">
+                                <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
+                                    class="btn btn-sm btn-outline-light">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-success"
+                                    th:onclick="'submitEvent(' + ${event.eventId} + ')'">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                    th:onclick="'deleteEvent(' + ${event.eventId} + ')'">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </th:block>
+
+                            <!-- 待審核 (S=0, R=0, P!=null): 撤回 -->
+                            <th:block
+                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}">
+                                <button class="btn btn-sm btn-warning"
+                                    th:onclick="'withdrawEvent(' + ${event.eventId} + ')'">
+                                    <i class="fas fa-undo"></i> 撤回
+                                </button>
+                            </th:block>
+
+                            <!-- 駁回 (S=0, R=2): 編輯、重新送審、刪除 -->
+                            <th:block th:if="${event.status == 0 && event.reviewStatus == 2}">
+                                <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
+                                    class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-success"
+                                    th:onclick="'submitEvent(' + ${event.eventId} + ')'">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                    th:onclick="'deleteEvent(' + ${event.eventId} + ')'">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </th:block>
+
+                            <!-- 已上架 (S=1, R=1): 查看 -->
+                            <th:block th:if="${event.status == 1 && event.reviewStatus == 1}">
+                                <a th:href="@{/event/{id}(id=${event.eventId})}" target="_blank"
+                                    class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </th:block>
                         </div>
                     </td>
                 </tr>
 
-                <!-- 無資料時顯示 -->
                 <tr th:if="${events == null or events.isEmpty()}">
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="4" class="text-center text-muted py-4">
                         <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                         尚無活動資料
                     </td>
                 </tr>
             </tbody>
-            </tbody>
         </table>
-    </div>
-    <div class="card-footer border-secondary">
-        <nav>
-            <ul class="pagination justify-content-center mb-0">
-                <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
-            </ul>
-        </nav>
     </div>
 </div>

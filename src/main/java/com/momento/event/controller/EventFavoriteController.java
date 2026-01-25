@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
+import com.momento.member.model.MemberVO;
 
 /**
  * Event Favorite Controller - 活動收藏功能控制器
@@ -34,14 +35,16 @@ public class EventFavoriteController {
             @PathVariable Integer id,
             HttpSession session) {
 
-        // 從 session 取得會員 ID
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        // 從 session 取得會員 VO
+        MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
 
         // 檢查是否已登入
-        if (memberId == null) {
+        if (loginMember == null) {
             return ResponseEntity.status(401)
                     .body(Map.of("success", false, "message", "請先登入"));
         }
+
+        Integer memberId = loginMember.getMemberId();
 
         // 切換收藏狀態
         boolean isFavorited = eventService.toggleFavorite(id, memberId);
