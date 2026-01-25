@@ -27,12 +27,13 @@ public class EventReviewController {
      * tab: pending (預設), rejected, approved
      */
     @GetMapping("/list")
-    public ResponseEntity<?> getEvents(@RequestParam(defaultValue = "pending") String tab,
+    public ResponseEntity<?> getEvents(@RequestParam(defaultValue = "all") String tab,
+            @RequestParam(required = false) String keyword,
             jakarta.servlet.http.HttpSession session) {
         if (session.getAttribute("loginEmp") == null) {
             return ResponseEntity.status(401).body(null);
         }
-        List<EventVO> list = eventReviewService.getEventsByTab(tab);
+        List<EventVO> list = eventReviewService.getEventsByTab(tab, keyword);
 
         // Convert to DTO
         List<com.momento.eventreview.dto.EventReviewDTO> dtos = list.stream().map(this::convertToDTO).toList();

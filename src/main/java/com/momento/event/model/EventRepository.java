@@ -229,6 +229,11 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         long countByStatusAndReviewStatus(Byte status, Byte reviewStatus);
 
         /**
+         * 計算所有主辦方的特定狀態集合活動數量
+         */
+        long countByStatusIn(java.util.Collection<Byte> statuses);
+
+        /**
          * 計算特定類型的活動數量
          * 
          * @param status       活動狀態
@@ -262,10 +267,7 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         long countByOrganizer_OrganizerIdAndStatusAndReviewStatus(Integer organizerId, Byte status, Byte reviewStatus);
 
         /**
-         * 計算主辦方的待審核活動數量 (S=0, R=0, P!=null)
-         */
-        /**
-         * 計算主辦方的待審核活動數量 (S=0, R=0, P!=null)
+         * 計算特定主辦方的待審核活動數量 (S=0, R=0, P!=null)
          */
         long countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNotNull(
                         Integer organizerId, Byte status, Byte reviewStatus);
@@ -289,6 +291,17 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
                         Byte reviewStatus);
 
         /**
+         * 計算特定主辦方的特定狀態集合活動數量 (S IN :statuses)
+         */
+        long countByOrganizer_OrganizerIdAndStatusIn(Integer organizerId, java.util.Collection<Byte> statuses);
+
+        /**
+         * 計算主辦方的特定狀態與審核狀態且送審時間為空 (S=0, R=2, P=NULL)
+         */
+        long countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(Integer organizerId, Byte status,
+                        Byte reviewStatus);
+
+        /**
          * 搜尋主辦方活動 (複合篩選)
          * 
          * @param organizerId  主辦方 ID (必填)
@@ -299,13 +312,39 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
          * @return 活動分頁
          */
         @Query("SELECT e FROM EventVO e WHERE e.organizer.organizerId = :organizerId " +
-                        "AND (:status IS NULL OR e.status = :status) " +
+                        "AND (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
+                        "AND (:statuses IS NULL OR e.status IN :statuses) " +
                         "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
-                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+                        "ORDER BY " +
+                        "CASE " +
+                        "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending
+                        "  WHEN (e.status = 0 AND e.reviewStatus = 2) THEN 2 " + // Rejected
+                        "  WHEN (e.status = 1) THEN 3 " + // Published
+                        "  WHEN (e.status = 2 OR e.status = 3) THEN 4 " + // Ended/Cancelled
+                        "  ELSE 5 " +
+                        "END ASC, e.eventAt DESC")
         Page<EventVO> searchOrganizerEvents(
                         @Param("organizerId") Integer organizerId,
-                        @Param("status") Byte status,
+                        @Param("statuses") java.util.Collection<Byte> statuses,
                         @Param("reviewStatus") Byte reviewStatus,
                         @Param("keyword") String keyword,
                         Pageable pageable);
+
+        @Query("SELECT e FROM EventVO e WHERE (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
+                        "AND (:statuses IS NULL OR e.status IN :statuses) " +
+                        "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
+                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+                        "ORDER BY " +
+                        "CASE " +
+                        "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending
+                        "  WHEN (e.status = 0 AND e.reviewStatus = 2) THEN 2 " + // Rejected
+                        "  WHEN (e.status = 1) THEN 3 " + // Published
+                        "  WHEN (e.status = 2 OR e.status = 3) THEN 4 " + // Ended/Cancelled
+                        "  ELSE 5 " +
+                        "END ASC, e.eventAt DESC")
+        List<EventVO> searchAdminEvents(
+                        @Param("statuses") java.util.Collection<Byte> statuses,
+                        @Param("reviewStatus") Byte reviewStatus,
+                        @Param("keyword") String keyword);
 }

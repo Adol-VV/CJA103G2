@@ -29,11 +29,11 @@ public class EventVO {
     private OrganizerVO organizer;
 
     @ManyToOne
-    @JoinColumn(name = "TYPE_ID", nullable = false)
+    @JoinColumn(name = "TYPE_ID", nullable = true)
     private TypeVO type;
 
     @ManyToOne
-    @JoinColumn(name = "EMP_ID")
+    @JoinColumn(name = "EMP_ID", nullable = true)
     private EmpVO emp;
 
     @Column(name = "STATUS")
@@ -42,27 +42,30 @@ public class EventVO {
     @Column(name = "REVIEW_STATUS")
     private Byte reviewStatus = 0;
 
-    @Column(name = "TITLE", nullable = false, length = 100)
+    @Column(name = "TITLE", length = 100)
     private String title;
 
     @Lob
     @Column(name = "CONTENT")
     private String content;
 
-    @Column(name = "PLACE", nullable = false, length = 200)
+    @Column(name = "PLACE", length = 200)
     private String place;
 
-    @Column(name = "STARTED_AT", nullable = false)
+    @Column(name = "STARTED_AT", nullable = true)
     private LocalDateTime startedAt;
 
-    @Column(name = "ENDED_AT", nullable = false)
+    @Column(name = "ENDED_AT", nullable = true)
     private LocalDateTime endedAt;
 
-    @Column(name = "EVENT_AT", nullable = false)
+    @Column(name = "EVENT_AT", nullable = true)
     private LocalDateTime eventAt;
 
-    @Column(name = "PUBLISHED_AT")
+    @Column(name = "PUBLISHED_AT", nullable = true)
     private LocalDateTime publishedAt;
+
+    @org.hibernate.annotations.Formula("(SELECT MIN(t.PRICE) FROM TICKET t WHERE t.EVENT_ID = EVENT_ID)")
+    private Integer minPrice;
 
     // ========== Constructors ==========
 

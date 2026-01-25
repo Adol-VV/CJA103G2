@@ -87,7 +87,7 @@ public interface EventManageService {
      */
     org.springframework.data.domain.Page<com.momento.event.model.EventVO> getOrganizerEvents(
             Integer organizerId,
-            Byte status,
+            java.util.Collection<Byte> statuses,
             Byte reviewStatus,
             String keyword,
             org.springframework.data.domain.Pageable pageable);
@@ -99,4 +99,12 @@ public interface EventManageService {
      * @return 統計 DTO
      */
     com.momento.eventmanage.dto.EventStatsDTO getOrganizerStats(Integer organizerId);
+
+    /**
+     * 取得活動詳情 (用於編輯)
+     * 
+     * @param eventId 活動 ID
+     * @return 活動詳情 DTO
+     */
+    com.momento.event.dto.EventDetailDTO getEventDetail(Integer eventId);
 }

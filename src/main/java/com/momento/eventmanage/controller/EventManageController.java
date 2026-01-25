@@ -234,7 +234,7 @@ public class EventManageController {
                 org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
                                 .getOrganizerEvents(
                                                 organizer.getOrganizerId(),
-                                                status,
+                                                status == null ? null : java.util.List.of(status),
                                                 reviewStatus,
                                                 keyword,
                                                 pageable);
@@ -249,6 +249,56 @@ public class EventManageController {
 
                 // 返回 Dashboard,前端會顯示 panel-events-list
                 return "pages/organizer/dashboard";
+        }
+
+        /**
+         * 取得活動列表 (AJAX API - 用於 Dashboard)
+         * GET /organizer/event/api/list
+         */
+        @GetMapping("/api/list")
+        @ResponseBody
+        public ResponseEntity<?> getOrganizerEventsApi(
+                        @RequestParam(value = "status", required = false) List<Byte> statuses,
+                        @RequestParam(required = false) Byte reviewStatus,
+                        @RequestParam(required = false) String keyword,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        HttpSession session) {
+
+                // 檢查登入
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+                }
+
+                // 分頁設定
+                org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
+                                size, org.springframework.data.domain.Sort.by("eventAt").descending());
+
+                // 查詢 - 若 statuses 為空則傳入 null 以觸發 Repository 的全選邏輯
+                java.util.List<Byte> finalStatuses = (statuses != null && statuses.isEmpty()) ? null : statuses;
+                org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
+                                .getOrganizerEvents(organizer.getOrganizerId(), finalStatuses, reviewStatus, keyword,
+                                                pageable);
+
+                // 轉換為 DTO
+                org.springframework.data.domain.Page<com.momento.eventmanage.dto.EventListItemDTO> dtoPage = eventPage
+                                .map(this::convertToListItemDTO);
+
+                return ResponseEntity.ok(dtoPage);
+        }
+
+        private com.momento.eventmanage.dto.EventListItemDTO convertToListItemDTO(
+                        com.momento.event.model.EventVO event) {
+                return new com.momento.eventmanage.dto.EventListItemDTO(
+                                event.getEventId(),
+                                event.getTitle(),
+                                event.getPlace(),
+                                event.getEventAt(),
+                                event.getPublishedAt(),
+                                event.getStatus(),
+                                event.getReviewStatus());
         }
 
         /**
@@ -275,12 +325,40 @@ public class EventManageController {
                 org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
                                 .getOrganizerEvents(
                                                 organizer.getOrganizerId(),
-                                                status,
+                                                status == null ? null : java.util.List.of(status),
                                                 reviewStatus,
                                                 keyword,
                                                 org.springframework.data.domain.Pageable.unpaged());
 
                 return ResponseEntity.ok(eventPage.getContent());
+        }
+
+        /**
+         * 取得所有活動類型 (AJAX API)
+         */
+        @GetMapping("/api/types")
+        @ResponseBody
+        public ResponseEntity<List<TypeVO>> getAllTypes() {
+                return ResponseEntity.ok(typeRepository.findAll());
+        }
+
+        /**
+         * 取得主辦方活動統計數據 (AJAX API)
+         * GET /organizer/event/api/stats
+         */
+        @GetMapping("/api/stats")
+        @ResponseBody
+        public ResponseEntity<?> getEventStats(HttpSession session) {
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401).build();
+                }
+
+                com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
+                                .getOrganizerStats(organizer.getOrganizerId());
+
+                return ResponseEntity.ok(stats);
         }
 
         /**
@@ -305,6 +383,34 @@ public class EventManageController {
                                                 (byte) 0);
 
                 return ResponseEntity.ok(drafts);
+        }
+
+        /**
+         * 取得單一活動詳情 (AJAX)
+         * GET /organizer/event/api/{id}
+         */
+        @GetMapping("/api/{id}")
+        @ResponseBody
+        public ResponseEntity<com.momento.event.dto.EventDetailDTO> getEventDetail(
+                        @PathVariable Integer id,
+                        HttpSession session) {
+
+                // 檢查主辦方登入狀態
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null) {
+                        return ResponseEntity.status(401).build();
+                }
+
+                // 檢查活動是否屬於該主辦方
+                if (!isEventOwner(id, organizer.getOrganizerId())) {
+                        return ResponseEntity.status(403).build();
+                }
+
+                // 取得詳情
+                com.momento.event.dto.EventDetailDTO dto = eventManageService.getEventDetail(id);
+
+                return ResponseEntity.ok(dto);
         }
 
         /**
@@ -524,4 +630,5 @@ public class EventManageController {
                                         .body(Map.of("success", false, "message", e.getMessage()));
                 }
         }
+
 }

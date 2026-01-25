@@ -29,17 +29,23 @@ public class EventReviewService {
      * 根據 Tab 類型取得活動列表
      * type: pending, rejected, approved
      */
-    public List<EventVO> getEventsByTab(String tabType) {
+    public List<EventVO> getEventsByTab(String tabType, String keyword) {
         switch (tabType) {
+            case "all":
+                // 全部: 非草稿 (由 Repository query 過濾)
+                return eventRepository.searchAdminEvents(null, null, keyword);
             case "pending":
                 // 待審核: S=0, R=0, P!=null
-                return eventRepository.findByStatusAndReviewStatusAndPublishedAtIsNotNull((byte) 0, (byte) 0);
+                return eventRepository.searchAdminEvents(java.util.List.of((byte) 0), (byte) 0, keyword);
             case "rejected":
                 // 已駁回: S=0, R=2
-                return eventRepository.findByStatusAndReviewStatus((byte) 0, (byte) 2);
+                return eventRepository.searchAdminEvents(java.util.List.of((byte) 0), (byte) 2, keyword);
             case "approved":
-                // 已通過: S=1, R=1
-                return eventRepository.findByStatusAndReviewStatus((byte) 1, (byte) 1);
+                // 上架中: S=1
+                return eventRepository.searchAdminEvents(java.util.List.of((byte) 1), null, keyword);
+            case "ended":
+                // 已結束/取消: S=2,3
+                return eventRepository.searchAdminEvents(java.util.List.of((byte) 2, (byte) 3), null, keyword);
             default:
                 return List.of();
         }
@@ -105,8 +111,15 @@ public class EventReviewService {
         // Rejected: S=0, R=2
         stats.put("rejected", eventRepository.countByStatusAndReviewStatus((byte) 0, (byte) 2));
 
-        // Approved: S=1, R=1
+        // Approved (Published): S=1
         stats.put("approved", eventRepository.countByStatusAndReviewStatus((byte) 1, (byte) 1));
+
+        // Ended/Cancelled: S=2,3
+        stats.put("ended",
+                eventRepository.countByStatusIn(java.util.List.of((byte) 2, (byte) 3)));
+
+        // Total (Non-draft)
+        stats.put("all", stats.get("pending") + stats.get("rejected") + stats.get("approved") + stats.get("ended"));
 
         return stats;
     }

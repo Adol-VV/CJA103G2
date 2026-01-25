@@ -57,13 +57,10 @@ public class EventController {
         // 確保排序方向正確 (價格通常由低到高, 日期可以是 DESC 或 ASC)
         // 這裡簡單處理: 如果是 'price'，預設 ASC; 如果是 'eventAt' 且前端傳 'newest'，則 DESC
         if ("newest".equals(sort)) {
-            filterDTO.setSort("eventAt");
+            filterDTO.setSort("publishedAt"); // Use publishedAt for newest
             filterDTO.setDirection("DESC");
-        } else if ("priceAsc".equals(sort)) {
-            // MVP Fix: EventVO does not have minPrice column.
-            // Fallback to eventAt to prevent crash.
-            // Future: Implement @Formula or Join for price sorting.
-            filterDTO.setSort("eventAt");
+        } else if ("minPrice".equals(sort) || "priceAsc".equals(sort)) {
+            filterDTO.setSort("minPrice");
             filterDTO.setDirection("ASC");
         }
 

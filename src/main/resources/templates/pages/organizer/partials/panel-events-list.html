@@ -2,38 +2,41 @@
 
 <div class="card bg-dark border-secondary mb-4">
     <div class="card-header border-secondary">
-        <ul class="nav nav-tabs card-header-tabs">
+        <ul class="nav nav-tabs card-header-tabs" id="organizer-event-tabs">
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${param.status == null} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list">全部</a>
+                <a class="nav-link active text-white" href="#" data-tab="all" data-status="">全部 <span
+                        class="badge bg-info ms-1" id="count-all">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.status != null and param.status[0] == '0' and param.reviewStatus != null and param.reviewStatus[0] == '0'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=0&reviewStatus=0">待審核</a>
+                <a class="nav-link" href="javascript:void(0)" data-tab="pending" data-review-status="0">
+                    待審核 <span class="badge rounded-pill bg-warning text-dark ms-1" id="count-pending">0</span>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.reviewStatus != null and param.reviewStatus[0] == '2'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=0&reviewStatus=2">已駁回</a>
+                <a class="nav-link" href="javascript:void(0)" data-tab="rejected" data-review-status="2">
+                    已駁回 <span class="badge rounded-pill bg-danger ms-1" id="count-rejected">0</span>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                    th:classappend="${param.status != null and param.status[0] == '1'} ? 'active text-white' : 'text-muted'"
-                    href="/organizer/event/list?status=1&reviewStatus=1">已上架</a>
+                <a class="nav-link" href="javascript:void(0)" data-tab="published" data-status="1">
+                    上架中 <span class="badge rounded-pill bg-success ms-1" id="count-published">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="ended" data-status="2,3">
+                    已結束/取消 <span class="badge rounded-pill bg-secondary ms-1" id="count-ended">0</span>
+                </a>
             </li>
         </ul>
     </div>
     <div class="card-body">
-        <form method="get" action="/organizer/event/list" class="d-flex">
-            <input type="hidden" name="status" th:value="${param.status}">
-            <input type="hidden" name="reviewStatus" th:value="${param.reviewStatus}">
+        <div class="d-flex">
             <div class="input-group">
-                <input type="text" name="keyword" class="form-control bg-dark text-white border-secondary"
-                    placeholder="搜尋活動名稱..." th:value="${param.keyword}">
-                <button type="submit" class="btn btn-outline-secondary">搜尋</button>
+                <input type="text" id="event-search-input" class="form-control bg-dark text-white border-secondary"
+                    placeholder="搜尋活動名稱...">
+                <button type="button" id="btn-event-search" class="btn btn-outline-secondary">搜尋</button>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -45,94 +48,24 @@
                     <th>活動名稱</th>
                     <th>日期</th>
                     <th>狀態</th>
-                    <th>操作</th>
+                    <th class="text-end">操作</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr th:each="event : ${events}">
-                    <td>
-                        <div class="fw-bold" th:text="${event.title}">活動名稱</div>
-                        <small class="text-muted" th:text="${event.place}">活動地點</small>
-                    </td>
-                    <td th:text="${#temporals.format(event.eventAt, 'yyyy/MM/dd')}">2024/12/31</td>
-                    <td>
-                        <!-- 草稿: S=0, R=0, P=null -->
-                        <span th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt == null}"
-                            class="badge bg-secondary">草稿</span>
-
-                        <!-- 待審核: S=0, R=0, P!=null -->
-                        <span th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}"
-                            class="badge bg-warning text-dark">待審核</span>
-
-                        <!-- 駁回: S=0, R=2 -->
-                        <span th:if="${event.status == 0 && event.reviewStatus == 2}" class="badge bg-danger">已駁回</span>
-
-                        <!-- 已上架: S=1, R=1 -->
-                        <span th:if="${event.status == 1 && event.reviewStatus == 1}"
-                            class="badge bg-success">已上架</span>
-                    </td>
-                    <td class="text-end">
-                        <div class="btn-group">
-                            <!-- 草稿 (S=0, R=0, P=null): 編輯、送審、刪除 -->
-                            <th:block
-                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt == null}">
-                                <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
-                                    class="btn btn-sm btn-outline-light">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-success"
-                                    th:onclick="'submitEvent(' + ${event.eventId} + ')'">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger"
-                                    th:onclick="'deleteEvent(' + ${event.eventId} + ')'">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </th:block>
-
-                            <!-- 待審核 (S=0, R=0, P!=null): 撤回 -->
-                            <th:block
-                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}">
-                                <button class="btn btn-sm btn-warning"
-                                    th:onclick="'withdrawEvent(' + ${event.eventId} + ')'">
-                                    <i class="fas fa-undo"></i> 撤回
-                                </button>
-                            </th:block>
-
-                            <!-- 駁回 (S=0, R=2): 編輯、重新送審、刪除 -->
-                            <th:block th:if="${event.status == 0 && event.reviewStatus == 2}">
-                                <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
-                                    class="btn btn-sm btn-outline-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-success"
-                                    th:onclick="'submitEvent(' + ${event.eventId} + ')'">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger"
-                                    th:onclick="'deleteEvent(' + ${event.eventId} + ')'">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </th:block>
-
-                            <!-- 已上架 (S=1, R=1): 查看 -->
-                            <th:block th:if="${event.status == 1 && event.reviewStatus == 1}">
-                                <a th:href="@{/event/{id}(id=${event.eventId})}" target="_blank"
-                                    class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </a>
-                            </th:block>
+            <tbody id="organizer-event-tbody">
+                <tr>
+                    <td colspan="4" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                    </td>
-                </tr>
-
-                <tr th:if="${events == null or events.isEmpty()}">
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                        尚無活動資料
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+    <!-- Pagination Container -->
+    <div class="card-footer border-secondary">
+        <nav id="organizer-event-pagination">
+            <!-- Pagination will be rendered here -->
+        </nav>
     </div>
 </div>
