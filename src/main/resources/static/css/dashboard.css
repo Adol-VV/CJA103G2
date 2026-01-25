@@ -668,3 +668,8 @@ img.rounded{
 	width: 60px;
     height: 60px;
 }
+
+img.prodImage:hover {
+    border: 2px solid var(--momento-green);
+    border-radius: 4px;
+}
