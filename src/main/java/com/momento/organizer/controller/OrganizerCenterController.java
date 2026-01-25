@@ -1,13 +1,19 @@
 package com.momento.organizer.controller;
 
+import com.momento.notify.model.OrganizerNotifyService;
+import com.momento.notify.model.OrganizerNotifyVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/organizer")
@@ -15,7 +21,8 @@ public class OrganizerCenterController {
 
     @Autowired
     private OrganizerService organizerService;
-
+    @Autowired
+    private OrganizerNotifyService organizerNotifyService;
 
 
     @GetMapping("/login")
@@ -75,6 +82,15 @@ public class OrganizerCenterController {
             return "redirect:/organizer/login";
         }
         model.addAttribute("organizer", organizer);
+
+        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
+
+        // 2從資料庫撈出歷史紀錄
+        OrganizerVO organizerVO = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer != null) {
+            List<OrganizerNotifyVO> notifyListData = organizerNotifyService.getByOrgId(organizer.getOrganizerId());
+            model.addAttribute("notifyListData", notifyListData);
+        }
         return "pages/organizer/dashboard";
     }
 

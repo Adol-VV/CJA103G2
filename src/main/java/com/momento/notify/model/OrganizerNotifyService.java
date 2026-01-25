@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +17,16 @@ public class OrganizerNotifyService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public void addNotify(OrganizerNotifyVO organizerNotifyVO){
         repository.save(organizerNotifyVO);
     }
-
+    @Transactional
     public void updateNotify(OrganizerNotifyVO organizerNotifyVO){
         repository.save(organizerNotifyVO);
     }
 
+    @Transactional
     public void deleteNotify(Integer organizerNotifyId){
         if (repository.existsById(organizerNotifyId)) {
             repository.deleteById(organizerNotifyId);
@@ -45,7 +48,13 @@ public class OrganizerNotifyService {
         return repository.findAll();
     }
 
-//    @Transactional
+    @Transactional
     public void updateReadStatus(Integer systemNotifyId, Integer status){
-    }
+        Optional<OrganizerNotifyVO> optional = repository.findById(systemNotifyId);
+            if (optional.isPresent()){
+                OrganizerNotifyVO vo = optional.get();
+                vo.setIsRead(status);
+                repository.save(vo);
+            }
+        }
 }

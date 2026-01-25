@@ -1,7 +1,9 @@
+<div id="notify-members" class="section-content">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="h3"><i class="fas fa-bullhorn me-2"></i>通知會員</h2>
 </div>
 
+<form  th:if="${organizerNotifyVO != null}" th:action="@{/organizer/notify/addNotify}" th:object="${organizerNotifyVO}" method="post">
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card bg-dark border-secondary mb-4">
@@ -10,18 +12,18 @@
 
                 <div class="mb-3">
                     <label class="form-label required">通知類型</label>
-                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyType">
-                        <option value="event_reminder">活動提醒</option>
-                        <option value="event_change">活動異動通知</option>
-                        <option value="event_cancel">活動取消通知</option>
-                        <option value="merchandise">商品出貨通知</option>
-                        <option value="custom">自訂通知</option>
+                    <select class="form-select bg-dark text-white border-secondary" th:field="*{notifyStatus}">
+                        <option value="1">活動提醒</option>
+                        <option value="2">活動異動通知</option>
+                        <option value="3">活動取消通知</option>
+                        <option value="4">商品出貨通知</option>
+                        <option value="0">自訂通知</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label required">選擇活動/商品</label>
-                    <select class="form-select bg-dark text-white border-secondary" id="memberNotifyTarget">
+                    <select class="form-select bg-dark text-white border-secondary" th:field="*{targetId}">
                         <option value="">請選擇</option>
                         <optgroup label="進行中活動">
                             <option value="event-1">2025新年音樂會｜維也納之夜 (購票人數: 856)</option>
@@ -36,14 +38,14 @@
 
                 <div class="mb-3">
                     <label class="form-label required">通知標題</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary" id="memberNotifyTitle"
+                    <input type="text" class="form-control bg-dark text-white border-secondary" th:field="*{title}"
                         placeholder="例：活動入場提醒" maxlength="50">
                     <small class="text-muted">50 字以內</small>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label required">通知內容</label>
-                    <textarea class="form-control bg-dark text-white border-secondary" rows="6" id="memberNotifyContent"
+                    <textarea class="form-control bg-dark text-white border-secondary" rows="6" th:field="*{content}"
                         placeholder="請輸入要通知會員的內容..."></textarea>
                 </div>
 
@@ -64,19 +66,19 @@
             <div class="card-body">
                 <div class="row g-2">
                     <div class="col-md-4">
-                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="活動入場提醒"
+                        <button type="button" class="btn btn-outline-secondary w-100 btn-template" data-title="活動入場提醒"
                             data-content="親愛的觀眾您好，您購買的活動將於明日舉行，請記得攜帶電子票券（QR Code）準時入場。建議提前 30 分鐘抵達會場。期待與您相見！">
                             <i class="fas fa-clock me-1"></i>入場提醒
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="活動時間變更通知"
+                        <button type="button" class="btn btn-outline-secondary w-100 btn-template" data-title="活動時間變更通知"
                             data-content="親愛的觀眾您好，因故活動時間有所調整，請留意以下變更：\n\n原定時間：\n調整後時間：\n\n造成不便敬請見諒，如需退票請至會員中心申請。">
                             <i class="fas fa-calendar-alt me-1"></i>時間變更
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-outline-secondary w-100 btn-template" data-title="商品已出貨通知"
+                        <button type="button" class="btn btn-outline-secondary w-100 btn-template" data-title="商品已出貨通知"
                             data-content="親愛的顧客您好，您訂購的商品已經出貨！\n\n物流編號：\n查詢網址：\n\n預計 2-3 個工作天送達，請留意收件。感謝您的支持！">
                             <i class="fas fa-truck me-1"></i>出貨通知
                         </button>
@@ -84,7 +86,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
         <div class="col-lg-4">
             <!-- 發送對象統計 -->
             <div class="card bg-dark border-secondary mb-4">
@@ -126,8 +128,8 @@
                 </button>
             </div>
         </div>
-    </div>
 </div>
+</form>
 
 <!-- 歷史通知紀錄 -->
 <div class="card bg-dark border-secondary mt-4">
@@ -171,4 +173,5 @@
             </tbody>
         </table>
     </div>
+</div>
 </div>

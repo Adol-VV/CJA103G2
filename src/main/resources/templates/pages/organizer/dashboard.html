@@ -39,7 +39,7 @@
                 <div class="dropdown">
                     <button class="btn btn-link text-muted position-relative" data-bs-toggle="dropdown">
                         <i class="far fa-bell fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        <span th:if="${unreadCount > 0}" th:text="${unreadCount}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                             style="font-size: 0.6rem;">3</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" style="width: 300px;">
