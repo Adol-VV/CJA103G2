@@ -306,7 +306,7 @@
                                 <label class="form-check-label" for="useTokensCheckout">
                                     使用 Momento 代幣折抵
                                     <span class="badge bg-success ms-2">可用餘額: 
-                                        <span class = "token" id="tokenAmount">1250</span>                                            
+                                        <span class = "token" id="tokenAmount" th:text="${session.loginMember.token}"></span>                                            
                                     </span>
                                 </label>
                             </div>

@@ -14,8 +14,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Theme -->
-    <link href="../../css/momento-theme.css" rel="stylesheet">
-    <link href="../../css/admin-dashboard.css" rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
     <!-- SortableJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </head>
@@ -151,46 +151,46 @@
         <div class="row">
             <!-- Sidebar Partial -->
             <div id="adminSidebar" class="col-md-3 col-lg-2 sidebar pt-3 d-none d-md-block"
-                data-partial="../../pages/admin/partials/sidebar.html">
+                 th:insert="pages/admin/partials/sidebar">
                 <!-- Content will be loaded here -->
             </div>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
 
                 <!-- Content Panels -->
-                <div data-partial="../../pages/admin/partials/panel-dashboard.html"></div>
+                <div th:insert="pages/admin/partials/panel-dashboard"></div>
 
                 <!-- Approval Center -->
-                <div data-partial="../../pages/admin/partials/panel-event-approval.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-product-approval.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-article-approval.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-organizer-reviews.html"></div>
+                <div th:insert="pages/admin/partials/panel-event-approval"></div>
+                <div th:insert="pages/admin/partials/panel-product-approval"></div>
+                <div th:insert="pages/admin/partials/panel-article-approval"></div>
+                <div th:insert="pages/admin/partials/panel-organizer-reviews"></div>
 
                 <!-- Orders -->
-                <div data-partial="../../pages/admin/partials/panel-event-orders.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-product-orders.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-refund-management.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-disputes.html"></div>
+                <div th:insert="pages/admin/partials/panel-event-orders"></div>
+                <div th:insert="pages/admin/partials/panel-product-orders"></div>
+                <div th:insert="pages/admin/partials/panel-refund-management"></div>
+                <div th:insert="pages/admin/partials/panel-disputes"></div>
 
                 <!-- Users -->
-                <div data-partial="../../pages/admin/partials/panel-member-list.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-staff-management.html"></div>
+                <div th:insert="pages/admin/partials/panel-member-list"></div>
+                <div th:insert="pages/admin/partials/panel-staff-management"></div>
 
                 <!-- Content -->
-                <div data-partial="../../pages/admin/partials/panel-homepage-editor.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-faq-management.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-about-editor.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-comment-management.html"></div>
+                <div th:insert="pages/admin/partials/panel-homepage-editor"></div>
+                <div th:insert="pages/admin/partials/panel-faq-management"></div>
+                <div th:insert="pages/admin/partials/panel-about-editor"></div>
+                <div th:insert="pages/admin/partials/panel-comment-management"></div>
 
                 <!-- Finance -->
-                <div data-partial="../../pages/admin/partials/panel-settlement.html"></div>
-                <div data-partial="../../pages/admin/partials/panel-analytics.html"></div>
+                <div th:insert="pages/admin/partials/panel-settlement"></div>
+                <div th:insert="pages/admin/partials/panel-analytics"></div>
 
                 <!-- Tools -->
-                <div data-partial="../../pages/admin/partials/panel-notification-composer.html"></div>
+                <div th:insert="pages/admin/partials/panel-notification-composer"></div>
 
                 <!-- Modals Partial -->
-                <div data-partial="../../pages/admin/partials/modals.html"></div>
+                <div th:insert="pages/admin/partials/modals"></div>
 
             </main>
         </div>
@@ -202,8 +202,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Modularized JS -->
-    <script type="module" src="../../js/admin/index.js"></script>
-    <script type="module" src="../../js/common/index.js"></script>
+    <script type="module" th:src="@{/js/admin/index.js}"></script>
+    <script type="module" th:src="@{/js/common/index.js}"></script>
+
 </body>
 
 </html>
