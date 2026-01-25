@@ -73,12 +73,10 @@ public class ProdController {
 		@RequestParam("prodId") String prodId,
 		ModelMap model) {	
 		/***************************2.開始查詢資料*********************************************/
-		ProdVO prodVO = prodSvc.getOneProd(Integer.valueOf(prodId));
-		List<ProdImageVO> imageList = prodSvc.getProdImagesByProdId(prodVO.getProdId());
+		ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
 		
 		/***************************3.查詢完成,準備轉交(Send the Success view)*****************/
-		model.addAttribute("prodVO", prodVO); 
-		model.addAttribute("prodImages", imageList);
+		model.addAttribute("prod", prod); 
                                            
 		return "pages/user/prod-detail"; 
 	}
@@ -91,8 +89,8 @@ public class ProdController {
 	}
 	
 	@GetMapping("/member/prod/getOne")
-	public ProdVO getOne(@RequestParam Integer prodId) {
+	public ProdDTO getOne(@RequestParam Integer prodId) {
 	    return prodSvc.getOneProd(prodId);
 	}
-	
+
 }
