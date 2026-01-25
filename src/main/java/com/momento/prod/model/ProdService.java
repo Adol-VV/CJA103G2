@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.momento.prod.dto.ProdDTO;
 
@@ -28,15 +29,52 @@ public class ProdService {
 		repository.save(prodVO);
 	}
 	
-	public ProdVO getOneProd(Integer prodId) {
+	@Transactional
+	public void updateProdReviewStatus(Integer prodId, byte reviewStatus) {
 		Optional<ProdVO> optional = repository.findById(prodId);
-		return optional.orElse(null);
+		ProdVO prod = optional.get();
+		prod.setReviewStatus(reviewStatus);
+		repository.save(prod);
+		System.out.println("更新成功");
 	}
 	
-	
-	public List<ProdImageVO> getProdImagesByProdId(Integer prodId) {
-		
-		return getOneProd(prodId).getProdImages();
+	public ProdDTO getOneProd(Integer prodId) {
+		Optional<ProdVO> optional = repository.findById(prodId);
+		ProdVO prod = optional.get();
+		ProdDTO dto = new ProdDTO();
+        dto.setProdId(prod.getProdId());
+        dto.setProdName(prod.getProdName());
+        dto.setProdPrice(prod.getProdPrice());
+        dto.setProdStock(prod.getProdStock());
+        dto.setProdContent(prod.getProdContent());
+        dto.setOrganizerName(prod.getOrganizerVO().getName());
+        dto.setSortName(prod.getProdSortVO().getSortName());
+        dto.setCreatedAt(prod.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        dto.setProdStatus(prod.getProdStatus());
+        
+        //將審核狀態由數字變更為字串存進DTO
+        switch(prod.getReviewStatus()) {
+        case 1:
+        	dto.setReviewStatus("通過");
+        	break;
+        case 2:
+        	dto.setReviewStatus("未通過");
+        	break;
+        default:
+        	dto.setReviewStatus("待審核");
+        }
+        
+        // 取出第一張圖片作為主圖
+        if (prod.getProdImages() == null || prod.getProdImages().isEmpty()) {
+        	dto.setMainImageUrl("/images/default.png"); // 預設圖片
+        } else {
+            dto.setMainImageUrl(prod.getProdImages().get(0).getImageUrl());
+        }
+        List<String> ImageUrls = prod.getProdImages().stream().map(prodImage -> 
+        	prodImage.getImageUrl()).collect(Collectors.toList());
+        dto.setProdImages(ImageUrls);
+        
+		return dto;
 	}
 	
 	
@@ -78,21 +116,21 @@ public class ProdService {
             
             //將審核狀態由數字變更為字串存進DTO
             switch(prod.getReviewStatus()) {
-            default:
-            	dto.setReviewStatus("待審核");
             case 1:
             	dto.setReviewStatus("通過");
             	break;
             case 2:
             	dto.setReviewStatus("未通過");
             	break;
+            default:
+            	dto.setReviewStatus("待審核");
             }
             
             // 取出第一張圖片作為主圖
             if (prod.getProdImages() == null || prod.getProdImages().isEmpty()) {
-            	dto.setImageUrl("/images/default.png"); // 預設圖片
+            	dto.setMainImageUrl("/images/default.png"); // 預設圖片
             } else {
-                dto.setImageUrl(prod.getProdImages().get(0).getImageUrl());
+                dto.setMainImageUrl(prod.getProdImages().get(0).getImageUrl());
             }
             return dto;
         }).collect(Collectors.toList());
@@ -105,14 +143,30 @@ public class ProdService {
             dto.setProdName(prod.getProdName());
             dto.setProdPrice(prod.getProdPrice());
             dto.setProdStock(prod.getProdStock());
+            dto.setOrganizerId(prod.getOrganizerVO().getOrganizerId());
+            dto.setOrganizerName(prod.getOrganizerVO().getName());
             dto.setSortId(prod.getProdSortVO().getSortId());
+            dto.setSortName(prod.getProdSortVO().getSortName());
+            dto.setCreatedAt(prod.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             dto.setProdStatus(prod.getProdStatus());
+            
+            //將審核狀態由數字變更為字串存進DTO
+            switch(prod.getReviewStatus()) {
+            case 1:
+            	dto.setReviewStatus("通過");
+            	break;
+            case 2:
+            	dto.setReviewStatus("未通過");
+            	break;
+            default:
+            	dto.setReviewStatus("待審核");
+            }
             
             // 取出第一張圖片作為主圖
             if (prod.getProdImages() == null || prod.getProdImages().isEmpty()) {
-            	dto.setImageUrl("/images/default.png"); // 預設圖片
+            	dto.setMainImageUrl("/images/default.png"); // 預設圖片
             } else {
-                dto.setImageUrl(prod.getProdImages().get(0).getImageUrl());
+                dto.setMainImageUrl(prod.getProdImages().get(0).getImageUrl());
             }
             return dto;
         }).collect(Collectors.toList());
