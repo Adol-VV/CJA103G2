@@ -186,67 +186,7 @@
     <script type="module" th:src="@{/js/organizer/index.js}"></script>
 
     <script th:inline="javascript">
-        $(document).ready(function() {
-            // 同步預覽
-            $('#title').on('input', function() {
-                $('#previewNotifyTitle').text($(this).val() || '通知標題');
-            });
-
-            $('#content').on('input', function() {
-                const val = $(this).val();
-                // 處理換行符號
-                $('#previewNotifyContent').html(val ? val.replace(/\n/g, '<br>') : '通知內容預覽...');
-            });
-
-            // 點擊快速範本後填入內容並強制更新預覽
-            $('.btn-template').on('click', function() {
-                const tTitle = $(this).attr('data-title');
-                const tContent = $(this).attr('data-content');
-
-                if (tTitle && tContent) {
-                    // 左側框+預覽更新
-                    $('#title').val(tTitle).trigger('input');
-                    $('#content').val(tContent).trigger('input');
-                }
-            });
-
-            // 發送人數變動
-            $('#targetId').on('change', function() {
-                const selectedId = $(this).val();
-                if (selectedId) {
-                    $.get('/organizer/notify/countMembers', { targetId: selectedId }, function(count) {
-                        $('#notifyTargetCount').text(count);
-                    });
-                } else {
-                    $('#notifyTargetCount').text(0);
-                }
-            });
-        });
+        window.INITIAL_PANEL = /*[[${activePanel}]]*/ null;
     </script>
-
-
-
-    <script th:inline="javascript">
-        $(document).ready(function() {
-            // 使用 Thymeleaf 讀取 Flash Attribute
-            var successMsg = /*[[${successMessage}]]*/ null;
-
-            if (successMsg) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '發送成功',
-                    text: successMsg,
-                    timer: 2000,
-                    showConfirmButton: false,
-                    background: '#1a1d20',
-                    color: '#fff'
-                });
-            }
-        });
-    </script>
-
-
-
-</body>
 
 </html>

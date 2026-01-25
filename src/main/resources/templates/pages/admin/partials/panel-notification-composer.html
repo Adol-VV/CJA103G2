@@ -1,5 +1,11 @@
 <div class="content-panel" id="panel-notification-composer">
     <h2 class="mb-4">系統通知發送</h2>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/notify/sendMessageNotify}" method="post">
+
+        <input type="hidden" name="empId" value="1">
 
     <div class="row">
         <div class="col-lg-8">
@@ -10,7 +16,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label">通知類型</label>
-                        <select class="form-select bg-dark text-white border-secondary">
+                        <select name="type" class="form-select bg-dark text-white border-secondary">
                             <option>系統公告</option>
                             <option>活動提醒</option>
                             <option>促銷優惠</option>
@@ -18,18 +24,18 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">通知標題</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                        <label  class="form-label">通知標題</label>
+                        <input name="title" type="text" class="form-control bg-dark text-white border-secondary"
                             placeholder="輸入通知標題...">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">通知內容</label>
-                        <textarea class="form-control bg-dark text-white border-secondary" rows="5"
+                        <textarea name="rawContent" class="form-control bg-dark text-white border-secondary" rows="5"
                             placeholder="輸入通知內容..."></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">連結 (選填)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                        <input name="url" type="text" class="form-control bg-dark text-white border-secondary"
                             placeholder="https://...">
                     </div>
 
@@ -49,11 +55,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">推送通道</label>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" checked><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="web" checked><label
                                     class="form-check-label">站內通知</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="email"><label
                                     class="form-check-label">Email</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="app"><label
                                     class="form-check-label">推播 (App)</label>
                             </div>
                         </div>
@@ -72,7 +78,7 @@
                     <div class="mb-3">
                         <small class="text-muted text-uppercase mb-2 d-block">快速選擇</small>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recEveryone" checked>
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="all" id="recEveryone" checked>
                             <label class="form-check-label" for="recEveryone">
                                 <i class="fas fa-globe me-1 text-primary"></i>所有人（會員+主辦方）
                                 <span class="text-muted">(12,606)</span>
@@ -167,7 +173,7 @@
             </div>
         </div>
     </div>
-
+    </form>
     <!-- History -->
     <div class="card bg-dark border-secondary mt-4">
         <div class="card-header border-secondary d-flex justify-content-between">
@@ -186,30 +192,52 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>2024/12/25 18:00</td>
-                        <td>聖誕節快樂！限時優惠開跑</td>
-                        <td><span class="badge bg-warning text-dark">促銷</span></td>
-                        <td>全部會員</td>
+                    <tr th:each="row : ${massNotifyRecords}">
+                        <td th:text="${#temporals.format(row[1], 'yyyy/MM/dd HH:mm')}">2024/12/25 18:00</td>
+
+                        <td th:text="${row[0]}">標題內容</td>
+
+                        <td><span class="badge bg-info" th:text="${row[5]} ?: '系統'">系統</span></td>
+
+                        <td th:text="${row[2]}">對象</td>
+
                         <td>
                             <div class="progress" style="width: 100px; height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 68%;"></div>
-                            </div><small>68%</small>
+                                <div class="progress-bar bg-success"
+                                     th:style="'width:' + (${row[4]} * 100 / ${row[3]}) + '%'"></div>
+                            </div>
+                            <small th:text="${#numbers.formatDecimal(row[4] * 100.0 / row[3], 1, 0)} + '%'"></small>
                         </td>
+
                         <td><span class="badge bg-success">已發送</span></td>
                     </tr>
-                    <tr>
-                        <td>2024/12/20 10:00</td>
-                        <td>系統維護公告 (12/21)</td>
-                        <td><span class="badge bg-info">系統</span></td>
-                        <td>全部會員</td>
-                        <td>
-                            <div class="progress" style="width: 100px; height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 82%;"></div>
-                            </div><small>82%</small>
-                        </td>
-                        <td><span class="badge bg-success">已發送</span></td>
-                    </tr>
+
+                    <th:block th:if="${massNotifyRecords == null or #lists.isEmpty(massNotifyRecords)}">
+                        <tr>
+                            <td>2024/12/25 18:00</td>
+                            <td>聖誕節快樂！限時優惠開跑</td>
+                            <td><span class="badge bg-warning text-dark">促銷</span></td>
+                            <td>全部會員</td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 68%;"></div>
+                                </div><small>68%</small>
+                            </td>
+                            <td><span class="badge bg-success">已發送</span></td>
+                        </tr>
+                        <tr>
+                            <td>2024/12/20 10:00</td>
+                            <td>系統維護公告 (12/21)</td>
+                            <td><span class="badge bg-info">系統</span></td>
+                            <td>全部會員</td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 82%;"></div>
+                                </div><small>82%</small>
+                            </td>
+                            <td><span class="badge bg-success">已發送</span></td>
+                        </tr>
+                    </th:block>
                 </tbody>
             </table>
         </div>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,30 @@ import java.util.Set;
 public class SystemNotifyController {
     @Autowired
     SystemNotifyService sysNotifySvc;
+
+    @PostMapping("sendMessageNotify")
+    public String sendMessageNotify(
+            @NotEmpty(message = "通知類型: 請勿空白") @RequestParam("type") String type,
+            @NotEmpty(message="通知標題: 請勿空白") @RequestParam("title") String title,
+            @NotEmpty(message="通知內容: 請勿空白") @RequestParam("rawContent") String rawContent,
+            @RequestParam(value = "url", required = false) String url,
+            @RequestParam("recipientGroup") String recipientGroup,
+            @RequestParam("empId") Integer empId, // 暫時由參數接收
+            ModelMap model, RedirectAttributes redirectAttributes) {
+
+        try{
+            sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, empId);
+            redirectAttributes.addFlashAttribute("successMessage", "通知已成功發送！");
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage", "發送失敗：" + e.getMessage());
+        }
+
+        List<Object[]> records = sysNotifySvc.getMessageNotifyRecords();
+        model.addAttribute("massNotifyRecords", records);
+
+        return "redirect:/admin/dashboard#notification-composer";
+        }
+
 
     // 取得該會員的所有系統通知
     @PostMapping("getMemberNotifications")
@@ -42,8 +67,9 @@ public class SystemNotifyController {
                 model.addAttribute("errorMessage", "目前尚無通知訊息");
             }
 
+            model.addAttribute("massNotifyRecords", sysNotifySvc.getMessageNotifyRecords());
             // 查詢完成,準備轉交
-            return "pages/user/dashboard";
+            return "pages/admin/dashboard";
             }
 
 
@@ -64,12 +90,12 @@ public class SystemNotifyController {
 
             if (sysNotifyVO == null) {
                 model.addAttribute("errorMessage", "查無此通知內容");
-                return "pages/user/dashboard";
+                return "pages/admin/dashboard";
             }
 
             // 查詢完成,準備轉交
                 model.addAttribute("sysNotifyVO", sysNotifyVO);
-                return "pages/user/dashboard";
+                return "pages/admin/dashboard";
             }
 
      // 錯誤處理
@@ -81,7 +107,7 @@ public class SystemNotifyController {
             strBuilder.append(violation.getMessage()).append("<br>");
         }
         String message = strBuilder.toString();
-        return new ModelAndView("pages/user/dashboard", "errorMessage", "請修正以下錯誤:<br>"+message);
+        return new ModelAndView("pages/admin/dashboard", "errorMessage", "請修正以下錯誤:<br>"+message);
     }
 }
 
