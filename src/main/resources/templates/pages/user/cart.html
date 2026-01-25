@@ -14,13 +14,13 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="../../index.html"><i
+            <a class="navbar-brand fw-bold" href="/"><i
                     class="fas fa-ticket-alt me-2 text-success"></i>Momento</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="event-list.html">找活動</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prod-list.html">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/event/list">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/prod/listAllProd">找商品</a></li>
                 </ul>
             </div>
         </div>
@@ -130,7 +130,7 @@
                         <div class="form-check mb-3">
                             <!-- <input class="form-check-input" type="checkbox" id="useTokens"> -->
                             <label class="form-check-label text-muted small" for="useTokens">
-                                可使用 Momento 代幣 <span class="text-success">(餘額: 1,250)</span>
+                                可使用 Momento 代幣 <span class="text-success" th:text="${session.loginMember.token}"></span>
                             </label>
                         </div>
 
