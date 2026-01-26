@@ -34,4 +34,8 @@ public class MessageService {
 	public List<MessageVO> getAll() {
 		return repository.findAll();
 	}
+
+	public List<MessageVO> getMessagesByArticleId(Integer articleId) {
+		return repository.findByArticleVO_ArticleId(articleId);
+	}
 }
