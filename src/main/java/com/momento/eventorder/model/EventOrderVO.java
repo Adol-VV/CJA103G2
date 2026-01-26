@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.momento.event.model.EventVO;
-import com.momento.eventorderitem.model.EventOrderItemVO;
 import com.momento.member.model.MemberVO;
 import com.momento.organizer.model.OrganizerVO;
 
