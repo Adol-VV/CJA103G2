@@ -6,11 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PublicPageController {
-	
-	@GetMapping("/index")
-	public String index() {
-		return "index";
-	}
 
     @GetMapping("/user/login")
     public String userLogin() {

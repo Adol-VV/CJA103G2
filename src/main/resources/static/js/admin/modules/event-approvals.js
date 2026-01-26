@@ -134,7 +134,7 @@ export function initEventApprovals() {
     }
 
     function updateBadge(status, count) {
-        const $link = $(`.nav-link[data-status="${status}"]`);
+        const $link = $(`#eventReviewTabs .nav-link[data-status="${status}"]`);
         $link.find('.badge').remove();
 
         let badgeClass = 'bg-secondary';

@@ -2,133 +2,121 @@
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Momento | 探索你的精彩時刻</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Momento | 探索你的精彩時刻</title>
 
-<!-- SEO Meta Tags -->
-<meta name="description"
-	content="Momento 是台灣領先的藝文票務與文創商品平台，探索音樂會、戲劇、展覽等精彩活動，發現獨特的文創設計商品。">
-<meta name="keywords"
-	content="藝文活動,票務平台,文創商品,音樂會,戲劇表演,藝術展覽,手作工坊,Momento">
-<meta name="author" content="Momento">
-<meta name="robots" content="index, follow">
+	<!-- SEO Meta Tags -->
+	<meta name="description" content="Momento 是台灣領先的藝文票務與文創商品平台，探索音樂會、戲劇、展覽等精彩活動，發現獨特的文創設計商品。">
+	<meta name="keywords" content="藝文活動,票務平台,文創商品,音樂會,戲劇表演,藝術展覽,手作工坊,Momento">
+	<meta name="author" content="Momento">
+	<meta name="robots" content="index, follow">
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://momento.com/">
-<meta property="og:title" content="Momento | 探索你的精彩時刻">
-<meta property="og:description"
-	content="Momento 是台灣領先的藝文票務與文創商品平台，探索音樂會、戲劇、展覽等精彩活動。">
-<meta property="og:image"
-	content="https://momento.com/assets/og-image.jpg">
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://momento.com/">
+	<meta property="og:title" content="Momento | 探索你的精彩時刻">
+	<meta property="og:description" content="Momento 是台灣領先的藝文票務與文創商品平台，探索音樂會、戲劇、展覽等精彩活動。">
+	<meta property="og:image" content="https://momento.com/assets/og-image.jpg">
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://momento.com/">
-<meta property="twitter:title" content="Momento | 探索你的精彩時刻">
-<meta property="twitter:description" content="Momento 是台灣領先的藝文票務與文創商品平台">
-<meta property="twitter:image"
-	content="https://momento.com/assets/og-image.jpg">
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" content="https://momento.com/">
+	<meta property="twitter:title" content="Momento | 探索你的精彩時刻">
+	<meta property="twitter:description" content="Momento 是台灣領先的藝文票務與文創商品平台">
+	<meta property="twitter:image" content="https://momento.com/assets/og-image.jpg">
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link
-	href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
-	rel="stylesheet">
-<!-- Bootstrap 5 CSS -->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<!-- Font Awesome -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Custom Theme -->
-<link href="css/momento-theme.css" rel="stylesheet">
-<style>
-/* 公告欄跑馬燈 */
-.announce_bar {
-	border-bottom: 1px solid rgba(45, 95, 79, 0.3);
-}
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Bootstrap 5 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<!-- Custom Theme -->
+	<link href="css/momento-theme.css" rel="stylesheet">
+	<style>
+		/* 公告欄跑馬燈 */
+		.announce_bar {
+			border-bottom: 1px solid rgba(45, 95, 79, 0.3);
+		}
 
-.announce_marquee {
-	height: 24px;
-	mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
-	-webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
-}
+		.announce_marquee {
+			height: 24px;
+			mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+			-webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+		}
 
-.announce_track {
-	animation: marquee 30s linear infinite;
-	white-space: nowrap;
-}
+		.announce_track {
+			animation: marquee 30s linear infinite;
+			white-space: nowrap;
+		}
 
-.announce_track:hover {
-	animation-play-state: paused;
-}
+		.announce_track:hover {
+			animation-play-state: paused;
+		}
 
-.announce_item {
-	display: inline-flex;
-	align-items: center;
-	padding: 0 2rem;
-	color: rgba(255, 255, 255, 0.9);
-	font-size: 0.9rem;
-	cursor: pointer;
-	transition: color 0.2s;
-}
+		.announce_item {
+			display: inline-flex;
+			align-items: center;
+			padding: 0 2rem;
+			color: rgba(255, 255, 255, 0.9);
+			font-size: 0.9rem;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
 
-.announce_item:hover {
-	color: #10B981;
-}
+		.announce_item:hover {
+			color: #10B981;
+		}
 
-.announce_item .badge {
-	font-size: 0.65rem;
-}
+		.announce_item .badge {
+			font-size: 0.65rem;
+		}
 
-@keyframes marquee { 0% {
-	transform: translateX(0);
-}
+		@keyframes marquee {
+			0% {
+				transform: translateX(0);
+			}
 
-100%
-{
-transform
-:
-translateX(
--50%
-);
-}
-}
-@media ( max-width : 767.98px) {
-	.announce_item {
-		padding: 0 1rem;
-		font-size: 0.8rem;
-	}
-}
+			100% {
+				transform:
+					translateX(-50%);
+			}
+		}
 
-/* 修正活動卡片標籤溢出問題 */
-.card {
-	overflow: visible;
-}
+		@media (max-width : 767.98px) {
+			.announce_item {
+				padding: 0 1rem;
+				font-size: 0.8rem;
+			}
+		}
 
-.card .card-img-top {
-	border-radius: 12px 12px 0 0;
-}
+		/* 修正活動卡片標籤溢出問題 */
+		.card {
+			overflow: visible;
+		}
 
-.card .position-relative .badge {
-	z-index: 10;
-	white-space: nowrap;
-}
+		.card .card-img-top {
+			border-radius: 12px 12px 0 0;
+		}
 
-/* Article Card Hover Effect */
-.article_hover {
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+		.card .position-relative .badge {
+			z-index: 10;
+			white-space: nowrap;
+		}
 
-.article_hover:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 8px 25px rgba(45, 95, 79, 0.15);
-}
-</style>
+		/* Article Card Hover Effect */
+		.article_hover {
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.article_hover:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 8px 25px rgba(45, 95, 79, 0.15);
+		}
+	</style>
 </head>
 
 <body>
@@ -137,52 +125,42 @@ translateX(
 	<nav class="navbar navbar-expand-lg sticky-top">
 		<div class="container-fluid px-lg-5">
 			<a class="navbar-brand" th:href="@{/}">Momento</a>
-			<button class="navbar-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarNav">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
 				<span class="navbar-toggler-icon" style="filter: invert(1);"></span>
 			</button>
 
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item"><a class="nav-link active"
-						th:href="@{/event/list}">找活動</a></li>
-					<li class="nav-item"><a class="nav-link"
-						th:href="@{prod/listAllProd}">找商品</a></li>
+					<li class="nav-item"><a class="nav-link active" th:href="@{/event/list}">找活動</a></li>
+					<li class="nav-item"><a class="nav-link" th:href="@{prod/listAllProd}">找商品</a></li>
 					<li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a>
 					</li>
-					<li class="nav-item"><a class="nav-link"
-						href="pages/public/about.html">關於我們</a></li>
+					<li class="nav-item"><a class="nav-link" th:herf="@{/about}">關於我們</a></li>
 				</ul>
 
 				<form class="d-flex mx-auto col-lg-4" role="search">
-					<div class="input-group cursor-pointer" data-bs-toggle="modal"
-						data-bs-target="#search_modal">
-						<span
-							class="input-group-text bg-dark border-secondary text-secondary"><i
-							class="fas fa-search"></i></span> <input
-							class="form-control bg-dark text-white border-secondary"
-							type="search" placeholder="搜尋活動或商品..." aria-label="Search"
-							readonly style="cursor: pointer;">
+					<div class="input-group cursor-pointer" data-bs-toggle="modal" data-bs-target="#search_modal">
+						<span class="input-group-text bg-dark border-secondary text-secondary"><i
+								class="fas fa-search"></i></span> <input
+							class="form-control bg-dark text-white border-secondary" type="search"
+							placeholder="搜尋活動或商品..." aria-label="Search" readonly style="cursor: pointer;">
 					</div>
 				</form>
 
 				<div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
-					<a href="pages/user/cart.html"
-						class="position-relative text-white text-decoration-none"> <i
-						class="fas fa-shopping-cart fa-lg"></i> <span
-						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-						style="font-size: 0.6rem;"> 2 </span>
+					<a href="pages/user/cart.html" class="position-relative text-white text-decoration-none"> <i
+							class="fas fa-shopping-cart fa-lg"></i> <span
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+							style="font-size: 0.6rem;"> 2 </span>
 					</a>
 					<div th:if="${session.loginMember}">
-						<a th:text="${session.loginMember.name}"></a> <a
-							th:href="@{/member/dashboard}"
-							class="btn btn-primary btn-sm px-4">會員中心</a> <a
-							th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+						<a th:text="${session.loginMember.name}"></a> <a th:href="@{/member/dashboard}"
+							class="btn btn-primary btn-sm px-4">會員中心</a> <a th:href="@{/member/logout}"
+							class="btn btn-primary btn-sm px-4">登出</a>
 					</div>
 					<div th:unless="${session.loginMember}">
 						<a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
-						<a th:href="@{/member/register}"
-							class="btn btn-primary btn-sm px-4">註冊</a>
+						<a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
 					</div>
 				</div>
 			</div>
@@ -191,84 +169,69 @@ translateX(
 
 	<!-- Announcement Banner (Carousel) -->
 	<div id="hero_carousel" class="carousel slide" data-bs-ride="carousel">
+
 		<div class="carousel-indicators">
-			<button type="button" data-bs-target="#hero_carousel"
-				data-bs-slide-to="0" class="active"></button>
-			<button type="button" data-bs-target="#hero_carousel"
-				data-bs-slide-to="1"></button>
-			<button type="button" data-bs-target="#hero_carousel"
-				data-bs-slide-to="2"></button>
+			<button type="button" data-bs-target="#hero_carousel" th:each="item, iterStat : ${carouselList}"
+				th:attr="data-bs-slide-to=${iterStat.index}" th:classappend="${iterStat.index == 0} ? 'active'"
+				aria-current="true" th:aria-label="'Slide ' + ${iterStat.count}">
+			</button>
 		</div>
+
 		<div class="carousel-inner">
-			<div class="carousel-item active" data-bs-interval="5000">
-				<img loading="lazy"
-					src="https://via.placeholder.com/1920x600/2D5F4F/FFFFFF?text=Featured+Event+1"
-					class="d-block w-100"
+
+			<div th:if="${#lists.isEmpty(carouselList)}" class="carousel-item active">
+				<img src="https://via.placeholder.com/1920x600/333/FFF?text=Momento+Events" class="d-block w-100"
 					style="height: 500px; object-fit: cover; filter: brightness(0.7);">
 				<div class="carousel-caption d-none d-md-block text-start">
-					<span class="badge bg-success mb-2">本月主打</span>
-					<h1 class="display-4 fw-bold">2025新年音樂會｜維也納之夜</h1>
-					<p class="lead">與維也納愛樂管弦樂團一同迎接嶄新的一年，中山堂隆重登場。</p>
-					<a href="pages/user/event-detail.html"
-						class="btn btn-primary btn-lg mt-3">立即購票</a>
+					<h1 class="display-4 fw-bold">精彩活動 敬請期待</h1>
+					<p class="lead">目前沒有主打活動，請稍後再回來查看。</p>
 				</div>
 			</div>
-			<div class="carousel-item" data-bs-interval="5000">
-				<img loading="lazy"
-					src="https://via.placeholder.com/1920x600/3B82F6/FFFFFF?text=Featured+Event+2"
-					class="d-block w-100"
-					style="height: 500px; object-fit: cover; filter: brightness(0.7);">
+
+			<div th:each="item, iterStat : ${carouselList}" class="carousel-item"
+				th:classappend="${iterStat.index == 0} ? 'active'" data-bs-interval="5000">
+
+				<img loading="lazy" th:src="${item.imageUrl}" class="d-block w-100"
+					style="height: 500px; object-fit: cover; filter: brightness(0.7);" th:alt="${item.title}">
+
 				<div class="carousel-caption d-none d-md-block text-start">
-					<span class="badge bg-info mb-2">熱門展覽</span>
-					<h1 class="display-4 fw-bold">島嶼・詩意｜台灣當代水墨特展</h1>
-					<p class="lead">探索當代水墨藝術的無限可能，感受島嶼文化的獨特韻味。</p>
-					<a href="#" class="btn btn-primary btn-lg mt-3">立即購票</a>
-				</div>
-			</div>
-			<div class="carousel-item" data-bs-interval="5000">
-				<img loading="lazy"
-					src="https://via.placeholder.com/1920x600/F59E0B/FFFFFF?text=Merchandise+Sale"
-					class="d-block w-100"
-					style="height: 500px; object-fit: cover; filter: brightness(0.7);">
-				<div class="carousel-caption d-none d-md-block text-start">
-					<span class="badge bg-warning text-dark mb-2">周邊商品</span>
-					<h1 class="display-4 fw-bold">音樂祭限定周邊開賣</h1>
-					<p class="lead">T-shirt、毛巾、以及更多獨家設計商品，限時限量搶購中。</p>
-					<a href="pages/user/prod-list.html"
-						class="btn btn-primary btn-lg mt-3">前往選購</a>
+					<span class="badge bg-success mb-2">主打活動</span>
+
+					<h1 class="display-4 fw-bold" th:text="${item.title}">活動標題</h1>
+
+					<p class="lead" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...</p>
+
+					<a th:href="@{/event/detail(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
+						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
+					</a>
 				</div>
 			</div>
 		</div>
-		<button class="carousel-control-prev" type="button"
-			data-bs-target="#hero_carousel" data-bs-slide="prev">
-			<span class="carousel-control-prev-icon" aria-hidden="true"></span> <span
-				class="visually-hidden">Previous</span>
+
+		<button class="carousel-control-prev" type="button" data-bs-target="#hero_carousel" data-bs-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Previous</span>
 		</button>
-		<button class="carousel-control-next" type="button"
-			data-bs-target="#hero_carousel" data-bs-slide="next">
-			<span class="carousel-control-next-icon" aria-hidden="true"></span> <span
-				class="visually-hidden">Next</span>
+		<button class="carousel-control-next" type="button" data-bs-target="#hero_carousel" data-bs-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Next</span>
 		</button>
 	</div>
 
 	<!-- Announcement Bar / 公告欄 -->
-	<div class="announce_bar py-2"
-		style="background: linear-gradient(90deg, #1a1a1a 0%, #2D5F4F 50%, #1a1a1a 100%);">
+	<div class="announce_bar py-2" style="background: linear-gradient(90deg, #1a1a1a 0%, #2D5F4F 50%, #1a1a1a 100%);">
 		<div class="container-fluid" style="max-width: 1400px;">
 			<div class="d-flex align-items-center">
-				<span
-					class="badge bg-warning text-dark me-3 d-none d-sm-inline-block">
+				<span class="badge bg-warning text-dark me-3 d-none d-sm-inline-block">
 					<i class="fas fa-bullhorn me-1"></i>公告
 				</span>
-				<div
-					class="announce_marquee flex-grow-1 overflow-hidden position-relative">
+				<div class="announce_marquee flex-grow-1 overflow-hidden position-relative">
 					<div class="announce_track d-flex" id="announce_track">
 						<!-- 公告項目由 JS 動態載入 -->
 					</div>
 				</div>
-				<button
-					class="btn btn-sm btn-outline-light ms-3 d-none d-md-inline-block"
-					data-bs-toggle="modal" data-bs-target="#announce_modal">
+				<button class="btn btn-sm btn-outline-light ms-3 d-none d-md-inline-block" data-bs-toggle="modal"
+					data-bs-target="#announce_modal">
 					<i class="fas fa-list-ul me-1"></i>全部公告
 				</button>
 			</div>
@@ -283,8 +246,7 @@ translateX(
 					<h5 class="modal-title">
 						<i class="fas fa-bullhorn me-2 text-warning"></i>平台公告
 					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body p-0">
 					<div class="list-group list-group-flush" id="announce_list">
@@ -300,157 +262,97 @@ translateX(
 		<div class="d-flex justify-content-between align-items-center mb-4">
 			<div>
 				<h2 class="mb-1">
-					<i class="fas fa-fire text-danger me-2"></i>熱門活動
+					<i class="fas fa-calendar-alt text-success me-2"></i>最新活動
 				</h2>
-				<p class="text-muted mb-0 small">精選近期最受歡迎的藝文活動</p>
+				<p class="text-muted mb-0 small">探索平台最新上架的精彩藝文活動</p>
 			</div>
 			<a th:href="@{/event/list}" class="btn btn-outline-primary">
 				探索更多活動 <i class="fas fa-arrow-right ms-1"></i>
 			</a>
 		</div>
 
-		<div class="row g-4">
-			<!-- Featured Event (大卡片) -->
-			<div class="col-12 col-lg-6">
+		<div class="row g-4" th:if="${latestEvents != null and !#lists.isEmpty(latestEvents)}">
+			<!-- Featured Event (大卡片) - 使用最新的一筆 -->
+			<div class="col-12 col-lg-6" th:with="mainEvent=${latestEvents[0]}">
 				<div class="card h-100 border-0 overflow-hidden"
 					style="background: linear-gradient(135deg, #2D5F4F 0%, #1a3a30 100%);">
-					<div class="row g-0 h-100">
-						<div class="col-md-6">
-							<img loading="lazy"
-								src="https://via.placeholder.com/600x500/2D5F4F/FFFFFF?text=Featured"
-								class="img-fluid h-100"
-								style="object-fit: cover; min-height: 320px;"
-								alt="Featured Event">
+					<div class="position-relative">
+						<a th:href="@{/event/detail(id=${mainEvent.eventId})}">
+							<img loading="lazy" th:src="${mainEvent.coverImageUrl}" class="card-img-top"
+								style="height: 350px; object-fit: cover;" th:alt="${mainEvent.title}">
+						</a>
+						<div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2">
+							<span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i>最新上架</span>
+							<span class="badge bg-success" th:text="${mainEvent.typeName}">音樂演出</span>
 						</div>
-						<div class="col-md-6 d-flex flex-column">
-							<div
-								class="card-body d-flex flex-column justify-content-center p-4">
-								<div class="mb-3">
-									<span class="badge bg-warning text-dark me-2"><i
-										class="fas fa-crown me-1"></i>本週精選</span> <span
-										class="badge bg-success">音樂演出</span>
-								</div>
-								<h3 class="card-title text-white mb-3">2025新年音樂會｜維也納之夜</h3>
-								<p class="text-white-50 mb-3">與維也納愛樂管弦樂團一同迎接嶄新的一年，經典華爾滋與新年序曲響徹中山堂。</p>
-								<div class="mb-3">
-									<div class="text-white-50 small mb-1">
-										<i class="fas fa-calendar-alt me-2"></i>2024/12/31 (二) 19:30
-									</div>
-									<div class="text-white-50 small">
-										<i class="fas fa-map-marker-alt me-2"></i>中山堂中正廳
-									</div>
-								</div>
-								<div
-									class="d-flex justify-content-between align-items-center mt-auto">
-									<span class="fw-bold fs-4 text-white">NT$ 1,800 <small
-										class="fs-6 text-white-50">起</small></span> <a
-										href="pages/user/event-detail.html"
-										class="btn btn-light btn-lg">立即購票</a>
-								</div>
+					</div>
+					<div class="card-body d-flex flex-column p-3">
+						<h4 class="card-title text-white mb-2">
+							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
+								class="text-white text-decoration-none" th:text="${mainEvent.title}">2025新年音樂會｜維也納之夜</a>
+						</h4>
+						<!-- 簡單顯示地點與主辦 -->
+						<div class="mb-2">
+							<div class="text-white-50 small mb-1">
+								<i class="fas fa-calendar-alt me-2"></i>
+								<span
+									th:text="${#temporals.format(mainEvent.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+									(二) 19:30</span>
 							</div>
+							<div class="text-white-50 small mb-1">
+								<i class="fas fa-map-marker-alt me-2"></i>
+								<span th:text="${mainEvent.place}">中山堂中正廳</span>
+							</div>
+							<div class="text-white-50 small">
+								<i class="fas fa-user-tie me-2"></i>
+								<span th:text="${mainEvent.organizerName}">主辦單位</span>
+							</div>
+						</div>
+						<div
+							class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top border-white-10">
+							<span class="fw-bold fs-5 text-white">
+								NT$ <span
+									th:text="${mainEvent.minPrice != null ? #numbers.formatInteger(mainEvent.minPrice, 0, 'COMMA') : '0'}">1,800</span>
+								<small class="fs-6 text-white-50">起</small>
+							</span>
+							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
+								class="btn btn-light btn-sm px-3">立即購票</a>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Event Cards (右側 2x2 網格) -->
+			<!-- Event Cards (右側 2x2 網格) - 使用其餘 4 筆 -->
 			<div class="col-12 col-lg-6">
 				<div class="row g-3 h-100">
-					<!-- Event Card 2 -->
-					<div class="col-6">
-						<div class="card h-100">
+					<div class="col-6" th:each="event, iterStat : ${latestEvents}" th:if="${iterStat.index > 0}">
+						<div class="card h-100 border-secondary bg-dark article_hover">
 							<div class="position-relative">
-								<img loading="lazy"
-									src="https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=Exhibition"
-									class="card-img-top" style="height: 140px; object-fit: cover;"
-									alt="Event"> <span
-									class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small">10/01</span>
-								<span
-									class="badge bg-info position-absolute bottom-0 start-0 m-2 small">藝術展覽</span>
+								<a th:href="@{/event/detail(id=${event.eventId})}">
+									<img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
+										style="height: 140px; object-fit: cover;" th:alt="${event.title}">
+								</a>
+								<span class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small"
+									th:text="${#temporals.format(event.eventAt, 'MM/dd')}">10/01</span>
+								<span class="badge bg-info position-absolute bottom-0 start-0 m-2 small"
+									th:text="${event.typeName}">藝術展覽</span>
 							</div>
-							<div class="card-body p-3">
-								<h6 class="card-title mb-2">島嶼・詩意｜台灣當代水墨特展</h6>
-								<p class="card-text text-muted small mb-2">
-									<i class="fas fa-map-marker-alt me-1"></i>台北市立美術館
+							<div class="card-body p-2">
+								<h6 class="card-title mb-1 text-truncate">
+									<a th:href="@{/event/detail(id=${event.eventId})}"
+										class="text-white text-decoration-none" th:text="${event.title}">活動標題</a>
+								</h6>
+								<p class="card-text text-muted small mb-2 text-truncate" style="font-size: 0.75rem;">
+									<i class="fas fa-map-marker-alt me-1"></i><span th:text="${event.place}">地點</span>
 								</p>
 								<div class="d-flex justify-content-between align-items-center">
-									<span class="fw-bold text-white">NT$ 280 起</span> <a href="#"
-										class="btn btn-primary btn-sm">購票</a>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Event Card 3 -->
-					<div class="col-6">
-						<div class="card h-100">
-							<div class="position-relative">
-								<img loading="lazy"
-									src="https://via.placeholder.com/400x250/F59E0B/FFFFFF?text=Theater"
-									class="card-img-top" style="height: 140px; object-fit: cover;"
-									alt="Event"> <span
-									class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small">04/01</span>
-								<span
-									class="badge bg-warning text-dark position-absolute bottom-0 start-0 m-2 small">戲劇表演</span>
-							</div>
-							<div class="card-body p-3">
-								<h6 class="card-title mb-2">經典重現｜乘著歌聲的翅膀</h6>
-								<p class="card-text text-muted small mb-2">
-									<i class="fas fa-map-marker-alt me-1"></i>國家戲劇院
-								</p>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="fw-bold text-white">NT$ 800 起</span> <a href="#"
-										class="btn btn-primary btn-sm">購票</a>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Event Card 4 -->
-					<div class="col-6">
-						<div class="card h-100">
-							<div class="position-relative">
-								<img loading="lazy"
-									src="https://via.placeholder.com/400x250/EF4444/FFFFFF?text=Concert"
-									class="card-img-top" style="height: 140px; object-fit: cover;"
-									alt="Event"> <span
-									class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small">01/15</span>
-								<span
-									class="badge bg-danger position-absolute bottom-0 start-0 m-2 small">熱賣中</span>
-							</div>
-							<div class="card-body p-3">
-								<h6 class="card-title mb-2">五月天「回到那一天」演唱會</h6>
-								<p class="card-text text-muted small mb-2">
-									<i class="fas fa-map-marker-alt me-1"></i>台北小巨蛋
-								</p>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="fw-bold text-white">NT$ 2,800 起</span> <a href="#"
-										class="btn btn-primary btn-sm">購票</a>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Event Card 5 -->
-					<div class="col-6">
-						<div class="card h-100">
-							<div class="position-relative">
-								<img loading="lazy"
-									src="https://via.placeholder.com/400x250/8B5CF6/FFFFFF?text=Jazz"
-									class="card-img-top" style="height: 140px; object-fit: cover;"
-									alt="Event"> <span
-									class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small">02/14</span>
-								<span
-									class="badge bg-secondary position-absolute bottom-0 start-0 m-2 small">爵士樂</span>
-							</div>
-							<div class="card-body p-3">
-								<h6 class="card-title mb-2">情人節爵士之夜</h6>
-								<p class="card-text text-muted small mb-2">
-									<i class="fas fa-map-marker-alt me-1"></i>Blue Note Taipei
-								</p>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="fw-bold text-white">NT$ 1,200 起</span> <a href="#"
-										class="btn btn-primary btn-sm">購票</a>
+									<span class="fw-bold text-white small" style="font-size: 0.85rem;">
+										NT$ <span
+											th:text="${event.minPrice != null ? #numbers.formatInteger(event.minPrice, 0, 'COMMA') : '0'}">280</span>
+										起
+									</span>
+									<a th:href="@{/event/detail(id=${event.eventId})}"
+										class="btn btn-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">購票</a>
 								</div>
 							</div>
 						</div>
@@ -459,50 +361,25 @@ translateX(
 			</div>
 		</div>
 
+		<!-- 若無活動時的預設顯示 -->
+		<div class="row" th:if="${latestEvents == null or #lists.isEmpty(latestEvents)}">
+			<div class="col-12 text-center py-5">
+				<p class="text-muted">目前尚無最新活動，敬請期待！</p>
+			</div>
+		</div>
+		</div>
+		</div>
+		</div>
+
 		<!-- 更多活動快速入口 -->
-		<div class="row g-3 mt-4">
-			<div class="col-6 col-md-3">
-				<a th:href="@{/event/list}"
-					class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
-					style="transition: transform 0.2s;"
-					onmouseover="this.style.transform='translateY(-4px)'"
-					onmouseout="this.style.transform='translateY(0)'"> <i
-					class="fas fa-music text-success fa-2x mb-2"></i> <span
-					class="text-white small">音樂演出</span> <span class="text-muted"
-					style="font-size: 0.7rem;">23 場活動</span>
-				</a>
-			</div>
-			<div class="col-6 col-md-3">
-				<a th:href="@{/event/list}"
-					class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
-					style="transition: transform 0.2s;"
-					onmouseover="this.style.transform='translateY(-4px)'"
-					onmouseout="this.style.transform='translateY(0)'"> <i
-					class="fas fa-palette text-info fa-2x mb-2"></i> <span
-					class="text-white small">藝術展覽</span> <span class="text-muted"
-					style="font-size: 0.7rem;">15 場活動</span>
-				</a>
-			</div>
-			<div class="col-6 col-md-3">
-				<a th:href="@{/event/list}"
-					class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
-					style="transition: transform 0.2s;"
-					onmouseover="this.style.transform='translateY(-4px)'"
-					onmouseout="this.style.transform='translateY(0)'"> <i
-					class="fas fa-theater-masks text-warning fa-2x mb-2"></i> <span
-					class="text-white small">戲劇表演</span> <span class="text-muted"
-					style="font-size: 0.7rem;">12 場活動</span>
-				</a>
-			</div>
-			<div class="col-6 col-md-3">
-				<a th:href="@{/event/list}"
-					class="card bg-dark border-secondary text-decoration-none h-100 p-3 text-center"
-					style="transition: transform 0.2s;"
-					onmouseover="this.style.transform='translateY(-4px)'"
-					onmouseout="this.style.transform='translateY(0)'"> <i
-					class="fas fa-hands text-danger fa-2x mb-2"></i> <span
-					class="text-white small">手作工坊</span> <span class="text-muted"
-					style="font-size: 0.7rem;">8 場活動</span>
+		<div class="d-flex flex-nowrap gap-2 mt-4" th:if="${eventTypes != null}">
+			<div class="flex-grow-1" style="min-width: 0;" th:each="tc : ${eventTypes}">
+				<a th:href="@{/event/list(typeId=${tc.type.typeId})}"
+					class="card bg-dark border-secondary text-decoration-none h-100 py-3 text-center article_hover px-1">
+					<i th:class="${tc.iconClass} + ' fa-2x mb-3'"></i>
+					<p class="text-white small mb-1 fw-bold text-truncate" th:text="${tc.type.typeName}">活動類型</p>
+					<span class="text-muted text-truncate d-block" style="font-size: 0.7rem;"
+						th:text="${tc.count + ' 場'}">0 場</span>
 				</a>
 			</div>
 		</div>
@@ -516,9 +393,8 @@ translateX(
 					<i class="fas fa-shopping-bag text-warning me-2"></i>人氣周邊
 				</h4>
 			</div>
-			<a href="pages/user/prod-list.html"
-				class="text-decoration-none text-muted small"> 查看更多 <i
-				class="fas fa-arrow-right"></i>
+			<a href="pages/user/prod-list.html" class="text-decoration-none text-muted small"> 查看更多 <i
+					class="fas fa-arrow-right"></i>
 			</a>
 		</div>
 
@@ -526,22 +402,20 @@ translateX(
 			<!-- Product Card 1 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product"> <span
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product"> <span
 								class="badge bg-danger position-absolute top-0 start-0 m-2 small">HOT</span>
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">音樂會紀念T恤</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 880</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -551,21 +425,19 @@ translateX(
 			<!-- Product Card 2 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product">
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product">
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">經典Logo帆布袋</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 450</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -575,22 +447,20 @@ translateX(
 			<!-- Product Card 3 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product"> <span
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product"> <span
 								class="badge bg-success position-absolute top-0 start-0 m-2 small">NEW</span>
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">不鏽鋼保溫杯</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 1,280</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -600,21 +470,19 @@ translateX(
 			<!-- Product Card 4 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product">
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product">
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">刺繡老帽</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 680</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -624,21 +492,19 @@ translateX(
 			<!-- Product Card 5 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product">
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product">
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">限定海報組</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 350</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -648,22 +514,20 @@ translateX(
 			<!-- Product Card 6 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden"
-						style="transition: transform 0.2s;"
+					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
 						onmouseover="this.style.transform='translateY(-4px)'"
 						onmouseout="this.style.transform='translateY(0)'">
 						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300"
-								class="card-img-top" style="height: 140px; object-fit: cover;"
-								alt="Product"> <span
+							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
+								style="height: 140px; object-fit: cover;" alt="Product"> <span
 								class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 small">限量</span>
 						</div>
 						<div class="card-body p-2">
 							<h6 class="card-title small text-white mb-1 text-truncate">紀念徽章套組</h6>
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="fw-bold text-white small">NT$ 520</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1"
-									style="font-size: 0.7rem;"><i class="fas fa-cart-plus"></i></span>
+									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
+										class="fas fa-cart-plus"></i></span>
 							</div>
 						</div>
 					</div>
@@ -680,36 +544,30 @@ translateX(
 					<i class="fas fa-newspaper text-info me-2"></i>熱門文章
 				</h4>
 			</div>
-			<a th:href="@{/article}"
-				class="text-decoration-none text-muted small"> 查看全部 <i
-				class="fas fa-arrow-right"></i>
+			<a th:href="@{/article}" class="text-decoration-none text-muted small"> 查看全部 <i
+					class="fas fa-arrow-right"></i>
 			</a>
 		</div>
 
 		<div class="row g-3">
 			<div class="col-lg-4" th:if="${not #lists.isEmpty(hotArticles)}">
 				<div th:with="firstArticle=${hotArticles[0]}">
-					<a th:href="@{/article/detail(id=${firstArticle.articleId})}"
-						class="text-decoration-none">
-						<div
-							class="card bg-dark border-secondary h-100 overflow-hidden article_hover">
+					<a th:href="@{/article/detail(id=${firstArticle.articleId})}" class="text-decoration-none">
+						<div class="card bg-dark border-secondary h-100 overflow-hidden article_hover">
 							<div class="position-relative">
-								<img
-									th:src="${firstArticle.articleImages != null and not #lists.isEmpty(firstArticle.articleImages)} ? ${firstArticle.articleImages[0].imageUrl} : 'https://via.placeholder.com/600x300/2D5F4F/FFFFFF?text=Featured'"
+								<img th:src="${firstArticle.articleImages != null and not #lists.isEmpty(firstArticle.articleImages)} ? ${firstArticle.articleImages[0].imageUrl} : 'https://via.placeholder.com/600x300/2D5F4F/FFFFFF?text=Featured'"
 									class="card-img-top" alt="Featured Article"
 									style="height: 180px; object-fit: cover;">
 								<div class="position-absolute top-0 start-0 m-2">
-									<span class="badge bg-success small"><i
-										class="fas fa-fire me-1"></i>精選</span>
+									<span class="badge bg-success small"><i class="fas fa-fire me-1"></i>精選</span>
 								</div>
 							</div>
 							<div class="card-body p-3">
 								<span class="badge bg-primary small mb-2">專欄</span>
-								<h6 class="card-title text-white mb-2"
-									th:text="${firstArticle.title}">文章標題</h6>
+								<h6 class="card-title text-white mb-2" th:text="${firstArticle.title}">文章標題</h6>
 								<div class="d-flex align-items-center text-muted small">
 									<span> <i class="far fa-clock me-1"></i> <span
-										th:text="${#dates.format(firstArticle.createdAt, 'yyyy/MM/dd')}"></span>
+											th:text="${#dates.format(firstArticle.createdAt, 'yyyy/MM/dd')}"></span>
 									</span>
 								</div>
 							</div>
@@ -720,24 +578,20 @@ translateX(
 
 			<div class="col-lg-8">
 				<div class="row g-2">
-					<div class="col-md-6" th:each="article, iterStat : ${hotArticles}"
-						th:if="${iterStat.index > 0}">
-						<a th:href="@{/article/detail(id=${article.articleId})}"
-							class="text-decoration-none">
+					<div class="col-md-6" th:each="article, iterStat : ${hotArticles}" th:if="${iterStat.index > 0}">
+						<a th:href="@{/article/detail(id=${article.articleId})}" class="text-decoration-none">
 							<div class="card bg-dark border-secondary article_hover">
 								<div class="row g-0">
 									<div class="col-4">
-										<img
-											th:src="${article.articleImages != null and not #lists.isEmpty(article.articleImages)} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/200x120/3B82F6/FFFFFF?text=Article'"
+										<img th:src="${article.articleImages != null and not #lists.isEmpty(article.articleImages)} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/200x120/3B82F6/FFFFFF?text=Article'"
 											class="img-fluid rounded-start h-100"
 											style="object-fit: cover; min-height: 90px;">
 									</div>
 									<div class="col-8">
 										<div class="card-body p-2">
-											<span class="badge bg-info small mb-1"
-												style="font-size: 0.65rem;">最新</span>
-											<h6 class="card-title text-white small mb-1"
-												style="line-height: 1.3;" th:text="${article.title}">
+											<span class="badge bg-info small mb-1" style="font-size: 0.65rem;">最新</span>
+											<h6 class="card-title text-white small mb-1" style="line-height: 1.3;"
+												th:text="${article.title}">
 												文章標題</h6>
 											<div class="text-muted small" style="font-size: 0.7rem;">
 												<i class="far fa-clock me-1"></i> <span
@@ -756,19 +610,17 @@ translateX(
 	</section>
 
 	<!-- Global Search Modal -->
-	<div class="modal fade" id="search_modal" tabindex="-1"
-		aria-hidden="true">
+	<div class="modal fade" id="search_modal" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-scrollable modal-lg">
 			<div class="modal-content bg-dark text-white border-secondary">
 				<div class="modal-header border-bottom border-secondary">
 					<div class="input-group">
 						<span class="input-group-text bg-transparent border-0 text-muted"><i
-							class="fas fa-search"></i></span> <input type="text"
-							class="form-control bg-transparent border-0 text-white shadow-none fs-5"
-							id="search_input" placeholder="搜尋活動、商品、文章..." autocomplete="off">
+								class="fas fa-search"></i></span> <input type="text"
+							class="form-control bg-transparent border-0 text-white shadow-none fs-5" id="search_input"
+							placeholder="搜尋活動、商品、文章..." autocomplete="off">
 					</div>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body p-0">
 					<!-- Initial State -->
@@ -814,27 +666,23 @@ translateX(
 			<div class="col-6 col-md-2">
 				<h5 class="mb-3">會員服務</h5>
 				<ul class="list-unstyled text-muted small">
-					<li class="mb-2"><a th:href="@{/member/login}"
-						class="text-decoration-none text-muted">會員登入</a></li>
-					<li class="mb-2"><a th:href="@{/member/dashboard}"
-						class="text-decoration-none text-muted">會員中心</a></li>
-					<li class="mb-2"><a href="pages/public/faq.html"
-						class="text-decoration-none text-muted">常見問題</a></li>
-					<li class="mb-2"><a href="#"
-						class="text-decoration-none text-muted">聯絡客服</a></li>
+					<li class="mb-2"><a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a></li>
+					<li class="mb-2"><a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a>
+					</li>
+					<li class="mb-2"><a href="pages/public/faq.html" class="text-decoration-none text-muted">常見問題</a>
+					</li>
+					<li class="mb-2"><a href="#" class="text-decoration-none text-muted">聯絡客服</a></li>
 				</ul>
 			</div>
 			<div class="col-6 col-md-2">
 				<h5 class="mb-3">主辦方專區</h5>
 				<ul class="list-unstyled text-muted small">
-					<li class="mb-2"><a th:href="@{/organizer/apply}"
-						class="text-decoration-none text-muted">成為主辦方</a></li>
-					<li class="mb-2"><a th:href="@{/organizer/login}"
-						class="text-decoration-none text-muted">主辦方後台</a></li>
-					<li class="mb-2"><a th:href="@{admin/login}"
-						class="text-decoration-none text-muted">平台管理後台</a></li>
-					<li class="mb-2"><a href="#"
-						class="text-decoration-none text-muted">服務條款</a></li>
+					<li class="mb-2"><a th:href="@{/organizer/apply}" class="text-decoration-none text-muted">成為主辦方</a>
+					</li>
+					<li class="mb-2"><a th:href="@{/organizer/login}" class="text-decoration-none text-muted">主辦方後台</a>
+					</li>
+					<li class="mb-2"><a th:href="@{admin/login}" class="text-decoration-none text-muted">平台管理後台</a></li>
+					<li class="mb-2"><a href="#" class="text-decoration-none text-muted">服務條款</a></li>
 				</ul>
 			</div>
 			<div class="col-12 col-md-4">
@@ -855,22 +703,21 @@ translateX(
 
 	<!-- Scripts -->
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 	<!-- Modularized JS -->
 	<script type="module" src="js/common/index.js"></script>
 	<script type="module" src="js/pages/home.js"></script>
 	<script>
-		window.onload = function() {
+		window.onload = function () {
 			const params = new URLSearchParams(window.location.search);
 			if (params.has('registerSuccess')) {
 				alert("註冊成功！");
 			} // 清理網址參數
 			const cleanUrl = window.location.protocol + "//"
-					+ window.location.host + window.location.pathname;
+				+ window.location.host + window.location.pathname;
 			window.history.replaceState({
-				path : cleanUrl
+				path: cleanUrl
 			}, '', cleanUrl);
 		}
 	</script>

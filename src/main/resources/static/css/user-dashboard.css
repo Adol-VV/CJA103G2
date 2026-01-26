@@ -125,3 +125,45 @@
     transform: translateY(-2px);
     border-color: var(--momento-green);
 }
+.order-container {
+    background: #1a1a1a; /* 深色背景 */
+    border: 1px solid #333;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    color: #fff;
+}
+
+.order-header {
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    transition: background 0.3s;
+}
+
+.order-header:hover { background: #222; }
+
+/* 詳情區初始狀態：隱藏 */
+.order-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background: #1e1e1e;
+    padding: 0 20px; /* 初始 padding 設為 0 */
+}
+
+/* 展開狀態 */
+.order-container.active .order-details {
+    max-height: 500px; /* 給予足夠的高度 */
+    padding: 20px;
+    border-top: 1px solid #333;
+}
+
+/* 箭頭旋轉動畫 */
+.arrow-icon { transition: transform 0.3s; color: #888; }
+.order-container.active .arrow-icon { transform: rotate(180deg); }
+
+/* 按鈕樣式簡化範例 */
+.btn-ticket { background: #2d5a4c; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; }
+.btn-refund { color: #ff5c5c; background: none; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; }

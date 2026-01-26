@@ -313,9 +313,10 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
          */
         @Query("SELECT e FROM EventVO e WHERE e.organizer.organizerId = :organizerId " +
                         "AND (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
-                        "AND (:statuses IS NULL OR e.status IN :statuses) " +
+                        "AND (COALESCE(:statuses, NULL) IS NULL OR e.status IN :statuses) " +
                         "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
-                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+                        "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+                        +
                         "ORDER BY " +
                         "CASE " +
                         "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending
@@ -332,9 +333,10 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
                         Pageable pageable);
 
         @Query("SELECT e FROM EventVO e WHERE (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
-                        "AND (:statuses IS NULL OR e.status IN :statuses) " +
+                        "AND (COALESCE(:statuses, NULL) IS NULL OR e.status IN :statuses) " +
                         "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
-                        "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+                        "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+                        +
                         "ORDER BY " +
                         "CASE " +
                         "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending

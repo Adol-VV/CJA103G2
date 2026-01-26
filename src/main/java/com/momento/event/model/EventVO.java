@@ -13,7 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "EVENT")
@@ -26,14 +29,17 @@ public class EventVO {
 
     @ManyToOne
     @JoinColumn(name = "ORGANIZER_ID", nullable = false)
+    @JsonIgnoreProperties({ "events", "articles", "products" })
     private OrganizerVO organizer;
 
     @ManyToOne
     @JoinColumn(name = "TYPE_ID", nullable = true)
+    @JsonIgnoreProperties("events")
     private TypeVO type;
 
     @ManyToOne
     @JoinColumn(name = "EMP_ID", nullable = true)
+    @JsonIgnoreProperties("events")
     private EmpVO emp;
 
     @Column(name = "STATUS")
@@ -66,6 +72,14 @@ public class EventVO {
 
     @org.hibernate.annotations.Formula("(SELECT MIN(t.PRICE) FROM TICKET t WHERE t.EVENT_ID = EVENT_ID)")
     private Integer minPrice;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("event")
+    private java.util.List<com.momento.ticket.model.TicketVO> tickets;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("event")
+    private java.util.List<EventImageVO> images;
 
     // ========== Constructors ==========
 
@@ -176,5 +190,32 @@ public class EventVO {
 
     public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public java.util.List<com.momento.ticket.model.TicketVO> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(java.util.List<com.momento.ticket.model.TicketVO> tickets) {
+        this.tickets = tickets;
+    }
+
+    public java.util.List<EventImageVO> getImages() {
+        return images;
+    }
+
+    public void setImages(java.util.List<EventImageVO> images) {
+        this.images = images;
+    }
+
+    @jakarta.persistence.Transient
+    private String rejectReason;
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

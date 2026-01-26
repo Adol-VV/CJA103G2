@@ -14,6 +14,7 @@ public class EventImageVO {
 
     @ManyToOne
     @JoinColumn(name = "EVENT_ID", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private EventVO event;
 
     @Column(name = "IMAGE_URL", nullable = false, length = 500)
