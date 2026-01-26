@@ -122,4 +122,23 @@ export function initProductApprovals() {
 		$tabs.find('.nav-link[data-status="通過"] .ms-1').text(count_approved);
 		$("span#prodApprovalCount").text(count_pending);
 	})
+	
+
+	$("span.showProdStatus").each(function(i, prodStatus){
+		if($(prodStatus).text()  === "上架中" ){
+			$(prodStatus).addClass("bg-success");
+		}else{
+			$(prodStatus).css("background-color","darkred");
+		}
+	})
+
+	$("span.showReviewStatus").each(function(i, reviewStatus){
+		if($(reviewStatus).text()  === "通過" ){
+			$(reviewStatus).addClass("bg-success");
+		}else if($(reviewStatus).text()  === "未通過"){
+			$(reviewStatus).addClass("bg-danger");
+		}else{
+			$(reviewStatus).addClass("bg-warning");				
+		}
+	})
 }

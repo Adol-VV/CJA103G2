@@ -1,15 +1,11 @@
 export function initProductList() {
-    $(document).on('click', '.btn-takedown-product', function () {
-        const $row = $(this).closest('tr');
-        const productName = $row.find('.fw-bold').first().text();
+    $(document).on('click', '.btn-takedown-product', function (e) {
+        let $row = $(this).closest('tr');
+        let productName = $row.find('.fw-bold').first().text();
 
-        if (confirm(`確定要下架「${productName}」嗎？`)) {
-            $row.find('td:eq(4) .badge').removeClass('bg-success').addClass('bg-dark').text('已下架');
-            $(this).removeClass('btn-outline-warning').addClass('btn-outline-success')
-                .attr('title', '重新上架').html('<i class="fas fa-redo"></i>')
-                .removeClass('btn-takedown-product').addClass('btn-relist-product');
-            if (window.showToast) window.showToast('商品已下架', 'success');
-        }
+        if (!confirm(`確定要下架「${productName}」嗎？`)) {
+			e.preventDefault();
+		}
     });
 
 //    $(document).on('click', '.btn-relist-product', function () {
@@ -27,30 +23,21 @@ export function initProductList() {
 
     // Draft Operations
     $(document).on('click', '.btn-publish-product', function () {
-        const $row = $(this).closest('tr');
-        const productName = $row.find('.fw-bold').first().text();
-        if (confirm(`確定要上架「${productName}」嗎？`)) {
-            $row.find('td:eq(4) .badge').removeClass('bg-secondary').addClass('bg-success').text('上架中');
-            $row.find('td:last .btn-group').html(`
-                <button class="btn btn-sm btn-outline-light btn-edit-product" title="編輯商品">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-warning btn-takedown-product" title="下架商品">
-                    <i class="fas fa-eye-slash"></i>
-                </button>
-            `);
-            if (window.showToast) window.showToast('商品已上架！', 'success');
+        let $row = $(this).closest('tr');
+        let productName = $row.find('.fw-bold').first().text();
+        if (!confirm(`確定要上架「${productName}」嗎？`)) {
+			e.preventDefault();
         }
     });
 
-    $(document).on('click', '.btn-delete-product', function () {
-        const $row = $(this).closest('tr');
-        const productName = $row.find('.fw-bold').first().text();
-        if (confirm(`確定要刪除草稿「${productName}」嗎？\n\n此操作無法復原。`)) {
-            $row.fadeOut(300, function () { $(this).remove(); });
-            if (window.showToast) window.showToast('草稿已刪除', 'success');
-        }
-    });
+//    $(document).on('click', '.btn-delete-product', function () {
+//        const $row = $(this).closest('tr');
+//        const productName = $row.find('.fw-bold').first().text();
+//        if (confirm(`確定要刪除草稿「${productName}」嗎？\n\n此操作無法復原。`)) {
+//            $row.fadeOut(300, function () { $(this).remove(); });
+//            if (window.showToast) window.showToast('草稿已刪除', 'success');
+//        }
+//    });
 
     $(document).on('click', '.btn-edit-product', function () {
         const $row = $(this).closest('tr');
@@ -107,7 +94,6 @@ export function initProductList() {
 	//依商品上下架狀態分類
 	$(document).on("change", "#status-select", function(){
 		let status = $(this).val();
-		console.log(status);
 		if(status === "all"){
 			$(".prodContent.show").show();
 			
@@ -120,5 +106,35 @@ export function initProductList() {
 				}
 			})	
 		}
+	})
+	
+	$(document).ready(function(){
+		$("span.showProdStatus").each(function(i, prodStatus){
+			if($(prodStatus).text()  === "上架中" ){
+				$(prodStatus).addClass("bg-success");
+			}else{
+				$(prodStatus).css("background-color","darkred");
+			}
+		})
+		
+		$("span.showReviewStatus").each(function(i, reviewStatus){
+			if($(reviewStatus).text()  === "通過" ){
+				$(reviewStatus).addClass("bg-success");
+			}else if($(reviewStatus).text()  === "未通過"){
+				$(reviewStatus).css("background-color","darkred");
+			}else{
+				$(reviewStatus).css("background-color","darkorange");				
+			}
+			
+			if($(reviewStatus).text()  != "通過" ){
+				$(reviewStatus).closest("tr").find(".btn-publish-product").attr("disabled",true);
+				$(reviewStatus).closest("tr").find(".btn-takedown-product").attr("disabled",true);
+			}
+		})
+		
+		
+		
+		
+
 	})
 }

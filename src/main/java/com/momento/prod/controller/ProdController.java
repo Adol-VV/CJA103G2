@@ -34,7 +34,7 @@ public class ProdController {
 	@Autowired
 	ProdSortService prodSortSvc;
 	
-	@GetMapping("addProd")
+	@GetMapping("/addProd")
 	public String addProd(ModelMap model) {
 		ProdVO prodVO = new ProdVO();
 		model.addAttribute("prodVO",prodVO);

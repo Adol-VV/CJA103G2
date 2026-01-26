@@ -5,14 +5,19 @@ import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
+import com.momento.prod.model.ProdVO;
+
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/organizer")
@@ -89,6 +94,7 @@ public class OrganizerCenterController {
 		if (!model.containsAttribute("prodList")) {
 			model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
 		}
+		model.addAttribute("prodVO",new ProdVO());
         return "pages/organizer/dashboard";
     }
 
@@ -294,5 +300,31 @@ public class OrganizerCenterController {
 		ra.addFlashAttribute("prodList",prodSvc.orgSearchProds(organizer.getOrganizerId(),s));
 
 		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//變更商品上下架狀態
+	@PostMapping("/changeProdStatus")
+	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
+		prodSvc.updateProdStatus(prodId, prodStatus);
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//新增商品
+	@PostMapping("/addProd")
+	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
+        prodVO.getEmpVO().setEmpId(8);
+        prodVO.setCreatedAt(LocalDateTime.now());
+        prodVO.setUpdatedAt(LocalDateTime.now());
+        prodVO.setProdStatus((byte) 0);
+        prodVO.setReviewStatus((byte) 0);
+        
+        
+        prodSvc.addProd(prodVO);
+        return "redirect:/organizer/dashboard#product-list";
 	}
 }

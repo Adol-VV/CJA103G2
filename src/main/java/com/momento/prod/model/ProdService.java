@@ -35,7 +35,14 @@ public class ProdService {
 		ProdVO prod = optional.get();
 		prod.setReviewStatus(reviewStatus);
 		repository.save(prod);
-		System.out.println("更新成功");
+	}
+	
+	@Transactional
+	public void updateProdStatus(Integer prodId, byte prodStatus) {
+		Optional<ProdVO> optional = repository.findById(prodId);
+		ProdVO prod = optional.get();
+		prod.setProdStatus(prodStatus);
+		repository.save(prod);
 	}
 	
 	public ProdDTO getOneProd(Integer prodId) {
@@ -110,7 +117,7 @@ public class ProdService {
 	
 	
 	public List<ProdDTO> getAllProds() {
-        return repository.findAll().stream().filter(prod -> prod.getProdStatus() == 1).map(prod -> {
+        return repository.findAll().stream().map(prod -> {
             ProdDTO dto = new ProdDTO();
             dto.setProdId(prod.getProdId());
             dto.setProdName(prod.getProdName());

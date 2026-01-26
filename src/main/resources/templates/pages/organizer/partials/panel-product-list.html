@@ -59,18 +59,22 @@
                     </td>
                     <td th:text="|NT$ ${prod.prodPrice}|">NT$ 680</td>
                     <td><span class="text-success" th:text="${prod.prodStock}">156</span></td>
-                    <td><span class="badge bg-success" th:text="${prod.reviewStatus}">通過</span></td>
-                    <td><span class="badge bg-success" th:text="${prod.prodStatus}">上架中</span></td>
+                    <td><span class="badge showReviewStatus" th:text="${prod.reviewStatus}">通過</span></td>
+                    <td><span class="badge showProdStatus" th:text="${prod.prodStatus}">上架中</span></td>
                     <td>
                         <div class="btn-group">
                             <button class="btn btn-sm btn-outline-light btn-edit-product" title="編輯商品">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-success btn-publish-product" title="上架商品">
-                                <i class="fas fa-eye"></i>
-                            <button class="btn btn-sm btn-outline-warning btn-takedown-product" title="下架商品">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
+                            <form method="post" th:action="@{changeProdStatus}">
+                            	<input type="hidden" name="prodId" th:value="${prod.prodId}">
+	                            <button th:if="${prod.prodStatus=='已下架'}" class="btn btn-sm btn-outline-success btn-publish-product" title="上架商品" type="submit" name="prodStatus" value="1">
+	                                <i class="fas fa-eye"></i>
+	                            </button>                          
+	                            <button th:if="${prod.prodStatus=='上架中'}" class="btn btn-sm btn-outline-warning btn-takedown-product" title="下架商品" type="submit" name="prodStatus" value="0">
+	                                <i class="fas fa-eye-slash"></i>
+	                            </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
