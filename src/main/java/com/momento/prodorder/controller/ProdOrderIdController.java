@@ -1,5 +1,7 @@
 package com.momento.prodorder.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,15 +70,19 @@ public class ProdOrderIdController {
 		return "pages/user/partials/panel-orders";
 	}
 	
-	@GetMapping("/deleteOrder")
+	@PostMapping("/deleteOrder")
 	public String deleteOrder(Integer orderId) {
 		poIdSev.deleteProdOrder(orderId);
 		return "redirect:/member/dashboard#orders";
 	}
 	
-	@GetMapping("/getOrder")
-	public String getOrder(Integer orderId) {
-		poIdSev.getOne(orderId);
+	@PostMapping("/orderDetail")
+	public String getOrder(Integer orderId,Model model) {
+		Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+		if(optional.isPresent()) {
+			ProdOrderIdVO order = optional.get();
+			model.addAttribute("orderDetail",order);
+		}
 		return "pages/user/order-detail";
 	}
 }

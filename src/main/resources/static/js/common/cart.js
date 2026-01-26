@@ -103,11 +103,15 @@ $(function(){
     function checkCartCount() {
         let count = $(".cart-item").length;
         let el = $("#emptyCart");
+        let checkoutBtn = $("#checkoutButton");
         if (count > 0) {
                 el.textContent = count > 99 ? '99+' : count;
                 el.addClass("d-none");
+                checkoutBtn.removeClass("disabled");
+                
             } else {
                 el.removeClass('d-none');
+                checkoutBtn.addClass("disabled");
         }
     }
     checkCartCount();
