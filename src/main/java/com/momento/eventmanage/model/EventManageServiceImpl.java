@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 /**
@@ -38,9 +39,6 @@ public class EventManageServiceImpl implements EventManageService {
 
     @Autowired
     private com.momento.organizer.model.OrganizerRepository organizerRepository;
-
-    // 圖片儲存路徑
-    private static final String UPLOAD_DIR = "uploads/events/";
 
     /**
      * 建立活動
@@ -138,38 +136,52 @@ public class EventManageServiceImpl implements EventManageService {
      */
     @Override
     public String uploadImage(MultipartFile file) {
+        // 驗證檔案
         if (file.isEmpty()) {
             throw new RuntimeException("檔案不能為空");
         }
 
+        // 驗證檔案類型
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("只能上傳圖片檔案");
+        }
+
+        // 驗證檔案大小 (限制 5MB)
+        long maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.getSize() > maxSize) {
+            throw new RuntimeException("圖片大小不能超過 5MB");
+        }
+
         try {
-            // 1. 檢查檔案類型
-            String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                throw new RuntimeException("只能上傳圖片檔案");
+            // 建立上傳目錄
+            String uploadDir = "uploads/events";
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                System.out.println("📁 建立目錄: " + uploadPath.toAbsolutePath());
             }
 
-            // 2. 生成唯一檔名
+            // 生成唯一檔名 (時間戳 + UUID + 原始副檔名)
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename != null && originalFilename.contains(".")
                     ? originalFilename.substring(originalFilename.lastIndexOf("."))
                     : ".jpg";
-            String filename = UUID.randomUUID().toString() + extension;
 
-            // 3. 確保目錄存在
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            String filename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + extension;
 
-            // 4. 儲存檔案
+            // 儲存檔案
             Path filePath = uploadPath.resolve(filename);
-            file.transferTo(filePath.toFile());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // 5. 返回相對路徑 URL
-            return "/" + UPLOAD_DIR + filename;
+            // 回傳可訪問的 URL
+            String imageUrl = "/uploads/events/" + filename;
+
+            System.out.println("✅ 圖片上傳成功: " + imageUrl);
+            return imageUrl;
 
         } catch (IOException e) {
+            System.err.println("❌ 圖片上傳失敗: " + e.getMessage());
             throw new RuntimeException("圖片上傳失敗: " + e.getMessage());
         }
     }
@@ -260,8 +272,13 @@ public class EventManageServiceImpl implements EventManageService {
         eventRepository.save(event);
 
         // 3. 更新圖片 (如果有提供新圖片)
-        if (dto.getBannerUrl() != null) {
-            // TODO: 刪除舊圖片,新增新圖片
+        if (dto.getBannerUrl() != null && !dto.getBannerUrl().isEmpty()) {
+            // 刪除目前活動的所有圖片 (MVP 簡化版：先全清再存主圖)
+            eventImageRepository
+                    .deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(dto.getEventId()));
+
+            // 儲存新主圖
+            saveEventImage(event, dto.getBannerUrl(), 0);
         }
 
         // 4. 更新票種資訊 (需要檢查是否可編輯)
@@ -460,6 +477,9 @@ public class EventManageServiceImpl implements EventManageService {
                 endedCount, allCount);
     }
 
+    @Autowired
+    private com.momento.notify.model.OrganizerNotifyRepository organizerNotifyRepository;
+
     @Override
     public com.momento.event.dto.EventDetailDTO getEventDetail(Integer eventId) {
         EventVO event = eventRepository.findById(eventId)
@@ -473,6 +493,24 @@ public class EventManageServiceImpl implements EventManageService {
         dto.setTickets(tickets);
         dto.setImages(images);
         dto.setOrganizer(event.getOrganizer());
+
+        // 如果是駁回狀態，去撈取最後一次的駁回通知
+        if (event.getReviewStatus() == 2) {
+            List<com.momento.notify.model.OrganizerNotifyVO> notifies = organizerNotifyRepository
+                    .findByOrganizerVO_OrganizerIdAndTitleContainingOrderByCreatedAtDesc(
+                            event.getOrganizer().getOrganizerId(),
+                            "活動審核未通過通知: " + event.getTitle());
+
+            if (notifies != null && !notifies.isEmpty()) {
+                String fullContent = notifies.get(0).getContent();
+                // 擷取 "退回原因:" 之後的文字
+                if (fullContent != null && fullContent.contains("退回原因: ")) {
+                    dto.setRejectReason(fullContent.split("退回原因: ")[1]);
+                } else {
+                    dto.setRejectReason(fullContent);
+                }
+            }
+        }
 
         return dto;
     }

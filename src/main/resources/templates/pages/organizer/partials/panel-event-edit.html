@@ -1,0 +1,138 @@
+<div class="event-edit-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0" id="editTitle">修改活動詳情</h2>
+        <div class="d-flex gap-2">
+            <a th:href="@{/organizer/event/list}" class="btn btn-outline-secondary" id="btnEditBackToList"
+                data-section="events-list">
+                <i class="fas fa-arrow-left me-1"></i> 返回列表
+            </a>
+        </div>
+    </div>
+
+    <!-- 駁回原因顯示區 (僅編輯模式顯示) -->
+    <div id="editRejectReasonAlert" class="alert alert-danger d-none mb-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-exclamation-circle fa-2x"></i>
+            </div>
+            <div>
+                <h6 class="alert-heading fw-bold">審核駁回原因</h6>
+                <p class="mb-0" id="editRejectReasonText"></p>
+            </div>
+        </div>
+    </div>
+
+    <form id="eventUpdateForm">
+        <input type="hidden" id="updateEventId" name="eventId">
+
+        <!-- 基本資訊 -->
+        <div class="card border-secondary bg-dark mb-4">
+            <div class="card-body">
+                <h5 class="mb-4">活動基本資訊</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label required">活動名稱</label>
+                        <input type="text" class="form-control" name="eventName" placeholder="例:五月天 2024 巡迴演唱會"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">活動類型</label>
+                        <div class="input-group">
+                            <select class="form-select" id="editEventType" required>
+                                <option value="">正在載入...</option>
+                            </select>
+                            <button class="btn btn-outline-secondary" type="button" onclick="loadActivityTypes()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">活動地點</label>
+                        <input type="text" class="form-control" name="eventVenue" placeholder="例:台北小巨蛋" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label required">活動主視覺</label>
+                        <label class="upload-zone d-block position-relative" for="editImageInput" id="editImageUpload"
+                            style="cursor: pointer; border: 2px dashed #6c757d; padding: 40px; text-align: center; border-radius: 8px; overflow: hidden;">
+                            <div class="upload-placeholder" id="editImageEmpty">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                                <p class="text-muted">點擊或拖曳圖片至此</p>
+                            </div>
+                            <!-- Transparent overlay for maximum compatibility -->
+                            <input type="file" id="editImageInput" accept="image/*"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
+
+                            <div class="upload-preview d-none position-relative" style="z-index: 10;">
+                                <img src="" id="editImagePreview" class="img-fluid rounded" style="max-height: 300px;">
+                                <button type="button" class="btn btn-sm btn-danger btn-remove-edit-preview"
+                                    style="position: absolute; top: 10px; right: 10px;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 時間設定 -->
+        <div class="card border-secondary bg-dark mb-4">
+            <div class="card-body">
+                <h5 class="mb-4">時間設定</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label required">活動舉辦時間</label>
+                        <input type="datetime-local" id="editEventDateTime" class="form-control" required>
+                        <div class="invalid-feedback" id="editEventDateTimeError">活動時間必須在售票結束之後</div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label required">售票開始時間</label>
+                        <input type="datetime-local" id="editSaleStart" class="form-control" required>
+                        <div class="invalid-feedback" id="editSaleStartError">開始時間必須早於結束時間</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">售票結束時間</label>
+                        <input type="datetime-local" id="editSaleEnd" class="form-control" required>
+                        <div class="invalid-feedback" id="editSaleEndError">結束時間必須在開始之後且早於活動時間</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 票種設定 -->
+        <div class="card border-secondary bg-dark mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">票種設定</h5>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnEditAddTicket">
+                        <i class="fas fa-plus me-1"></i>新增票種
+                    </button>
+                </div>
+                <div id="editTicketZones">
+                    <!-- 票種卡片會由 JS 動態生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 詳細說明 -->
+        <div class="card border-secondary bg-dark mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">詳細說明</h5>
+                <textarea class="form-control bg-dark text-white" id="editEventContent" rows="8" required
+                    placeholder="請輸入活動詳細介紹..."></textarea>
+            </div>
+        </div>
+
+        <!-- 操作按鈕 -->
+        <div class="d-flex justify-content-end gap-2 mb-5">
+            <button type="button" class="btn btn-outline-light" id="btnUpdateSave">
+                <i class="fas fa-save me-1"></i>僅儲存修改
+            </button>
+            <button type="button" class="btn btn-success btn-lg" id="btnUpdateSubmit">
+                <i class="fas fa-paper-plane me-1"></i>儲存並重新送審
+            </button>
+        </div>
+    </form>
+</div>

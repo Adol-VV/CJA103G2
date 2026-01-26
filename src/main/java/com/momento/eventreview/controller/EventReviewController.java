@@ -108,14 +108,14 @@ public class EventReviewController {
             err.put("error", "未登入");
             return ResponseEntity.status(401).body(err);
         }
-        Integer eventId = request.get("eventId");
+        Integer eventId = ((Number) request.get("eventId")).intValue();
         Map<String, String> response = new HashMap<>();
         try {
             eventReviewService.approveEvent(eventId);
             response.put("message", "活動已核准");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("error", e.getMessage());
+            response.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -131,16 +131,17 @@ public class EventReviewController {
             err.put("error", "未登入");
             return ResponseEntity.status(401).body(err);
         }
-        Integer eventId = (Integer) request.get("eventId");
+        Integer eventId = ((Number) request.get("eventId")).intValue();
         String reason = (String) request.get("reason");
+        com.momento.emp.model.EmpVO emp = (com.momento.emp.model.EmpVO) session.getAttribute("loginEmp");
 
         Map<String, String> response = new HashMap<>();
         try {
-            eventReviewService.rejectEvent(eventId, reason);
+            eventReviewService.rejectEvent(eventId, reason, emp);
             response.put("message", "活動已駁回");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("error", e.getMessage());
+            response.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

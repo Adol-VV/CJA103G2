@@ -272,8 +272,8 @@ export function initEventList() {
         const eventId = $(this).data('id');
         if (window.openEventEditor) {
             window.openEventEditor(eventId);
-            // Switch to create panel
-            $('[data-section="event-create"]').trigger('click');
+            // Switch to edit panel
+            $('[data-section="event-edit"]').trigger('click');
         }
     });
 

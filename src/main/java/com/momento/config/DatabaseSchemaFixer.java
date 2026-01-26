@@ -74,6 +74,16 @@ public class DatabaseSchemaFixer implements CommandLineRunner {
                 System.err.println("DatabaseSchemaFixer: Failed to alter PUBLISHED_AT. " + e.getMessage());
             }
 
+            // Fix 5: ORG_NOTIFY schema fixes
+            try {
+                System.out.println("DatabaseSchemaFixer: Altering ORG_NOTIFY.IS_READ...");
+                // Setting default 0 for IS_READ
+                stmt.executeUpdate("ALTER TABLE ORG_NOTIFY MODIFY COLUMN IS_READ TINYINT DEFAULT 0");
+                System.out.println("DatabaseSchemaFixer: ORG_NOTIFY.IS_READ updated.");
+            } catch (Exception e) {
+                System.err.println("DatabaseSchemaFixer: Failed to alter ORG_NOTIFY. " + e.getMessage());
+            }
+
         } catch (Exception e) {
             System.err.println("DatabaseSchemaFixer: Error during execution. " + e.getMessage());
         }
