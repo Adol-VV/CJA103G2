@@ -1,12 +1,32 @@
 <div class="content-panel" id="panel-event-approval">
     <h2 class="mb-4">活動審核</h2>
     <div class="card bg-dark border-secondary">
-        <div class="card-header border-secondary">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item"><a class="nav-link active text-white" href="#">待審核 (2)</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#">需補件</a></li>
-                <li class="nav-item"><a class="nav-link text-muted" href="#">已駁回</a></li>
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+            <ul class="nav nav-tabs card-header-tabs border-bottom-0" id="eventReviewTabs">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#" data-status="all">全部</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="pending">待審核</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="approved">上架中</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="ended">已結束/取消</a>
+                </li>
             </ul>
+            <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i
+                            class="fas fa-search"></i></span>
+                    <input type="text" id="adminEventSearch" class="form-control bg-dark text-white border-secondary"
+                        placeholder="搜尋活動名稱...">
+                </div>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -23,33 +43,40 @@
                     </thead>
                     <tbody id="eventApprovalList">
                         <tr>
-                            <td>2024/12/26</td>
-                            <td>
-                                <div class="fw-bold">2025 新年音樂會｜維也納之夜</div>
-                                <small class="text-muted">ID: E20250101</small>
-                            </td>
-                            <td>高雄市交響樂團</td>
-                            <td>2025/01/01</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2024/12/25</td>
-                            <td>
-                                <div class="fw-bold">獨立樂團之夜 - 搖滾篇</div>
-                                <small class="text-muted">ID: E20250115</small>
-                            </td>
-                            <td>地下社會</td>
-                            <td>2025/01/15</td>
-                            <td><span class="badge bg-warning text-dark">待審核</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary btn-review-event">審核</button>
-                            </td>
+                            <td colspan="6" class="text-center text-muted py-4">正在載入...</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 審核 Modal -->
+    <div class="modal fade" id="eventReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">審核活動</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="eventReviewDetails">
+                        <!-- 動態載入 -->
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <div class="mb-3">
+                        <label class="form-label">駁回原因 (若駁回必填)</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" id="rejectReason" rows="3"
+                            placeholder="請說明駁回原因..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmReject">駁回</button>
+                    <button type="button" class="btn btn-success" id="btnConfirmApprove">批准上架</button>
+                </div>
             </div>
         </div>
     </div>
