@@ -1,6 +1,11 @@
 <div class="content-panel" id="panel-notification-composer">
     <h2 class="mb-4">系統通知發送</h2>
 
+
+    <form th:action="@{/notify/sendMessageNotify}" method="post" id="notifyForm">
+
+        <input type="hidden" name="empId" value="1">
+
     <div class="row">
         <div class="col-lg-8">
             <div class="card bg-dark border-secondary">
@@ -10,7 +15,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label">通知類型</label>
-                        <select class="form-select bg-dark text-white border-secondary">
+                        <select name="type" class="form-select bg-dark text-white border-secondary">
                             <option>系統公告</option>
                             <option>活動提醒</option>
                             <option>促銷優惠</option>
@@ -18,18 +23,18 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">通知標題</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                        <label  class="form-label">通知標題</label>
+                        <input name="title" type="text" class="form-control bg-dark text-white border-secondary"
                             placeholder="輸入通知標題...">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">通知內容</label>
-                        <textarea class="form-control bg-dark text-white border-secondary" rows="5"
+                        <textarea name="rawContent" class="form-control bg-dark text-white border-secondary" rows="5"
                             placeholder="輸入通知內容..."></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">連結 (選填)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                        <input name="url" type="text" class="form-control bg-dark text-white border-secondary"
                             placeholder="https://...">
                     </div>
 
@@ -49,11 +54,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">推送通道</label>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" checked><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="web" checked><label
                                     class="form-check-label">站內通知</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="email"><label
                                     class="form-check-label">Email</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox"><label
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="app"><label
                                     class="form-check-label">推播 (App)</label>
                             </div>
                         </div>
@@ -72,7 +77,7 @@
                     <div class="mb-3">
                         <small class="text-muted text-uppercase mb-2 d-block">快速選擇</small>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recEveryone" checked>
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="all" id="recEveryone" checked>
                             <label class="form-check-label" for="recEveryone">
                                 <i class="fas fa-globe me-1 text-primary"></i>所有人（會員+主辦方）
                                 <span class="text-muted">(12,606)</span>
@@ -161,15 +166,15 @@
             </div>
 
             <div class="d-grid gap-2">
-                <button class="btn btn-primary btn-lg" onclick="alert('通知已發送！')"><i
-                        class="fas fa-paper-plane me-2"></i>發送通知</button>
+                <button type="submit" class="btn btn-primary btn-lg" >
+                    <i class="fas fa-paper-plane me-2"></i>發送通知</button>
                 <button class="btn btn-outline-secondary">預覽</button>
             </div>
         </div>
     </div>
-
+    </form>
     <!-- History -->
-    <div class="card bg-dark border-secondary mt-4">
+    <div class="card bg-dark border-secondary mt-4" id="historyTableContainer">
         <div class="card-header border-secondary d-flex justify-content-between">
             <h5 class="mb-0"><i class="fas fa-history me-2"></i>發送紀錄</h5>
         </div>
@@ -186,32 +191,117 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>2024/12/25 18:00</td>
-                        <td>聖誕節快樂！限時優惠開跑</td>
-                        <td><span class="badge bg-warning text-dark">促銷</span></td>
-                        <td>全部會員</td>
+                    <tr th:each="row : ${messageNotifyRecords}">
+                        <td th:text="${row[1] != null ? #dates.format(row[1], 'yyyy/MM/dd HH:mm') : ''}">2024/12/25 18:00</td>
+
+                        <td th:text="${row[0]}">標題內容</td>
+
+                        <td><span class="badge bg-info" th:text="${row[5]}">類型</span></td>
+
+                        <td th:text="${row[2]}">對象</td>
+
                         <td>
                             <div class="progress" style="width: 100px; height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 68%;"></div>
-                            </div><small>68%</small>
+                                <div class="progress-bar bg-success"
+                                     th:style="'width:' + (${row[4]} * 100 / ${row[3]}) + '%'"></div>
+                            </div>
+                            <small th:text="${#numbers.formatDecimal(row[4] * 100.0 / row[3], 1, 0)} + '%'"></small>
                         </td>
+
                         <td><span class="badge bg-success">已發送</span></td>
                     </tr>
-                    <tr>
-                        <td>2024/12/20 10:00</td>
-                        <td>系統維護公告 (12/21)</td>
-                        <td><span class="badge bg-info">系統</span></td>
-                        <td>全部會員</td>
-                        <td>
-                            <div class="progress" style="width: 100px; height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 82%;"></div>
-                            </div><small>82%</small>
-                        </td>
-                        <td><span class="badge bg-success">已發送</span></td>
-                    </tr>
+
+                    <th:block th:if="${massNotifyRecords == null or #lists.isEmpty(massNotifyRecords)}">
+                        <tr>
+                            <td>2024/12/25 18:00</td>
+                            <td>聖誕節快樂！限時優惠開跑</td>
+                            <td><span class="badge bg-warning text-dark">促銷</span></td>
+                            <td>全部會員</td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 68%;"></div>
+                                </div><small>68%</small>
+                            </td>
+                            <td><span class="badge bg-success">已發送</span></td>
+                        </tr>
+                        <tr>
+                            <td>2024/12/20 10:00</td>
+                            <td>系統維護公告 (12/21)</td>
+                            <td><span class="badge bg-info">系統</span></td>
+                            <td>全部會員</td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 82%;"></div>
+                                </div><small>82%</small>
+                            </td>
+                            <td><span class="badge bg-success">已發送</span></td>
+                        </tr>
+                    </th:block>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            // 表單發送
+            $('#notifyForm').on('submit', function(e) {
+                e.preventDefault(); // 阻止表單跳轉
+
+                // 顯示Loading
+                Swal.fire({
+                    title: '正在發送通知...',
+                    allowOutsideClick: false,
+                    background: '#1a1d20',
+                    color: '#fff',
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // 使用 AJAX 發送資料
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(), // 自動抓取標題、內容、對象等所有欄位
+                    success: function(res) {
+                        // 當後端回傳 ResponseEntity.ok() (200 OK) 時執行
+                        Swal.fire({
+                            icon: 'success',
+                            title: '發送成功',
+                            text: res.message, // 顯示後端傳回的"通知已成功發送！"
+                            timer: 2000,
+                            showConfirmButton: false,
+                            background: '#1a1d20',
+                            color: '#fff'
+                        });
+
+                        // 重新載入發送紀錄
+                        $('#historyTableContainer').load(window.location.href + ' #historyTableContainer > *');
+
+                        // 清空輸入框
+                        $('input[name="title"]').val('');
+                        $('textarea[name="rawContent"]').val('');
+                    },
+                    error: function(err) {
+                        // 當後端回傳500(INTERNAL_SERVER_ERROR)時，跳進這裡
+                        let errorMsg = "系統發生未知錯誤";
+                        if (err.responseJSON && err.responseJSON.message) {
+                            errorMsg = err.responseJSON.message; // 取得body(response)裡的錯誤訊息
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: '發送失敗',
+                            text: errorMsg,
+                            background: '#1a1d20',
+                            color: '#fff'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 </div>

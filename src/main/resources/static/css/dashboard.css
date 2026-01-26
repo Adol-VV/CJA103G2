@@ -150,12 +150,12 @@
 /* ========================================
    Content Panels
    ======================================== */
-.panel {
+.content-panel {
     display: none;
     animation: fadeIn 0.3s ease;
 }
 
-.panel.active {
+.content-panel.active {
     display: block;
 }
 
@@ -662,4 +662,19 @@
     border-radius: 4px;
     width: 0;
     /* Initial width */
+}
+
+img.rounded{
+	width: 60px;
+    height: 60px;
+}
+
+img.prodImage:hover {
+    border: 2px solid var(--momento-green);
+    border-radius: 4px;
+}
+
+/* 確保下拉選單不會被後面的內容蓋住 */
+.navbar .dropdown-menu {
+    z-index: 2000 !important;
 }

@@ -37,13 +37,14 @@ public class PublicPageController {
         return "pages/public/faq";
     }
 
-    @GetMapping("cart")
-    public String listaalEmp(Model model) {
+    @GetMapping("/member/cart")
+    public String prodCart(Model model) {
         return "pages/user/cart";
     }
 
-    @GetMapping("checkout")
-    public String asdsadsad(Model model) {
+    @GetMapping("/member/checkout")
+    public String prodCheckout(Model model) {
         return "pages/user/checkout";
     }
+    
 }

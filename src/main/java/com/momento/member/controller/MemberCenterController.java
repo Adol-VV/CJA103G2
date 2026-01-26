@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,7 +48,7 @@ public class MemberCenterController {
 		if (member != null && member.getPassword().equals(password)) {
 
 			session.setAttribute("loginMember", member);
-			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/login")) {
+			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register") || targetUrl.contains("/forgot-password")) {
 
 				targetUrl = "/index"; // 設定一個預設的跳轉頁面
 
@@ -72,9 +73,11 @@ public class MemberCenterController {
 		return "pages/user/dashboard";
 	}
 
-	@GetMapping("/dashboard/sidebar")
-	public String showDashboardSidebar() {
-		return "pages/user/partials/sidebar";
+	@GetMapping("/dashboard/{pageName}")
+	public String showDashboardPage(@PathVariable String pageName) {
+	    // 假設你的檔案都放在 pages/user/ 目錄下
+	    // 例如：點擊「我的票券」網址為 /dashboard/myTickets -> 回傳 pages/user/myTickets
+	    return "pages/user/partials/" + pageName;
 	}
 
 	@GetMapping("/dashboard/modals")
@@ -165,7 +168,7 @@ public class MemberCenterController {
 			@RequestParam String confirmedPassword, HttpSession session) {
 
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
-		String regPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+		String regPassword = "^.{8,}$";
 
 		session.removeAttribute("passwordError");
 		session.removeAttribute("newPasswordError");
@@ -178,7 +181,7 @@ public class MemberCenterController {
 		}
 
 		if (!newPassword.trim().matches(regPassword)) {
-			session.setAttribute("newPasswordError", "必須包含小寫字母、大寫字母、數字，且須為8碼以上");
+			session.setAttribute("newPasswordError", "長度須為8碼以上");
 			hasErrors = true;
 		}
 		

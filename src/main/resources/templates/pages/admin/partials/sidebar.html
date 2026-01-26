@@ -1,116 +1,136 @@
-<ul class="nav flex-column">
-    <!-- 儀表板 -->
-    <li class="nav-item">
-        <a class="nav-link active" href="#" data-section="dashboard">
-            <i class="fas fa-th-large me-2"></i> 儀表板
-        </a>
-    </li>
+<nav id="sidebar" class="sidebar">
+    <div class="sidebar-content pt-3">
+        <ul class="nav flex-column">
+            <!-- 儀表板 -->
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="dashboard">
+                    <i class="fas fa-th-large me-2"></i> 儀表板
+                </a>
+            </li>
 
-    <!-- 審核中心 -->
-    <h6 class="sidebar-heading px-3 mt-4">審核中心</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="event-approval" data-permission="content_approve">
-            <i class="far fa-calendar-check me-2"></i> 活動審核
-            <span class="badge bg-warning float-end">3</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="product-approval" data-permission="content_approve">
-            <i class="fas fa-box-open me-2"></i> 商品審核
-            <span class="badge bg-warning float-end">4</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="article-approval" data-permission="content_approve">
-            <i class="fas fa-newspaper me-2"></i> 文章審核
-            <span class="badge bg-info float-end">2</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="organizer-reviews" data-permission="user_manage">
-            <i class="fas fa-building me-2"></i> 主辦審核
-            <span class="badge bg-danger float-end">2</span>
-        </a>
-    </li>
+            <!-- 審核中心 -->
+            <li
+                th:if="${isSuperAdmin or activeFunctionIds.contains(2) or activeFunctionIds.contains(3) or activeFunctionIds.contains(4)}">
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">審核中心</h6>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(4)}">
+                <a class="nav-link" href="#" data-section="event-approval">
+                    <i class="far fa-calendar-check me-2"></i> 活動審核
+                    <span class="badge bg-warning float-end">3</span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(3)}">
+                <a class="nav-link" href="#" data-section="product-approval">
+                    <i class="fas fa-box-open me-2"></i> 商品審核
+                    <span class="badge bg-warning float-end" id="prodApprovalCount">4</span>
+                </a>
+            </li>
+            <!-- 文章審核 (無ID功能，預設開放) -->
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="article-approval">
+                    <i class="fas fa-newspaper me-2"></i> 文章審核
+                    <span class="badge bg-info float-end">2</span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(2)}">
+                <a class="nav-link" href="#" data-section="organizer-reviews">
+                    <i class="fas fa-building me-2"></i> 主辦審核
+                    <span class="badge bg-danger float-end">2</span>
+                </a>
+            </li>
 
-    <!-- 訂單管理 -->
-    <h6 class="sidebar-heading px-3 mt-4">訂單管理</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="event-orders" data-permission="order_manage">
-            <i class="fas fa-ticket-alt me-2"></i> 活動訂單
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="product-orders" data-permission="order_manage">
-            <i class="fas fa-box me-2"></i> 商品訂單
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="refund-management" data-permission="order_refund">
-            <i class="fas fa-undo me-2"></i> 退款審核
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="disputes" data-permission="order_dispute">
-            <i class="fas fa-gavel me-2"></i> 爭議仲裁
-        </a>
-    </li>
+            <!-- 訂單管理 -->
+            <li th:if="${isSuperAdmin or activeFunctionIds.contains(5)}">
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">訂單管理</h6>
+            </li>
+            <th:block th:if="${isSuperAdmin or activeFunctionIds.contains(5)}">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="event-orders">
+                        <i class="fas fa-ticket-alt me-2"></i> 活動訂單
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="product-orders">
+                        <i class="fas fa-box me-2"></i> 商品訂單
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="refund-management">
+                        <i class="fas fa-undo me-2"></i> 退款審核
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="disputes">
+                        <i class="fas fa-gavel me-2"></i> 爭議仲裁
+                    </a>
+                </li>
+            </th:block>
 
-    <!-- 用戶管理 -->
-    <h6 class="sidebar-heading px-3 mt-4">用戶管理</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="member-list" data-permission="user_manage">
-            <i class="fas fa-users me-2"></i> 會員管理
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="staff-management" data-permission="user_manage">
-            <i class="fas fa-user-shield me-2"></i> 員工管理
-        </a>
-    </li>
+            <!-- 用戶管理 -->
+            <li th:if="${isSuperAdmin or activeFunctionIds.contains(1) or activeFunctionIds.contains(9)}">
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">用戶管理</h6>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(1)}">
+                <a class="nav-link" href="#" data-section="member-list">
+                    <i class="fas fa-users me-2"></i> 會員管理
+                </a>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(9)}">
+                <a class="nav-link" href="#" data-section="staff-management">
+                    <i class="fas fa-user-shield me-2"></i> 員工管理
+                </a>
+            </li>
 
-    <!-- 內容運營 -->
-    <h6 class="sidebar-heading px-3 mt-4">內容運營</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="homepage-editor" data-permission="content_edit">
-            <i class="fas fa-desktop me-2"></i> 首頁管理
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="faq-management" data-permission="content_edit">
-            <i class="fas fa-question-circle me-2"></i> 常見問題
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="about-editor" data-permission="content_edit">
-            <i class="fas fa-info-circle me-2"></i> 關於我們
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="comment-management" data-permission="content_edit">
-            <i class="fas fa-comments me-2"></i> 留言管理
-            <span class="badge bg-danger float-end">5</span>
-        </a>
-    </li>
+            <!-- 內容運營 -->
+            <li>
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">內容運營</h6>
+            </li>
+            <!-- 無ID功能 - 開放 -->
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="homepage-editor">
+                    <i class="fas fa-desktop me-2"></i> 首頁管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="faq-management">
+                    <i class="fas fa-question-circle me-2"></i> 常見問題
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="about-editor">
+                    <i class="fas fa-info-circle me-2"></i> 關於我們
+                </a>
+            </li>
+            <!-- ID 8: 檢舉處理 (留言管理) -->
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(8)}">
+                <a class="nav-link" href="#" data-section="comment-management">
+                    <i class="fas fa-comments me-2"></i> 留言管理
+                    <span class="badge bg-danger float-end">5</span>
+                </a>
+            </li>
+            <!-- ID 7: 公告管理 -->
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(7)}">
+                <a class="nav-link" href="#" data-section="notification-composer">
+                    <i class="fas fa-bullhorn me-2"></i> 公告管理
+                </a>
+            </li>
 
-    <!-- 財務報表 -->
-    <h6 class="sidebar-heading px-3 mt-4">財務報表</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="settlement" data-permission="finance_settle">
-            <i class="fas fa-file-invoice-dollar me-2"></i> 結算中心
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="analytics" data-permission="analytics_view">
-            <i class="fas fa-chart-line me-2"></i> 數據報表
-        </a>
-    </li>
-
-    <!-- 系統工具 -->
-    <h6 class="sidebar-heading px-3 mt-4">系統工具</h6>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-section="notification-composer" data-permission="system_notify">
-            <i class="fas fa-bell me-2"></i> 通知發送
-        </a>
-    </li>
-</ul>
+            <!-- 財務報表 -->
+            <li th:if="${isSuperAdmin or activeFunctionIds.contains(6)}">
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">財務報表</h6>
+            </li>
+            <th:block th:if="${isSuperAdmin or activeFunctionIds.contains(6)}">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="settlement">
+                        <i class="fas fa-file-invoice-dollar me-2"></i> 結算中心
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="analytics">
+                        <i class="fas fa-chart-line me-2"></i> 數據報表
+                    </a>
+                </li>
+            </th:block>
+        </ul>
+    </div>
+</nav>

@@ -1,6 +1,8 @@
 package com.momento.eventfav.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -69,4 +71,13 @@ public interface EventFavRepository extends JpaRepository<EventFavVO, Integer> {
          * @return 收藏記錄列表
          */
         List<EventFavVO> findByEvent_EventId(Integer eventId);
+
+        /**
+         * 計算主辦方所有活動的總收藏數
+         * 
+         * @param organizerId 主辦方 ID
+         * @return 總收藏數
+         */
+        @Query("SELECT COUNT(ef) FROM EventFavVO ef WHERE ef.event.organizer.organizerId = :organizerId")
+        long countByOrganizerId(@Param("organizerId") Integer organizerId);
 }

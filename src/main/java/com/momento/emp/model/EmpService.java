@@ -19,6 +19,9 @@ public class EmpService {
     @Autowired
     private EmpAuthorityRepository empAuthorityRepository;
 
+    @Autowired
+    private BackendFunctionRepository backendFunctionRepository;
+
     public boolean isSuperAdmin(Integer empId) {
         EmpVO emp = empRepository.findById(empId).orElse(null);
         if (emp == null) {
@@ -31,28 +34,23 @@ public class EmpService {
         return superAdminConfig.isSuperAdmin(account);
     }
 
-
     public EmpVO getEmployee(Integer empId) {
         return empRepository.findById(empId).orElse(null);
     }
-
 
     public EmpVO getEmployeeByAccount(String account) {
         return empRepository.findByAccount(account).orElse(null);
     }
 
-
     public List<EmpVO> getAllEmployees() {
         return empRepository.findAll();
     }
-
 
     public EmpVO addEmployee(Integer currentEmpId, EmpVO newEmp) {
 
         if (!isSuperAdmin(currentEmpId)) {
             throw new SecurityException("只有超級管理員可以新增員工");
         }
-
 
         if (empRepository.existsByAccount(newEmp.getAccount())) {
             throw new IllegalArgumentException("帳號已存在");
@@ -61,19 +59,16 @@ public class EmpService {
         return empRepository.save(newEmp);
     }
 
-
     public EmpVO updateEmployee(Integer currentEmpId, EmpVO emp) {
 
         if (!isSuperAdmin(currentEmpId)) {
             throw new SecurityException("只有超級管理員可以修改員工資料");
         }
 
-
         EmpVO existing = empRepository.findById(emp.getEmpId()).orElse(null);
         if (existing == null) {
             throw new IllegalArgumentException("員工不存在");
         }
-
 
         if (isSuperAdmin(emp.getEmpId()) && !existing.getAccount().equals(emp.getAccount())) {
             throw new IllegalArgumentException("不允許修改超級管理員帳號");
@@ -82,18 +77,15 @@ public class EmpService {
         return empRepository.save(emp);
     }
 
-
     public void deleteEmployee(Integer currentEmpId, Integer targetEmpId) {
 
         if (!isSuperAdmin(currentEmpId)) {
             throw new SecurityException("只有超級管理員可以刪除員工");
         }
 
-
         if (isSuperAdmin(targetEmpId)) {
             throw new IllegalArgumentException("不允許刪除超級管理員");
         }
-
 
         if (currentEmpId.equals(targetEmpId)) {
             throw new IllegalArgumentException("不允許刪除自己");
@@ -102,9 +94,9 @@ public class EmpService {
         empRepository.deleteById(targetEmpId);
     }
 
-    public void grantPermission(Integer currentEmpId,Integer targetEmpId, Integer functionId){
+    public void grantPermission(Integer currentEmpId, Integer targetEmpId, Integer functionId) {
 
-        if(!isSuperAdmin(currentEmpId)){
+        if (!isSuperAdmin(currentEmpId)) {
             throw new SecurityException("只有超級管理員可以分配權限");
         }
 
@@ -146,11 +138,10 @@ public class EmpService {
 
         if (isSuperAdmin(empId)) {
 
-            return new ArrayList<>();  //
+            return new ArrayList<>(); //
         }
         return empAuthorityRepository.findByEmpId(empId);
     }
-
 
     public boolean hasPermission(Integer empId, Integer functionId) {
 
@@ -159,6 +150,37 @@ public class EmpService {
         }
 
         return empAuthorityRepository.existsByEmpIdAndFunctionId(empId, functionId);
+    }
+
+    public List<BackendFunctionVO> getAllFunctions() {
+        return backendFunctionRepository.findAll();
+    }
+
+    /**
+     * 員工登入驗證
+     * 
+     * @param account  帳號
+     * @param password 密碼
+     * @return 驗證成功返回 EmpVO，失敗返回 null
+     */
+    public EmpVO authenticateEmployee(String account, String password) {
+        EmpVO emp = empRepository.findByAccount(account).orElse(null);
+
+        if (emp == null) {
+            return null; // 帳號不存在
+        }
+
+        // 檢查員工狀態 (1=啟用, 0=停用)
+        if (emp.getStatus() == null || emp.getStatus() != 1) {
+            throw new IllegalStateException("此帳號已被停用");
+        }
+
+        // 驗證密碼 (目前是明文比對，之後可以改用 BCrypt)
+        if (!emp.getPassword().equals(password)) {
+            return null; // 密碼錯誤
+        }
+
+        return emp;
     }
 
 }

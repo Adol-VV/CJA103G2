@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯活動 | Momento 主辦方後台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/organizer-dashboard.css}" rel="stylesheet">
+</head>
+
+<body style="background-color: #121212;">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-dark">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" th:href="@{/organizer/dashboard}">Momento <span
+                    class="badge bg-secondary ms-2" style="font-size: 0.7rem;">Organizer</span></a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <a class="btn btn-outline-light btn-sm" th:href="@{/organizer/event/list}">
+                    <i class="fas fa-arrow-left me-1"></i> 返回列表
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="organizerSidebar" class="col-md-3 col-lg-2 sidebar pt-3 d-none d-md-block"
+                th:insert="pages/organizer/partials/sidebar">
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 text-white">
+                <div class="event-create-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>編輯活動: <span th:text="${event.title}"></span></h2>
+                        <div>
+                            <!-- 草稿: S=0, R=0, P=null -->
+                            <span class="badge bg-secondary"
+                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt == null}">草稿</span>
+
+                            <!-- 待審核: S=0, R=0, P!=null -->
+                            <span class="badge bg-warning text-dark"
+                                th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}">待審核</span>
+
+                            <!-- 駁回: S=0, R=2 -->
+                            <span class="badge bg-danger"
+                                th:if="${event.status == 0 && event.reviewStatus == 2}">已駁回</span>
+
+                            <!-- 已上架: S=1, R=1 -->
+                            <span class="badge bg-success"
+                                th:if="${event.status == 1 && event.reviewStatus == 1}">已上架</span>
+                        </div>
+                    </div>
+
+                    <!-- 駁回提示 -->
+                    <div class="alert alert-danger mb-4" th:if="${event.status == 0 && event.reviewStatus == 2}">
+                        <div class="d-flex">
+                            <i class="fas fa-exclamation-circle fs-4 me-3"></i>
+                            <div>
+                                <h5 class="alert-heading">審核未通過</h5>
+                                <p class="mb-0">此活動已被平台退回，請根據審核意見修改後重新送審。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 已上架提示 -->
+                    <div class="alert alert-info mb-4" th:if="${event.status == 1}">
+                        <i class="fas fa-info-circle me-2"></i> 活動已上架，部分關鍵資訊 (如票價、已售出的票種數量) 可能受到編輯限制。
+                    </div>
+
+                    <form id="eventEditForm">
+                        <!-- 基本資訊 -->
+                        <div class="card border-secondary bg-dark mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0">基本資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label required">活動名稱</label>
+                                        <input type="text" class="form-control" name="eventName"
+                                            th:value="${event.title}" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label required">活動類型</label>
+                                        <select class="form-select" id="eventType" name="eventCategory" required>
+                                            <option th:each="type : ${types}" th:value="${type.typeId}"
+                                                th:text="${type.typeName}" th:selected="${type.typeId == event.typeId}">
+                                                活動類型</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label required">活動地點</label>
+                                        <input type="text" class="form-control" name="eventVenue"
+                                            th:value="${event.place}" required>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">詳細說明</label>
+                                        <textarea class="form-control bg-dark text-white" id="eventContent" rows="8"
+                                            th:text="${event.content}"></textarea>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">活動主視覺</label>
+                                        <div class="upload-zone mt-2" id="mainImageUpload"
+                                            style="cursor: pointer; border: 2px dashed #6c757d; padding: 40px; text-align: center; border-radius: 8px;">
+                                            <input type="file" class="d-none" id="mainImageInput" accept="image/*">
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                                <p class="mb-0 text-muted">點擊上傳新圖片</p>
+                                            </div>
+                                            <div class="upload-preview d-none position-relative">
+                                                <img src="" id="mainImagePreview" class="img-fluid rounded"
+                                                    style="max-height: 300px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 時間設定 -->
+                        <div class="card border-secondary bg-dark mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0">時間設定</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label required">活動日期時間</label>
+                                        <input type="datetime-local" class="form-control" id="eventAt" name="eventAt"
+                                            th:value="${event.eventAt}" required>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                        <label class="form-label required">售票開始時間</label>
+                                        <input type="datetime-local" class="form-control" id="startedAt"
+                                            name="startedAt" th:value="${event.startedAt}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label required">售票結束時間</label>
+                                        <input type="datetime-local" class="form-control" id="endedAt" name="endedAt"
+                                            th:value="${event.endedAt}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 票種設定 -->
+                        <div class="card border-secondary bg-dark mb-4">
+                            <div
+                                class="card-header bg-transparent border-secondary d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">票種設定</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddTicketZone">
+                                    <i class="fas fa-plus me-1"></i>新增票種
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="ticketZones">
+                                    <div class="ticket-zone-card mb-3 p-3 position-relative"
+                                        style="background: #1A1A1A; border-radius: 6px;"
+                                        th:each="ticket, iterStat : ${tickets}">
+
+                                        <input type="hidden" class="zone-id" th:value="${ticket.ticketId}">
+
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <h6 th:text="'票種 #' + ${iterStat.count}">票種 #1</h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-zone">
+                                                <i class="fas fa-trash"></i> 刪除
+                                            </button>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label required">票種名稱</label>
+                                                <input type="text" class="form-control zone-name"
+                                                    th:value="${ticket.ticketName}" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label required">票價 (NT$)</label>
+                                                <input type="number" class="form-control zone-price"
+                                                    th:value="${ticket.price}" min="0" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label required">總數量</label>
+                                                <input type="number" class="form-control zone-qty"
+                                                    th:value="${ticket.total}" min="1" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">已售出</label>
+                                                <input type="text" class="form-control-plaintext text-white"
+                                                    th:value="${ticket.total - ticket.remain}" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 按鈕區塊 -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 sticky-bottom bg-dark p-3 border-top border-secondary"
+                            style="bottom: 0; z-index: 100;">
+
+                            <div>
+                                <a th:href="@{/organizer/event/list}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> 返回列表
+                                </a>
+
+                                <!-- 刪除（草稿/駁回可見）-->
+                                <button type="button" class="btn btn-outline-danger ms-2" id="btnDelete"
+                                    th:if="${event.status == 0 && (event.publishedAt == null || event.reviewStatus == 2)}">
+                                    <i class="fas fa-trash me-1"></i>刪除活動
+                                </button>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <!-- 草稿/駁回: 儲存與送審 -->
+                                <th:block
+                                    th:if="${event.status == 0 && (event.publishedAt == null || event.reviewStatus == 2)}">
+                                    <button type="button" class="btn btn-outline-light" id="btnSaveDraft">
+                                        <i class="fas fa-save me-1"></i>儲存
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="btnSubmitReview">
+                                        <i class="fas fa-paper-plane me-1"></i>送出審核
+                                    </button>
+                                </th:block>
+
+                                <!-- 待審核: 撤回 -->
+                                <th:block
+                                    th:if="${event.status == 0 && event.reviewStatus == 0 && event.publishedAt != null}">
+                                    <button type="button" class="btn btn-warning" id="btnWithdraw">
+                                        <i class="fas fa-undo me-1"></i>撤回審核
+                                    </button>
+                                </th:block>
+
+                                <!-- 已上架: 查看前台 -->
+                                <th:block th:if="${event.status == 1 && event.reviewStatus == 1}">
+                                    <a th:href="@{'/event/' + ${event.eventId}}" target="_blank"
+                                        class="btn btn-outline-info">
+                                        <i class="fas fa-external-link-alt me-1"></i> 查看活動頁面
+                                    </a>
+                                </th:block>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            const eventId = /*[[${event.eventId}]]*/ 0;
+            let uploadedBannerUrl = null;
+
+            const isReadOnly = /*[[${event.status != 0 || (event.publishedAt != null && event.reviewStatus == 0)}]]*/ false;
+
+            if (isReadOnly) {
+                $('input, select, textarea, button.btn-remove-zone, #btnAddTicketZone, #mainImageUpload').prop('disabled', true);
+                $('#mainImageUpload').css('pointer-events', 'none');
+                $('#btnWithdraw, .btn-outline-secondary, .btn-outline-info').prop('disabled', false);
+            }
+
+            $('#mainImageUpload').click(function () {
+                if (isReadOnly) return;
+                $('#mainImageInput').click();
+            });
+
+            $('#mainImageInput').change(function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: '/organizer/event/upload-image',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            uploadedBannerUrl = response.imageUrl;
+                            $('#mainImagePreview').attr('src', response.imageUrl);
+                            $('.upload-placeholder').addClass('d-none');
+                            $('.upload-preview').removeClass('d-none');
+                        } else {
+                            alert('上傳失敗: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('圖片上傳失敗');
+                    }
+                });
+            });
+
+            $('#btnAddTicketZone').click(function () {
+                const count = $('#ticketZones .ticket-zone-card').length + 1;
+                const newZone = `
+                    <div class="ticket-zone-card mb-3 p-3 position-relative" style="background: #1A1A1A; border-radius: 6px;">
+                        <input type="hidden" class="zone-id" value=""> 
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>新票種 #${count}</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-zone">
+                                <i class="fas fa-trash"></i> 刪除
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label required">票種名稱</label>
+                                <input type="text" class="form-control zone-name" placeholder="例如:全票" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label required">票價 (NT$)</label>
+                                <input type="number" class="form-control zone-price" placeholder="1800" min="0" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label required">總數量</label>
+                                <input type="number" class="form-control zone-qty" placeholder="200" min="1" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">已售出</label>
+                                <input type="text" class="form-control-plaintext text-white" value="0" readonly>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#ticketZones').append(newZone);
+            });
+
+            $(document).on('click', '.btn-remove-zone', function () {
+                if (confirm('確定要刪除此票種嗎？')) {
+                    $(this).closest('.ticket-zone-card').remove();
+                }
+            });
+
+            function collectFormData() {
+                const formData = {
+                    eventId: eventId,
+                    title: $('[name="eventName"]').val(),
+                    typeId: parseInt($('#eventType').val()),
+                    place: $('[name="eventVenue"]').val(),
+                    content: $('#eventContent').val(),
+                    eventAt: $('#eventAt').val(),
+                    startedAt: $('#startedAt').val(),
+                    endedAt: $('#endedAt').val(),
+                    bannerUrl: uploadedBannerUrl,
+                    tickets: []
+                };
+
+                $('.ticket-zone-card').each(function () {
+                    const idVal = $(this).find('.zone-id').val();
+                    formData.tickets.push({
+                        ticketId: idVal ? parseInt(idVal) : null,
+                        name: $(this).find('.zone-name').val(),
+                        price: parseInt($(this).find('.zone-price').val()),
+                        total: parseInt($(this).find('.zone-qty').val())
+                    });
+                });
+                return formData;
+            }
+
+            $('#btnSaveDraft').click(function () {
+                const btn = $(this);
+                const originalHtml = btn.html();
+                btn.html('<span class="spinner-border spinner-border-sm me-2"></span>儲存中...').prop('disabled', true);
+
+                const formData = collectFormData();
+
+                $.ajax({
+                    url: '/organizer/event/' + eventId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        if (response.success) {
+                            alert('儲存成功!');
+                            btn.html(originalHtml).prop('disabled', false);
+                        } else {
+                            alert('儲存失敗: ' + response.message);
+                            btn.html(originalHtml).prop('disabled', false);
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('儲存失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                        btn.html(originalHtml).prop('disabled', false);
+                    }
+                });
+            });
+
+            $('#btnSubmitReview').click(function () {
+                if (!confirm('確定要送出審核嗎？送出後將無法編輯。')) return;
+
+                const btn = $(this);
+                const originalHtml = btn.html();
+                btn.html('<span class="spinner-border spinner-border-sm me-2"></span>處理中...').prop('disabled', true);
+
+                const formData = collectFormData();
+
+                $.ajax({
+                    url: '/organizer/event/' + eventId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (updateRes) {
+                        if (updateRes.success) {
+                            $.ajax({
+                                url: '/organizer/event/submit/' + eventId,
+                                type: 'POST',
+                                success: function (submitRes) {
+                                    if (submitRes.success) {
+                                        alert('活動已送出審核！');
+                                        window.location.href = '/organizer/event/list?status=0&reviewStatus=0';
+                                    } else {
+                                        alert('送審失敗: ' + submitRes.message);
+                                        btn.html(originalHtml).prop('disabled', false);
+                                    }
+                                },
+                                error: function (xhr) {
+                                    alert('送審失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                                    btn.html(originalHtml).prop('disabled', false);
+                                }
+                            });
+                        } else {
+                            alert('更新失敗: ' + updateRes.message);
+                            btn.html(originalHtml).prop('disabled', false);
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('更新失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
+                        btn.html(originalHtml).prop('disabled', false);
+                    }
+                });
+            });
+
+            $('#btnWithdraw').click(function () {
+                if (!confirm('確定要撤回審核嗎？撤回後可再次編輯。')) return;
+
+                $.ajax({
+                    url: '/organizer/event/withdraw/' + eventId,
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.success) {
+                            alert('已撤回活動，現在可以編輯了。');
+                            window.location.reload();
+                        } else {
+                            alert('撤回失敗: ' + res.message);
+                        }
+                    }
+                });
+            });
+
+            $('#btnDelete').click(function () {
+                if (!confirm('確定要刪除此活動嗎？無法復原！')) return;
+
+                $.ajax({
+                    url: '/organizer/event/' + eventId,
+                    type: 'DELETE',
+                    success: function (res) {
+                        if (res.success) {
+                            alert('活動已刪除');
+                            window.location.href = '/organizer/event/list';
+                        } else {
+                            alert('刪除失敗: ' + res.message);
+                        }
+                    }
+                });
+            });
+
+            $('#eventEditForm').on('submit', function (e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+
+</html>

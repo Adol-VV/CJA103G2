@@ -109,15 +109,15 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-lg-5">
-            <a class="navbar-brand" href="../../index.html">Momento</a>
+            <a class="navbar-brand" th:href="@{/index}">Momento</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="event-list.html">找活動</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prod-list.html">找商品</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">文章</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/event/list}">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
                 </ul>
                 <form class="d-flex mx-auto col-lg-4" role="search" action="/event/search" method="GET">
@@ -170,12 +170,13 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">價格區間</label>
-                        <input type="range" class="form-range" min="0" max="5000" step="100" id="priceRangeDesktop">
+                        <label class="form-label fw-bold mb-2">價格中心點 (最高 NT$)</label>
+                        <input type="range" class="form-range" min="0" max="10000" step="100" id="priceRangeDesktop"
+                            value="5000">
                         <div class="d-flex justify-content-between text-muted small">
-                            <span>$0</span>
-                            <span class="price-display">$2500</span>
-                            <span>$5000+</span>
+                            <span>NT$ 0</span>
+                            <span class="price-display">NT$ 5,000</span>
+                            <span>NT$ 10,000+</span>
                         </div>
                     </div>
 
@@ -311,64 +312,179 @@
     <!-- <script src="../../js/common.js"></script> -->
     <script>
         $(document).ready(function () {
-            // Price range display (Desktop & Mobile)
+            // Price range display
+            // Price range display
             $('input[type="range"]').on('input', function () {
                 const val = $(this).val();
-                // Update specific display related to this input or all displays if synced
+                let displayVal = 'NT$ ' + parseInt(val).toLocaleString();
+                if (parseInt(val) >= 10000) displayVal = 'NT$ 10,000+';
+
                 if (this.id === 'priceRangeDesktop') {
-                    $(this).parent().find('.price-display').text('$' + val);
+                    $(this).next('.d-flex').find('.price-display').text(displayVal);
                 } else {
-                    $(this).parent().find('.price-display').text('$' + val);
+                    $(this).next('.price-display').text(displayVal);
+                }
+
+                // Debounced fetch
+                clearTimeout(window.priceTimeout);
+                window.priceTimeout = setTimeout(fetchEvents, 500);
+            });
+
+            // Filter Change Listeners
+            $('.filter-sidebar input, .filter-sidebar select, .filter-sidebar button.btn-primary').click(function (e) {
+                if ($(this).hasClass('btn-primary')) {
+                    e.preventDefault();
+                    fetchEvents();
                 }
             });
 
-            // Favorite toggle
-            $('.btn-favorite').click(function (e) {
-                e.preventDefault();
-                $(this).find('i').toggleClass('far fas');
-                $(this).toggleClass('active');
+            $('.filter-sidebar input[type="checkbox"], .filter-sidebar select').change(function () {
+                fetchEvents();
             });
 
-            // 搜尋功能示例（實際使用時從 API 取得資料）
-            function searchEvents(keyword) {
-                const eventGrid = $('.row.g-4').first();
-                const events = eventGrid.find('.col-12, .col-md-6, .col-lg-4');
+            // Sort Change
+            $('.col-lg-9 select.form-select').change(function () {
+                fetchEvents();
+            });
 
-                if (!keyword) {
-                    events.show();
+            // Clear Filters
+            $('.filter-sidebar .btn-outline-secondary').click(function () {
+                $('input[type="checkbox"]').prop('checked', false);
+                $('.filter-sidebar select').val('全部');
+                $('#priceRangeDesktop').val(5000).trigger('input');
+                fetchEvents();
+            });
+
+            // --- AJAX Fetch Function ---
+            function fetchEvents(page = 0) {
+                const typeIds = [];
+                $('input[id^="cat-"]:checked').each(function () {
+                    typeIds.push($(this).val());
+                });
+
+                const typeId = typeIds.length > 0 ? typeIds[0] : null;
+                const place = $('.filter-sidebar select').val() === '全部' ? null : $('.filter-sidebar select').val();
+                const maxPrice = $('#priceRangeDesktop').val();
+                const sortVal = $('.col-lg-9 select.form-select').val();
+
+                let sortParam = 'eventAt';
+                if (sortVal === '價格由低到高') sortParam = 'minPrice';
+                if (sortVal === '最新上架') sortParam = 'newest';
+                if (sortVal === '即將開始') sortParam = 'eventAt';
+
+                // Show Loading
+                $('.row.g-4').css('opacity', '0.5');
+
+                $.ajax({
+                    url: '/event/api/list',
+                    data: {
+                        page: page,
+                        size: 12,
+                        typeId: typeId,
+                        place: place,
+                        maxPrice: maxPrice,
+                        sort: sortParam
+                    },
+                    success: function (data) {
+                        renderEvents(data.content);
+                        renderPagination(data);
+                        $('.row.g-4').css('opacity', '1');
+                        // Update result count
+                        $('.text-muted span').text(data.totalElements);
+                    },
+                    error: function (err) {
+                        console.error('Fetch error:', err);
+                        $('.row.g-4').css('opacity', '1');
+                    }
+                });
+            }
+
+            function renderEvents(events) {
+                const container = $('.row.g-4');
+                container.empty();
+
+                if (events.length === 0) {
+                    container.html(`
+                        <div class="col-12 text-center py-5">
+                            <div class="py-5">
+                                <i class="fas fa-search fa-4x text-white-50 mb-4"></i>
+                                <h3 class="text-white mb-3">找不到符合條件的活動</h3>
+                                <p class="text-white-50 mb-4">目前沒有相關活動</p>
+                                <button onclick="location.reload()" class="btn btn-outline-light px-4">
+                                    <i class="fas fa-redo me-2"></i>清除所有篩選
+                                </button>
+                            </div>
+                        </div>
+                    `);
                     return;
                 }
 
-                let visibleCount = 0;
-                events.each(function () {
-                    const title = $(this).find('.card-title').text().toLowerCase();
-                    if (title.includes(keyword.toLowerCase())) {
-                        $(this).show();
-                        visibleCount++;
-                    } else {
-                        $(this).hide();
-                    }
+                events.forEach(event => {
+                    const dateStr = new Date(event.eventAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+                    const priceStr = event.minPrice ? event.minPrice.toLocaleString() : '0';
+
+                    const html = `
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 event-card">
+                            <div class="card-img-wrapper">
+                                <img loading="lazy" src="${event.coverImageUrl}" class="card-img-top" alt="${event.title}">
+                                <span class="badge date-badge">${dateStr}</span>
+                                <button class="btn-favorite" data-event-id="${event.eventId}">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">${event.typeName}</span>
+                                <h5 class="card-title text-truncate-2">${event.title}</h5>
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <span>${event.place}</span>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price">NT$ ${priceStr} 起</span>
+                                    <a href="/event/${event.eventId}" class="btn btn-sm btn-primary px-3">查看詳情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    container.append(html);
                 });
 
-                // 如果沒有結果，顯示空狀態
-                if (visibleCount === 0) {
-                    Momento.UI.showEmptyState(eventGrid[0], {
-                        icon: 'fas fa-search',
-                        title: '找不到符合的活動',
-                        message: `沒有找到包含「${keyword}」的活動，試試其他關鍵字吧`,
-                        actionText: '清除搜尋',
-                        actionCallback: function () {
-                            $('#searchInput').val('');
-                            searchEvents('');
-                        }
-                    });
-                }
+                // Re-bind favorites
+                $('.btn-favorite').click(toggleFavorite);
             }
 
-            // 搜尋輸入框（如果頁面有的話）
-            $('#searchInput').on('input', Momento.Utils.debounce(function () {
-                searchEvents($(this).val());
-            }, 500));
+            function renderPagination(pageData) {
+                // Simplified Pagination for MVP
+                const nav = $('nav.mt-5');
+                if (pageData.totalPages <= 1) {
+                    nav.hide();
+                    return;
+                }
+                nav.show();
+                // We'd need to rebuild the standard standard pagination HTML here
+                // For MVP, we can just keep the "Next/Prev" logic or a simple "Load More"
+            }
+
+            // Favorite toggle function
+            function toggleFavorite(e) {
+                e.preventDefault();
+                const btn = $(this);
+                const eventId = btn.data('event-id');
+                // Call API (Already implemented in existing code, just ensuring it's wired)
+                $.post('/api/event/favorite/' + eventId, function (res) {
+                    if (res.success) {
+                        btn.find('i').toggleClass('far fas');
+                        btn.toggleClass('active');
+                    } else {
+                        if (res.message === '請先登入') location.href = '/member/login';
+                        else alert(res.message);
+                    }
+                });
+            }
+
+            $('.btn-favorite').click(toggleFavorite); // Bind initial load
         });
     </script>
 </body>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -109,35 +109,35 @@
                         </div>
 
                         <!-- Login Form -->
-                        <form id="adminLoginForm">
+                        <form id="adminLoginForm" method="post" th:action="@{/admin/login}">
+                            <!-- 通用錯誤訊息 -->
+                            <div class="alert alert-danger" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+
                             <div class="mb-3">
                                 <label class="form-label">管理員帳號</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
-                                    <input type="email" class="form-control" id="adminEmail" 
-                                        placeholder="admin@momento.com" required value="admin@momento.com">
+                                    <input type="text" class="form-control" id="account" name="account"
+                                        placeholder="請輸入帳號" required th:value="${savedAccount}"
+                                        th:classappend="${accountMsg != null ? 'is-invalid' : ''}">
+                                </div>
+                                <!-- 帳號錯誤訊息 -->
+                                <div class="invalid-feedback d-block" th:if="${accountMsg}" th:text="${accountMsg}">
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">密碼</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" class="form-control" id="adminPassword" required value="admin123">
+                                    <input type="password" class="form-control" id="password" name="password" required
+                                        th:classappend="${passwordMsg != null ? 'is-invalid' : ''}">
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="far fa-eye"></i>
                                     </button>
                                 </div>
-                            </div>
-
-                            <!-- Two-Factor Auth (Mock) -->
-                            <div class="mb-4" id="tfaSection" style="display: none;">
-                                <label class="form-label">雙重驗證碼</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-mobile-alt"></i></span>
-                                    <input type="text" class="form-control" id="tfaCode" 
-                                        placeholder="請輸入 6 位數驗證碼" maxlength="6">
+                                <!-- 密碼錯誤訊息 -->
+                                <div class="invalid-feedback d-block" th:if="${passwordMsg}" th:text="${passwordMsg}">
                                 </div>
-                                <small class="text-muted">驗證碼已發送至您的手機</small>
                             </div>
 
                             <button type="submit" class="btn btn-secondary w-100 btn-lg mb-3" id="btnAdminLogin">
@@ -147,16 +147,17 @@
 
                         <!-- Demo Credentials -->
                         <div class="alert alert-secondary mt-4 small">
-                            <strong><i class="fas fa-info-circle me-1"></i>Demo 測試：</strong>
+                            <strong><i class="fas fa-info-circle me-1"></i>測試說明：</strong>
                             <div class="mt-2">
-                                <code>admin@momento.com</code> / 密碼任意
+                                請使用資料庫中的員工帳號登入
                             </div>
                         </div>
 
                         <!-- Extra Links -->
                         <div class="text-center mt-4">
                             <p class="text-muted small mb-2">
-                                主辦方請前往 <a href="../organizer/login.html" class="text-primary text-decoration-none">主辦方登入</a>
+                                主辦方請前往 <a href="../organizer/login.html"
+                                    class="text-primary text-decoration-none">主辦方登入</a>
                             </p>
                             <p class="text-muted small mb-0">
                                 一般會員請前往 <a href="../user/login.html" class="text-primary text-decoration-none">會員登入</a>
@@ -192,67 +193,8 @@
                     icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
-
-            // Login form submit
-            $('#adminLoginForm').submit(function (e) {
-                e.preventDefault();
-                const email = $('#adminEmail').val().toLowerCase();
-                const btn = $('#btnAdminLogin');
-
-                btn.prop('disabled', true)
-                   .empty()
-                   .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
-                   .append('驗證中...');
-
-                setTimeout(() => {
-                    // 驗證是否為管理員帳號（模擬）
-                    if (!email.includes('admin') && !email.includes('platform') && !email.includes('super')) {
-                        btn.prop('disabled', false)
-                           .empty()
-                           .append($('<i>').addClass('fas fa-sign-in-alt me-2'))
-                           .append('登入管理後台');
-                        showToast('此帳號無管理員權限', 'danger');
-                        return;
-                    }
-
-                    const user = { 
-                        email: email, 
-                        name: 'Super Admin', 
-                        role: 'ADMIN',
-                        permissions: ['content_edit', 'content_approve', 'user_manage', 'finance_settle', 'order_refund', 'order_dispute', 'order_manage', 'system_notify']
-                    };
-                    localStorage.setItem('momento_user', JSON.stringify(user));
-                    localStorage.setItem('momento_token', 'mock-admin-jwt-token');
-                    localStorage.setItem('momento_admin_user', JSON.stringify(user));
-                    localStorage.setItem('momento_admin_logged_in', 'true');
-
-                    showToast('登入成功！正在進入管理後台...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 800);
-                }, 1500);
-            });
         });
-
-        function showToast(message, type) {
-            let container = document.getElementById('toastContainer');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'toastContainer';
-                container.className = 'toast-container position-fixed top-0 end-0 p-3';
-                container.style.zIndex = '9999';
-                document.body.appendChild(container);
-            }
-            const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
-            const iconClass = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
-            const toast = document.createElement('div');
-            toast.className = `toast show align-items-center text-white ${bgClass} border-0`;
-            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${iconClass} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.toast').remove()"></button></div>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
     </script>
 </body>
 
 </html>
-

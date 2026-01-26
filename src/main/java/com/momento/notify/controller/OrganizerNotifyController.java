@@ -142,6 +142,8 @@ public class OrganizerNotifyController {
 
             // 設定主辦方 ID
             vo.setOrganizerVO(organizer);
+            vo.setCreatedAt(java.time.LocalDateTime.now());
+            vo.setIsRead(0);
 
             // 設定員工 ID（暫時使用固定值）
             EmpVO tempEmp = new EmpVO();
