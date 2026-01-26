@@ -230,5 +230,24 @@
         });
     </script>
 
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            // 使用 Thymeleaf 讀取 Flash Attribute
+            var successMsg = /*[[${successMessage}]]*/ null;
+
+            if (successMsg) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '發送成功',
+                    text: successMsg,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

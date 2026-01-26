@@ -83,9 +83,9 @@ public class OrganizerCenterController {
         }
         model.addAttribute("organizer", organizer);
 
+        //pei
         model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
-
-        // 2從資料庫撈出歷史紀錄
+        // 從資料庫撈出歷史紀錄
         OrganizerVO organizerVO = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer != null) {
             List<OrganizerNotifyVO> notifyListData = organizerNotifyService.getByOrgId(organizer.getOrganizerId());

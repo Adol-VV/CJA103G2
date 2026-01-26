@@ -1,7 +1,6 @@
 package com.momento.emp.controller;
 
 import com.momento.emp.model.EmpAuthorityVO;
-import com.momento.emp.model.BackendFunctionVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
 import com.momento.notify.model.SystemNotifyService;
@@ -30,6 +29,8 @@ public class EmpController {
     @Autowired
     private ProdSortService prodSortSvc;
 
+    @Autowired
+    private SystemNotifyService systemNotifyService;
     /**
      * 顯示登入頁面
      */
@@ -116,6 +117,9 @@ public class EmpController {
         if (!model.containsAttribute("prodList")) {
             model.addAttribute("prodList", prodSvc.getAllProds());
         }
+
+        //pei的
+        model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
 
         return "pages/admin/dashboard";
     }
