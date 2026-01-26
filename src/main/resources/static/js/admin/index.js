@@ -5,7 +5,7 @@ import UI from './core/ui.js';
 import { loadPartials } from '../modules/partial-loader.js';
 
 // Admin Granular Modules
-import { checkAuth } from './modules/auth.js';
+
 import { initAnalytics } from './modules/analytics.js';
 
 // Approvals
@@ -25,8 +25,7 @@ import { initHomepageEditor } from './modules/homepage-editor.js';
 import { initFaqManagement } from './modules/faq-management.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Auth Check
-    if (!checkAuth()) return;
+
 
     // 2. Load Partials
     await loadPartials();
