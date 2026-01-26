@@ -19,6 +19,9 @@ public class EmpService {
     @Autowired
     private EmpAuthorityRepository empAuthorityRepository;
 
+    @Autowired
+    private BackendFunctionRepository backendFunctionRepository;
+
     public boolean isSuperAdmin(Integer empId) {
         EmpVO emp = empRepository.findById(empId).orElse(null);
         if (emp == null) {
@@ -147,6 +150,10 @@ public class EmpService {
         }
 
         return empAuthorityRepository.existsByEmpIdAndFunctionId(empId, functionId);
+    }
+
+    public List<BackendFunctionVO> getAllFunctions() {
+        return backendFunctionRepository.findAll();
     }
 
     /**

@@ -1,66 +1,191 @@
 <div class="content-panel" id="panel-staff-management">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>員工管理</h2>
-        <button class="btn btn-primary" onclick="$('#staffModal').modal('show')">
-            <i class="fas fa-user-plus"></i> 新增員工
-        </button>
+        <h2>員工管理與權限設定</h2>
     </div>
 
     <div class="card bg-dark border-secondary">
         <div class="table-responsive">
+            <!-- 從後端 model.employees 動態渲染資料 -->
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>員工姓名</th>
-                        <th>職位</th>
-                        <th>權限群組</th>
-                        <th>上次登入</th>
-                        <th>狀態</th>
+                        <th>員工編號</th>
+                        <th>姓名</th>
+                        <th>帳號</th>
+                        <th>目前狀態</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <!-- Thymeleaf Loop -->
+                    <tr th:each="emp : ${employees}">
+                        <td th:text="${emp.empId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 32px; height: 32px;">A</div>
+                                    style="width: 32px; height: 32px;"
+                                    th:text="${#strings.substring(emp.empName, 0, 1)}">A</div>
                                 <div>
-                                    <div class="fw-bold">Admin User</div>
-                                    <small class="text-muted">admin@momento.com</small>
+                                    <div class="fw-bold" th:text="${emp.empName}">Admin</div>
                                 </div>
                             </div>
                         </td>
-                        <td>系統管理員</td>
-                        <td><span class="badge bg-danger">超級管理員</span></td>
-                        <td>2024/12/27 10:30</td>
-                        <td><span class="badge bg-success">正常</span></td>
+                        <td th:text="${emp.account}">admin</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-light"><i class="fas fa-edit"></i></button>
+                            <span class="badge" th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
+                                th:text="${emp.status == 1 ? '在職' : '離職/停權'}">正常</span>
                         </td>
-                    </tr>
-                    <tr>
                         <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 32px; height: 32px;">S</div>
-                                <div>
-                                    <div class="fw-bold">Support Staff</div>
-                                    <small class="text-muted">support@momento.com</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>客服專員</td>
-                        <td><span class="badge bg-info">客服人員</span></td>
-                        <td>2024/12/26 15:45</td>
-                        <td><span class="badge bg-success">正常</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-ban"></i></button>
+                            <!-- 權限設定按鈕 -->
+                            <button class="btn btn-sm btn-outline-info me-1"
+                                th:onclick="'openPermissionModal(' + ${emp.empId} + ', \'' + ${emp.empName} + '\')'">
+                                <i class="fas fa-user-cog"></i> 設定權限
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- 權限設定 Modal -->
+    <div class="modal fade" id="permissionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">權限設定 - <span id="modalEmpName"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="permissionForm">
+                        <input type="hidden" id="targetEmpId">
+
+                        <!-- 提示訊息 -->
+                        <div id="adminWarning" class="alert alert-warning d-none">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 超級管理員 (ID:1) 擁有所有權限，且不可變更。
+                        </div>
+
+                        <div class="row g-3" id="checkboxContainer">
+                            <!-- 功能列表 1~9 -->
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1"
+                                        id="f1"><label class="form-check-label" for="f1">會員管理 (1)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="2"
+                                        id="f2"><label class="form-check-label" for="f2">主辦方管理 (2)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="3"
+                                        id="f3"><label class="form-check-label" for="f3">商品審核 (3)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="4"
+                                        id="f4"><label class="form-check-label" for="f4">活動審核 (4)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="5"
+                                        id="f5"><label class="form-check-label" for="f5">訂單管理 (5)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="6"
+                                        id="f6"><label class="form-check-label" for="f6">結算管理 (6)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="7"
+                                        id="f7"><label class="form-check-label" for="f7">公告管理 (7)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="8"
+                                        id="f8"><label class="form-check-label" for="f8">檢舉處理 (8)</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" value="9"
+                                        id="f9"><label class="form-check-label text-warning" for="f9">權限管理 (9)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="savePermissionBtn"
+                        onclick="savePermissions()">儲存變更</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function openPermissionModal(empId, empName) {
+            // 1. 設定 UI
+            $('#modalEmpName').text(empName);
+            $('#targetEmpId').val(empId);
+
+            // 重置所有 checkbox
+            $('.form-check-input').prop('checked', false);
+            $('.form-check-input').prop('disabled', false); // 先解鎖
+            $('#savePermissionBtn').prop('disabled', false);
+            $('#adminWarning').addClass('d-none'); // 隱藏警告
+
+            // 2. 特殊處理：如果是超級管理員 (ID=1)
+            if (empId === 1) {
+                $('.form-check-input').prop('checked', true); // 全勾
+                $('.form-check-input').prop('disabled', true); // 全鎖
+                $('#savePermissionBtn').prop('disabled', true); // 按鈕鎖
+                $('#adminWarning').removeClass('d-none'); // 顯示警告
+
+                $('#permissionModal').modal('show');
+                return; // 不用去後端查了
+            }
+
+            // 3. 呼叫後端 API 查詢目前權限
+            $.ajax({
+                url: '/admin/permissions/get/' + empId,
+                method: 'GET',
+                success: function (functionIds) {
+                    // 根據回傳的 ID 列表勾選對應的 checkbox
+                    functionIds.forEach(function (fid) {
+                        $('#f' + fid).prop('checked', true);
+                    });
+                    $('#permissionModal').modal('show');
+                },
+                error: function (err) {
+                    alert('無法讀取權限資料');
+                    console.error(err);
+                }
+            });
+        }
+
+        function savePermissions() {
+            const empId = $('#targetEmpId').val();
+            // 蒐集所有被勾選的 checkbox 值
+            const selectedIds = [];
+            $('.form-check-input:checked').each(function () {
+                // 如果是 disabled 的檢查框(例如 admin)，我們還是要確認它的值嗎？
+                // 其實 admin 的 save 按鈕已經被鎖住了，根本進不來這裡，所以這裡只處理一般員工
+                selectedIds.push(parseInt($(this).val()));
+            });
+
+            // 呼叫更新 API
+            $.ajax({
+                url: '/admin/permissions/update',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    empId: empId,
+                    functionIds: selectedIds
+                }),
+                success: function (res) {
+                    alert('權限更新成功');
+                    $('#permissionModal').modal('hide');
+                    // 最好 reload 頁面或是重新渲染表格，這裡簡單起見先不 reload
+                },
+                error: function (xhr) {
+                    alert('更新失敗: ' + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                }
+            });
+        }
+    </script>
 </div>

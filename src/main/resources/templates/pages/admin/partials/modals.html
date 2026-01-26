@@ -787,22 +787,21 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">權限設定</label>
-                        <div class="card bg-secondary bg-opacity-10 border-0 p-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" checked disabled>
-                                <label class="form-check-label">基礎後台存取</label>
+                        <div class="card bg-secondary bg-opacity-10 border-0 p-3"
+                            style="max-height: 200px; overflow-y: auto;">
+                            <!-- 動態生成權限選項 -->
+                            <div class="form-check" th:each="func : ${allFunctions}">
+                                <input class="form-check-input permission-checkbox" type="checkbox"
+                                    th:id="'perm_' + ${func.functionId}" th:value="${func.functionId}"
+                                    name="functionIds">
+                                <label class="form-check-label" th:for="'perm_' + ${func.functionId}"
+                                    th:text="${func.functionName}">
+                                    功能名稱
+                                </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <label class="form-check-label">會員管理權限</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <label class="form-check-label">活動審核權限</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <label class="form-check-label">財務結算權限</label>
+                            <!-- 防止列表為空時的提示 -->
+                            <div th:if="${allFunctions == null or allFunctions.empty}" class="text-muted small">
+                                無可用權限或無法讀取功能列表
                             </div>
                         </div>
                     </div>
