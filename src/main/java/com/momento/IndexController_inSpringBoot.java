@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.momento.article.model.ArticleRepository;
 import com.momento.article.model.ArticleVO;
+import com.momento.featured.model.FeaturedService;
 
 //@PropertySource("classpath:application.properties") // 於https://start.spring.io建立Spring Boot專案時, application.properties文件預設已經放在我們的src/main/resources 目錄中，它會被自動檢測到
 @Controller
@@ -27,6 +28,9 @@ public class IndexController_inSpringBoot {
     // 注入 ArticleRepository 以便在首頁撈取文章資料
     @Autowired
     private ArticleRepository articleRepository;
+    
+    @Autowired
+    private FeaturedService featuredService;
 
     // inject(注入資料) via application.properties
     @Value("${welcome.message}")
@@ -42,6 +46,9 @@ public class IndexController_inSpringBoot {
     public String index(Model model) {
         model.addAttribute("message", message);
         model.addAttribute("myList", myList);
+        
+        List<FeaturedService.FeaturedCarouselDTO> carouselList = featuredService.getCarouselData();
+        model.addAttribute("carouselList", carouselList);
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
         Page<ArticleVO> page = articleRepository.findAll(pageable);
