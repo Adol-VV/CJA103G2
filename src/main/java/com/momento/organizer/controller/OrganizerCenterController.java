@@ -1,11 +1,16 @@
 package com.momento.organizer.controller;
 
+import com.momento.emp.model.EmpVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.prod.model.ProdService;
+import com.momento.prod.model.ProdSortService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -16,6 +21,11 @@ public class OrganizerCenterController {
     @Autowired
     private OrganizerService organizerService;
 
+    @Autowired
+    private ProdService prodSvc;
+    
+    @Autowired
+    private ProdSortService prodSortSvc;
 
 
     @GetMapping("/login")
@@ -75,6 +85,10 @@ public class OrganizerCenterController {
             return "redirect:/organizer/login";
         }
         model.addAttribute("organizer", organizer);
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
+		if (!model.containsAttribute("prodList")) {
+			model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
+		}
         return "pages/organizer/dashboard";
     }
 
@@ -269,4 +283,16 @@ public class OrganizerCenterController {
 
         return "redirect:/organizer/dashboard#settings";
     }
+    
+    //商品列表裡面的搜尋商品
+	@PostMapping("/orgSearchProds")
+	public String orgSearchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+		ra.addFlashAttribute("prodList",prodSvc.orgSearchProds(organizer.getOrganizerId(),s));
+
+		return "redirect:/organizer/dashboard#product-list";
+	}
 }

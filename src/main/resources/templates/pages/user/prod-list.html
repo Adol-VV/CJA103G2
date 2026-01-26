@@ -202,7 +202,7 @@
 
                 <div class="row g-4" id="productGrid">
                     <!-- Product -->
-                    <div class="col-12 col-sm-6 col-lg-4 prod" style="display:block;" th:each="prod : ${prodList}" th:attr="sortid=${prod.sortId}">
+                    <div class="col-12 col-sm-6 col-lg-4 prod" style="display:block;" th:each="prod : ${prodList}" th:attr="sortid=${prod.sortId}" th:if="${prod.prodStatus}=='上架中'">
                         <div class="card h-100 product-card">
                             <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
                                 <div class="product-img-wrapper">
