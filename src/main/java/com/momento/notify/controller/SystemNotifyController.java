@@ -1,22 +1,25 @@
 package com.momento.notify.controller;
 
+import com.momento.emp.model.EmpVO;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.notify.model.SystemNotifyVO;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -25,6 +28,46 @@ import java.util.Set;
 public class SystemNotifyController {
     @Autowired
     SystemNotifyService sysNotifySvc;
+
+    @PostMapping("sendMessageNotify")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>>  sendMessageNotify(
+            @NotEmpty(message = "通知類型: 請勿空白") @RequestParam("type") String type,
+            @NotEmpty(message="通知標題: 請勿空白") @RequestParam("title") String title,
+            @NotEmpty(message="通知內容: 請勿空白") @RequestParam("rawContent") String rawContent,
+            @RequestParam(value = "url", required = false) String url,
+            @RequestParam("recipientGroup") String recipientGroup,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        // 從Session取得登入員工
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            response.put("success", false);
+            response.put("message", "連線逾時，請重新登入");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            // 執行發送
+            sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, loginEmp.getEmpId());
+
+            // JSON 回傳資料
+            response.put("success", true);
+            response.put("message", "通知已成功發送！");
+
+            response.put("newRecords", sysNotifySvc.getMessageNotifyRecords());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "發送失敗：" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+        }
+
 
     // 取得該會員的所有系統通知
     @PostMapping("getMemberNotifications")
@@ -42,8 +85,9 @@ public class SystemNotifyController {
                 model.addAttribute("errorMessage", "目前尚無通知訊息");
             }
 
+            model.addAttribute("massNotifyRecords", sysNotifySvc.getMessageNotifyRecords());
             // 查詢完成,準備轉交
-            return "pages/user/dashboard";
+            return "pages/admin/dashboard";
             }
 
 
@@ -64,12 +108,12 @@ public class SystemNotifyController {
 
             if (sysNotifyVO == null) {
                 model.addAttribute("errorMessage", "查無此通知內容");
-                return "pages/user/dashboard";
+                return "pages/admin/dashboard";
             }
 
             // 查詢完成,準備轉交
                 model.addAttribute("sysNotifyVO", sysNotifyVO);
-                return "pages/user/dashboard";
+                return "pages/admin/dashboard";
             }
 
      // 錯誤處理
@@ -81,7 +125,7 @@ public class SystemNotifyController {
             strBuilder.append(violation.getMessage()).append("<br>");
         }
         String message = strBuilder.toString();
-        return new ModelAndView("pages/user/dashboard", "errorMessage", "請修正以下錯誤:<br>"+message);
+        return new ModelAndView("pages/admin/dashboard", "errorMessage", "請修正以下錯誤:<br>"+message);
     }
 }
 

@@ -38,12 +38,13 @@ public class PublicPageController {
     }
 
     @GetMapping("/member/cart")
-    public String listaalEmp(Model model) {
+    public String prodCart(Model model) {
         return "pages/user/cart";
     }
 
     @GetMapping("/member/checkout")
-    public String asdsadsad(Model model) {
+    public String prodCheckout(Model model) {
         return "pages/user/checkout";
     }
+    
 }

@@ -130,11 +130,11 @@
                         <div class="form-check mb-3">
                             <!-- <input class="form-check-input" type="checkbox" id="useTokens"> -->
                             <label class="form-check-label text-muted small" for="useTokens">
-                                可使用 Momento 代幣 <span class="text-success" th:text="${session.loginMember.token}"></span>
+                                可使用 Momento 代幣 <label class="text-success" th:text="${session.loginMember.token}"></label>
                             </label>
                         </div>
 
-                        <a href="checkout" class="btn btn-primary w-100 btn-lg">
+                        <a href="checkout" class="btn btn-primary w-100 btn-lg disabled" id="checkoutButton">
                             <i class="fas fa-lock me-2"></i>前往結帳
                         </a>
 

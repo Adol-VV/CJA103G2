@@ -2,6 +2,7 @@ package com.momento.notify.model;
 
 import com.momento.emp.model.EmpVO;
 import com.momento.member.model.MemberVO;
+import com.momento.organizer.model.OrganizerVO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,10 @@ public class SystemNotifyVO implements Serializable {
     private MemberVO memberVO;
 
     @ManyToOne
+    @JoinColumn(name = "ORGANIZER_ID")
+    private OrganizerVO organizerVO;
+
+    @ManyToOne
     @JoinColumn(name = "EMP_ID")
     private EmpVO empVO;
 
@@ -45,6 +50,7 @@ public class SystemNotifyVO implements Serializable {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
+    @Transient
     private Integer notifyStatus;
+
 }

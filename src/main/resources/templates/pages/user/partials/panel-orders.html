@@ -6,7 +6,7 @@
         <a class="nav-link active bg-transparent text-white border-bottom border-success border-0 border-bottom-2"
             data-bs-toggle="tab" href="#ordersAll">全部訂單</a>
     </li>
-    <li class="nav-item">
+    <!--<li class="nav-item">
         <a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab" href="#ordersPending">
             待出貨 <span class="badge bg-warning ms-2 rounded-pill" id="pendingOrderCount">1</span>
         </a>
@@ -16,7 +16,7 @@
     <li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
             href="#ordersCompleted">已完成</a></li>
     <li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
-            href="#ordersRefunded">退款/退貨</a></li>
+            href="#ordersRefunded">退款/退貨</a></li>-->
 </ul>
 
 <div class="tab-content">
@@ -31,62 +31,75 @@
                     <option value="30d">近 30 天</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <!--<div class="col-md-3">
                 <select class="form-select bg-dark text-white border-secondary" id="filterOrderStatus">
                     <option value="">全部狀態</option>
                     <option value="pending">待付款</option>
                     <option value="shipped">已出貨</option>
                 </select>
-            </div>
+            </div>-->
         </div>
 
         <div id="productOrdersList">
             <!-- Mock Order Card 1 -->
-            <div class="card mb-3 order-card bg-dark border-secondary">
+            <div class="card mb-3 order-card bg-dark border-secondary" th:each="order:${allProdOrder}">
                 <div class="card-header border-secondary d-flex justify-content-between align-items-center">
                     <div>
                         <span class="text-muted small">訂單編號：</span><strong
-                            class="text-white">#ORD-PROD-20241120-001</strong>
-                        <span class="ms-3 text-muted small">下單時間：</span><span class="text-white small">2024/11/20
+                            class="text-white" th:text="${order.orderId}">#ORD-PROD-20241120-001</strong>
+                        <span class="ms-3 text-muted small">下單時間：</span><span class="text-white small" th:text="${#dates.format(order.createdDate, 'yyyy/MM/dd HH:mm')}">2024/11/20
                             14:30</span>
                     </div>
-                    <span class="badge bg-success text-white">已完成</span>
+                    <span class="badge bg-success text-white" th:text="${order.status==1?'已付款':'未付款'}">已完成</span>
                 </div>
                 <div class="card-body">
-                    <div class="order-item mb-3">
+                    <div class="order-item mb-3" th:each="item:${order.orderItems}">
                         <div class="row align-items-center">
-                            <div class="col-auto"><img loading="lazy" src="https://via.placeholder.com/80"
+                            <div class="col-auto"><img loading="lazy" th:src="${item.prodId.prodImages[0].imageUrl}"
                                     class="rounded"></div>
                             <div class="col">
-                                <h6 class="mb-1 text-white">2024年度音樂會紀念T恤</h6>
-                                <p class="text-muted small mb-1">尺寸：L / 顏色：黑色</p>
-                                <p class="mb-0 text-white"><span class="text-muted">NT$ 880</span> x
-                                    1</p>
+                                <h6 class="mb-1 text-white" th:text="${item.prodId.prodName}">2024年度音樂會紀念T恤</h6>
+                                <!-- <p class="text-muted small mb-1" th>尺寸：L / 顏色：黑色</p> -->
+                                <p class="mb-0 text-white">
+                                    <span class="text-muted" th:text="'NT$'+${item.prodId.prodPrice}">NT$ 880</span>
+                                    x<span th:text="${item.quantity}">1</span>
+                                </p>
                             </div>
-                            <div class="col-auto text-end"><strong class="text-white">NT$
+                            <div class="col-auto text-end"><strong class="text-white" th:text="'NT$'+${item.total}">NT$
                                     880</strong></div>
                         </div>
                     </div>
                     <hr class="border-secondary">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-white small">
-                            <div class="mb-1"><strong>收件人：</strong>王小明 (0912-345-678)</div>
-                            <div><strong>地址：</strong>台北市信義區信義路五段7號</div>
+                            <div class="mb-1"><strong>收件人：</strong><span th:text="${session.loginMember.name}">王小明</span> (<span th:text="${session.loginMember.phone}">0912-345-678</span>)</div>
+                            <div><strong>地址：</strong><span th:text="${session.loginMember.address}">台北市信義區信義路五段7號</span></div>
                         </div>
                         <div class="text-end">
                             <div class="text-muted small">訂單總額</div>
-                            <strong class="text-primary fs-5">NT$ 1,390</strong>
+                            <strong class="text-primary fs-5" th:text="'NT$'+${order.total}">NT$ 1,390</strong>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer border-secondary d-flex justify-content-between">
                     <div>
-                        <button class="btn btn-outline-primary btn-sm btn-view-order-detail" data-id="MOP20241225001"><i
-                                class="fas fa-eye"></i> 詳情</button>
-                        <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-headset"></i> 客服</button>
+                         <form th:action="@{/member/prod_order/orderDetail}" method="post" style="display:inline;">
+                        <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                        
+                        <button type="submit" class="btn btn-outline-primary btn-sm btn-view-order-detail">
+                            詳情
+                        </button>
+                        </form>
+                        <!--<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-headset"></i> 客服</button>-->
                     </div>
-                    <button class="btn btn-outline-danger btn-sm btn-cancel-order"
-                        data-id="MOP20241225001">取消訂單</button>
+                    <form th:action="@{/member/prod_order/deleteOrder}" method="post" style="display:inline;">
+                        <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                        
+                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                onclick="return confirm('確定要取消這筆訂單嗎？');">
+                            取消訂單
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -50,9 +50,14 @@ public class OrganizerService {
         return organizerRepository.findById(organizerId).orElse(null);
     }
 
-    /**
-     * 透過帳號查詢主辦方（用於登入）
-     */
+    /*透過 Email 查詢主辦方 (用於忘記密碼)*/
+
+    public OrganizerVO findByEmail(String email) {
+        return organizerRepository.findByEmail(email).orElse(null);
+    }
+
+    /* 透過帳號查詢主辦方（用於登入）*/
+
     public OrganizerVO findByAccount(String account) {
         return organizerRepository.findByAccount(account).orElse(null);
     }

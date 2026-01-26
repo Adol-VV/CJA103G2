@@ -16,13 +16,13 @@
 <!-- 通知篩選 -->
 <div class="btn-group flex-wrap mb-4" role="group">
     <button type="button" class="btn btn-outline-secondary active" data-filter="all">
-        全部 <span class="badge bg-secondary ms-1">9</span>
+        全部 <span class="badge bg-secondary ms-1" th:text="${totalCount}">9</span>
     </button>
     <button type="button" class="btn btn-outline-info" data-filter="platform">
-        <i class="fas fa-building me-1"></i>平台通知 <span class="badge bg-info ms-1">4</span>
+        <i class="fas fa-building me-1"></i>平台通知 <span class="badge bg-info ms-1" th:text="${platformCount}">4</span>
     </button>
     <button type="button" class="btn btn-outline-warning" data-filter="member">
-        <i class="fas fa-user me-1"></i>會員動態 <span class="badge bg-warning ms-1">5</span>
+        <i class="fas fa-user me-1"></i>會員動態 <span class="badge bg-warning ms-1" th:text="${mamberCount}">5</span>
     </button>
 </div>
 
