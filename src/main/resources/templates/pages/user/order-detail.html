@@ -112,11 +112,11 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="../../index.html">
+            <a class="navbar-brand fw-bold" href="/">
                 <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
             </a>
             <div class="d-flex align-items-center">
-                <a href="dashboard.html#orders" class="btn btn-outline-secondary btn-sm">
+                <a href="/member/dashboard#orders" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-arrow-left me-2"></i>返回訂單列表
                 </a>
             </div>
@@ -131,20 +131,20 @@
                     <i class="fas fa-receipt me-2 text-success"></i>訂單詳情
                 </h2>
                 <p class="text-muted mb-0">
-                    訂單編號：<span class="text-white fw-bold" id="orderId">MO-20241226-001234</span>
+                    訂單編號：<span class="text-white fw-bold" id="orderId" th:text="${orderDetail.orderId}">123</span>
                     <button class="btn btn-link btn-sm text-muted p-0 ms-2" onclick="copyOrderId()">
                         <i class="fas fa-copy"></i>
                     </button>
                 </p>
             </div>
             <div class="text-end">
-                <span class="badge bg-success fs-6 mb-2">已完成</span>
-                <p class="text-muted small mb-0">下單時間：2024/12/26 14:30</p>
+                <span class="badge bg-success fs-6 mb-2" th:text="${orderDetail.status==1?'已付款':'未付款'}">已完成</span>
+                <p class="text-muted small mb-0">下單時間：<span th:text="${#dates.format(orderDetail.createdDate, 'yyyy/MM/dd HH:mm')}">2024/12/26 14:30</span></p>
             </div>
         </div>
 
         <!-- Order Status Timeline -->
-        <div class="card bg-dark border-secondary mb-4">
+        <!-- <div class="card bg-dark border-secondary mb-4">
             <div class="card-body">
                 <h5 class="card-title mb-0">訂單狀態</h5>
                 <div class="order-status-timeline">
@@ -175,7 +175,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="row">
             <!-- Left Column -->
@@ -187,7 +187,7 @@
                     </div>
                     <div class="card-body p-0">
                         <!-- Ticket Item -->
-                        <div class="order-item">
+                        <!-- <div class="order-item">
                             <img loading="lazy" src="https://picsum.photos/seed/event1/200" class="order-item-img" alt="Event">
                             <div class="flex-grow-1">
                                 <span class="badge bg-primary mb-2">票券</span>
@@ -205,26 +205,26 @@
                                     <i class="fas fa-qrcode me-1"></i>顯示票券
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Product Item -->
-                        <div class="order-item">
-                            <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                        <div class="order-item" th:each="item : ${orderDetail.orderItems}">
+                            <img loading="lazy" th:src="${item.prodId.prodImages[0].imageUrl}" class="order-item-img" alt="Product">
                             <div class="flex-grow-1">
                                 <span class="badge bg-warning text-dark mb-2">商品</span>
-                                <h6 class="mb-1">經典Logo帆布袋</h6>
-                                <p class="text-muted small mb-0">規格：米白色</p>
+                                <h6 class="mb-1" th:text="${item.prodId.prodName}">經典Logo帆布袋</h6>
+                                <!-- <p class="text-muted small mb-0">規格：<span th:text="${item.prodId.prodSpec}">米白色</span></p> -->
                             </div>
                             <div class="text-end">
-                                <div class="text-muted small">x 1</div>
-                                <div class="text-success fw-bold">NT$ 450</div>
+                                <div class="text-muted small">x <span th:text="${item.quantity}">1</span></div>
+                                <div class="text-success fw-bold">NT$ <span th:text="${item.total}">450</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Shipping Tracking -->
-                <div class="card tracking-card mb-4">
+                <!-- <div class="card tracking-card mb-4">
                     <div class="card-header bg-transparent border-secondary">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="fas fa-truck me-2"></i>物流追蹤</h5>
@@ -249,8 +249,8 @@
                         </div>
                         
                         <hr class="border-secondary">
-                        
-                        <!-- Tracking History -->
+                         -->
+                        <!-- Tracking History
                         <div class="tracking-history">
                             <div class="d-flex mb-3">
                                 <div class="me-3">
@@ -302,8 +302,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div>-->
+            </div> 
 
             <!-- Right Column -->
             <div class="col-lg-4">
@@ -313,7 +313,7 @@
                         <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>付款資訊</h5>
                     </div>
                     <div class="card-body">
-                        <div class="info-row">
+                        <!-- <div class="info-row">
                             <span class="text-muted">付款方式</span>
                             <span>信用卡</span>
                         </div>
@@ -324,11 +324,11 @@
                         <div class="info-row">
                             <span class="text-muted">付款時間</span>
                             <span>2024/12/26 14:31</span>
-                        </div>
+                        </div> -->
                         <hr class="border-secondary">
                         <div class="info-row">
                             <span class="text-muted">商品小計</span>
-                            <span>NT$ 3,250</span>
+                            <span class="text-success">NT$ <span th:text="${orderDetail.total}">3,250</span></span>
                         </div>
                         <div class="info-row">
                             <span class="text-muted">運費</span>
@@ -336,16 +336,17 @@
                         </div>
                         <div class="info-row">
                             <span class="text-muted">代幣折抵</span>
-                            <span class="text-danger">-NT$ 0</span>
+                            <span class="text-danger">-NT$ <span th:text="${orderDetail.token}">0</span></span>
                         </div>
                         <hr class="border-secondary">
                         <div class="d-flex justify-content-between">
                             <span class="fw-bold">實付金額</span>
-                            <span class="fw-bold text-success fs-5">NT$ 3,250</span>
+                            <span class="fw-bold text-success fs-5">NT$ <span th:text="${orderDetail.payable}"></span></span>
                         </div>
                         <div class="text-end">
                             <small class="text-success">
-                                <i class="fas fa-coins me-1"></i>已獲得 54 代幣
+                                <i class="fas fa-coins me-1"></i>已獲得 
+                                <span th:text="${#numbers.formatInteger(orderDetail.payable / 300, 0)}">0</span> 代幣
                             </small>
                         </div>
                     </div>
@@ -359,21 +360,21 @@
                     <div class="card-body">
                         <div class="info-row">
                             <span class="text-muted">收件人</span>
-                            <span>林書涵</span>
+                            <span class="text-success" th:text="${session.loginMember.name}">林書涵</span>
                         </div>
                         <div class="info-row">
                             <span class="text-muted">手機</span>
-                            <span>0912-345-678</span>
+                            <span class="text-success" th:text="${session.loginMember.phone}">0912-345-678</span>
                         </div>
                         <div class="info-row">
                             <span class="text-muted">地址</span>
-                            <span>100 台北市中正區忠孝東路一段 100 號</span>
+                            <span class="text-success" th:text="${session.loginMember.address}">100 台北市中正區忠孝東路一段 100 號</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Invoice Info -->
-                <div class="card bg-dark border-secondary mb-4">
+                <!-- <div class="card bg-dark border-secondary mb-4">
                     <div class="card-header bg-transparent border-secondary">
                         <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>發票資訊</h5>
                     </div>
@@ -387,17 +388,17 @@
                             <span>AB-12345678</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Actions -->
-                <div class="d-grid gap-2">
+                <!-- <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary">
                         <i class="fas fa-download me-2"></i>下載訂單明細
                     </button>
                     <button class="btn btn-outline-warning">
                         <i class="fas fa-question-circle me-2"></i>聯繫客服
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -442,24 +443,6 @@
     <script src="../../js/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Get order ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('id') || 'MO-20241226-001234';
-            $('#orderId').text(orderId);
-
-            // Generate QR Code when modal opens
-            $('#qrModal').on('shown.bs.modal', function () {
-                new QRious({
-                    element: document.getElementById('qrCanvas'),
-                    value: 'MOMENTO:TICKET:' + orderId + ':VIP-A12',
-                    size: 200,
-                    foreground: '#000000',
-                    background: '#ffffff'
-                });
-            });
-        });
-
         function copyOrderId() {
             const orderId = $('#orderId').text();
             navigator.clipboard.writeText(orderId).then(function () {
