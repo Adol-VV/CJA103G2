@@ -116,15 +116,15 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label">姓名 <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control bg-dark text-white border-secondary" required>
+                                        <label type="text" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.name}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">手機號碼 <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control bg-dark text-white border-secondary" placeholder="0912-345-678" required>
+                                        <label type="tel" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.phone}">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">電子郵件 <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control bg-dark text-white border-secondary" required>
+                                        <label type="email" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.account}">
                                         <div class="form-text">票券將寄送至此信箱</div>
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
-                                    <div class="col-md-4">
+                                    <!--<div class="col-md-4">
                                         <label class="form-label">郵遞區號</label>
                                         <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="100">
                                     </div>
@@ -153,10 +153,10 @@
                                             <option value="tainan">台南市</option>
                                             <option value="kaohsiung">高雄市</option>
                                         </select>
-                                    </div>
+                                    </div>-->
                                     <div class="col-12">
                                         <label class="form-label">詳細地址</label>
-                                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="請輸入完整地址">
+                                        <label type="text" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.Address}">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">備註（選填）</label>
@@ -306,7 +306,7 @@
                                 <label class="form-check-label" for="useTokensCheckout">
                                     使用 Momento 代幣折抵
                                     <span class="badge bg-success ms-2">可用餘額: 
-                                        <span class = "token" id="tokenAmount" th:text="${session.loginMember.token}"></span>                                            
+                                        <label class = "token" id="tokenAmount" th:text="${session.loginMember.token}"></label>                                            
                                     </span>
                                 </label>
                             </div>
