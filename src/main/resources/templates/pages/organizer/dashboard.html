@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,8 @@
 <body style="background-color: #121212;">
 
     <!-- Top Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-dark"
+        style="z-index: 1050;">
         <div class="container-fluid px-4">
             <!-- Mobile Menu Toggle -->
             <button class="btn btn-link text-white d-md-none me-2" type="button" data-bs-toggle="offcanvas"
@@ -39,49 +40,68 @@
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <!-- Notifications -->
                 <div class="dropdown">
-                    <button class="btn btn-link text-muted position-relative" data-bs-toggle="dropdown" id="bellDropdown" type="button">
+                    <button class="btn btn-link text-muted position-relative p-2" data-bs-toggle="dropdown"
+                        id="bellDropdown" type="button" aria-expanded="false">
                         <i class="far fa-bell fs-5"></i>
-                        <span id="bellBadge" th:if="${unreadCount > 0}" th:text="${unreadCount}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        <span id="bellBadge" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                             style="font-size: 0.6rem;">3</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" style="width: 320px;">
-                        <li>
-                            <h6 class="dropdown-header">通知中心</h6>
-                            <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none" id="markAllReadBtn" style="font-size: 0.8rem;">全部標記已讀</button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary"
+                        style="width: 320px;">
+                        <li class="p-3 pb-2 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">通知中心</h6>
+                            <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none"
+                                id="btnMarkAllRead" style="font-size: 0.8rem;">全部標記已讀</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
 
-                        <div id="bellNotificationList" style="max-height: 350px; overflow-y: auto;">
-                            <li class="text-center py-4 text-muted small">
-                                <i class="fas fa-spinner fa-spin me-2"></i>載入中...
-                            </li>
-                        </div>
-                        <li><hr class="dropdown-divider m-0"></li>
-                        <li><a class="dropdown-item text-center small text-primary py-2" href="#">查看所有通知</a></li>
+                        <!-- 通知清單容器 -->
+                        <li>
+                            <ul id="bellNotificationList" class="list-unstyled mb-0"
+                                style="max-height: 350px; overflow-y: auto;">
+                                <li class="text-center py-4 text-muted small">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>載入中...
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider m-0">
+                        </li>
+                        <li><a class="dropdown-item text-center small text-primary py-2" href="#notifications"
+                                data-section="notifications">查看所有通知</a></li>
                     </ul>
                 </div>
 
-                <!-- Profile -->
+                <!-- Profile Dropdown -->
                 <div class="dropdown">
                     <button class="btn btn-link text-white text-decoration-none dropdown-toggle"
-                        data-bs-toggle="dropdown">
-                        <img loading="lazy" src="https://via.placeholder.com/40" class="rounded-circle me-2"
-                            alt="Avatar">
-                        <span>相信音樂</span>
+                        data-bs-toggle="dropdown" type="button">
+                        <img loading="lazy"
+                            th:src="'https://ui-avatars.com/api/?name=' + ${organizer.name} + '&background=random'"
+                            class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                        <span class="small" th:text="${organizer.name}">主辦方名稱</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#">企業資料</a></li>
-                        <li><a class="dropdown-item" href="#">設定</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg">
+                        <li class="dropdown-header border-bottom border-secondary pb-2 mb-2">帳號管理</li>
+                        <li><a class="dropdown-item py-2" href="#settings" data-section="settings"><i
+                                    class="fas fa-id-card me-2"></i>企業資料</a></li>
+                        <li><a class="dropdown-item py-2" href="#settings" data-section="settings"><i
+                                    class="fas fa-user-cog me-2"></i>帳號設定</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="../../index.html" target="_blank">前往前台</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/index}" target="_blank"><i
+                                    class="fas fa-external-link-alt me-2"></i>查看前台首頁</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item text-danger" href="login.html">登出</a></li>
+                        <li><a class="dropdown-item text-danger py-2" th:href="@{/organizer/logout}">
+                                <i class="fas fa-sign-out-alt me-2"></i>登出系統
+                            </a></li>
                     </ul>
                 </div>
             </div>
@@ -192,20 +212,20 @@
 
 
     <script th:inline="javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             // 同步預覽
-            $('#title').on('input', function() {
+            $('#title').on('input', function () {
                 $('#previewNotifyTitle').text($(this).val() || '通知標題');
             });
 
-            $('#content').on('input', function() {
+            $('#content').on('input', function () {
                 const val = $(this).val();
                 // 處理換行符號
                 $('#previewNotifyContent').html(val ? val.replace(/\n/g, '<br>') : '通知內容預覽...');
             });
 
             // 點擊快速範本後填入內容並強制更新預覽
-            $('.btn-template').on('click', function() {
+            $('.btn-template').on('click', function () {
                 const tTitle = $(this).attr('data-title');
                 const tContent = $(this).attr('data-content');
 
@@ -217,10 +237,10 @@
             });
 
             // 發送人數變動
-            $('#targetId').on('change', function() {
+            $('#targetId').on('change', function () {
                 const selectedId = $(this).val();
                 if (selectedId) {
-                    $.get('/organizer/notify/countMembers', { targetId: selectedId }, function(count) {
+                    $.get('/organizer/notify/countMembers', { targetId: selectedId }, function (count) {
                         $('#notifyTargetCount').text(count);
                     });
                 } else {
@@ -231,7 +251,7 @@
     </script>
 
     <script th:inline="javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             // 使用 Thymeleaf 讀取 Flash Attribute
             var successMsg = /*[[${successMessage}]]*/ null;
 
@@ -250,4 +270,5 @@
     </script>
 
 </body>
+
 </html>
