@@ -188,23 +188,23 @@ $(document).ready(function () {
 //計算總額
     updateTotal();
     function updateTotal(useToken=false) {
+        let total = 0;
         if(useToken){
             const token = parseInt($('#tokenAmount').text()) || 0;
-            const final = (total_price - token)>=0?(total_price - token):0;
+            const total = (total_price - token)>=0?(total_price - token):0;
 
             token_used = (total_price - token)>=0?token:total_price;
             
-            $('#finalPrice').text("NT$ " + final);
+            $('#finalPrice').text("NT$ " + total);
             $('#tokenDiscountAmount').text('-NT$ ' + token_used.toLocaleString());
             
-            $('#finalTotal').text('NT$ ' + final.toLocaleString());
+            $('#finalTotal').text('NT$ ' + total.toLocaleString());
             // 使用安全方式更新按鈕
             $('#btnSubmitOrder')
                 .empty()
                 .append($('<i>').addClass('fas fa-lock me-2'))
-                .append('確認付款 NT$ ' + final.toLocaleString());
+                .append('確認付款 NT$ ' + total.toLocaleString());
         }else{
-            let total = 0;
             token_used=0;
             $(".cart-item").each(function(item){
                 let price = parseInt($(this).data("price"));
@@ -223,6 +223,7 @@ $(document).ready(function () {
                 .append($('<i>').addClass('fas fa-lock me-2'))
                 .append('確認付款 NT$ ' + total.toLocaleString());
         }
+        $(".momentoCoins").text((Math.floor(total / 300))*5);
         
     }
 });

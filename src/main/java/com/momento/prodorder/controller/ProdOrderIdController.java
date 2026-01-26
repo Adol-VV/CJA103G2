@@ -49,6 +49,7 @@ public class ProdOrderIdController {
 			//更改會員裡的Token
 			int token = (int)member.getToken();
 			token -= prodOrderIdVO.getToken();
+			token += (prodOrderIdVO.getPayable()/300)*5;
 			member.setToken(token);
 			memberSvc.updateMember(member);
 			
