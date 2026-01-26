@@ -1,18 +1,32 @@
 <div class="content-panel" id="panel-event-approval">
     <h2 class="mb-4">活動審核</h2>
     <div class="card bg-dark border-secondary">
-        <div class="card-header border-secondary">
-            <ul class="nav nav-tabs card-header-tabs" id="eventReviewTabs">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+            <ul class="nav nav-tabs card-header-tabs border-bottom-0" id="eventReviewTabs">
                 <li class="nav-item">
-                    <a class="nav-link active text-white" href="#" data-status="pending">待審核</a>
+                    <a class="nav-link active text-white" href="#" data-status="all">全部</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="pending">待審核</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-muted" href="#" data-status="rejected">已駁回</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="#" data-status="approved">已通過</a>
+                    <a class="nav-link text-muted" href="#" data-status="approved">上架中</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="#" data-status="ended">已結束/取消</a>
                 </li>
             </ul>
+            <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i
+                            class="fas fa-search"></i></span>
+                    <input type="text" id="adminEventSearch" class="form-control bg-dark text-white border-secondary"
+                        placeholder="搜尋活動名稱...">
+                </div>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

@@ -1,12 +1,31 @@
 <div class="event-create-container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">建立新活動</h2>
-        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#draftsModal">
-            <i class="fas fa-save me-1"></i> 我的草稿
-        </button>
+        <h2 class="mb-0" id="editorTitle">建立新活動</h2>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#draftsModal">
+                <i class="fas fa-save me-1"></i> 我的草稿
+            </button>
+            <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">
+                <i class="fas fa-times me-1"></i> 取消編輯
+            </button>
+        </div>
+    </div>
+
+    <!-- 駁回原因顯示區 (僅編輯模式顯示) -->
+    <div id="rejectReasonAlert" class="alert alert-danger d-none mb-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-exclamation-circle fa-2x"></i>
+            </div>
+            <div>
+                <h6 class="alert-heading fw-bold">審核駁回原因</h6>
+                <p class="mb-0" id="rejectReasonText"></p>
+            </div>
+        </div>
     </div>
 
     <form id="eventCreateForm">
+        <input type="hidden" id="editEventId" name="eventId">
         <!-- 基本資訊 -->
         <div class="card border-secondary bg-dark mb-4">
             <div class="card-body">
@@ -19,11 +38,14 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label required">活動類型</label>
-                        <select class="form-select" id="eventType" required>
-                            <option value="">請選擇</option>
-                            <option th:each="type : ${types}" th:value="${type.typeId}" th:text="${type.typeName}">活動類型
-                            </option>
-                        </select>
+                        <div class="input-group">
+                            <select class="form-select" id="eventType" required>
+                                <option value="">正在載入...</option>
+                            </select>
+                            <button class="btn btn-outline-secondary" type="button" onclick="loadActivityTypes()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label required">活動地點</label>
@@ -31,22 +53,24 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label required">活動主視覺</label>
-                        <div class="upload-zone" id="mainImageUpload"
-                            style="cursor: pointer; border: 2px dashed #6c757d; padding: 40px; text-align: center; border-radius: 8px;">
-                            <input type="file" class="d-none" id="mainImageInput" accept="image/*">
+                        <label class="upload-zone d-block position-relative" for="mainImageInput" id="mainImageUpload"
+                            style="cursor: pointer; border: 2px dashed #6c757d; padding: 40px; text-align: center; border-radius: 8px; overflow: hidden;">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
-                                <p class="text-muted">點擊上傳圖片</p>
+                                <p class="text-muted">點擊或拖曳圖片至此</p>
                             </div>
-                            <div class="upload-preview d-none position-relative">
+                            <!-- Transparent overlay for maximum compatibility -->
+                            <input type="file" id="mainImageInput" accept="image/*"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
+
+                            <div class="upload-preview d-none position-relative" style="z-index: 10;">
                                 <img src="" id="mainImagePreview" class="img-fluid rounded" style="max-height: 300px;">
-                                <button type="button" class="btn btn-sm btn-danger"
-                                    style="position: absolute; top: 10px; right: 10px;"
-                                    onclick="$('#mainImagePreview').attr('src', ''); $('.upload-preview').addClass('d-none'); $('.upload-placeholder').removeClass('d-none'); uploadedBannerUrl = '';">
+                                <button type="button" class="btn btn-sm btn-danger btn-remove-preview"
+                                    style="position: absolute; top: 10px; right: 10px;">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                        </div>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -60,16 +84,19 @@
                     <div class="col-md-6">
                         <label class="form-label required">活動舉辦時間</label>
                         <input type="datetime-local" id="eventDateTime" class="form-control" required>
+                        <div class="invalid-feedback" id="eventDateTimeError">活動時間必須在售票結束之後</div>
                     </div>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label required">售票開始時間</label>
                         <input type="datetime-local" id="saleStart" class="form-control" required>
+                        <div class="invalid-feedback" id="saleStartError">開始時間必須早於結束時間</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label required">售票結束時間</label>
                         <input type="datetime-local" id="saleEnd" class="form-control" required>
+                        <div class="invalid-feedback" id="saleEndError">結束時間必須在開始之後且早於活動時間</div>
                     </div>
                 </div>
             </div>

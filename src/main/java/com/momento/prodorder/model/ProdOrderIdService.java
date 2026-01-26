@@ -37,4 +37,8 @@ public class ProdOrderIdService {
 	public Optional<ProdOrderIdVO> getOne(Integer orderID) {
 		return repository.findById(orderID);
 	}
+	
+	public List<ProdOrderIdVO> getByMemberId(Integer memberId) {
+		return repository.findByMemberId_MemberId(memberId);
+	}
 }

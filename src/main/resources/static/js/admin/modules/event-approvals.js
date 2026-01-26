@@ -16,8 +16,18 @@ export function initEventApprovals() {
         $('#eventReviewTabs .nav-link').removeClass('active text-white').addClass('text-muted');
         $(this).addClass('active text-white').removeClass('text-muted');
 
-        currentTab = $(this).data('status'); // pending, rejected, approved
-        loadEventApprovals(currentTab);
+        currentTab = $(this).data('status'); // all, pending, rejected, approved, ended
+        loadEventApprovals(currentTab, $('#adminEventSearch').val());
+    });
+
+    // Search Input Event
+    let searchTimer;
+    $(document).on('input', '#adminEventSearch', function () {
+        clearTimeout(searchTimer);
+        const keyword = $(this).val();
+        searchTimer = setTimeout(() => {
+            loadEventApprovals(currentTab, keyword);
+        }, 500);
     });
 
     // Approve Button Click
@@ -112,9 +122,11 @@ export function initEventApprovals() {
             const response = await fetch('/admin/event/review/api/stats');
             if (response.ok) {
                 const stats = await response.json();
+                updateBadge('all', stats.all);
                 updateBadge('pending', stats.pending);
                 updateBadge('rejected', stats.rejected);
                 updateBadge('approved', stats.approved);
+                updateBadge('ended', stats.ended);
             }
         } catch (e) {
             console.error('Failed to load stats', e);
@@ -129,18 +141,19 @@ export function initEventApprovals() {
         if (status === 'pending') badgeClass = 'bg-warning text-dark';
         if (status === 'rejected') badgeClass = 'bg-danger';
         if (status === 'approved') badgeClass = 'bg-success';
+        if (status === 'all') badgeClass = 'bg-info';
 
         $link.append(` <span class="badge ${badgeClass} ms-1">${count}</span>`);
     }
 
-    async function loadEventApprovals(tab = 'pending') {
+    async function loadEventApprovals(tab = 'all', keyword = '') {
         updateStats();
 
         const $tbody = $('#eventApprovalList');
         if ($tbody.length === 0) return;
 
         try {
-            const response = await fetch(`/admin/event/review/api/list?tab=${tab}`);
+            const response = await fetch(`/admin/event/review/api/list?tab=${tab}&keyword=${encodeURIComponent(keyword)}`);
             if (!response.ok) throw new Error('Query failed');
             const events = await response.json();
 
@@ -157,16 +170,20 @@ export function initEventApprovals() {
                 const organizerName = evt.organizer ? (evt.organizer.name || evt.organizer.accountName || '未知主辦方') : '系統管理';
 
                 let statusBadge = '';
-                if (tab === 'pending') {
+                // 根據活動真實狀態顯示標籤
+                if (evt.status === 0 && evt.reviewStatus === 0 && evt.publishedAt) {
                     statusBadge = '<span class="badge bg-warning text-dark">待審核</span>';
-                } else if (tab === 'rejected') {
+                } else if (evt.status === 0 && evt.reviewStatus === 2) {
                     statusBadge = '<span class="badge bg-danger">已駁回</span>';
-                } else {
-                    statusBadge = '<span class="badge bg-success">已通過</span>';
+                } else if (evt.status === 1) {
+                    statusBadge = '<span class="badge bg-success">上架中</span>';
+                } else if (evt.status === 2 || evt.status === 3) {
+                    statusBadge = '<span class="badge bg-secondary">已結束/取消</span>';
                 }
 
                 let actionsHtml = '';
-                if (tab === 'pending') {
+                // 只有「待審核」狀態需要審核按鈕
+                if (evt.status === 0 && evt.reviewStatus === 0 && evt.publishedAt) {
                     actionsHtml = `
                         <button class="btn btn-sm btn-info btn-review-event-detail me-1" data-id="${evt.eventId}">
                             <i class="fas fa-eye"></i> 審核

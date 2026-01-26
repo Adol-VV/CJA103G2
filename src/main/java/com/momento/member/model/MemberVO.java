@@ -28,7 +28,7 @@ public class MemberVO implements Serializable {
     private String account;
 
 	@Column(name = "password", nullable = false)
-	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", message = "必須包含小寫字母、大寫字母、數字，且須為8碼以上")
+	@Size(min=8, message="長度須為8碼以上")
 	private String password;
 
 	@Column(name = "name", nullable = false)

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結帳 | Momento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="/css/momento-theme.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/checkout.css">
+</head>
+
+<body class="bg-black text-white">
+	<!-- Navbar (Simplified) -->
+	<nav class="navbar navbar-dark bg-dark border-bottom border-secondary">
+		<div class="container">
+			<a class="navbar-brand fw-bold" href="/"> <i
+				class="fas fa-ticket-alt me-2 text-success"></i>Momento
+			</a> <a href="cart" class="btn btn-outline-secondary btn-sm"> <i
+				class="fas fa-arrow-left me-2"></i>返回活動頁面
+			</a>
+		</div>
+	</nav>
+
+	<div class="container py-5">
+		<!-- Stepper -->
+		<div class="checkout-stepper">
+			<div class="step-item active" data-step="1">
+				<div class="step-number">1</div>
+				<span class="step-label d-none d-md-inline">確認訂單</span>
+			</div>
+			<div class="step-item" data-step="2">
+				<div class="step-number">2</div>
+				<span class="step-label d-none d-md-inline">聯絡資訊</span>
+			</div>
+			<div class="step-item" data-step="3">
+				<div class="step-number">3</div>
+				<span class="step-label d-none d-md-inline">付款方式</span>
+			</div>
+			<div class="step-item" data-step="4">
+				<div class="step-number">4</div>
+				<span class="step-label d-none d-md-inline">完成</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- Main Content -->
+			<div class="col-lg-8">
+				<!-- Step 1: Review Order -->
+				<div class="step-content active" id="step1">
+					<div class="card bg-dark border-secondary mb-4">
+						<div class="card-header bg-transparent border-secondary">
+							<h5 class="mb-0">
+								<i class="fas fa-ticket-alt me-2 text-primary"></i>票券項目
+							</h5>
+						</div>
+						<div class="card-body">
+							<div class="order-item"
+								th:each="item: ${session.finalSelectedItems}"
+								th:data-ticket-id="${item.ticketId}">
+								<div class="flex-grow-1">
+									<h6 class="mb-1" th:text="${item.eventName}">2025新年音樂會｜維也納之夜</h6>
+									<p class="text-muted small mb-1" th:text="${item.ticketName}">VIP
+										特區</p>
+									<p class="text-muted small mb-0">
+										<i class="far fa-calendar me-1"></i> <span
+											th:text="${#temporals.format(item.eventTime, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+											(二) 19:30</span>
+									</p>
+								</div>
+								<div class="text-end">
+									<div class="text-success fw-bold" th:text="${item.price}">NT$
+										2,800</div>
+									<small class="text-muted quantity" th:text="${item.quantity}">x
+										1</small>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<!--                     <div class="card bg-dark border-secondary mb-4"> -->
+					<!--                         <div class="card-header bg-transparent border-secondary"> -->
+					<!--                             <h5 class="mb-0"><i class="fas fa-box me-2 text-warning"></i>商品項目</h5> -->
+					<!--                         </div> -->
+					<!--                         <div class="card-body p-0"> -->
+					<!--                             <div class="order-item"> -->
+					<!--                                 <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product"> -->
+					<!--                                 <div class="flex-grow-1"> -->
+					<!--                                     <h6 class="mb-1">經典Logo帆布袋</h6> -->
+					<!--                                     <p class="text-muted small mb-0">規格：米白色</p> -->
+					<!--                                 </div> -->
+					<!--                                 <div class="text-end"> -->
+					<!--                                     <div class="text-success fw-bold">NT$ 450</div> -->
+					<!--                                     <small class="text-muted">x 1</small> -->
+					<!--                                 </div> -->
+					<!--                             </div> -->
+					<!--                         </div> -->
+					<!--                     </div> -->
+
+					<div class="d-flex justify-content-end">
+						<!--                         <a href="cart.html" class="btn btn-outline-secondary"> -->
+						<!--                             <i class="fas fa-arrow-left me-2"></i>修改購物車 -->
+						<!--                         </a> -->
+						<button class="btn btn-primary btn-next" data-next="2">
+							下一步：確認資訊<i class="fas fa-arrow-right ms-2"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- Step 2: Shipping Info -->
+				<div class="step-content" id="step2">
+					<form id="shippingForm">
+						<!-- Contact Info -->
+						<div class="card bg-dark border-secondary mb-4">
+							<div class="card-header bg-transparent border-secondary">
+								<h5 class="mb-0">
+									<i class="fas fa-user me-2"></i>聯絡資訊
+								</h5>
+							</div>
+							<div class="card-body">
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label class="form-label">姓名：</label> <label
+											class="form-label" th:text="${session.loginMember.name}"></label>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">手機號碼： </label> <label
+											class="form-label" th:text="${session.loginMember.phone}"></label>
+									</div>
+									<div class="col-12">
+										<label class="form-label">電子郵件： </label> <label
+											class="form-label" th:text="${session.loginMember.account}"></label>										
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<!-- Invoice -->
+						<!--<div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header bg-transparent border-secondary">
+                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>發票資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoicePersonal" checked>
+                                    <label class="form-check-label" for="invoicePersonal">個人電子發票</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoiceCarrier">
+                                    <label class="form-check-label" for="invoiceCarrier">手機載具</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="invoiceType" id="invoiceCompany">
+                                    <label class="form-check-label" for="invoiceCompany">公司發票</label>
+                                </div>
+                                <div id="carrierInput" class="d-none">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="/ABC1234">
+                                </div>
+                                <div id="companyInput" class="d-none">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="公司統編">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="公司抬頭">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+
+						<div class="d-flex justify-content-between">
+							<button type="button" class="btn btn-outline-secondary btn-prev"
+								data-prev="1">
+								<i class="fas fa-arrow-left me-2"></i>上一步
+							</button>
+							<button type="button" class="btn btn-primary btn-next"
+								data-next="3">
+								下一步：選擇付款<i class="fas fa-arrow-right ms-2"></i>
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- Step 3: Payment -->
+				<div class="step-content" id="step3">
+					<div class="card bg-dark border-secondary mb-4">
+						<div class="card-header bg-transparent border-secondary">
+							<h5 class="mb-0">
+								<i class="fas fa-credit-card me-2"></i>選擇付款方式
+							</h5>
+						</div>
+						<div class="card-body">
+							<div class="row g-3">
+								<div class="col-md-6">
+									<label class="payment-option selected w-100"> <input
+										type="radio" name="paymentMethod" value="credit" checked>
+										<div class="d-flex align-items-center">
+											<i class="fas fa-credit-card fa-2x text-primary me-3"></i>
+											<div>
+												<div class="fw-bold">信用卡</div>
+												<small class="text-muted">Visa / Mastercard / JCB</small>
+											</div>
+										</div>
+									</label>
+								</div>
+								<div class="col-md-6">
+									<label class="payment-option w-100"> <input
+										type="radio" name="paymentMethod" value="linepay">
+										<div class="d-flex align-items-center">
+											<i class="fab fa-line fa-2x text-success me-3"></i>
+											<div>
+												<div class="fw-bold">LINE Pay</div>
+												<small class="text-muted">快速安全付款</small>
+											</div>
+										</div>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Credit Card Form -->
+					<div class="card bg-dark border-secondary mb-4" id="creditCardForm">
+						<div class="card-header bg-transparent border-secondary">
+							<h5 class="mb-0">
+								<i class="fas fa-lock me-2"></i>信用卡資訊
+							</h5>
+						</div>
+						<div class="card-body">
+							<div class="row g-3">
+								<div class="col-12">
+									<label class="form-label">卡號</label> <input type="text"
+										class="form-control bg-dark text-white border-secondary"
+										placeholder="1234 5678 9012 3456" maxlength="19">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">有效期限</label> <input type="text"
+										class="form-control bg-dark text-white border-secondary"
+										placeholder="MM/YY" maxlength="5">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">安全碼 (CVV)</label> <input type="text"
+										class="form-control bg-dark text-white border-secondary"
+										placeholder="123" maxlength="4">
+								</div>
+								<div class="col-12">
+									<label class="form-label">持卡人姓名</label> <input type="text"
+										class="form-control bg-dark text-white border-secondary"
+										placeholder="與卡片上相同">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Token Discount -->
+					<div class="card bg-dark border-secondary mb-4">
+						<div class="card-body">
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox"
+									id="useTokensCheckout" onchange="calcTotal(this.checked)">
+								<label class="form-check-label" for="useTokensCheckout">
+									使用 Momento 代幣折抵 <span class="badge bg-success ms-2">可用餘額:
+										<span class="token" id="tokenAmount"
+										th:text="${session.loginMember.token}"></span>
+								</span>
+								</label>
+							</div>
+							<!--<div class="mt-2 d-none" id="tokenSlider">
+                                <input type="range" class="form-range" min="0" max="1250" step="50" value="0" id="tokenAmount">
+                                <div class="d-flex justify-content-between text-muted small">
+                                    <span>0</span>
+                                    <span id="tokenAmountDisplay">使用 0 代幣</span>
+                                    <span>1,250</span>
+                                </div>
+                            </div>-->
+						</div>
+					</div>
+
+					<!-- Token Reward Notice -->
+					<div
+						class="alert alert-success bg-success bg-opacity-10 border-success mb-4"
+						id="tokenRewardNotice">
+						<div class="d-flex align-items-center">
+							<div class="me-3">
+								<i class="fas fa-coins fa-2x text-success"></i>
+							</div>
+							<div>
+								<h6 class="mb-1 text-success">
+									<i class="fas fa-gift me-1"></i>消費回饋
+								</h6>
+								<p class="mb-0 small">
+									單筆消費滿 <strong>NT$ 300</strong> 即贈 <strong class="text-success">5
+										元代幣</strong>！ 
+<!-- 										<span id="tokenRewardMsg" class="ms-2"> 此筆訂單將獲得  -->
+<!-- 										<span -->
+<!-- 										class="badge bg-success">5  -->
+<!-- 										<span>代幣</span> -->
+<!-- 										</span> 回饋 -->
+<!-- 									</span> -->
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-between">
+						<button type="button" class="btn btn-outline-secondary btn-prev"
+							data-prev="2">
+							<i class="fas fa-arrow-left me-2"></i>上一步
+						</button>
+						<button type="button" class="btn btn-primary btn-lg btn-next"
+							id="btnSubmitOrder">
+							<i class="fas fa-lock me-2"></i>確認付款
+						</button>
+					</div>
+				</div>
+
+				<!-- Step 4: Success -->
+				<div class="step-content" id="step4">
+					<div class="card bg-dark border-secondary text-center py-5">
+						<div class="card-body">
+							<div class="success-animation mb-4">
+								<i class="fas fa-check-circle fa-5x text-success"></i>
+							</div>
+							<h2 class="mb-3">訂單完成！</h2>
+							<p class="text-muted mb-4">感謝您的購買，訂單確認信已寄送至您的信箱</p>
+
+							<div class="bg-black rounded p-4 mb-4 d-inline-block">
+								<div class="text-muted small mb-1">訂單編號</div>
+								<div class="h4 text-success mb-0" id="eventOrderId">MO-20241226-001234</div>
+							</div>
+
+							<div class="row justify-content-center g-3 mb-4">
+ 								
+                                <div class="col-auto">
+                                    <div class="text-muted small">票券</div>
+                                    <div class="fw-bold"><span id="totalQuantity">1</span> 張</div>
+                                </div>
+                               
+<!-- 								<div class="col-auto"> -->
+<!-- 									<div class="text-muted small">商品</div> -->
+<!-- 									<div class="fw-bold" id="finalCouhnt">1 件</div> -->
+<!-- 								</div> -->
+								<div class="col-auto">
+									<div class="text-muted small">付款金額</div>
+									<div class="fw-bold text-success">NT$
+										<span id="payable">3,250</span></div>
+								</div>
+							</div>
+
+							<!-- Token Reward Earned -->
+							<div
+								class="alert alert-success bg-success bg-opacity-10 border-success mb-4">
+								<div class="d-flex align-items-center justify-content-center">
+									<i class="fas fa-coins fa-2x text-success me-3"></i>
+									<div>
+										<h6 class="mb-0 text-success">
+											🎉 恭喜獲得 <strong id="tokenReward">5 </strong><strong>代幣</strong> 回饋！
+										</h6>
+										<small class="text-muted">代幣已自動存入您的錢包，可於下次消費折抵使用</small>
+									</div>
+								</div>
+							</div>
+
+							<div
+								class="alert alert-info bg-info bg-opacity-10 border-info mb-4">
+								<i class="fas fa-info-circle me-2"></i> 電子票券將於活動前 3 天開放下載，届時會以
+								Email 通知您
+							</div>
+
+							<div class="d-flex justify-content-center gap-3">
+								<a href="dashboard.html#orders" class="btn btn-primary"> <i
+									class="fas fa-list me-2"></i>查看訂單
+								</a> <a href="/" class="btn btn-outline-secondary"> <i
+									class="fas fa-home me-2"></i>回首頁
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Order Summary Sidebar -->
+			<div class="col-lg-4">
+				<div class="card bg-dark border-secondary sticky-top"
+					style="top: 100px;">
+					<div class="card-header bg-transparent border-secondary">
+						<h5 class="mb-0">訂單摘要</h5>
+					</div>
+					<div class="card-body">
+						<!--                         <div class="d-flex justify-content-between mb-2"> -->
+						<!--                              <span class="text-muted">票券小計</span>NT$ -->
+						<!--                              <span>NT$ 2,800</span>  -->
+						<!--                         </div> -->
+						<div class="d-flex justify-content-between mb-2">
+							<span class="text-muted">票券小計</span>
+							<div class="prod_price_T">
+								<span>NT$</span> <span th:text="${session.checkoutData.total}">450</span>
+							</div>
+						</div>
+						<!--<div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">服務費</span>
+                            <span>NT$ 0</span>
+                        </div>-->
+						<!--                         <div class="d-flex justify-content-between mb-2"> -->
+						<!--                             <span class="text-muted">運費</span> -->
+						<!--                             <span class="text-success">免運費</span> -->
+						<!--                         </div> -->
+						<div class="d-flex justify-content-between mb-2 "
+							id="tokenDiscountRow">
+							<span class="text-muted">代幣折抵</span>
+							<div>
+								<span class="text-danger">-NT$</span> <span id="tokenUsedDisp"
+									class="text-danger" th:text="${session.checkoutData.tokenUsed}">
+									0</span>
+							</div>
+						</div>
+						<hr class="border-secondary">
+						<div class="d-flex justify-content-between">
+							<span class="fw-bold">應付總額</span>
+							<div>
+								<span class="fw-bold text-success fs-4">NT$</span> <span
+									id="payableDisp" class="fw-bold text-success fs-4"
+									th:text="${session.checkoutData.payable}">3,250</span>
+							</div>
+						</div>
+						<div class="text-end">
+							<small class="text-success"> <i class="fas fa-coins me-1"></i>可獲得
+								54 Momento 代幣
+							</small>
+						</div>
+					</div>
+					<div class="card-footer bg-transparent border-secondary">
+						<div class="d-flex align-items-center text-muted small">
+							<i class="fas fa-shield-alt me-2"></i> SSL 安全加密，保護您的交易資訊
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="/js/common.js"></script>
+	<script src="/js/common/event-checkout.js"></script>
+	<script>
+
+		function calcTotal(ischecked){	
+			const isChecked = document.getElementById('useTokensCheckout').checked; 
+			fetch(`/member/event/checkout/refresh-summary?useToken=${isChecked}`, {
+		        method: 'POST'
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        // 拿到後端算好的值，直接更新畫面上的數字
+		        document.getElementById('tokenUsedDisp').innerText = data.tokenUsed;
+		        document.getElementById('payableDisp').innerText = data.payable;
+		    });
+		}
+		function sendOrder(orderData) {
+			const isChecked = document.getElementById('useTokensCheckout').checked; 
+			orderData.useToken = isChecked;
+		    fetch('/member/event/checkout/create', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify(orderData) // 把物件轉成 JSON 字串
+		    })
+		    .then(async res => {
+		        if (res.ok) {
+		        	const data = await res.json();
+		        	const step3 = document.querySelector('[data-step="3"]');
+		        	const step4 = document.querySelector('[data-step="4"]');
+		        	const content4 = document.getElementById("step4");
+		        	
+		            
+		        	step3.classList.remove("active");
+		        	step3.classList.add("completed");
+		        	step4.classList.add("active");
+		        	content4.classList.add("active");
+		        	
+		        	document.getElementById("eventOrderId").innerText = data.eventOrderId;
+		            document.getElementById("totalQuantity").innerText = data.totalQuantity;
+		            document.getElementById("tokenReward").innerText = data.tokenReward; 
+		            document.getElementById("payable").innerText = data.payable;
+		        } else {
+		            const errorMsg = await res.text();
+		            alert("失敗：" + errorMsg);
+		        }
+		    })
+		    .catch(err => console.error("網路錯誤:", err));
+		}
+		
+		document.getElementById('btnSubmitOrder').addEventListener('click', function() {
+		    // 1. 拿到代幣勾選狀態 (從 checkbox 拿) & eventId
+		    const useToken = document.getElementById('useTokensCheckout').checked;	
+
+		    // 2. 拿到票券清單 (需要遍歷畫面上的票券項目)
+		    const items = [];
+		    document.querySelectorAll('.order-item').forEach(row => {
+		        items.push({
+		            ticketId: row.dataset.ticketId, // 建議在 HTML 用 data-ticket-id 存放
+		            quantity: row.querySelector('.quantity').innerText
+		        });
+		    });
+
+		    // 3. 組合成 DTO 結構
+		    const orderData = {
+		        isUseToken: useToken,
+		        items: items,
+		    };
+		    // 發送請求
+		    sendOrder(orderData);
+		});
+	</script>
+</body>
+
+</html>
+

@@ -4,7 +4,6 @@ import com.momento.event.model.*;
 import com.momento.eventmanage.dto.EventCreateDTO;
 import com.momento.ticket.model.TicketVO;
 import com.momento.ticket.model.TicketRepository;
-import com.momento.organizer.model.OrganizerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class EventManageServiceImpl implements EventManageService {
     private TypeRepository typeRepository;
 
     @Autowired
-    private OrganizerRepository organizerRepository;
+    private com.momento.organizer.model.OrganizerRepository organizerRepository;
 
     // 圖片儲存路徑
     private static final String UPLOAD_DIR = "uploads/events/";
@@ -49,7 +48,7 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     @Transactional
     public Integer createEvent(EventCreateDTO dto) {
-        // 時間邏輯驗證
+        // 時間邏輯驗證 (僅在兩者皆存在時檢查)
         if (dto.getStartedAt() != null && dto.getEndedAt() != null && !dto.getStartedAt().isBefore(dto.getEndedAt())) {
             throw new RuntimeException("售票開始時間必須早於售票結束時間");
         }
@@ -61,17 +60,18 @@ public class EventManageServiceImpl implements EventManageService {
         EventVO event = new EventVO();
 
         // 設定主辦方
-        // TODO: 從 DTO 取得 organizerId 後設定
-        // OrganizerVO organizer = organizerRepository.findById(dto.getOrganizerId())
-        // .orElseThrow(() -> new RuntimeException("主辦方不存在"));
-        // event.setOrganizer(organizer);
+        com.momento.organizer.model.OrganizerVO organizer = organizerRepository.findById(dto.getOrganizerId())
+                .orElseThrow(() -> new RuntimeException("主辦方不存在"));
+        event.setOrganizer(organizer);
 
-        // 設定活動類型
-        TypeVO type = typeRepository.findById(dto.getTypeId())
-                .orElseThrow(() -> new RuntimeException("活動類型不存在"));
-        event.setType(type);
+        // 設定活動類型 (允許為空)
+        if (dto.getTypeId() != null) {
+            TypeVO type = typeRepository.findById(dto.getTypeId())
+                    .orElse(null); // 若找不到則設為 null，或保留 null
+            event.setType(type);
+        }
 
-        // 設定基本資訊
+        // 設定基本資訊 (允許為空)
         event.setTitle(dto.getTitle());
         event.setPlace(dto.getPlace());
         event.setEventAt(dto.getEventAt());
@@ -310,19 +310,47 @@ public class EventManageServiceImpl implements EventManageService {
                 .orElseThrow(() -> new RuntimeException("活動不存在"));
 
         // 只允許草稿狀態送審
-        // S=0 (草稿), R=0 (初始), R=2 (被駁回)
-        // 為了寬容性，只要是 S=0 都可以送
         if (event.getStatus() != 0) {
             throw new RuntimeException("活動狀態不正確，無法送審");
         }
 
+        // ========== 嚴格驗證 (送審時必填) ==========
+        if (event.getTitle() == null || event.getTitle().trim().isEmpty()) {
+            throw new RuntimeException("活動標題不能為空");
+        }
+        if (event.getType() == null) {
+            throw new RuntimeException("請選擇活動類型");
+        }
+        if (event.getPlace() == null || event.getPlace().trim().isEmpty()) {
+            throw new RuntimeException("活動地點不能為空");
+        }
+        if (event.getEventAt() == null) {
+            throw new RuntimeException("活動舉辦時間不能為空");
+        }
+        if (event.getStartedAt() == null || event.getEndedAt() == null) {
+            throw new RuntimeException("售票時間不能為空");
+        }
+        if (event.getContent() == null || event.getContent().trim().isEmpty()) {
+            throw new RuntimeException("活動內容簡介不能為空");
+        }
+
+        // 檢查票種 (至少一種)
+        List<TicketVO> tickets = ticketRepository.findByEvent_EventId(eventId);
+        if (tickets == null || tickets.isEmpty()) {
+            throw new RuntimeException("至少需要設定一種票種");
+        }
+
+        // 時間邏輯再次確認
+        if (!event.getStartedAt().isBefore(event.getEndedAt())) {
+            throw new RuntimeException("售票開始時間必須早於售票結束時間");
+        }
+        if (event.getEndedAt().isAfter(event.getEventAt())) {
+            throw new RuntimeException("售票結束時間不能晚於活動舉辦時間");
+        }
+
         // 更新狀態: 標記送審時間 -> 變為待審核
         event.setPublishedAt(java.time.LocalDateTime.now());
-        // 保持 S=0, R=0
-
-        // 若之前是駁回狀態 (R=2)，送審後重置為 R=0?
-        // 邏輯: 待審核 = S=0, R=0, P!=null
-        // 所以送審要重置 R=0
+        // 保持 S=0, R=0 (待審核狀態)
         event.setReviewStatus((byte) 0);
 
         eventRepository.save(event);
@@ -355,14 +383,17 @@ public class EventManageServiceImpl implements EventManageService {
 
         // 根據狀態執行不同邏輯
         switch (status) {
-            case 3: // 下架
+            case 1: // 上架
+                event.setStatus((byte) 1);
+                break;
+            case 2: // 取消 (Cancelled)
+                event.setStatus((byte) 2);
+                break;
+            case 3: // 結束/下架 (Closed)
                 event.setStatus((byte) 3);
                 break;
-            case 4: // 取消
-                event.setStatus((byte) 4);
-                break;
             default:
-                throw new RuntimeException("不支援的狀態變更");
+                throw new RuntimeException("無效的狀態值");
         }
 
         // 儲存變更
@@ -380,7 +411,7 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     public Page<EventVO> getOrganizerEvents(
             Integer organizerId,
-            Byte status,
+            java.util.Collection<Byte> statuses,
             Byte reviewStatus,
             String keyword,
             Pageable pageable) {
@@ -388,7 +419,7 @@ public class EventManageServiceImpl implements EventManageService {
         // 使用 Repository 的複合查詢方法直接在資料庫層級進行篩選和分頁
         return eventRepository.searchOrganizerEvents(
                 organizerId,
-                status,
+                statuses,
                 reviewStatus,
                 keyword,
                 pageable);
@@ -413,6 +444,36 @@ public class EventManageServiceImpl implements EventManageService {
         // 3. 總收藏數
         long totalFavorites = eventFavRepository.countByOrganizerId(organizerId);
 
-        return new com.momento.eventmanage.dto.EventStatsDTO(activeCount, pendingCount, totalFavorites);
+        // 4. 已駁回活動 (S=0, R=2, P=null)
+        long rejectedCount = eventRepository.countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(
+                organizerId, (byte) 0, (byte) 2);
+
+        // 5. 已結束/取消 (S=2,3)
+        long endedCount = eventRepository.countByOrganizer_OrganizerIdAndStatusIn(organizerId,
+                java.util.List.of((byte) 2, (byte) 3));
+
+        // 6. 全部 (非草稿)
+        // 合計所有非草稿分類
+        long allCount = activeCount + pendingCount + rejectedCount + endedCount;
+
+        return new com.momento.eventmanage.dto.EventStatsDTO(activeCount, pendingCount, totalFavorites, rejectedCount,
+                endedCount, allCount);
+    }
+
+    @Override
+    public com.momento.event.dto.EventDetailDTO getEventDetail(Integer eventId) {
+        EventVO event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        List<com.momento.ticket.model.TicketVO> tickets = ticketRepository.findByEvent_EventId(eventId);
+        List<EventImageVO> images = eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId);
+
+        com.momento.event.dto.EventDetailDTO dto = new com.momento.event.dto.EventDetailDTO();
+        dto.setEvent(event);
+        dto.setTickets(tickets);
+        dto.setImages(images);
+        dto.setOrganizer(event.getOrganizer());
+
+        return dto;
     }
 }
