@@ -1,5 +1,7 @@
 package com.momento.emp.controller;
 
+import com.momento.emp.model.EmpAuthorityVO;
+import com.momento.emp.model.BackendFunctionVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
 import com.momento.notify.model.SystemNotifyService;
@@ -24,11 +26,9 @@ public class EmpController {
 
     @Autowired
     private ProdService prodSvc;
-    
+
     @Autowired
     private ProdSortService prodSortSvc;
-    @Autowired
-    private SystemNotifyService systemNotifyService;
 
     /**
      * 顯示登入頁面
@@ -43,7 +43,7 @@ public class EmpController {
         return "pages/admin/login";
     }
 
-    /* 處理登入請求*/
+    /* 處理登入請求 */
 
     @PostMapping("/login")
     public String login(
@@ -78,7 +78,7 @@ public class EmpController {
         }
     }
 
-    /* 登出*/
+    /* 登出 */
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
@@ -86,8 +86,8 @@ public class EmpController {
         return "redirect:/admin/login";
     }
 
-    /* 後台首頁 (Dashboard)*/
-    
+    /* 後台首頁 (Dashboard) */
+
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, ModelMap model) {
         EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
@@ -97,14 +97,26 @@ public class EmpController {
 
         model.addAttribute("loginEmp", loginEmp);
         model.addAttribute("isSuperAdmin", empSvc.isSuperAdmin(loginEmp.getEmpId()));
-		model.addAttribute("prodSortList", prodSortSvc.getAll());
-		if (!model.containsAttribute("prodList")) {
-			model.addAttribute("prodList", prodSvc.getAllProds());
-		}
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
 
-        //pei的
-        model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
-		
+        // 獲取權限列表
+        List<EmpAuthorityVO> authorities = empSvc.getEmployeePermissions(loginEmp.getEmpId());
+        model.addAttribute("authorities", authorities);
+
+        // 提取權限 ID 集合以便前端比對 (修正為 java.util.stream.Collectors)
+        java.util.Set<Integer> activeFunctionIds = authorities.stream()
+                .map(EmpAuthorityVO::getFunctionId)
+                .collect(java.util.stream.Collectors.toSet());
+        model.addAttribute("activeFunctionIds", activeFunctionIds);
+
+        // 員工管理所需的列表
+        model.addAttribute("empListData", empSvc.getAllEmployees());
+        model.addAttribute("allFunctions", empSvc.getAllFunctions());
+
+        if (!model.containsAttribute("prodList")) {
+            model.addAttribute("prodList", prodSvc.getAllProds());
+        }
+
         return "pages/admin/dashboard";
     }
 
@@ -200,35 +212,36 @@ public class EmpController {
 
         return "redirect:/admin/listAllEmp";
     }
-    
-    //商品審核裡面的搜尋商品
-	@PostMapping("/searchProds")
-	public String searchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
+
+    // 商品審核裡面的搜尋商品
+    @PostMapping("/searchProds")
+    public String searchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
         EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
         if (loginEmp == null) {
             return "redirect:/admin/login";
         }
-        
-		ra.addFlashAttribute("prodList",prodSvc.searchProds(s));
 
-		return "redirect:/admin/dashboard#product-approval";
-	}
-	
-	//審核商品詳頁
-	@GetMapping("/api/getOneProd")
-	@ResponseBody
-	public ProdDTO getOneProd(@RequestParam("prodId") String prodId) {
+        ra.addFlashAttribute("prodList", prodSvc.searchProds(s));
 
-		ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
-		
-		return prod;
-	}
-	
-	//變更商品審核狀態
-	@PostMapping("/changeReviewStatus")
-	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("reviewStatus") Byte reviewStatus) {
-		System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
-		prodSvc.updateProdReviewStatus(prodId, reviewStatus);
-		return "redirect:/admin/dashboard#product-approval";
-	}
+        return "redirect:/admin/dashboard#product-approval";
+    }
+
+    // 審核商品詳頁
+    @GetMapping("/api/getOneProd")
+    @ResponseBody
+    public ProdDTO getOneProd(@RequestParam("prodId") String prodId) {
+
+        ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
+
+        return prod;
+    }
+
+    // 變更商品審核狀態
+    @PostMapping("/changeReviewStatus")
+    public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
+            @RequestParam("reviewStatus") Byte reviewStatus) {
+        System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
+        prodSvc.updateProdReviewStatus(prodId, reviewStatus);
+        return "redirect:/admin/dashboard#product-approval";
+    }
 }

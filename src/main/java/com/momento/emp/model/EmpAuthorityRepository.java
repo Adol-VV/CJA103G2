@@ -15,4 +15,9 @@ public interface EmpAuthorityRepository extends JpaRepository<EmpAuthorityVO, In
     List<EmpAuthorityVO> findByFunctionId(Integer functionId);
 
     void deleteByEmpIdAndFunctionId(Integer empId, Integer functionId);
+
+    // 用於更新權限時，先清空該員工所有舊權限
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM EmpAuthorityVO ea WHERE ea.empId = ?1")
+    void deleteByEmpId(Integer empId);
 }
