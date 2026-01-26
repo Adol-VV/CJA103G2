@@ -2,26 +2,18 @@ package com.momento.emp.controller;
 
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
+import com.momento.notify.model.SystemNotifyService;
 import com.momento.prod.dto.ProdDTO;
-import com.momento.prod.model.ProdImageVO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
-import com.momento.prod.model.ProdVO;
-
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -35,7 +27,9 @@ public class EmpController {
     
     @Autowired
     private ProdSortService prodSortSvc;
-    
+    @Autowired
+    private SystemNotifyService systemNotifyService;
+
     /**
      * 顯示登入頁面
      */
@@ -107,6 +101,9 @@ public class EmpController {
 		if (!model.containsAttribute("prodList")) {
 			model.addAttribute("prodList", prodSvc.getAllProds());
 		}
+
+        //pei的
+        model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
 		
         return "pages/admin/dashboard";
     }

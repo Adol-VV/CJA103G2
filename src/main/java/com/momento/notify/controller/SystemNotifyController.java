@@ -1,23 +1,25 @@
 package com.momento.notify.controller;
 
+import com.momento.emp.model.EmpVO;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.notify.model.SystemNotifyVO;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -28,26 +30,42 @@ public class SystemNotifyController {
     SystemNotifyService sysNotifySvc;
 
     @PostMapping("sendMessageNotify")
-    public String sendMessageNotify(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>>  sendMessageNotify(
             @NotEmpty(message = "通知類型: 請勿空白") @RequestParam("type") String type,
             @NotEmpty(message="通知標題: 請勿空白") @RequestParam("title") String title,
             @NotEmpty(message="通知內容: 請勿空白") @RequestParam("rawContent") String rawContent,
             @RequestParam(value = "url", required = false) String url,
             @RequestParam("recipientGroup") String recipientGroup,
-            @RequestParam("empId") Integer empId, // 暫時由參數接收
-            ModelMap model, RedirectAttributes redirectAttributes) {
+            HttpSession session) {
 
-        try{
-            sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, empId);
-            redirectAttributes.addFlashAttribute("successMessage", "通知已成功發送！");
-        } catch (Exception e){
-            redirectAttributes.addFlashAttribute("errorMessage", "發送失敗：" + e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+
+        // 從Session取得登入員工
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            response.put("success", false);
+            response.put("message", "連線逾時，請重新登入");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        List<Object[]> records = sysNotifySvc.getMessageNotifyRecords();
-        model.addAttribute("massNotifyRecords", records);
+        try {
+            // 執行發送
+            sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, loginEmp.getEmpId());
 
-        return "redirect:/admin/dashboard#notification-composer";
+            // JSON 回傳資料
+            response.put("success", true);
+            response.put("message", "通知已成功發送！");
+
+            response.put("newRecords", sysNotifySvc.getMessageNotifyRecords());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "發送失敗：" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
         }
 
 
