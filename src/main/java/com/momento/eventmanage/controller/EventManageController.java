@@ -386,31 +386,106 @@ public class EventManageController {
         }
 
         /**
-         * 取得單一活動詳情 (AJAX)
+         * 取得活動詳細資料 (供編輯器使用)
          * GET /organizer/event/api/{id}
          */
         @GetMapping("/api/{id}")
         @ResponseBody
-        public ResponseEntity<com.momento.event.dto.EventDetailDTO> getEventDetail(
+        public ResponseEntity<Map<String, Object>> getEventDetailApi(
                         @PathVariable Integer id,
                         HttpSession session) {
+
+                System.out.println("📥 收到請求: GET /organizer/event/api/" + id);
 
                 // 檢查主辦方登入狀態
                 com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
                                 .getAttribute("loginOrganizer");
+
                 if (organizer == null) {
-                        return ResponseEntity.status(401).build();
+                        return ResponseEntity.status(401)
+                                        .body(Map.of("success", false, "message", "請先登入"));
                 }
 
-                // 檢查活動是否屬於該主辦方
-                if (!isEventOwner(id, organizer.getOrganizerId())) {
-                        return ResponseEntity.status(403).build();
+                try {
+                        // 檢查活動是否屬於該主辦方
+                        if (!isEventOwner(id, organizer.getOrganizerId())) {
+                                return ResponseEntity.status(403)
+                                                .body(Map.of("success", false, "message", "無權限查看此活動"));
+                        }
+
+                        // 使用 Service 層方法 取得完整詳情 DTO
+                        com.momento.event.dto.EventDetailDTO eventDetail = eventManageService.getEventDetail(id);
+                        com.momento.event.model.EventVO eventCore = eventDetail.getEvent();
+
+                        // 取得最新票種
+                        List<com.momento.ticket.model.TicketVO> tickets = ticketRepository.findByEvent_EventId(id);
+
+                        // === 手動建構回應,避免循環引用與格式問題 ===
+                        java.util.Map<String, Object> response = new java.util.HashMap<>();
+
+                        // 1. 活動核心資料
+                        java.util.Map<String, Object> eventData = new java.util.HashMap<>();
+                        eventData.put("eventId", eventCore.getEventId());
+                        eventData.put("title", eventCore.getTitle());
+                        eventData.put("place", eventCore.getPlace());
+                        eventData.put("content", eventCore.getContent());
+                        eventData.put("eventAt", eventCore.getEventAt());
+                        eventData.put("startedAt", eventCore.getStartedAt());
+                        eventData.put("endedAt", eventCore.getEndedAt());
+                        eventData.put("type", eventDetail.getEvent().getType()); // 保持 DTO 抓取到的 Type
+
+                        // 2. 圖片資料 (只取必要欄位,避免循環)
+                        List<Map<String, Object>> imagesList = new java.util.ArrayList<>();
+                        if (eventDetail.getImages() != null) {
+                                for (com.momento.event.model.EventImageVO img : eventDetail.getImages()) {
+                                        java.util.Map<String, Object> imgData = new java.util.HashMap<>();
+                                        imgData.put("eventImageId", img.getEventImageId());
+                                        imgData.put("imageUrl", img.getImageUrl());
+                                        imagesList.add(imgData);
+                                }
+                        }
+
+                        // 3. 票種資料 (計算已售數量)
+                        List<Map<String, Object>> ticketsList = new java.util.ArrayList<>();
+                        for (com.momento.ticket.model.TicketVO ticket : tickets) {
+                                java.util.Map<String, Object> ticketData = new java.util.HashMap<>();
+                                ticketData.put("ticketId", ticket.getTicketId());
+                                ticketData.put("ticketName", ticket.getTicketName());
+                                ticketData.put("price", ticket.getPrice());
+                                ticketData.put("total", ticket.getTotal());
+                                // 計算已售數量: 總數 - 剩餘
+                                int sold = (ticket.getTotal() != null && ticket.getRemain() != null)
+                                                ? (ticket.getTotal() - ticket.getRemain())
+                                                : 0;
+                                ticketData.put("sold", sold);
+                                ticketsList.add(ticketData);
+                        }
+
+                        response.put("event", eventData);
+                        response.put("tickets", ticketsList);
+                        response.put("images", imagesList);
+
+                        // 4. 審核狀態與原因
+                        response.put("reviewStatus", eventCore.getReviewStatus());
+                        response.put("status", eventCore.getStatus());
+                        response.put("publishedAt", eventCore.getPublishedAt());
+
+                        if (eventCore.getReviewStatus() == 2) {
+                                String rejectReason = eventDetail.getRejectReason() != null
+                                                ? eventDetail.getRejectReason()
+                                                : "內容不符規範,請修改後重新送審";
+                                response.put("rejectReason", rejectReason);
+                        }
+
+                        System.out.println("✅ 回應成功,Event ID: " + id);
+                        return ResponseEntity.ok(response);
+
+                } catch (Exception e) {
+                        System.err.println("❌ 處理失敗: " + e.getMessage());
+                        e.printStackTrace();
+                        return ResponseEntity.badRequest()
+                                        .body(Map.of("success", false, "message", e.getMessage()));
                 }
-
-                // 取得詳情
-                com.momento.event.dto.EventDetailDTO dto = eventManageService.getEventDetail(id);
-
-                return ResponseEntity.ok(dto);
         }
 
         /**

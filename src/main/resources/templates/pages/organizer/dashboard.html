@@ -34,7 +34,7 @@
                 <i class="fas fa-bars fs-5"></i>
             </button>
 
-            <a class="navbar-brand fw-bold" th:href="@{/index}">Momento <span class="badge bg-secondary ms-2"
+            <a class="navbar-brand fw-bold" th:href="@{/}">Momento <span class="badge bg-secondary ms-2"
                     style="font-size: 0.7rem;">Organizer</span></a>
 
             <div class="d-flex align-items-center gap-3 ms-auto">
@@ -147,6 +147,10 @@
                 <!-- Event Create Panel -->
                 <div class="content-panel" id="panel-event-create"
                     th:insert="pages/organizer/partials/panel-event-create"></div>
+
+                <!-- Event Edit Panel -->
+                <div class="content-panel" id="panel-event-edit" th:insert="pages/organizer/partials/panel-event-edit">
+                </div>
 
                 <!-- Orders Panel -->
                 <div class="content-panel" id="panel-orders" th:insert="pages/organizer/partials/panel-orders"></div>

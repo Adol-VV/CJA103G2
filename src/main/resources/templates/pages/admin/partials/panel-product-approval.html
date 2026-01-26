@@ -19,22 +19,22 @@
             <ul class="nav nav-tabs card-header-tabs" id="productReviewTabs">
                 <li class="nav-item">
                     <a class="nav-link active text-white" href="#" data-status="all">
-                        全部商品 <span class="badge bg-info ms-1">4</span>
+                        全部商品 <span class="badge bg-info ms-1 prodcount" >4</span>
                     </a>
                 </li>
                 <li class="nav-item text-muted">
                     <a class="nav-link" href="#" data-status="待審核">
-                        待審核 <span class="badge bg-warning ms-1">4</span>
+                        待審核 <span class="badge bg-warning ms-1  prodcount">4</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-muted" href="#" data-status="未通過">
-                        已駁回 <span class="badge bg-danger ms-1">2</span>
+                        已駁回 <span class="badge bg-danger ms-1  prodcount">2</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-muted" href="#" data-status="通過">
-                        已通過 <span class="badge bg-success ms-1">12</span>
+                        已通過 <span class="badge bg-success ms-1  prodcount">12</span>
                     </a>
                 </li>
             </ul>
@@ -68,7 +68,7 @@
                             <td><span class="badge bg-secondary" th:text="${prod.sortName}">收藏藝品</span></td>
                             <td th:text="|NT$ ${prod.prodPrice}|">NT$ 3,200</td>
                             <td th:text="${prod.createdAt}">2024/12/26</td>
-                            <td><span class="badge bg-warning text-dark" th:text="${prod.reviewStatus}">待審核</span></td>
+                            <td><span class="badge text-white showReviewStatus" th:text="${prod.reviewStatus}">待審核</span></td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-info btn-review-product" title="查看詳情" th:attr="data-id=${prod.prodId}">

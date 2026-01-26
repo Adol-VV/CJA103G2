@@ -11,6 +11,7 @@ import { initNotifications } from './modules/notifications.js';
 import { initMemberNotify } from './modules/member-notify.js';
 import { initEventList } from './modules/event-list.js';
 import { initEventCreate } from './modules/event-create.js';
+import { initEventEdit } from './modules/event-edit.js';
 import { initOrderManagement } from './modules/orders.js';
 import { initScanner } from './modules/scanner.js';
 import { initProductList } from './modules/product-list.js';
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initMemberNotify();
     initEventList();
     initEventCreate();
+    initEventEdit();
     initOrderManagement();
     initScanner();
     initProductList();

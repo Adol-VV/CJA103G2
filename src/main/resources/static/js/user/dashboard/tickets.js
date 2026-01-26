@@ -53,5 +53,63 @@ const Tickets = {
         });
     }
 };
+window.toggleOrder = function(element, targetId) {
+    // 找到點擊目標最近的那個容器
+    
+	const container = element.closest('.order-container');
+	    if (container) {
+	        container.classList.toggle('active');
+	    }
+
+	    // 2. 根據 ID 切換顯示/隱藏
+	    const detailDiv = document.getElementById(targetId);
+	    if (detailDiv) {
+	        detailDiv.classList.toggle('d-none');
+	    }
+	
+};
+
+$(document).ready(function() {
+    console.log("腳本已載入");
+
+    $(document).on('click', '.btn-show-qr', function() {
+		const eventOrderItemId = $(this).prev().attr("id");
+		fetch(`/member/dashboard/get-uuid-by-id?eventOrderItemId=${eventOrderItemId}`)
+		            .then(response => {
+		                if (!response.ok) throw new Error("網路請求失敗");
+		                return response.json();
+		            })
+		            .then(data => {
+		                // 4. 取得後端回傳的 UUID (例如: QR-EVT009...)
+		                const uuidText = data.uuid; 
+						const eventName = data.eventName;
+		                
+		                // 5. 繪製 QR Code 到你的 <canvas id="qrCanvas">
+		                // 這裡假設你引入的是 qrcode.js
+		                const container = document.getElementById('qrCanvas');
+						const h5_el = document.getElementById("eventName");
+		                
+		                // 清除舊圖案（如果需要）
+						container.innerHTML = "";
+						h5_el.innerText = eventName;
+
+						    // 3. 產生 QR Code (使用傳統 qrcode.js 語法)
+						    new QRCode(container, {
+						        text: uuidText,
+						        width: 180,
+						        height: 180,
+						        colorDark : "#000000",
+						        colorLight : "#ffffff",
+						        correctLevel : QRCode.CorrectLevel.H
+						    });
+		            })
+		            .catch(err => {
+		                console.error("錯誤:", err);
+		                alert("無法取得票券資訊");
+		            });
+					
+        
+    });
+});
 
 export default Tickets;

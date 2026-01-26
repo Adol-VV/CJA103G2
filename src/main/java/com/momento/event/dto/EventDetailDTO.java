@@ -37,6 +37,9 @@ public class EventDetailDTO {
     /** 當前會員是否已收藏 */
     private Boolean isFavorited;
 
+    /** 駁回原因 (從通知系統抓取) */
+    private String rejectReason;
+
     /** 相關活動推薦 */
     private List<EventListItemDTO> relatedEvents;
 
@@ -104,6 +107,14 @@ public class EventDetailDTO {
 
     public void setIsFavorited(Boolean isFavorited) {
         this.isFavorited = isFavorited;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 
     public List<EventListItemDTO> getRelatedEvents() {

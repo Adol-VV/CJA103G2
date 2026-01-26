@@ -17,5 +17,7 @@ public class EventWebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadPath);
+
+        System.out.println("📂 靜態資源路徑設定: " + uploadPath);
     }
 }

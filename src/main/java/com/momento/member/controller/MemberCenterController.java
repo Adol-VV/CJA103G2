@@ -50,7 +50,7 @@ public class MemberCenterController {
 			session.setAttribute("loginMember", member);
 			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register") || targetUrl.contains("/forgot-password")) {
 
-				targetUrl = "/index"; // 設定一個預設的跳轉頁面
+				targetUrl = "/"; // 設定一個預設的跳轉頁面
 
 			}
 			return "redirect:" + targetUrl;

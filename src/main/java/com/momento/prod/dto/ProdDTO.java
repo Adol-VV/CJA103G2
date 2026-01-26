@@ -15,7 +15,7 @@ public class ProdDTO {
     private Integer sortId;
     private String sortName;
     private String createdAt;
-    private byte prodStatus;
+    private String prodStatus;
     private String reviewStatus;
     private String mainImageUrl; // 存儲第一張圖片  
 	private List<String> prodImages = new ArrayList<String>();
@@ -79,10 +79,10 @@ public class ProdDTO {
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
-	public byte getProdStatus() {
+	public String getProdStatus() {
 		return prodStatus;
 	}
-	public void setProdStatus(byte prodStatus) {
+	public void setProdStatus(String prodStatus) {
 		this.prodStatus = prodStatus;
 	}
 	public String getReviewStatus() {

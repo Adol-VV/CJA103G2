@@ -1,19 +1,23 @@
 package com.momento.organizer.controller;
 
-import com.momento.notify.model.OrganizerNotifyService;
-import com.momento.notify.model.OrganizerNotifyVO;
+import com.momento.emp.model.EmpVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
-import jakarta.servlet.http.HttpSession;
+import com.momento.prod.model.ProdService;
+import com.momento.prod.model.ProdSortService;
+import com.momento.prod.model.ProdVO;
+
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/organizer")
@@ -21,8 +25,12 @@ public class OrganizerCenterController {
 
     @Autowired
     private OrganizerService organizerService;
+
     @Autowired
-    private OrganizerNotifyService organizerNotifyService;
+    private ProdService prodSvc;
+    
+    @Autowired
+    private ProdSortService prodSortSvc;
 
 
     @GetMapping("/login")
@@ -82,15 +90,11 @@ public class OrganizerCenterController {
             return "redirect:/organizer/login";
         }
         model.addAttribute("organizer", organizer);
-
-        //pei
-        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
-        // 從資料庫撈出歷史紀錄
-        OrganizerVO organizerVO = (OrganizerVO) session.getAttribute("loginOrganizer");
-        if (organizer != null) {
-            List<OrganizerNotifyVO> notifyListData = organizerNotifyService.getByOrgId(organizer.getOrganizerId());
-            model.addAttribute("notifyListData", notifyListData);
-        }
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
+		if (!model.containsAttribute("prodList")) {
+			model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
+		}
+		model.addAttribute("prodVO",new ProdVO());
         return "pages/organizer/dashboard";
     }
 
@@ -285,4 +289,42 @@ public class OrganizerCenterController {
 
         return "redirect:/organizer/dashboard#settings";
     }
+    
+    //商品列表裡面的搜尋商品
+	@PostMapping("/orgSearchProds")
+	public String orgSearchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+		ra.addFlashAttribute("prodList",prodSvc.orgSearchProds(organizer.getOrganizerId(),s));
+
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//變更商品上下架狀態
+	@PostMapping("/changeProdStatus")
+	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
+		prodSvc.updateProdStatus(prodId, prodStatus);
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//新增商品
+	@PostMapping("/addProd")
+	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
+        prodVO.getEmpVO().setEmpId(8);
+        prodVO.setCreatedAt(LocalDateTime.now());
+        prodVO.setUpdatedAt(LocalDateTime.now());
+        prodVO.setProdStatus((byte) 0);
+        prodVO.setReviewStatus((byte) 0);
+        
+        
+        prodSvc.addProd(prodVO);
+        return "redirect:/organizer/dashboard#product-list";
+	}
 }

@@ -22,6 +22,7 @@ public class TicketVO {
 
 	@ManyToOne
 	@JoinColumn(name = "event_id", referencedColumnName = "event_id")
+	@com.fasterxml.jackson.annotation.JsonIgnore
 	private EventVO event;
 
 	@Column(name = "price")

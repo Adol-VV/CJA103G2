@@ -19,8 +19,8 @@ import com.momento.eventorder.dto.CheckoutDTO;
 import com.momento.eventorder.dto.OrderCreateDTO;
 import com.momento.eventorder.dto.SelectionFormDTO;
 import com.momento.eventorder.dto.TicketItemsDTO;
+import com.momento.eventorder.model.CreateOrderService;
 import com.momento.eventorder.model.EventOrderItemVO;
-import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberVO;
 
@@ -31,7 +31,7 @@ import jakarta.servlet.http.HttpSession;
 public class OrderController {
 	
 	@Autowired
-	EventOrderService eventOrderSvc;
+	CreateOrderService eventOrderSvc;
 	
 	// 從event-detail抓到資料放到event-checkout
 	@PostMapping("/checkout")

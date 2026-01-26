@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -46,6 +46,12 @@
             position: sticky;
             top: 100px;
         }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -57,7 +63,7 @@
                     class="fas fa-ticket-alt me-2"></i>Momento</a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/index}">首頁</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">活動</a></li>
                     <li class="nav-item"><a class="nav-link active" th:href="@{/article}">最新消息</a></li>
                 </ul>
@@ -67,18 +73,22 @@
 
     <!-- Hero Image -->
     <div class="position-relative w-100" style="height: 50vh; margin-top: 60px;">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1514525253440-b393452e8d26" class="w-100 h-100"
-            style="object-fit: cover;">
+        <img loading="lazy"
+            th:src="${article.articleImages != null and not #lists.isEmpty(article.articleImages)} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/1920x600/2D5F4F/FFFFFF?text=No+Image'"
+            class="w-100 h-100" style="object-fit: cover;">
         <div class="position-absolute bottom-0 start-0 w-100 bg-gradient-to-t p-5"
             style="background: linear-gradient(to top, #000 0%, transparent 100%);">
             <div class="container">
-                <span class="badge bg-primary mb-3">新人專訪</span>
-                <h1 class="display-3 fw-bold">專訪「草東沒有派對」：在喧囂中尋找寧靜</h1>
+                <span class="badge bg-primary mb-3">專欄</span>
+                <h1 class="display-3 fw-bold" th:text="${article.title}">文章標題</h1>
                 <div class="d-flex align-items-center text-white-50 mt-3">
-                    <img loading="lazy" src="https://via.placeholder.com/40" class="rounded-circle me-2">
-                    <span class="me-3">文 / Momento 資深編輯</span>
-                    <span class="me-3"><i class="far fa-clock"></i> 2024/12/20</span>
-                    <span><i class="fas fa-eye"></i> 12,548 次瀏覽</span>
+                    <img loading="lazy"
+                        th:src="'https://ui-avatars.com/api/?name=' + ${article.organizerVO.name} + '&background=random'"
+                        class="rounded-circle me-2" width="40" height="40">
+                    <span class="me-3" th:text="'文 / ' + ${article.organizerVO.name}">文 / Momento 資深編輯</span>
+                    <span class="me-3"><i class="far fa-clock"></i> <span
+                            th:text="${#dates.format(article.createdAt, 'yyyy/MM/dd')}">2024/12/20</span></span>
+                    <!-- <span><i class="fas fa-eye"></i> 12,548 次瀏覽</span> -->
                 </div>
             </div>
         </div>
@@ -89,27 +99,8 @@
         <div class="row">
             <!-- Main Column -->
             <div class="col-lg-8">
-                <div class="article-content">
-                    <p class="lead text-white">「我們從來沒有想過要代表誰，只是誠實地唱出心裡的聲音。」</p>
-
-                    <p>成軍多年，草東沒有派對以其獨特的音樂風格和深刻的歌詞，在獨立樂界佔有一席之地。這次，我們有幸邀請到樂團成員，深入探討他們的新專輯創作理念以及對未來的展望。</p>
-
-                    <h2>關於新專輯的誕生</h2>
-                    <p>這張專輯籌備了整整兩年。主唱巫堵表示：「這兩年間我們經歷了很多，也甚至曾想過要放棄。但音樂就像是我們的救贖，把那些無法言說的情緒，轉化成了旋律。」</p>
-
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"
-                        class="img-fluid rounded my-4 w-100">
-                    <p class="text-center text-muted small">樂團在錄音室的幕後花絮</p>
-
-                    <blockquote>
-                        "有的時候，誠實面對自己的脆弱，比武裝自己更需要勇氣。"
-                    </blockquote>
-
-                    <h2>面對成名後的改變</h2>
-                    <p>隨著知名度大增，他們的每一場演出都一票難求。面對這樣的轉變，吉他手筑筑笑說：「其實我們還是那個在練團室吃便當的樂團，只是便當變高級了一點（笑）。真正的改變是，我們發現這份聲音能傳遞給更多人，這是一份責任。」
-                    </p>
-
-                    <p>最後，他們也透露了明年的巡迴計畫，預計將會踏上更多未曾去過的城市。</p>
+                <div class="article-content" th:utext="${article.content}">
+                    <!-- Content will be replaced by Thymeleaf -->
                 </div>
 
                 <!-- Tags -->
@@ -131,7 +122,7 @@
 
                 <!-- Comments Section -->
                 <div class="section-comments">
-                    <h4 class="mb-4">留言 (58)</h4>
+                    <h4 class="mb-4">留言 (<span th:text="${#lists.size(messages)}">0</span>)</h4>
 
                     <!-- Comment Form -->
                     <div class="d-flex mb-5">
@@ -145,65 +136,36 @@
                     </div>
 
                     <!-- Comment List -->
-                    <div class="comment-item mb-4">
-                        <div class="d-flex">
-                            <img loading="lazy" src="https://via.placeholder.com/50" class="rounded-circle me-3"
-                                width="50" height="50">
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 text-white">MusicLover99</h6>
-                                    <small class="text-muted">2 小時前</small>
-                                </div>
-                                <p class="text-muted mb-2">天啊！太期待新專輯了，一定要買爆！</p>
-                                <div class="d-flex align-items-center">
-                                    <a href="#" class="text-muted small me-3 text-decoration-none">回覆</a>
-                                    <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
-                                        data-bs-target="#reportCommentModal" onclick="setReportCommentId(1)">
-                                        <i class="fas fa-flag me-1"></i>檢舉
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="comment-item mb-4">
-                        <div class="d-flex">
-                            <img loading="lazy" src="https://via.placeholder.com/50" class="rounded-circle me-3"
-                                width="50" height="50">
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 text-white">RockStar_TW</h6>
-                                    <small class="text-muted">5 小時前</small>
-                                </div>
-                                <p class="text-muted mb-2">寫得真好，希望能看到更多獨立樂團的專訪。</p>
-                                <div class="d-flex align-items-center">
-                                    <a href="#" class="text-muted small me-3 text-decoration-none">回覆</a>
-                                    <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
-                                        data-bs-target="#reportCommentModal" onclick="setReportCommentId(2)">
-                                        <i class="fas fa-flag me-1"></i>檢舉
-                                    </a>
+                    <div th:if="${messages != null and not #lists.isEmpty(messages)}">
+                        <div class="comment-item mb-4" th:each="message : ${messages}">
+                            <div class="d-flex">
+                                <img loading="lazy"
+                                    th:src="'https://ui-avatars.com/api/?name=' + ${message.memberVO.name} + '&background=random'"
+                                    class="rounded-circle me-3" width="50" height="50">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 text-white" th:text="${message.memberVO.name}">會員名稱</h6>
+                                        <small class="text-muted"
+                                            th:text="${#dates.format(message.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+                                    </div>
+                                    <p class="text-muted mb-2" th:text="${message.content}">留言內容</p>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="text-muted small me-3 text-decoration-none">回覆</a>
+                                        <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
+                                            data-bs-target="#reportCommentModal"
+                                            th:onclick="'setReportCommentId(' + ${message.messageId} + ')'">
+                                            <i class="fas fa-flag me-1"></i>檢舉
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="comment-item mb-4">
-                        <div class="d-flex">
-                            <img loading="lazy" src="https://via.placeholder.com/50" class="rounded-circle me-3"
-                                width="50" height="50">
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 text-white">IndieMusic_Fan</h6>
-                                    <small class="text-muted">1 天前</small>
-                                </div>
-                                <p class="text-muted mb-2">專訪寫得很有深度，感謝分享！期待他們的演唱會。</p>
-                                <div class="d-flex align-items-center">
-                                    <a href="#" class="text-muted small me-3 text-decoration-none">回覆</a>
-                                    <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
-                                        data-bs-target="#reportCommentModal" onclick="setReportCommentId(3)">
-                                        <i class="fas fa-flag me-1"></i>檢舉
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+
+                    <!-- 無留言時顯示 -->
+                    <div th:if="${messages == null or #lists.isEmpty(messages)}" class="text-center text-muted py-5">
+                        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                        <p>目前還沒有留言，成為第一個留言的人吧！</p>
                     </div>
                 </div>
 
@@ -273,23 +235,24 @@
                             <small class="text-muted"><i class="fas fa-pen-fancy me-2"></i>文章來源</small>
                         </div>
                         <div class="card-body text-center">
-                            <a href="organizer-profile.html" id="authorLink">
+                            <a href="#" id="authorLink">
                                 <img loading="lazy"
-                                    src="https://ui-avatars.com/api/?name=Momento&background=2D5F4F&color=fff&size=128"
+                                    th:src="'https://ui-avatars.com/api/?name=' + ${article.organizerVO.name} + '&background=2D5F4F&color=fff&size=128'"
                                     class="rounded-circle mb-3 border border-secondary p-1" width="80" height="80"
                                     id="authorAvatar">
                             </a>
                             <h5 class="text-white">
-                                <a href="organizer-profile.html" class="text-white text-decoration-none"
-                                    id="authorName">Momento 編輯部</a>
+                                <a href="#" class="text-white text-decoration-none" id="authorName"
+                                    th:text="${article.organizerVO.name}">Momento 編輯部</a>
                             </h5>
-                            <p class="text-muted small mb-3" id="authorDesc">官方編輯團隊，為您帶來第一手的藝文資訊與活動情報。</p>
+                            <p class="text-muted small mb-3" id="authorDesc"
+                                th:text="${article.organizerVO.introduction}">官方編輯團隊，為您帶來第一手的藝文資訊與活動情報。</p>
                             <div class="d-grid gap-2" id="authorActions">
                                 <!-- 若為主辦方文章，顯示主辦方相關按鈕 -->
                             </div>
                         </div>
                         <div class="card-footer border-secondary text-center small text-muted" id="authorStats">
-                            已發布 28 篇文章
+                            <!-- 已發布 28 篇文章 -->
                         </div>
                     </div>
                     <!-- Related Event -->

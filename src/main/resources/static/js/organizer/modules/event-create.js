@@ -54,11 +54,13 @@ export function initEventCreate() {
 
     // Listen for sidebar navigation to reset to "Create" mode
     $(document).on('click', '[data-section="event-create"]', function (e) {
-        // If the click didn't come from the "Edit" button logic, reset to empty
-        if (!e.originalEvent || !$(e.target).closest('[data-action="edit-event"]').length) {
+        // Only reset if it's a direct user click on the sidebar link (not triggered by and edit action)
+        if (e.originalEvent && !window.IS_EDITING_EVENT) {
             console.log('Sidebar Navigation: Resetting Editor to Create Mode');
             if (window.openEventEditor) window.openEventEditor(null);
         }
+        // Always clear the flag after navigation
+        window.IS_EDITING_EVENT = false;
     });
 
     /**
@@ -73,48 +75,94 @@ export function initEventCreate() {
         $('#btnCancelEdit').removeClass('d-none');
 
         try {
+            console.log('loadEventData: Sending AJAX request to /organizer/event/api/' + eventId);
             const response = await $.ajax({
                 url: `/organizer/event/api/${eventId}`,
                 method: 'GET'
             });
 
-            console.log('loadEventData: Success', response);
-            const { event, tickets, images } = response;
+            console.log('loadEventData: Received Response:', response);
 
-            // 填寫基本資訊
-            $('[name="eventName"]').val(event.title);
-            $('[name="eventVenue"]').val(event.place);
+            if (!response || !response.event) {
+                console.error('loadEventData: Invalid response structure', response);
+                alert('系統無法解析活動資料，請聯絡管理員。');
+                return;
+            }
+
+            const event = response.event;
+            const tickets = response.tickets || [];
+            const images = response.images || [];
+
+            console.log('loadEventData: Populating basic fields...');
+            $('#eventCreateForm [name="eventName"]').val(event.title || '');
+            $('#eventCreateForm [name="eventVenue"]').val(event.place || '');
             $('#eventType').val(event.type?.typeId || '');
-            $('#eventContent').val(event.content);
+            $('#eventContent').val(event.content || '');
 
-            // 填寫時間 (格式化為 datetime-local 要求的 YYYY-MM-DDTHH:mm)
-            if (event.eventAt) $('#eventDateTime').val(event.eventAt.substring(0, 16));
-            if (event.startedAt) $('#saleStart').val(event.startedAt.substring(0, 16));
-            if (event.endedAt) $('#saleEnd').val(event.endedAt.substring(0, 16));
+            // 填寫時間 (強化格式化功能，處理陣列或字串)
+            const formatTime = (timeData) => {
+                if (!timeData) return '';
+                console.log('formatTime processing:', timeData);
 
-            // 處理圖片
-            if (images && images.length > 0) {
-                uploadedBannerUrl = images[0].imageUrl;
-                $('#mainImagePreview').attr('src', uploadedBannerUrl);
+                // 如果是陣列 [2026, 1, 26, 18, 30]
+                if (Array.isArray(timeData)) {
+                    const y = timeData[0];
+                    const m = String(timeData[1]).padStart(2, '0');
+                    const d = String(timeData[2]).padStart(2, '0');
+                    const hh = String(timeData[3] || 0).padStart(2, '0');
+                    const mm = String(timeData[4] || 0).padStart(2, '0');
+                    return `${y}-${m}-${d}T${hh}:${mm}`;
+                }
+
+                // 如果是字串
+                if (typeof timeData === 'string') {
+                    return timeData.replace(' ', 'T').substring(0, 16);
+                }
+                return '';
+            };
+
+            console.log('loadEventData: Setting date fields...');
+            $('#eventDateTime').val(formatTime(event.eventAt));
+            $('#saleStart').val(formatTime(event.startedAt));
+            $('#saleEnd').val(formatTime(event.endedAt));
+
+            // 處理圖片 (主視覺)
+            console.log('loadEventData: Handling images...');
+            if (images && images.length > 0 && images[0].imageUrl) {
+                let imgUrl = images[0].imageUrl;
+                if (imgUrl && !imgUrl.startsWith('/') && !imgUrl.startsWith('http')) {
+                    imgUrl = '/' + imgUrl;
+                }
+                uploadedBannerUrl = imgUrl;
+                $('#mainImagePreview').attr('src', imgUrl);
                 $('.upload-placeholder').addClass('d-none');
                 $('.upload-preview').removeClass('d-none');
+            } else {
+                uploadedBannerUrl = '';
+                $('.upload-preview').addClass('d-none');
+                $('.upload-placeholder').removeClass('d-none');
             }
 
             // 渲染票種
+            console.log('loadEventData: Rendering tickets...');
             renderTicketZones(tickets);
 
             // 處理駁回原因
             if (event.reviewStatus === 2) {
+                console.log('loadEventData: Rejection detect, showing reason.');
                 $('#rejectReasonAlert').removeClass('d-none');
-                $('#rejectReasonText').text(event.note || '內容不符規範，請修改後重新送審。');
+                $('#rejectReasonText').text(response.rejectReason || '內容不符規範，請修改後重新送審。');
                 $('#btnSubmitReview').html('<i class="fas fa-paper-plane me-1"></i>重新送審');
             } else {
                 $('#rejectReasonAlert').addClass('d-none');
+                $('#btnSubmitReview').html('<i class="fas fa-paper-plane me-1"></i>送出審核');
             }
 
+            console.log('loadEventData: ALL STEPS COMPLETED SUCCESSFULLY');
+
         } catch (error) {
-            console.error('loadEventData: Failed', error);
-            alert('載入活動資料失敗');
+            console.error('loadEventData: CRASHED!', error);
+            alert('載入活動資料時發生程式錯誤，請查看控制台報告。');
         }
     }
 
@@ -234,40 +282,49 @@ export function initEventCreate() {
         validateTimeSequence();
     });
 
-    // ========== 圖片上傳 (優化) ==========
-    // Note: Now using <label for="mainImageInput">, so manual .click() is not needed
-    $(document).on('click', '#mainImageUpload', function (e) {
-        console.log('mainImageUpload: Box clicked');
-        // If clicking remove button, stop propagation
-        if ($(e.target).closest('.btn-remove-preview').length) {
-            e.preventDefault();
-            return;
-        }
-    });
+    // ========== 圖片上傳處理 ==========
 
-    $(document).on('click', '.btn-remove-preview', function (e) {
-        e.stopPropagation();
-        $('#mainImagePreview').attr('src', '');
-        $('.upload-preview').addClass('d-none');
-        $('.upload-placeholder').removeClass('d-none');
-        uploadedBannerUrl = '';
-        $('#mainImageInput').val(''); // Clear file input
-    });
-
+    // 監聽圖片選擇
     $(document).on('change', '#mainImageInput', function (e) {
         const file = e.target.files[0];
-        console.log('mainImageInput: File selected', file);
         if (!file) return;
 
-        // Show Loading
-        const $uploadZone = $('#mainImageUpload');
-        const $placeholder = $uploadZone.find('.upload-placeholder');
-        const originalPlaceholderHtml = $placeholder.html();
+        // 驗證檔案類型
+        if (!file.type.startsWith('image/')) {
+            alert('請選擇圖片檔案!');
+            this.value = '';
+            return;
+        }
 
-        $placeholder.html('<div class="spinner-border text-primary mb-2"></div><p>上傳中...</p>');
+        // 驗證檔案大小 (5MB)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('圖片大小不能超過 5MB!');
+            this.value = '';
+            return;
+        }
 
+        // 顯示本地預覽 (立即反饋)
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#mainImagePreview').attr('src', e.target.result);
+            $('.upload-placeholder').addClass('d-none');
+            $('.upload-preview').removeClass('d-none');
+        };
+        reader.readAsDataURL(file);
+
+        // 上傳到後端
+        uploadImageToServer(file);
+    });
+
+    // 上傳圖片到伺服器
+    function uploadImageToServer(file) {
         const formData = new FormData();
         formData.append('file', file);
+
+        // 顯示上傳中狀態
+        $('.upload-preview').css('opacity', '0.6');
+        $('.upload-preview').append('<div class="upload-spinner position-absolute top-50 start-50 translate-middle"><i class="fas fa-spinner fa-spin fa-2x text-light"></i></div>');
 
         $.ajax({
             url: '/organizer/event/upload-image',
@@ -276,24 +333,51 @@ export function initEventCreate() {
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log('Image upload response', response);
-                if (response.success) {
+                console.log('✅ 圖片上傳成功:', response);
+
+                if (response.success && response.imageUrl) {
                     uploadedBannerUrl = response.imageUrl;
                     $('#mainImagePreview').attr('src', response.imageUrl);
-                    $placeholder.addClass('d-none').html(originalPlaceholderHtml);
-                    $('.upload-preview').removeClass('d-none');
-                    if (window.showToast) window.showToast('圖片上傳成功', 'success');
+
+                    // 移除上傳中狀態
+                    $('.upload-spinner').remove();
+                    $('.upload-preview').css('opacity', '1');
+
+                    // 顯示成功提示
+                    showToast('圖片上傳成功!', 'success');
                 } else {
-                    alert('上傳失敗: ' + response.message);
-                    $placeholder.html(originalPlaceholderHtml);
+                    throw new Error('上傳失敗: ' + (response.message || '未知錯誤'));
                 }
             },
-            error: function (xhr) {
-                console.error('Image upload error', xhr);
-                alert('圖片上傳失敗');
-                $placeholder.html(originalPlaceholderHtml);
+            error: function (xhr, status, error) {
+                console.error('❌ 圖片上傳失敗:', xhr.responseJSON);
+
+                // 移除預覽
+                $('.upload-preview').addClass('d-none');
+                $('.upload-placeholder').removeClass('d-none');
+                $('#mainImageInput').val('');
+
+                // 顯示錯誤訊息
+                const errorMsg = xhr.responseJSON?.message || '圖片上傳失敗,請重試';
+                alert(errorMsg);
             }
         });
+    }
+
+    // 移除圖片預覽
+    $(document).on('click', '.btn-remove-preview', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!confirm('確定要移除此圖片嗎?')) return;
+
+        uploadedBannerUrl = '';
+        $('#mainImagePreview').attr('src', '');
+        $('.upload-preview').addClass('d-none');
+        $('.upload-placeholder').removeClass('d-none');
+        $('#mainImageInput').val('');
+
+        console.log('🗑️ 圖片已移除');
     });
 
     // ========== 新增票種 ==========
@@ -334,153 +418,112 @@ export function initEventCreate() {
         }
     });
 
-    // ========== 資料收集 ==========
-    function collectFormData(isDraft = false) {
-        const eventAtVal = $('#eventDateTime').val();
-        const startedAtVal = $('#saleStart').val();
-        const endedAtVal = $('#saleEnd').val();
+    // ========== 建立活動邏輯 (包含圖片 URL) ==========
 
+    async function createEvent(isDraft = false) {
+        // 驗證必填欄位
         if (!isDraft) {
-            // Strict Validation for Submit
-            if (!validateTimeSequence()) {
-                alert('時間順序不正確，請修正後再試');
-                return null;
+            if (!uploadedBannerUrl) {
+                alert('請上傳活動主視覺圖片!');
+                return;
             }
 
-            if (!eventAtVal || !startedAtVal || !endedAtVal) {
+            // 驗證時間序
+            if (!validateTimeSequence()) {
+                alert('時間順序不正確，請修正後再試');
+                return;
+            }
+
+            if (!$('#eventDateTime').val() || !$('#saleStart').val() || !$('#saleEnd').val()) {
                 alert('請完整填寫所有時間欄位');
-                return null;
+                return;
             }
         }
 
-        const formData = {
-            eventId: $('#editEventId').val() ? parseInt($('#editEventId').val()) : null,
+        const eventId = $('#editEventId').val() ? parseInt($('#editEventId').val()) : null;
+
+        // 組合資料
+        const eventData = {
+            eventId: eventId,
             title: $('[name="eventName"]').val(),
-            typeId: parseInt($('#eventType').val()) || null, // Allow null if not selected
+            typeId: parseInt($('#eventType').val()) || null,
             place: $('[name="eventVenue"]').val(),
-            eventAt: (eventAtVal && eventAtVal.includes(':') && eventAtVal.split(':').length === 2) ? eventAtVal + ':00' : (eventAtVal || null),
-            startedAt: (startedAtVal && startedAtVal.includes(':') && startedAtVal.split(':').length === 2) ? startedAtVal + ':00' : (startedAtVal || null),
-            endedAt: (endedAtVal && endedAtVal.includes(':') && endedAtVal.split(':').length === 2) ? endedAtVal + ':00' : (endedAtVal || null),
+            eventAt: $('#eventDateTime').val() ? $('#eventDateTime').val() + ':00' : null,
+            startedAt: $('#saleStart').val() ? $('#saleStart').val() + ':00' : null,
+            endedAt: $('#saleEnd').val() ? $('#saleEnd').val() + ':00' : null,
             content: $('#eventContent').val(),
-            bannerUrl: uploadedBannerUrl || null,
-            imageUrls: [],
+            bannerUrl: uploadedBannerUrl, // ← 重要!帶上圖片 URL
             tickets: []
         };
 
-        // Draft: Ensure at least Title is present (or some minimal field) - optional requirement from user "any field"
-        // But backend creates entity. Let's just pass what is there.
-        // If everything is empty, backend might create an empty event? 
-        // User said "Have filled in ANY field".
-        // Let's rely on user not clicking save if empty.
-        // Or check if at least title is there? No, user said ANY field.
-
-        $('.ticket-zone-card').each(function () {
-            const price = $(this).find('.zone-price').val();
-            const total = $(this).find('.zone-qty').val();
-
-            formData.tickets.push({
-                ticketId: $(this).find('.zone-id').val() ? parseInt($(this).find('.zone-id').val()) : null,
+        // 收集票種資料
+        $('#ticketZones .ticket-zone-card').each(function () {
+            const ticketId = $(this).find('.zone-id').val();
+            eventData.tickets.push({
+                ticketId: ticketId ? parseInt(ticketId) : null,
                 name: $(this).find('.zone-name').val(),
-                price: price ? parseInt(price) : 0,
-                total: total ? parseInt(total) : 0
+                price: parseInt($(this).find('.zone-price').val()) || 0,
+                total: parseInt($(this).find('.zone-qty').val()) || 0
             });
         });
 
-        return formData;
-    }
+        console.log('📤 送出資料:', eventData);
 
-    // ========== 儲存草稿 ==========
-    $(document).on('click', '#btnSaveDraft', function () {
-        const formData = collectFormData(true);
-        if (!formData) return;
-
-        const btn = $(this);
-        const originalText = btn.html();
-        btn.html('<span class="spinner-border spinner-border-sm me-2"></span>儲存中...').prop('disabled', true);
-
-        const isEdit = !!formData.eventId;
-        const url = isEdit ? `/organizer/event/${formData.eventId}` : '/organizer/event/create';
-        const method = isEdit ? 'PUT' : 'POST';
-
-        $.ajax({
-            url: url,
-            type: method,
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function (response) {
-                if (response.success) {
-                    btn.html('<i class="fas fa-check me-2"></i>已儲存');
-                    if (!isEdit && response.eventId) {
-                        $('#editEventId').val(response.eventId);
-                    }
-                    if (window.showToast) window.showToast('草稿儲存成功', 'success');
-                    setTimeout(() => {
-                        btn.html(originalText).prop('disabled', false);
-                    }, 2000);
-                } else {
-                    alert('儲存失敗: ' + response.message);
-                    btn.html(originalText).prop('disabled', false);
-                }
-            },
-            error: function (xhr) {
-                alert('儲存失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
-                btn.html(originalText).prop('disabled', false);
-            }
-        });
-    });
-
-    // ========== 送出審核 ==========
-    $(document).on('click', '#btnSubmitReview', function () {
-        const isEdit = !!$('#editEventId').val();
-        const confirmMsg = isEdit ? '確定要更新並重新送出審核嗎？' : '確定要送出審核嗎？送出後將無法編輯。';
-        if (!confirm(confirmMsg)) return;
-
-        const formData = collectFormData(false);
-        if (!formData) return;
-
-        const btn = $(this);
-        const originalText = btn.html();
+        const btn = isDraft ? $('#btnSaveDraft') : $('#btnSubmitReview');
+        const originalHtml = btn.html();
         btn.html('<span class="spinner-border spinner-border-sm me-2"></span>處理中...').prop('disabled', true);
 
-        const saveUrl = isEdit ? `/organizer/event/${formData.eventId}` : '/organizer/event/create';
-        const saveMethod = isEdit ? 'PUT' : 'POST';
+        const url = eventId ? `/organizer/event/${eventId}` : '/organizer/event/create';
+        const method = eventId ? 'PUT' : 'POST';
 
-        $.ajax({
-            url: saveUrl,
-            type: saveMethod,
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function (res) {
-                const eventId = isEdit ? formData.eventId : res.eventId;
-                if (res.success || isEdit) {
-                    $.ajax({
-                        url: '/organizer/event/submit/' + eventId,
-                        type: 'POST',
-                        success: function (submitRes) {
-                            if (submitRes.success) {
-                                alert('活動已送出審核！');
-                                Navigation.showSection('events-list');
-                            } else {
-                                alert('送審失敗: ' + submitRes.message);
-                                btn.html(originalText).prop('disabled', false);
-                            }
-                        },
-                        error: function (xhr) {
-                            alert('送審失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
-                            btn.html(originalText).prop('disabled', false);
-                        }
-                    });
+        // 發送請求
+        try {
+            const response = await $.ajax({
+                url: url,
+                method: method,
+                contentType: 'application/json',
+                data: JSON.stringify(eventData)
+            });
+
+            console.log('✅ 處理成功:', response);
+
+            if (response.success) {
+                const targetEventId = eventId || response.eventId;
+
+                if (!isDraft) {
+                    // 如果不是草稿，還要執行送審
+                    await $.post('/organizer/event/submit/' + targetEventId);
+                    alert('活動已送出審核！');
+                    if (window.Navigation) window.Navigation.showSection('events-list');
                 } else {
-                    alert('儲存失敗: ' + res.message);
-                    btn.html(originalText).prop('disabled', false);
+                    alert('草稿儲存成功!');
+                    if (!eventId && response.eventId) {
+                        $('#editEventId').val(response.eventId);
+                    }
                 }
-            },
-            error: function (xhr) {
-                alert('處理失敗: ' + (xhr.responseJSON?.message || '未知錯誤'));
-                btn.html(originalText).prop('disabled', false);
+            } else {
+                alert('處理失敗: ' + (response.message || '未知錯誤'));
             }
-        });
-    });
+        } catch (error) {
+            console.error('❌ 處理失敗:', error);
+            alert('處理失敗: ' + (error.responseJSON?.message || '未知錯誤'));
+        } finally {
+            btn.html(originalHtml).prop('disabled', false);
+        }
+    }
+
+    // 綁定按鈕事件
+    $(document).on('click', '#btnSubmitReview', () => createEvent(false));
+    $(document).on('click', '#btnSaveDraft', () => createEvent(true));
+
+    // 輔助函數: Toast 提示
+    function showToast(message, type = 'info') {
+        if (window.showToast) {
+            window.showToast(message, type);
+        } else {
+            console.log(`[${type}] ${message}`);
+        }
+    }
 
     $(document).on('click', '#btnCancelEdit', function () {
         if (confirm('確定要取消編輯嗎？未儲存的變更將會遺失。')) {
@@ -532,13 +575,14 @@ export function initEventCreate() {
         // 1. 關閉 Modal
         $('#draftsModal').modal('hide');
 
-        // 2. 切換到建立活動區塊
-        // 假設 Navigation.showSection 存在，若不存在則嘗試模擬點擊
+        // 2. 切換到「編輯活動」區塊
         if (window.Navigation && window.Navigation.showSection) {
-            window.Navigation.showSection('event-create');
+            window.Navigation.showSection('event-edit');
         } else {
-            // Fallback: trigger click on sidebar or manually show
-            $('[data-section="event-create"]').trigger('click');
+            // Fallback: trigger click or force show
+            $('.content-panel').removeClass('active');
+            $('#panel-event-edit').addClass('active');
+            history.replaceState(null, '', '#event-edit');
         }
 
         // 3. 載入資料 (延遲確保畫面切換完成)

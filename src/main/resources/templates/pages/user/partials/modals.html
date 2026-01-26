@@ -162,32 +162,3 @@
     </div>
 </div>
 
-<!-- QR Code Modal -->
-<div class="modal fade" id="qrModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: #1A1A1A;">
-            <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title">電子票券入場碼</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center py-5">
-                <h5 class="mb-4 text-white">五月天 [回到那一天]</h5>
-                <div class="bg-white p-3 d-inline-block rounded mb-4">
-                    <canvas id="qrCanvas"></canvas>
-                </div>
-                <p class="text-muted mb-1">訂單編號：<span id="qrOrderId" class="text-primary font-monospace"></span></p>
-                <p class="text-muted small">請於入場時出示此 QR Code</p>
-
-                <div class="alert alert-warning d-inline-block text-start mt-3 small">
-                    <i class="fas fa-exclamation-triangle me-1"></i> 此票券為一次性有效，掃描後即失效。
-                </div>
-
-                <div class="mt-4">
-                    <button class="btn btn-outline-light btn-sm" id="btnDownloadQR">
-                        <i class="fas fa-download me-1"></i> 儲存圖片
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

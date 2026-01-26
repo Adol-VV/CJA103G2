@@ -36,15 +36,15 @@ public class ProdVO implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "ORGANIZER_ID")
-	private OrganizerVO organizerVO;
+	private OrganizerVO organizerVO = new OrganizerVO();
 	
 	@ManyToOne
 	@JoinColumn(name = "SORT_ID")
-	private ProdSortVO prodSortVO;
+	private ProdSortVO prodSortVO = new ProdSortVO();
 	
 	@ManyToOne
 	@JoinColumn(name = "EMP_ID")
-	private EmpVO empVO;
+	private EmpVO empVO = new EmpVO();
 	
 	@Column(name = "PROD_NAME")
 	private String prodName;

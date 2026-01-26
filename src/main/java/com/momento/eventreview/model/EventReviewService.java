@@ -75,7 +75,7 @@ public class EventReviewService {
      * 駁回活動
      */
     @Transactional
-    public void rejectEvent(Integer eventId, String reason) {
+    public void rejectEvent(Integer eventId, String reason, com.momento.emp.model.EmpVO emp) {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
@@ -87,6 +87,7 @@ public class EventReviewService {
             // 發送通知
             OrganizerNotifyVO notify = new OrganizerNotifyVO();
             notify.setOrganizerVO(event.getOrganizer());
+            notify.setEmpVO(emp); // 設定審核員工
             notify.setTitle("活動審核未通過通知: " + event.getTitle());
             notify.setContent("您的活動「" + event.getTitle() + "」未能通過審核。\n退回原因: " + reason);
             notify.setNotifyStatus(0);
