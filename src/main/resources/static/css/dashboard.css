@@ -664,8 +664,8 @@
     /* Initial width */
 }
 
-img.rounded{
-	width: 60px;
+img.rounded {
+    width: 60px;
     height: 60px;
 }
 
@@ -674,7 +674,25 @@ img.prodImage:hover {
     border-radius: 4px;
 }
 
-/* 確保下拉選單不會被後面的內容蓋住 */
+/* 確保下拉選單能浮在內容上方，不佔據導覽列空間 */
 .navbar .dropdown-menu {
-    z-index: 2000 !important;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    left: auto !important;
+    z-index: 3000 !important;
+    margin-top: 0.5rem !important;
+    display: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5) !important;
+}
+
+.navbar .dropdown-menu.show {
+    display: block !important;
+}
+
+/* 防止 Navbar 或其容器裁切下拉選單 */
+.navbar,
+.navbar .container-fluid,
+.navbar .d-flex {
+    overflow: visible !important;
 }
