@@ -1,33 +1,42 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3">活動管理列表</h2>
-    <a href="/organizer/event/create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> 建立新活動
-    </a>
-</div>
+<h2 class="h3 mb-4">活動管理列表</h2>
 
 <div class="card bg-dark border-secondary mb-4">
+    <div class="card-header border-secondary">
+        <ul class="nav nav-tabs card-header-tabs" id="organizer-event-tabs">
+            <li class="nav-item">
+                <a class="nav-link active text-white" href="#" data-tab="all" data-status="">全部 <span
+                        class="badge bg-info ms-1" id="count-all">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="pending" data-review-status="0">
+                    待審核 <span class="badge rounded-pill bg-warning text-dark ms-1" id="count-pending">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="rejected" data-review-status="2">
+                    已駁回 <span class="badge rounded-pill bg-danger ms-1" id="count-rejected">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="published" data-status="1">
+                    上架中 <span class="badge rounded-pill bg-success ms-1" id="count-published">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="ended" data-status="2,3">
+                    已結束/取消 <span class="badge rounded-pill bg-secondary ms-1" id="count-ended">0</span>
+                </a>
+            </li>
+        </ul>
+    </div>
     <div class="card-body">
-        <form method="get" action="/organizer/event/list">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <select name="status" class="form-select bg-dark text-white border-secondary">
-                        <option value="">所有狀態</option>
-                        <option value="0" th:selected="${param.status != null and param.status[0] == '0'}">草稿</option>
-                        <option value="1" th:selected="${param.status != null and param.status[0] == '1'}">待審核</option>
-                        <option value="2" th:selected="${param.status != null and param.status[0] == '2'}">已上架</option>
-                        <option value="3" th:selected="${param.status != null and param.status[0] == '3'}">已下架</option>
-                        <option value="4" th:selected="${param.status != null and param.status[0] == '4'}">已取消</option>
-                    </select>
-                </div>
-                <div class="col-md-9">
-                    <div class="input-group">
-                        <input type="text" name="keyword" class="form-control bg-dark text-white border-secondary"
-                            placeholder="搜尋活動名稱..." th:value="${param.keyword}">
-                        <button type="submit" class="btn btn-outline-secondary">搜尋</button>
-                    </div>
-                </div>
+        <div class="d-flex">
+            <div class="input-group">
+                <input type="text" id="event-search-input" class="form-control bg-dark text-white border-secondary"
+                    placeholder="搜尋活動名稱...">
+                <button type="button" id="btn-event-search" class="btn btn-outline-secondary">搜尋</button>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -38,161 +47,25 @@
                 <tr>
                     <th>活動名稱</th>
                     <th>日期</th>
-                    <th>已售出</th>
-                    <th>營收</th>
                     <th>狀態</th>
-                    <th>操作</th>
+                    <th class="text-end">操作</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Thymeleaf 動態渲染活動列表 -->
-                <tr th:each="event : ${events}" th:attr="data-event-id=${event.eventId}">
-                    <td>
-                        <div class="fw-bold" th:text="${event.title}">活動名稱</div>
-                        <small class="text-muted" th:text="${event.place}">活動地點</small>
-                    </td>
-                    <td th:text="${#temporals.format(event.eventAt, 'yyyy/MM/dd')}">2024/12/31</td>
-                    <td>
-                        <!-- TODO: 已售出票數需要其他成員提供 -->
-                        <div class="progress" style="height: 6px; width: 100px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
-                        </div>
-                        <small class="text-muted">待整合</small>
-                    </td>
-                    <td>
-                        <!-- TODO: 營收需要其他成員提供 -->
-                        <span class="text-muted">待整合</span>
-                    </td>
-                    <td>
-                        <span th:if="${event.status == 0}" class="badge bg-secondary">草稿</span>
-                        <span th:if="${event.status == 1}" class="badge bg-warning">待審核</span>
-                        <span th:if="${event.status == 2}" class="badge bg-success">已上架</span>
-                        <span th:if="${event.status == 3}" class="badge bg-dark">已下架</span>
-                        <span th:if="${event.status == 4}" class="badge bg-danger">已取消</span>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <a th:href="@{/organizer/event/edit/{id}(id=${event.eventId})}"
-                                class="btn btn-sm btn-outline-light" title="編輯活動">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-sm btn-outline-warning" th:if="${event.status == 2}"
-                                th:onclick="'changeEventStatus(' + ${event.eventId} + ', 3)'" title="下架活動">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger"
-                                th:onclick="'changeEventStatus(' + ${event.eventId} + ', 4)'" title="取消活動">
-                                <i class="fas fa-times"></i>
-                            </button>
+            <tbody id="organizer-event-tbody">
+                <tr>
+                    <td colspan="4" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </td>
                 </tr>
-
-                <!-- 無資料時顯示 -->
-                <tr th:if="${events == null or events.isEmpty()}">
-                    <td colspan="6" class="text-center text-muted py-4">
-                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                        尚無活動資料
-                    </td>
-                </tr>
-            </tbody>
-            <tr data-event-id="2">
-                <td>
-                    <div class="fw-bold">2025新年音樂會｜維也納之夜</div>
-                    <small class="text-muted">中山堂中正廳</small>
-                </td>
-                <td>2025/01/01</td>
-                <td>
-                    <div class="progress" style="height: 6px; width: 100px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 65%"></div>
-                    </div>
-                    <small class="text-muted">856 / 1,200</small>
-                </td>
-                <td>NT$ 1.5M</td>
-                <td><span class="badge bg-success">銷售中</span></td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-light btn-edit-event" title="編輯活動">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-info" title="查看數據" onclick="showSection('reports')">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-primary btn-notify-event" title="通知購票者"
-                            onclick="showSection('notify-members')">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-warning btn-takedown-event" title="下架活動">
-                            <i class="fas fa-eye-slash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            <tr data-event-id="3">
-                <td>
-                    <div class="fw-bold">2024 國際動漫節</div>
-                    <small class="text-muted">南港展覽館</small>
-                </td>
-                <td>2024/02/01</td>
-                <td>
-                    <div class="progress" style="height: 6px; width: 100px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
-                    </div>
-                    <small class="text-muted">4,500 / 10,000</small>
-                </td>
-                <td>NT$ 1.2M</td>
-                <td><span class="badge bg-secondary">草稿</span></td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-light btn-edit-event" title="編輯活動">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-success btn-publish-event" title="上架活動">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger btn-delete-event" title="刪除草稿">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            <tr data-event-id="4">
-                <td>
-                    <div class="fw-bold">春季音樂節</div>
-                    <small class="text-muted">大安森林公園</small>
-                </td>
-                <td>2024/11/15</td>
-                <td>
-                    <div class="progress" style="height: 6px; width: 100px;">
-                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 100%"></div>
-                    </div>
-                    <small class="text-muted">已結束</small>
-                </td>
-                <td>NT$ 2.8M</td>
-                <td><span class="badge bg-dark">已下架</span></td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-info" title="查看數據" onclick="showSection('reports')">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" title="查看結算"
-                            onclick="showSection('settlement')">
-                            <i class="fas fa-wallet"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
             </tbody>
         </table>
     </div>
+    <!-- Pagination Container -->
     <div class="card-footer border-secondary">
-        <nav>
-            <ul class="pagination justify-content-center mb-0">
-                <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
-            </ul>
+        <nav id="organizer-event-pagination">
+            <!-- Pagination will be rendered here -->
         </nav>
     </div>
 </div>

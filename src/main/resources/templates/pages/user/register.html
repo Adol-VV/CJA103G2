@@ -55,44 +55,45 @@
 					<label class="form-label">
 						姓名
 						<span style ="color:red">*</span>
+					<div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
 					</label> 
-					<input type="text" th:field="*{name}" class="form-control" placeholder="真實姓名">
+					<input type="text" th:field="*{name}" class="form-control" >
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">
 						電子信箱
 						<span style ="color:red">*</span>
+					<div class="text-danger" th:if="${#fields.hasErrors('account')}" th:errors="*{account}"></div>
 					</label> 
 					<input type="text" th:field="*{account}" class="form-control" placeholder="name@example.com">
-					<div class="text-danger" th:if="${#fields.hasErrors('account')}" th:errors="*{account}"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">
 						設定密碼
 						<span style ="color:red">*</span>
+					<div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
 					</label> 
 					<input type="password" th:field="*{password}" class="form-control" placeholder="至少 8 位字元">
-					<div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">
 						手機號碼
 						<span style ="color:red">*</span>
+					<div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
 					</label> 
 					<input type="text" th:field="*{phone}" class="form-control">
-					<div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">
 					地址
 						<span style ="color:red">*</span>
+					<div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 					</label> 
 					<input type="text"th:field="*{address}" class="form-control">
-					<div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 				</div>
 
 				<div class="form-group">
@@ -127,7 +128,7 @@
 
 			<div class="text-center"
 				style="margin-top: 32px; font-size: 14px; color: var(--text-secondary);">
-				已經有帳號了？ <a href="login.html" style="font-weight: 700;">使用現有帳號登入</a>
+				已經有帳號了？ <a href="/member/login" style="font-weight: 700;">使用現有帳號登入</a>
 			</div>
 		</div>
 	</div>

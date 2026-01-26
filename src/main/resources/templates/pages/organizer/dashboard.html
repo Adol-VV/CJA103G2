@@ -183,8 +183,8 @@
     <!-- Modularized JS -->
     <script type="module" th:src="@{/js/organizer/index.js}"></script>
 
-
-
-</body>
+    <script th:inline="javascript">
+        window.INITIAL_PANEL = /*[[${activePanel}]]*/ null;
+    </script>
 
 </html>

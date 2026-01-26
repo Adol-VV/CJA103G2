@@ -1,17 +1,26 @@
 package com.momento.event.controller;
 
-import com.momento.event.dto.*;
-import com.momento.event.model.EventService;
-import com.momento.event.model.TypeVO;
-import com.momento.event.model.TypeRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.momento.event.dto.EventDetailDTO;
+import com.momento.event.dto.EventFilterDTO;
+import com.momento.event.dto.EventListItemDTO;
+import com.momento.event.model.EventService;
+import com.momento.event.model.TypeRepository;
+import com.momento.event.model.TypeVO;
+import com.momento.eventorder.dto.SelectionFormDTO;
 
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * Event Controller - 活動頁面控制器
@@ -28,15 +37,41 @@ public class EventController {
     @Autowired
     private TypeRepository typeRepository;
 
-    @GetMapping("/test-json")
+    /**
+     * AJAX 活動列表 API
+     * GET /event/api/list
+     */
+    @GetMapping("/api/list")
     @ResponseBody
-    public Page<EventListItemDTO> testJson(
+    public Page<EventListItemDTO> getEventListJson(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size) {
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "eventAt") String sort,
+            @RequestParam(required = false) Integer typeId,
+            @RequestParam(required = false) String place,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice) {
+
+        System.out.println("=== API Request: /event/api/list ===");
 
         EventFilterDTO filterDTO = new EventFilterDTO();
         filterDTO.setPage(page);
         filterDTO.setSize(size);
+        filterDTO.setSort(sort);
+        filterDTO.setTypeId(typeId);
+        filterDTO.setPlace(place);
+        filterDTO.setMinPrice(minPrice);
+        filterDTO.setMaxPrice(maxPrice);
+
+        // 確保排序方向正確 (價格通常由低到高, 日期可以是 DESC 或 ASC)
+        // 這裡簡單處理: 如果是 'price'，預設 ASC; 如果是 'eventAt' 且前端傳 'newest'，則 DESC
+        if ("newest".equals(sort)) {
+            filterDTO.setSort("publishedAt"); // Use publishedAt for newest
+            filterDTO.setDirection("DESC");
+        } else if ("minPrice".equals(sort) || "priceAsc".equals(sort)) {
+            filterDTO.setSort("minPrice");
+            filterDTO.setDirection("ASC");
+        }
 
         return eventService.filterEvents(filterDTO);
     }
@@ -162,6 +197,9 @@ public class EventController {
         model.addAttribute("favoriteCount", eventDetail.getFavoriteCount());
         model.addAttribute("isFavorited", eventDetail.getIsFavorited());
         model.addAttribute("relatedEvents", eventDetail.getRelatedEvents());
+        
+        // 傳到結帳頁面
+        model.addAttribute("selectionForm", new SelectionFormDTO());
 
         return "pages/user/event-detail";
     }

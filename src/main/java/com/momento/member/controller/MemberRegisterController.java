@@ -55,6 +55,6 @@ public class MemberRegisterController {
 		}
 		
 		memberSvc.addMember(memberVO);
-		return "redirect:/";
+		return "redirect:/?registerSuccess";
 	}
 }

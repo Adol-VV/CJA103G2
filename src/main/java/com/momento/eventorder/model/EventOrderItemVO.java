@@ -1,8 +1,7 @@
-package com.momento.eventorderitem.model;
+package com.momento.eventorder.model;
 
 import java.io.Serializable;
 
-import com.momento.eventorder.model.EventOrderVO;
 import com.momento.ticket.model.TicketVO;
 
 import groovy.transform.ToString;
@@ -42,22 +41,18 @@ public class EventOrderItemVO implements Serializable {
 	@Column(name = "price")
 	private Integer price;
 
-	@Column(name = "total")
-	private Integer total;
-
 	public EventOrderItemVO() {
 
 	}
 
 	public EventOrderItemVO(Integer eventOrderItemId, EventOrderVO eventOrder, TicketVO ticket, String qrcode,
-			Integer price, Integer total) {
+			Integer price) {
 		super();
 		this.eventOrderItemId = eventOrderItemId;
 		this.eventOrder = eventOrder;
 		this.ticket = ticket;
 		this.qrcode = qrcode;
 		this.price = price;
-		this.total = total;
 	}
 
 	public Integer getEventOrderItemId() {
@@ -98,13 +93,5 @@ public class EventOrderItemVO implements Serializable {
 
 	public void setPrice(Integer price) {
 		this.price = price;
-	}
-
-	public Integer getTotal() {
-		return total;
-	}
-
-	public void setTotal(Integer total) {
-		this.total = total;
 	}
 }
