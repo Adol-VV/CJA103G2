@@ -34,6 +34,9 @@ public class EventServiceImpl implements EventService {
         private EventFavRepository eventFavRepository;
 
         @Autowired
+        private com.momento.member.model.MemberRepository memberRepository;
+
+        @Autowired
         private TicketService ticketService;
 
         // 常數：已上架且審核通過
@@ -175,28 +178,29 @@ public class EventServiceImpl implements EventService {
         }
 
         @Override
+        @Transactional
         public boolean toggleFavorite(Integer eventId, Integer memberId) {
-                // 檢查是否已收藏
+                // 先查詢是否已收藏
                 Optional<EventFavVO> existing = eventFavRepository
                                 .findByMember_MemberIdAndEvent_EventId(memberId, eventId);
 
                 if (existing.isPresent()) {
                         // 已收藏 → 取消收藏
-                        eventFavRepository.delete(existing.get());
-                        return false;
+                        eventFavRepository.deleteByMember_MemberIdAndEvent_EventId(memberId, eventId);
+                        return false; // 回傳 false 表示已取消收藏
                 } else {
                         // 未收藏 → 新增收藏
                         EventVO event = eventRepository.findById(eventId)
                                         .orElseThrow(() -> new RuntimeException("活動不存在"));
 
-                        // 臨時方案：創建只包含 ID 的 MemberVO
-                        com.momento.member.model.MemberVO member = new com.momento.member.model.MemberVO();
-                        member.setMemberId(memberId);
+                        // 從資料庫查詢 member entity (關鍵修正)
+                        com.momento.member.model.MemberVO member = memberRepository.findById(memberId)
+                                        .orElseThrow(() -> new RuntimeException("會員不存在"));
 
-                        // 使用建構子創建收藏
                         EventFavVO fav = new EventFavVO(event, member);
                         eventFavRepository.save(fav);
-                        return true;
+                        eventFavRepository.flush();
+                        return true; // 回傳 true 表示已新增收藏
                 }
         }
 
@@ -206,7 +210,15 @@ public class EventServiceImpl implements EventService {
         }
 
         @Override
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public List<EventListItemDTO> getMemberFavorites(Integer memberId) {
+                // 先執行 flush 確保所有變更已同步到資料庫
+                eventFavRepository.flush();
+
+                // 清除一級快取
+                eventFavRepository.findAll(); // 觸發查詢
+
+                // 重新查詢會員的收藏
                 List<EventFavVO> favorites = eventFavRepository.findByMember_MemberId(memberId);
 
                 return favorites.stream()
