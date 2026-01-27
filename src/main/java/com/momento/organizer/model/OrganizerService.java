@@ -12,12 +12,15 @@ public class OrganizerService {
     private OrganizerRepository organizerRepository;
 
     public OrganizerVO apply(OrganizerVO organizer) {
+        System.out.println("Service 接收到申請資料: " + organizer.getAccount() + ", " + organizer.getEmail());
 
         if (organizerRepository.existsByAccount(organizer.getAccount())) {
+            System.out.println("帳號已存在: " + organizer.getAccount());
             throw new IllegalArgumentException("帳號已存在");
         }
 
         if (organizerRepository.existsByEmail(organizer.getEmail())) {
+            System.out.println("Email 已被使用: " + organizer.getEmail());
             throw new IllegalArgumentException("Email 已被使用");
         }
 
@@ -27,7 +30,15 @@ public class OrganizerService {
         // TODO: 密碼加密
         // organizer.setPassword(passwordEncoder.encode(organizer.getPassword()));
 
-        return organizerRepository.save(organizer);
+        try {
+            OrganizerVO saved = organizerRepository.save(organizer);
+            System.out.println("成功存入資料庫，ID: " + saved.getOrganizerId());
+            return saved;
+        } catch (Exception e) {
+            System.err.println("資料庫儲存失敗: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public List<OrganizerVO> getAllOrganizers() {
@@ -50,13 +61,13 @@ public class OrganizerService {
         return organizerRepository.findById(organizerId).orElse(null);
     }
 
-    /*透過 Email 查詢主辦方 (用於忘記密碼)*/
+    /* 透過 Email 查詢主辦方 (用於忘記密碼) */
 
     public OrganizerVO findByEmail(String email) {
         return organizerRepository.findByEmail(email).orElse(null);
     }
 
-    /* 透過帳號查詢主辦方（用於登入）*/
+    /* 透過帳號查詢主辦方（用於登入） */
 
     public OrganizerVO findByAccount(String account) {
         return organizerRepository.findByAccount(account).orElse(null);
@@ -126,6 +137,16 @@ public class OrganizerService {
         }
 
         // 拒絕 >申請直接刪除記錄
+        organizerRepository.deleteById(organizerId);
+    }
+
+    /**
+     * 永久刪除主辦單位 (註銷帳號)
+     */
+    public void deleteOrganizer(Integer organizerId) {
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new IllegalArgumentException("主辦方不存在");
+        }
         organizerRepository.deleteById(organizerId);
     }
 

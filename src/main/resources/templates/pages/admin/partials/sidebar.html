@@ -35,7 +35,7 @@
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(2)}">
                 <a class="nav-link" href="#" data-section="organizer-reviews">
                     <i class="fas fa-building me-2"></i> 主辦審核
-                    <span class="badge bg-danger float-end">2</span>
+                    <span class="badge bg-danger float-end" id="organizerReviewBadge">0</span>
                 </a>
             </li>
 

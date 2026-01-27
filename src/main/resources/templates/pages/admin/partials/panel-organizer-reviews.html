@@ -1,21 +1,29 @@
-<div class="content-panel" id="panel-organizer-reviews">
-    <h2 class="mb-4">主辦單位申請審核</h2>
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-4">
-            <div class="card bg-dark border-secondary h-100">
-                <div class="card-header border-secondary d-flex justify-content-between">
-                    <span class="badge bg-primary">新申請</span>
-                    <small class="text-muted">2024/12/26</small>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-white">快樂文創有限公司</h5>
-                    <p class="card-text text-muted small">統編：12345678</p>
-                    <p class="card-text text-white">申請理由：我們專注於獨立音樂展演...</p>
-                </div>
-                <div class="card-footer border-secondary">
-                    <button class="btn btn-primary w-100 btn-review-application" data-id="1">進行審核</button>
-                </div>
-            </div>
+<div class="content-panel" id="panel-organizer-reviews" style="min-height: calc(100vh - 250px);">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">主辦單位申請審核</h2>
+        <div class="d-flex align-items-center">
+            <label class="me-2 text-muted small">狀態：</label>
+            <select class="form-select form-select-sm bg-dark text-white border-secondary" id="organizerStatusFilter"
+                style="width: 150px;">
+                <option value="0">待審核</option>
+                <option value="1">使用中</option>
+                <option value="2">已停權</option>
+            </select>
         </div>
+    </div>
+
+    <div class="row g-4" id="organizerReviewList">
+        <!-- 待審核主辦單位卡片將透過 JavaScript 動態載入 -->
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">載入中...</span>
+            </div>
+            <p class="mt-2 text-muted">正在載入列表...</p>
+        </div>
+    </div>
+
+    <!-- 分頁按鈕容器 - 還原為最穩定的 mt-auto 佈局 -->
+    <div class="d-flex justify-content-center mt-auto pt-5 pb-3" id="organizerPagination">
+        <!-- 分頁按鈕將透過 JavaScript 動態生成 -->
     </div>
 </div>

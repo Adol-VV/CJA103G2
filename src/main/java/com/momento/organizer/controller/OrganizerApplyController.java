@@ -2,7 +2,6 @@ package com.momento.organizer.controller;
 
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,41 +36,35 @@ public class OrganizerApplyController {
     }
 
     @PostMapping("/apply")
-    public String apply(@Valid @ModelAttribute("organizer") OrganizerVO organizer,
+    public String apply(@ModelAttribute("organizer") OrganizerVO organizer,
             BindingResult result,
             Model model) {
 
         System.out.println("========== 收到申請表單 ==========");
         System.out.println("帳號: " + organizer.getAccount());
-        System.out.println("Email: " + organizer.getEmail());
-        System.out.println("主辦方名稱: " + organizer.getName());
 
-        if (organizerService.existsByAccount(organizer.getAccount())) {
-            result.rejectValue("account", "organizer.account.duplicate", "此帳號已被使用");
-        }
-
-        // 檢查 Email 是否已存在
-        if (organizerService.existsByEmail(organizer.getEmail())) {
-            result.rejectValue("email", "organizer.email.duplicate", "此 Email 已被使用");
-        }
-
-        // 如果有驗證錯誤，返回申請頁面
+        // 如果有綁定錯誤（例如資料型態不符），紀錄日誌但不在此攔截，交由 Service 處理或後續檢查
         if (result.hasErrors()) {
-            System.out.println("驗證錯誤: " + result.getAllErrors());
-            return "pages/public/organizer-apply";
+            System.err.println("資料綁定存在警告/錯誤: " + result.getAllErrors());
         }
 
         try {
-            // 儲存申請
+            // 直接呼叫 Service 進行儲存（Service 內部會再做最後一次重複檢查）
             OrganizerVO saved = organizerService.apply(organizer);
             System.out.println("申請成功！ID: " + saved.getOrganizerId());
 
-            // 重定向到申請頁面（帶著成功參數）
+            // 重定向到申請頁面（帶著成功參數，觸發成功畫面）
             return "redirect:/organizer/apply?success=true";
+        } catch (IllegalArgumentException e) {
+            // 處理業務邏輯錯誤（如帳號/Email重複）
+            System.err.println("業務邏輯錯誤: " + e.getMessage());
+            model.addAttribute("errorMsg", e.getMessage());
+            return "pages/public/organizer-apply";
         } catch (Exception e) {
-            System.err.println("儲存失敗: " + e.getMessage());
+            // 處理資料庫或其他系統錯誤
+            System.err.println("系統錯誤: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("errorMsg", "申請失敗：" + e.getMessage());
+            model.addAttribute("errorMsg", "申請處理失敗，請聯繫技術人員或稍後再試。");
             return "pages/public/organizer-apply";
         }
     }
