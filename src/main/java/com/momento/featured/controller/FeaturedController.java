@@ -37,6 +37,16 @@ public class FeaturedController {
     }
 
     /**
+     * 取得首頁輪播資料 (含圖片、標題等)
+     * GET /featured/api/list
+     */
+    @GetMapping("/api/list")
+    public ResponseEntity<List<FeaturedService.FeaturedCarouselDTO>> getFeaturedCarouselData() {
+        List<FeaturedService.FeaturedCarouselDTO> list = featuredService.getCarouselData();
+        return ResponseEntity.ok(list);
+    }
+
+    /**
      * 取得單一主打活動
      * GET /featured/{id}
      * 

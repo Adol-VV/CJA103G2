@@ -1,68 +1,54 @@
 /* === Layout Fix: Sidebar & Main Content === */
-/* Prevent sidebar from using fixed positioning */
-.sidebar {
-    background-color: #1A1A1A !important;
-    border-right: 1px solid #2A2A2A !important;
-    position: sticky !important;
-    top: 56px !important;
-    height: calc(100vh - 56px) !important;
-    overflow-y: auto !important;
-    z-index: 100 !important;
-    flex-shrink: 0 !important;
+#organizerSidebar {
+    position: fixed;
+    /* 改用 fixed,完全脫離文檔流 */
+    top: 56px;
+    /* 緊貼 Navbar 底部 */
+    left: 0;
+    /* 固定在左側 */
+    width: 16.666667%;
+    /* col-md-2 對應寬度,對應 col-lg-2 */
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    z-index: 1040;
+    /* 低於 Navbar (1050) */
+    background-color: #1a1a1a;
+    /* 確保背景色 */
+    border-right: 1px solid #2a2a2a;
 }
 
-/* Ensure main content fills remaining space and doesn't overlap */
-main.col-md-9,
-main.col-lg-10 {
-    min-height: calc(100vh - 56px);
-    flex: 1 1 auto !important;
-    max-width: none !important;
-    overflow-x: auto;
+/* 補償 Main Content 位移 */
+#organizerSidebar~main {
+    margin-left: 16.666667% !important;
+    /* 對應 Sidebar 寬度 */
+    width: 83.333333% !important;
 }
 
-/* Fix for zoom/scaling - prevent overlap with flexbox */
-.container-fluid>.row {
-    flex-wrap: nowrap !important;
-    margin: 0 !important;
-}
-
-/* Make container full width */
-.container-fluid {
-    padding: 0 !important;
-    overflow-x: hidden;
-}
-
-@media (min-width: 768px) {
-    .sidebar {
-        min-width: 200px !important;
-        width: 200px !important;
+/* RWD 斷點 - 小於 992px 時調整 (對應 col-lg-2 失效) */
+@media (max-width: 991.98px) {
+    #organizerSidebar {
+        width: 25%;
+        /* col-md-3 對應寬度 */
     }
 
-    main.col-md-9,
-    main.col-lg-10 {
-        width: calc(100% - 200px) !important;
+    #organizerSidebar~main {
+        margin-left: 25% !important;
+        width: 75% !important;
     }
 }
 
-@media (min-width: 992px) {
-    .sidebar {
-        min-width: 220px !important;
-        width: 220px !important;
-    }
-
-    main.col-md-9,
-    main.col-lg-10 {
-        width: calc(100% - 220px) !important;
-    }
-}
-
+/* 小於 768px 時隱藏 Sidebar (使用 Bootstrap d-none d-md-block) 或根據需求調整 */
 @media (max-width: 767.98px) {
-    .sidebar {
+    #organizerSidebar {
+        position: static;
+        width: 100%;
+        height: auto;
         display: none !important;
+        /* 原本就有 d-md-block */
     }
 
-    main.col-md-9,
-    main.col-lg-10 {
+    #organizerSidebar~main {
+        margin-left: 0 !important;
         width: 100% !important;
     }
 }

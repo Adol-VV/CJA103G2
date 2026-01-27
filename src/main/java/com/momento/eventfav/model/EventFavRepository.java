@@ -22,7 +22,9 @@ public interface EventFavRepository extends JpaRepository<EventFavVO, Integer> {
          * @param memberId 會員 ID
          * @return 收藏活動列表
          */
-        List<EventFavVO> findByMember_MemberId(Integer memberId);
+        @org.springframework.data.jpa.repository.Query("SELECT ef FROM EventFavVO ef WHERE ef.member.memberId = :memberId")
+        List<EventFavVO> findByMember_MemberId(
+                        @org.springframework.data.repository.query.Param("memberId") Integer memberId);
 
         /**
          * 檢查會員是否已收藏該活動
@@ -60,6 +62,8 @@ public interface EventFavRepository extends JpaRepository<EventFavVO, Integer> {
          * @param memberId 會員 ID
          * @param eventId  活動 ID
          */
+        @org.springframework.transaction.annotation.Transactional
+        @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true, flushAutomatically = true)
         void deleteByMember_MemberIdAndEvent_EventId(
                         Integer memberId,
                         Integer eventId);

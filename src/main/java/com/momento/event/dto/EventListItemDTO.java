@@ -32,6 +32,9 @@ public class EventListItemDTO {
     /** 主辦方名稱 */
     private String organizerName;
 
+    /** 主辦方 ID */
+    private Integer organizerId;
+
     /** 收藏數量 */
     private Long favoriteCount;
 
@@ -102,6 +105,14 @@ public class EventListItemDTO {
 
     public void setOrganizerName(String organizerName) {
         this.organizerName = organizerName;
+    }
+
+    public Integer getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(Integer organizerId) {
+        this.organizerId = organizerId;
     }
 
     public Long getFavoriteCount() {

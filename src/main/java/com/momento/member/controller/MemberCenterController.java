@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
+import com.momento.event.model.EventService;
+import com.momento.event.dto.EventListItemDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/member")
@@ -22,6 +25,9 @@ public class MemberCenterController {
 
 	@Autowired
 	MemberService memberSvc;
+
+	@Autowired
+	EventService eventService;
 
 	@GetMapping("/login")
 	public String showLoginPage(String targetUrl, HttpServletRequest request, Model model, HttpSession session) {
@@ -48,7 +54,8 @@ public class MemberCenterController {
 		if (member != null && member.getPassword().equals(password)) {
 
 			session.setAttribute("loginMember", member);
-			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register") || targetUrl.contains("/forgot-password")) {
+			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register")
+					|| targetUrl.contains("/forgot-password")) {
 
 				targetUrl = "/"; // 設定一個預設的跳轉頁面
 
@@ -73,18 +80,21 @@ public class MemberCenterController {
 		return "pages/user/dashboard";
 	}
 
-	@GetMapping("/dashboard/{pageName}")
-	public String showDashboardPage(@PathVariable String pageName) {
-	    // 假設你的檔案都放在 pages/user/ 目錄下
-	    // 例如：點擊「我的票券」網址為 /dashboard/myTickets -> 回傳 pages/user/myTickets
-	    return "pages/user/partials/" + pageName;
+	@GetMapping("/dashboard/sidebar")
+	public String showSidebar(HttpSession session, Model model) {
+		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		if (loginMember != null) {
+			List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(loginMember.getMemberId());
+			model.addAttribute("favoriteCount", favoriteEvents.size());
+		}
+		return "pages/user/partials/sidebar";
 	}
 
 	@GetMapping("/dashboard/modals")
 	public String showModals() {
 		return "pages/user/partials/modals";
 	}
-	
+
 	@GetMapping("/dashboard/overview")
 	public String showDashboardOverview(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
@@ -93,9 +103,26 @@ public class MemberCenterController {
 		return "pages/user/partials/panel-overview";
 	}
 
+	@GetMapping("/dashboard/panel-favorites")
+	public String showFavorites(HttpSession session, Model model) {
+		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		if (loginMember != null) {
+			List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(loginMember.getMemberId());
+			model.addAttribute("favoriteEvents", favoriteEvents);
+		}
+		return "pages/user/partials/panel-favorites";
+	}
+
 	@GetMapping("/dashboard/settings")
 	public String showSettings() {
 		return "pages/user/partials/panel-settings";
+	}
+
+	@GetMapping("/dashboard/{pageName}")
+	public String showDashboardPage(@PathVariable String pageName) {
+		// 假設你的檔案都放在 pages/user/ 目錄下
+		// 例如：點擊「我的票券」網址為 /dashboard/myTickets -> 回傳 pages/user/myTickets
+		return "pages/user/partials/" + pageName;
 	}
 
 	@PostMapping("/dashboard/settings")
@@ -184,7 +211,7 @@ public class MemberCenterController {
 			session.setAttribute("newPasswordError", "長度須為8碼以上");
 			hasErrors = true;
 		}
-		
+
 		if (!newPassword.trim().equals(confirmedPassword)) {
 			session.setAttribute("confirmedError", "與新密碼不符");
 			hasErrors = true;

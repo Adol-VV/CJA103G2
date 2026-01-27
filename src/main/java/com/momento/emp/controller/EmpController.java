@@ -31,6 +31,7 @@ public class EmpController {
 
     @Autowired
     private SystemNotifyService systemNotifyService;
+
     /**
      * 顯示登入頁面
      */
@@ -118,7 +119,7 @@ public class EmpController {
             model.addAttribute("prodList", prodSvc.getAllProds());
         }
 
-        //pei的
+        // pei的
         model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
 
         return "pages/admin/dashboard";

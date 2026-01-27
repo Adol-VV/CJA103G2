@@ -201,7 +201,7 @@
 
 					<p class="lead" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...</p>
 
-					<a th:href="@{/event/detail(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
+					<a th:href="@{/event/{id}(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
 						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
 					</a>
 				</div>
@@ -274,10 +274,9 @@
 		<div class="row g-4" th:if="${latestEvents != null and !#lists.isEmpty(latestEvents)}">
 			<!-- Featured Event (大卡片) - 使用最新的一筆 -->
 			<div class="col-12 col-lg-6" th:with="mainEvent=${latestEvents[0]}">
-				<div class="card h-100 border-0 overflow-hidden"
-					style="background: linear-gradient(135deg, #2D5F4F 0%, #1a3a30 100%);">
+				<div class="card h-100 border-0 overflow-hidden" style="background: #2a2a2a;">
 					<div class="position-relative">
-						<a th:href="@{/event/detail(id=${mainEvent.eventId})}">
+						<a th:href="@{/event/{id}(id=${mainEvent.eventId})}">
 							<img loading="lazy" th:src="${mainEvent.coverImageUrl}" class="card-img-top"
 								style="height: 350px; object-fit: cover;" th:alt="${mainEvent.title}">
 						</a>
@@ -286,37 +285,22 @@
 							<span class="badge bg-success" th:text="${mainEvent.typeName}">音樂演出</span>
 						</div>
 					</div>
-					<div class="card-body d-flex flex-column p-3">
-						<h4 class="card-title text-white mb-2">
-							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
-								class="text-white text-decoration-none" th:text="${mainEvent.title}">2025新年音樂會｜維也納之夜</a>
-						</h4>
-						<!-- 簡單顯示地點與主辦 -->
-						<div class="mb-2">
-							<div class="text-white-50 small mb-1">
-								<i class="fas fa-calendar-alt me-2"></i>
+					<div class="card-body d-flex flex-column p-2" style="min-height: 80px;">
+						<h5 class="card-title text-white mb-1">
+							<a th:href="@{/event/{id}(id=${mainEvent.eventId})}" class="text-white text-decoration-none"
+								th:text="${mainEvent.title}">2025新年音樂會｜維也納之夜</a>
+						</h5>
+						<div class="mb-1">
+							<div class="text-white-50 small mb-0" style="font-size: 0.8rem;">
+								<i class="fas fa-calendar-alt me-1"></i>
 								<span
 									th:text="${#temporals.format(mainEvent.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
 									(二) 19:30</span>
 							</div>
-							<div class="text-white-50 small mb-1">
-								<i class="fas fa-map-marker-alt me-2"></i>
+							<div class="text-white-50 small mb-0" style="font-size: 0.8rem;">
+								<i class="fas fa-map-marker-alt me-1"></i>
 								<span th:text="${mainEvent.place}">中山堂中正廳</span>
 							</div>
-							<div class="text-white-50 small">
-								<i class="fas fa-user-tie me-2"></i>
-								<span th:text="${mainEvent.organizerName}">主辦單位</span>
-							</div>
-						</div>
-						<div
-							class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top border-white-10">
-							<span class="fw-bold fs-5 text-white">
-								NT$ <span
-									th:text="${mainEvent.minPrice != null ? #numbers.formatInteger(mainEvent.minPrice, 0, 'COMMA') : '0'}">1,800</span>
-								<small class="fs-6 text-white-50">起</small>
-							</span>
-							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
-								class="btn btn-light btn-sm px-3">立即購票</a>
 						</div>
 					</div>
 				</div>
@@ -328,7 +312,7 @@
 					<div class="col-6" th:each="event, iterStat : ${latestEvents}" th:if="${iterStat.index > 0}">
 						<div class="card h-100 border-secondary bg-dark article_hover">
 							<div class="position-relative">
-								<a th:href="@{/event/detail(id=${event.eventId})}">
+								<a th:href="@{/event/{id}(id=${event.eventId})}">
 									<img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
 										style="height: 140px; object-fit: cover;" th:alt="${event.title}">
 								</a>
@@ -337,23 +321,14 @@
 								<span class="badge bg-info position-absolute bottom-0 start-0 m-2 small"
 									th:text="${event.typeName}">藝術展覽</span>
 							</div>
-							<div class="card-body p-2">
-								<h6 class="card-title mb-1 text-truncate">
-									<a th:href="@{/event/detail(id=${event.eventId})}"
+							<div class="card-body p-2" style="min-height: 65px;">
+								<h6 class="card-title mb-1 text-truncate" style="font-size: 0.9rem;">
+									<a th:href="@{/event/{id}(id=${event.eventId})}"
 										class="text-white text-decoration-none" th:text="${event.title}">活動標題</a>
 								</h6>
-								<p class="card-text text-muted small mb-2 text-truncate" style="font-size: 0.75rem;">
+								<p class="card-text text-muted small mb-0 text-truncate" style="font-size: 0.7rem;">
 									<i class="fas fa-map-marker-alt me-1"></i><span th:text="${event.place}">地點</span>
 								</p>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="fw-bold text-white small" style="font-size: 0.85rem;">
-										NT$ <span
-											th:text="${event.minPrice != null ? #numbers.formatInteger(event.minPrice, 0, 'COMMA') : '0'}">280</span>
-										起
-									</span>
-									<a th:href="@{/event/detail(id=${event.eventId})}"
-										class="btn btn-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">購票</a>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -364,22 +339,18 @@
 		<!-- 若無活動時的預設顯示 -->
 		<div class="row" th:if="${latestEvents == null or #lists.isEmpty(latestEvents)}">
 			<div class="col-12 text-center py-5">
-				<p class="text-muted">目前尚無最新活動，敬請期待！</p>
+				<p class="text-muted">目前尚無最新活動,敬請期待!</p>
 			</div>
 		</div>
-		</div>
-		</div>
-		</div>
-
 		<!-- 更多活動快速入口 -->
-		<div class="d-flex flex-nowrap gap-2 mt-4" th:if="${eventTypes != null}">
-			<div class="flex-grow-1" style="min-width: 0;" th:each="tc : ${eventTypes}">
+		<div class="d-flex gap-2 mt-4" th:if="${eventTypes != null}" style="overflow-x: auto; flex-wrap: nowrap;">
+			<div th:each="tc : ${eventTypes}" style="flex: 1 1 0; min-width: 0;">
 				<a th:href="@{/event/list(typeId=${tc.type.typeId})}"
-					class="card bg-dark border-secondary text-decoration-none h-100 py-3 text-center article_hover px-1">
-					<i th:class="${tc.iconClass} + ' fa-2x mb-3'"></i>
-					<p class="text-white small mb-1 fw-bold text-truncate" th:text="${tc.type.typeName}">活動類型</p>
-					<span class="text-muted text-truncate d-block" style="font-size: 0.7rem;"
-						th:text="${tc.count + ' 場'}">0 場</span>
+					class="card bg-dark border-secondary text-decoration-none d-flex flex-row align-items-center justify-content-center py-2 px-3 article_hover"
+					style="height: 75px; width: 100%;">
+					<i th:class="${tc.iconClass} + ' fa-lg me-2 flex-shrink-0'" style="font-size: 1.3rem;"></i>
+					<p class="text-white small mb-0 fw-bold text-truncate" th:text="${tc.type.typeName}"
+						style="font-size: 0.9rem;">活動類型</p>
 				</a>
 			</div>
 		</div>
@@ -402,21 +373,13 @@
 			<!-- Product Card 1 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product"> <span
-								class="badge bg-danger position-absolute top-0 start-0 m-2 small">HOT</span>
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">音樂會紀念T恤</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 880</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<span class="badge bg-danger position-absolute top-0 start-0 m-2 small">HOT</span>
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">音樂會紀念T恤</h6>
 						</div>
 					</div>
 				</a>
@@ -425,20 +388,12 @@
 			<!-- Product Card 2 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product">
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">經典Logo帆布袋</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 450</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">經典Logo帆布袋</h6>
 						</div>
 					</div>
 				</a>
@@ -447,21 +402,13 @@
 			<!-- Product Card 3 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product"> <span
-								class="badge bg-success position-absolute top-0 start-0 m-2 small">NEW</span>
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">不鏽鋼保溫杯</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 1,280</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<span class="badge bg-success position-absolute top-0 start-0 m-2 small">NEW</span>
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">不鏽鋼保溫杯</h6>
 						</div>
 					</div>
 				</a>
@@ -470,20 +417,12 @@
 			<!-- Product Card 4 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product">
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">刺繡老帽</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 680</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">刺繡老帽</h6>
 						</div>
 					</div>
 				</a>
@@ -492,20 +431,12 @@
 			<!-- Product Card 5 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product">
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">限定海報組</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 350</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">限定海報組</h6>
 						</div>
 					</div>
 				</a>
@@ -514,21 +445,13 @@
 			<!-- Product Card 6 -->
 			<div class="col-6 col-md-4 col-lg-2">
 				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden" style="transition: transform 0.2s;"
-						onmouseover="this.style.transform='translateY(-4px)'"
-						onmouseout="this.style.transform='translateY(0)'">
-						<div class="position-relative">
-							<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img-top"
-								style="height: 140px; object-fit: cover;" alt="Product"> <span
-								class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 small">限量</span>
-						</div>
-						<div class="card-body p-2">
-							<h6 class="card-title small text-white mb-1 text-truncate">紀念徽章套組</h6>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold text-white small">NT$ 520</span> <span
-									class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 0.7rem;"><i
-										class="fas fa-cart-plus"></i></span>
-							</div>
+					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+							style="height: 145px; object-fit: cover;" alt="Product">
+						<span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 small">限量</span>
+						<div
+							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
+							<h6 class="text-white mb-0 w-100 text-center">紀念徽章套組</h6>
 						</div>
 					</div>
 				</a>
@@ -536,6 +459,25 @@
 		</div>
 	</section>
 
+	<style>
+		.prod-hover-card {
+			transition: transform 0.2s;
+		}
+
+		.prod-hover-card:hover {
+			transform: translateY(-4px);
+		}
+
+		.prod-overlay {
+			background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		.prod-hover-card:hover .prod-overlay {
+			opacity: 1;
+		}
+	</style>
 	<!-- Hot Articles Section (緊湊版面) -->
 	<section class="container-fluid py-4" style="max-width: 1400px;">
 		<div class="d-flex justify-content-between align-items-center mb-3">
@@ -675,7 +617,7 @@
 				</ul>
 			</div>
 			<div class="col-6 col-md-2">
-				<h5 class="mb-3">主辦方專區</h5>
+				<h5 class="mb-3">後台專區</h5>
 				<ul class="list-unstyled text-muted small">
 					<li class="mb-2"><a th:href="@{/organizer/apply}" class="text-decoration-none text-muted">成為主辦方</a>
 					</li>
@@ -696,7 +638,7 @@
 			</div>
 		</div>
 		<hr class="border-secondary my-4">
-		<div class="text-center text-muted small">&copy; 2024 Momento.
+		<div class="text-center text-muted small">&copy; 2026 Momento.
 			All rights reserved.</div>
 	</div>
 	</footer>
