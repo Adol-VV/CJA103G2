@@ -31,6 +31,30 @@ export function initOrderManagement() {
     window.updateOrderStatus = updateOrderStatus;
     window.confirmShipping = confirmShipping;
     window.handleRefund = handleRefund;
+	
+	$("#btnApplyFilter").on("click", function(){
+	    // 獲取所有參數值
+	    const activeEvent = document.getElementById('activeEvent').value;
+	    const buyer = document.querySelector('input[name="buyer"]').value; // 對應你後端的 buyer 參數
+		const finishedEvent = document.getElementById("finishedEvent").value;
+	    
+	    // 組裝 URL (注意路徑要對應你 Controller 的 @GetMapping)
+	    const url = `/organizer/dashboard/tickets?activeEvent=${activeEvent}&finishedEvent=${finishedEvent}&buyer=${buyer}`;
+
+	    fetch(url, {
+	        method: 'GET',
+	        headers: {
+	            'X-Requested-With': 'XMLHttpRequest' // 標記為非同步請求
+	        }
+	    })
+	    .then(response => response.text())
+	    .then(html => {
+	        // 關鍵：將回傳的 HTML 直接替換掉原本的表格內容
+	        document.getElementById('orderListContainer').innerHTML = html;
+		console.log("回傳的內容：", html);
+	    })
+	    .catch(error => console.error('Error:', error));
+	})
 }
 
 function batchUpdateStatus(status) {
@@ -104,3 +128,5 @@ export function handleRefund() {
         showToast('已進入退款流程', 'info');
     }
 }
+
+

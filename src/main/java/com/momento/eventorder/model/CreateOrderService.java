@@ -58,7 +58,7 @@ public class CreateOrderService {
 		
 		TicketVO firstTicket = ticketRepo.getById(firstTicketId);
 
-		EventVO event = eventRepo.findById(firstTicket.getTicketId()).orElseThrow((() -> new RuntimeException("此活動不存在")));
+		EventVO event = eventRepo.findById(firstTicket.getEvent().getEventId()).orElseThrow((() -> new RuntimeException("查無此活動")));
 		
 		OrganizerVO organizer = event.getOrganizer();
 
@@ -135,6 +135,7 @@ public class CreateOrderService {
 			String qrcode = UUID.randomUUID().toString();
 			orderItem.setEventOrder(eventOrder);
 			orderItem.setQrcode(qrcode);
+			orderItem.setStatus(0);
 		}
 		
 		eventOrderItemRepo.saveAll(orderItemList);

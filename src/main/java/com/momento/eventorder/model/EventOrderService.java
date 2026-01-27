@@ -21,4 +21,11 @@ public class EventOrderService {
 		return eventOrderRepo.findByMember_MemberId(memberId);
 	}
 	
+	public List<EventOrderVO> getEventOrderByCompositeQuery(Integer organizerId, Integer activeEvent, Integer finishedEvent, String buyer){
+		return eventOrderRepo.filterOrders(organizerId, activeEvent, finishedEvent, buyer);
+	}
+	
+	public List<EventOrderVO> getEventOrdersByEventId(Integer eventId){
+		return eventOrderRepo.findByEvent_EventId(eventId);
+	};
 }
