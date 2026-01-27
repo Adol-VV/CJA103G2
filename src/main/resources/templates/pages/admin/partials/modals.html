@@ -317,45 +317,56 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content bg-dark text-white border-secondary">
             <div class="modal-header border-secondary">
-                <h5>申請審核 - 快樂文創有限公司</h5>
+                <h5 id="modalOrganizerTitle">申請審核 - 載入中...</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <!-- 左側：公司資訊 -->
                     <div class="col-md-6">
                         <h6 class="text-muted">公司資訊</h6>
-                        <p><strong>負責人：</strong>王小明</p>
-                        <p><strong>統編：</strong>12345678</p>
-                        <p><strong>地址：</strong>台北市...</p>
-                        <p><strong>電話：</strong>02-1234-5678</p>
-                        <hr class="border-secondary">
-                        <h6 class="text-muted">備註</h6>
-                        <p>我們專注於獨立音樂展演，希望能在此平台售票。</p>
+                        <p><strong>負責人：</strong><span id="reviewOwnerName">---</span></p>
+                        <p><strong>帳號：</strong><span id="reviewAccount">---</span></p>
+                        <p><strong>電話：</strong><span id="reviewPhone">---</span></p>
+                        <p><strong>Email：</strong><span id="reviewEmail">---</span></p>
                     </div>
+                    <!-- 右側：銀行帳戶與審核確認 -->
                     <div class="col-md-6">
-                        <h6 class="text-muted">文件審核</h6>
-                        <div class="card bg-secondary bg-opacity-10 mb-3">
-                            <div class="card-body text-center">
-                                <i class="fas fa-file-alt fa-3x mb-2"></i>
-                                <p class="mb-0">營利事業登記證.pdf</p>
-                                <button class="btn btn-sm btn-link">預覽</button>
-                            </div>
+                        <h6 class="text-muted">銀行帳戶資訊</h6>
+                        <p><strong>銀行代碼：</strong><span id="reviewBankCode">---</span></p>
+                        <p><strong>戶名：</strong><span id="reviewAccountName">---</span></p>
+                        <p><strong>帳號：</strong><span id="reviewBankAccount">---</span></p>
+
+                        <hr class="border-secondary">
+                        <h6 class="text-muted">審核確認</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input border-success" type="checkbox" id="checkReg"
+                                style="cursor: pointer; background-color: transparent;">
+                            <label class="form-check-label" for="checkReg" style="cursor: pointer;">資料驗證無誤</label>
                         </div>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="checkReg">
-                            <label class="form-check-label" for="checkReg">公司登記驗證無誤</label>
+                            <input class="form-check-input border-success" type="checkbox" id="checkBank"
+                                style="cursor: pointer; background-color: transparent;">
+                            <label class="form-check-label" for="checkBank" style="cursor: pointer;">銀行帳戶驗證無誤</label>
                         </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="checkBank">
-                            <label class="form-check-label" for="checkBank">銀行帳戶驗證無誤</label>
+                    </div>
+                    <!-- 底部滿版：備註 / 簡介 -->
+                    <div class="col-12 mt-3">
+                        <hr class="border-secondary">
+                        <h6 class="text-muted">備註 / 簡介</h6>
+                        <div class="p-3 bg-secondary bg-opacity-10 rounded border border-secondary"
+                            style="min-height: 80px;">
+                            <p id="reviewIntroduction" class="mb-0" style="white-space: pre-wrap;">---</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer border-secondary">
-                <button class="btn btn-outline-danger">駁回申請</button>
-                <button class="btn btn-success"
-                    onclick="alert('申請已核准，通知信已寄出');$('#applicationReviewModal').modal('hide')">核准申請</button>
+                <button class="btn btn-outline-danger" id="btnRejectOrganizer">駁回申請</button>
+                <button class="btn btn-danger" id="btnSuspendOrganizer" style="display:none;">停權主辦</button>
+                <button class="btn btn-danger" id="btnDeleteOrganizer" style="display:none;">註銷帳號</button>
+                <button class="btn btn-success" id="btnApproveOrganizer">核准申請</button>
+                <button class="btn btn-success" id="btnUnsuspendOrganizer" style="display:none;">恢復使用</button>
             </div>
         </div>
     </div>

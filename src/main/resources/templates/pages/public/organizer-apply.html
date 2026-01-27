@@ -123,6 +123,17 @@
         li {
             color: #E5E5E5;
         }
+
+        /* 核取框自定義樣式 - 確保在深色背景下未勾選也有綠框 */
+        .form-check-input.border-success:not(:checked) {
+            border-color: var(--momento-green) !important;
+            border-width: 2px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--momento-green) !important;
+            border-color: var(--momento-green) !important;
+        }
     </style>
 </head>
 
@@ -147,6 +158,12 @@
                 <div class="text-center mb-5">
                     <h1 class="h2 mb-2">成為 Momento 主辦單位</h1>
                     <p class="text-muted">加入我們，開始在最受歡迎的平台上售票</p>
+                </div>
+
+                <!-- 錯誤訊息提示區 -->
+                <div th:if="${errorMsg}" class="alert alert-danger border-danger bg-transparent text-danger mb-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span th:text="${errorMsg}">發生錯誤</span>
                 </div>
 
                 <!-- Stepper -->
@@ -398,7 +415,7 @@
                                 </div>
                             </div>
 
-                            <!-- Step 4: Review -->
+                            <!-- 提交前最後檢查區 -->
                             <div class="step-content" data-step="4" th:if="${success == null or success == false}">
                                 <div class="text-center py-4">
                                     <div class="mb-4">
@@ -425,8 +442,10 @@
                                     </div>
 
                                     <div class="form-check text-start mb-4 d-inline-block">
-                                        <input class="form-check-input" type="checkbox" id="agreeTerms">
-                                        <label class="form-check-label text-muted small" for="agreeTerms">
+                                        <input class="form-check-input border-success" type="checkbox" id="agreeTerms"
+                                            style="cursor: pointer; background-color: transparent;">
+                                        <label class="form-check-label text-muted small" for="agreeTerms"
+                                            style="cursor: pointer;">
                                             我已閱讀並同意 <a href="/templates/pages/public/privacy.html" target="_blank"
                                                 class="text-success">主辦單位服務條款</a> 與 <a
                                                 href="/templates/pages/public/terms.html" target="_blank"
@@ -524,6 +543,23 @@
                     }
                 }
 
+                // 驗證第二步：基本資料
+                if (currentStep === 2) {
+                    const email = $('#emailInput').val();
+                    const emailPattern = /@.*\.com$/;
+                    if (!emailPattern.test(email)) {
+                        alert('Email 格式不正確 (需包含 @ 與 .com)');
+                        $('#emailInput').focus();
+                        return;
+                    }
+
+                    if ($('#emailError').is(':visible') && $('#emailErrorMsg').text().includes('已被使用')) {
+                        alert('此 Email 已被使用，請更換一個');
+                        $('#emailInput').focus();
+                        return;
+                    }
+                }
+
                 // 驗證第三步：銀行帳戶
                 if (currentStep === 3) {
                     const bankCode = $('select[name="bankCode"]').val();
@@ -601,7 +637,7 @@
             // 延遲 500ms 後才檢查（避免每次輸入都發送請求）
             accountCheckTimeout = setTimeout(function () {
                 $.get('/organizer/account/exists', { account: account }, function (exists) {
-                    if (exists) {
+                    if (exists === true) {
                         $('#accountErrorMsg').text('此帳號已被使用');
                         $('#accountError').removeClass('d-none');
                         $('#accountSuccess').addClass('d-none');
@@ -627,22 +663,22 @@
             // 隱藏所有提示
             $('#emailError, #emailSuccess').addClass('d-none');
 
-            // 簡單的 Email 格式驗證
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // 簡化 Email 格式驗證：只要有 @ 和 .com 即可
+            const emailPattern = /@.*\.com$/;
             if (!emailPattern.test(email)) {
+                $('#emailErrorMsg').text('Email 格式不正確');
+                $('#emailError').removeClass('d-none');
+                $('#emailSuccess').addClass('d-none');
                 return;
             }
 
-            // 延遲 500ms 後才檢查
             emailCheckTimeout = setTimeout(function () {
                 $.get('/organizer/email/exists', { email: email }, function (exists) {
-                    if (exists) {
+                    if (exists === true) {
                         $('#emailErrorMsg').text('此 Email 已被使用');
                         $('#emailError').removeClass('d-none');
-                        $('#emailSuccess').addClass('d-none');
                     } else {
                         $('#emailError').addClass('d-none');
-                        $('#emailSuccess').removeClass('d-none');
                     }
                 }).fail(function () {
                     $('#emailErrorMsg').text('檢查失敗，請稍後再試');

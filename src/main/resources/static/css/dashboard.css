@@ -159,6 +159,12 @@
     display: block;
 }
 
+/* 專門為主辦審核面板提供的 active 狀態，支援 flex 佈局以實現分頁靠底 */
+#panel-organizer-reviews.active {
+    display: flex !important;
+    flex-direction: column;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -673,6 +679,22 @@ img.prodImage:hover {
     border: 2px solid var(--momento-green);
     border-radius: 4px;
 }
+
+/* 針對主辦審核對話框的核取框優化 - 禁用狀態 */
+#applicationReviewModal .form-check-input:disabled:checked {
+    background-color: #2D5F4F !important;
+    /* Momento Green 但降飽和度 */
+    border-color: #555 !important;
+    opacity: 0.9 !important;
+}
+
+#applicationReviewModal .form-check-input:disabled {
+    filter: none !important;
+    /* 防止 Bootstrap 預設的灰化太重 */
+    opacity: 1 !important;
+    cursor: default !important;
+}
+
 
 /* 確保下拉選單能浮在內容上方，不佔據導覽列空間 */
 .navbar .dropdown-menu {
