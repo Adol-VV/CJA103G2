@@ -31,7 +31,7 @@
                 <i class="fas fa-bars fs-5"></i>
             </button>
 
-            <a class="navbar-brand fw-bold" href="../../index.html">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
                 <span class="text-success">Momento</span>
                 <span class="badge bg-danger ms-2" style="font-size: 0.6rem; vertical-align: middle;">ADMIN</span>
             </a>
@@ -187,10 +187,10 @@
                 <div th:insert="pages/admin/partials/panel-staff-management"></div>
 
                 <!-- Content -->
-                <div th:insert="pages/admin/partials/panel-homepage-editor"></div>
-                <div th:insert="pages/admin/partials/panel-faq-management"></div>
-                <div th:insert="pages/admin/partials/panel-about-editor"></div>
-                <div th:insert="pages/admin/partials/panel-comment-management"></div>
+                <div th:insert="pages/admin/partials/panel-homepage-editor"></div> <!--首頁管理-->
+                <div th:insert="pages/admin/partials/panel-faq-management"></div> <!--常見問題-->
+                <div th:insert="pages/admin/partials/panel-about-editor"></div> <!--關於我們-->
+                <div th:insert="pages/admin/partials/panel-comment-management"></div> <!--留言處理-->
 
                 <!-- Finance -->
                 <div th:insert="pages/admin/partials/panel-settlement"></div>

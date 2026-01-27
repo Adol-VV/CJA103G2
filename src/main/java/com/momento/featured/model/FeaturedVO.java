@@ -61,7 +61,7 @@ public class FeaturedVO implements java.io.Serializable {
 	}
 
 	@Column(name = "STARTED_AT")
-	@NotNull(message="開始時間: 請勿空白")
+	@NotNull(message = "開始時間: 請勿空白")
 	public Timestamp getStartedAt() {
 		return this.startedAt;
 	}
@@ -71,7 +71,7 @@ public class FeaturedVO implements java.io.Serializable {
 	}
 
 	@Column(name = "ENDED_AT")
-	@NotNull(message="結束時間: 請勿空白")
+	@NotNull(message = "結束時間: 請勿空白")
 	public Timestamp getEndedAt() {
 		return this.endedAt;
 	}

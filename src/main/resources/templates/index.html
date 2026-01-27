@@ -201,7 +201,7 @@
 
 					<p class="lead" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...</p>
 
-					<a th:href="@{/event/detail(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
+					<a th:href="@{/event/{id}(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
 						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
 					</a>
 				</div>
@@ -277,7 +277,7 @@
 				<div class="card h-100 border-0 overflow-hidden"
 					style="background: linear-gradient(135deg, #2D5F4F 0%, #1a3a30 100%);">
 					<div class="position-relative">
-						<a th:href="@{/event/detail(id=${mainEvent.eventId})}">
+						<a th:href="@{/event/{id}(id=${mainEvent.eventId})}">
 							<img loading="lazy" th:src="${mainEvent.coverImageUrl}" class="card-img-top"
 								style="height: 350px; object-fit: cover;" th:alt="${mainEvent.title}">
 						</a>
@@ -288,8 +288,8 @@
 					</div>
 					<div class="card-body d-flex flex-column p-3">
 						<h4 class="card-title text-white mb-2">
-							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
-								class="text-white text-decoration-none" th:text="${mainEvent.title}">2025新年音樂會｜維也納之夜</a>
+							<a th:href="@{/event/{id}(id=${mainEvent.eventId})}" class="text-white text-decoration-none"
+								th:text="${mainEvent.title}">2025新年音樂會｜維也納之夜</a>
 						</h4>
 						<!-- 簡單顯示地點與主辦 -->
 						<div class="mb-2">
@@ -315,7 +315,7 @@
 									th:text="${mainEvent.minPrice != null ? #numbers.formatInteger(mainEvent.minPrice, 0, 'COMMA') : '0'}">1,800</span>
 								<small class="fs-6 text-white-50">起</small>
 							</span>
-							<a th:href="@{/event/detail(id=${mainEvent.eventId})}"
+							<a th:href="@{/event/{id}(id=${mainEvent.eventId})}"
 								class="btn btn-light btn-sm px-3">立即購票</a>
 						</div>
 					</div>
@@ -328,7 +328,7 @@
 					<div class="col-6" th:each="event, iterStat : ${latestEvents}" th:if="${iterStat.index > 0}">
 						<div class="card h-100 border-secondary bg-dark article_hover">
 							<div class="position-relative">
-								<a th:href="@{/event/detail(id=${event.eventId})}">
+								<a th:href="@{/event/{id}(id=${event.eventId})}">
 									<img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
 										style="height: 140px; object-fit: cover;" th:alt="${event.title}">
 								</a>
@@ -339,7 +339,7 @@
 							</div>
 							<div class="card-body p-2">
 								<h6 class="card-title mb-1 text-truncate">
-									<a th:href="@{/event/detail(id=${event.eventId})}"
+									<a th:href="@{/event/{id}(id=${event.eventId})}"
 										class="text-white text-decoration-none" th:text="${event.title}">活動標題</a>
 								</h6>
 								<p class="card-text text-muted small mb-2 text-truncate" style="font-size: 0.75rem;">
@@ -351,7 +351,7 @@
 											th:text="${event.minPrice != null ? #numbers.formatInteger(event.minPrice, 0, 'COMMA') : '0'}">280</span>
 										起
 									</span>
-									<a th:href="@{/event/detail(id=${event.eventId})}"
+									<a th:href="@{/event/{id}(id=${event.eventId})}"
 										class="btn btn-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">購票</a>
 								</div>
 							</div>
