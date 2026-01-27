@@ -57,23 +57,25 @@ public class FeaturedService {
         for (FeaturedVO featured : featuredList) {
             EventVO event = featured.getEventVO();
             // 防呆：如果關聯的活動不存在，則跳過
-            if (event == null) continue;
+            if (event == null)
+                continue;
 
             // 查詢該活動的第一張圖片 (封面圖)
-            Optional<EventImageVO> imgOpt = eventImageRepository.findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
-            
+            Optional<EventImageVO> imgOpt = eventImageRepository
+                    .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
+
             // 如果有圖就用資料庫的圖，沒圖就用預設圖 (可自行換成專案內的預設圖路徑)
             String imgUrl = imgOpt.map(EventImageVO::getImageUrl)
-                                  .orElse("https://via.placeholder.com/1920x600/2D5F4F/FFFFFF?text=No+Image");
+                    .orElse("https://via.placeholder.com/1920x600/2D5F4F/FFFFFF?text=No+Image");
 
             // 組裝 DTO
             FeaturedCarouselDTO dto = new FeaturedCarouselDTO();
             dto.setFeaturedId(featured.getFeaturedId());
             dto.setEventId(event.getEventId());
-            dto.setTitle(event.getTitle());      // 對應 EventVO 的 title
-            dto.setContent(event.getContent());  // 對應 EventVO 的 content
+            dto.setTitle(event.getTitle()); // 對應 EventVO 的 title
+            dto.setContent(event.getContent()); // 對應 EventVO 的 content
             dto.setImageUrl(imgUrl);
-            
+
             resultList.add(dto);
         }
         return resultList;
@@ -88,15 +90,44 @@ public class FeaturedService {
         private String imageUrl;
 
         // Getters and Setters
-        public Integer getFeaturedId() { return featuredId; }
-        public void setFeaturedId(Integer featuredId) { this.featuredId = featuredId; }
-        public Integer getEventId() { return eventId; }
-        public void setEventId(Integer eventId) { this.eventId = eventId; }
-        public String getTitle() { return title; }
-        public void setTitle(String title) { this.title = title; }
-        public String getContent() { return content; }
-        public void setContent(String content) { this.content = content; }
-        public String getImageUrl() { return imageUrl; }
-        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+        public Integer getFeaturedId() {
+            return featuredId;
+        }
+
+        public void setFeaturedId(Integer featuredId) {
+            this.featuredId = featuredId;
+        }
+
+        public Integer getEventId() {
+            return eventId;
+        }
+
+        public void setEventId(Integer eventId) {
+            this.eventId = eventId;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getImageUrl() {
+            return imageUrl;
+        }
+
+        public void setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+        }
     }
 }

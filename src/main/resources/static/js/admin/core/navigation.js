@@ -31,6 +31,13 @@ const Navigation = {
         $('[data-section]').removeClass('active');
         $(`[data-section="${section}"]`).addClass('active');
 
+        $('[data-section]').removeClass('active');
+        $(`[data-section="${section}"]`).addClass('active');
+
+        // Scroll Top Logic - target all potential scrollable containers
+        window.scrollTo(0, 0);
+        $('html, body, main').scrollTop(0);
+
         history.replaceState(null, '', '#' + section);
     },
 

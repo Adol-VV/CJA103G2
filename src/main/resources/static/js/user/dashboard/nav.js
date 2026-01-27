@@ -32,7 +32,10 @@ const Nav = {
 
         // Update Hash
         history.pushState(null, null, '#' + section);
-        // window.scrollTo(0, 0);  // 點擊功能捲軸會跳到最上面
+
+        // Scroll Top Logic
+        window.scrollTo(0, 0);
+        $('html, body, main').scrollTop(0);
     },
 
     handleHash() {

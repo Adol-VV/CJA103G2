@@ -201,7 +201,7 @@
 
 					<p class="lead" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...</p>
 
-					<a th:href="@{/event/detail(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
+					<a th:href="@{/event/{id}(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
 						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
 					</a>
 				</div>

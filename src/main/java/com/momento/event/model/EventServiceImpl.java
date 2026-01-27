@@ -228,6 +228,7 @@ public class EventServiceImpl implements EventService {
                 dto.setEventAt(event.getEventAt());
                 dto.setTypeName(event.getType().getTypeName());
                 dto.setOrganizerName(event.getOrganizer().getName());
+                dto.setOrganizerId(event.getOrganizer().getOrganizerId());
 
                 // 查詢封面圖片 URL
                 Optional<EventImageVO> coverImage = eventImageRepository
