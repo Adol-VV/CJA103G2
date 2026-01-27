@@ -1,6 +1,5 @@
 package com.momento.organizer.controller;
 
-
 import com.momento.organizer.model.OrganizerEmailService;
 import com.momento.organizer.model.OrganizerResetPasswordService;
 import com.momento.organizer.model.OrganizerService;
@@ -50,7 +49,7 @@ public class OrganizerForgotPasswordController {
 
         } catch (Exception e) {
 
-            model.addAttribute("account", "郵件發送失敗，請稍後再試");
+            model.addAttribute("accountMsg", "郵件發送失敗，請稍後再試");
             e.printStackTrace();
 
         }
@@ -58,10 +57,10 @@ public class OrganizerForgotPasswordController {
     }
 
     @GetMapping("/reset-password")
-    public String showResetPage(@RequestParam String token, Model model){
+    public String showResetPage(@RequestParam String token, Model model) {
         String organizerId = resetSvc.verifyToken(token);
 
-        if (organizerId != null){
+        if (organizerId != null) {
             model.addAttribute("token", token);
 
             OrganizerVO organizer = organizerSvc.getOrganizer(Integer.valueOf(organizerId));
@@ -91,8 +90,5 @@ public class OrganizerForgotPasswordController {
         }
         return "redirect:/organizer/forgot-password?error";
     }
-
-
-
 
 }
