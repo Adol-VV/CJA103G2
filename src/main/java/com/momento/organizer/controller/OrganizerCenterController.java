@@ -3,6 +3,7 @@ package com.momento.organizer.controller;
 import com.momento.emp.model.EmpVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import com.momento.prod.model.ProdVO;
@@ -94,7 +95,7 @@ public class OrganizerCenterController {
 		if (!model.containsAttribute("prodList")) {
 			model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
 		}
-		model.addAttribute("prodVO",new ProdVO());
+		model.addAttribute("prod",new ProdVO());
         return "pages/organizer/dashboard";
     }
 
@@ -311,20 +312,42 @@ public class OrganizerCenterController {
 	
 	//新增商品
 	@PostMapping("/addProd")
-	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+	public String addProd(@Valid ProdVO prod, HttpSession session) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
-        prodVO.getEmpVO().setEmpId(8);
-        prodVO.setCreatedAt(LocalDateTime.now());
-        prodVO.setUpdatedAt(LocalDateTime.now());
-        prodVO.setProdStatus((byte) 0);
-        prodVO.setReviewStatus((byte) 0);
+        prod.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
+        prod.getEmpVO().setEmpId(8);
+        prod.setCreatedAt(LocalDateTime.now());
+        prod.setUpdatedAt(LocalDateTime.now());
+        prod.setProdStatus((byte) 0);
+        prod.setReviewStatus((byte) 0);
         
         
-        prodSvc.addProd(prodVO);
+        prodSvc.addProd(prod);
         return "redirect:/organizer/dashboard#product-list";
 	}
+	
+	//進入編輯商品頁面
+	@PostMapping("/prodEdit")
+	public String prodEdit(HttpSession session, Integer prodId, ModelMap model) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+        ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
+        model.addAttribute("prod", prod);
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        return "pages/organizer/product-edit";
+	}
+	
+	//更新商品
+	@PostMapping("/prodUpdate")
+	public String prodUpdate(ProdDTO prod,HttpSession session) {
+		
+		
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
 }

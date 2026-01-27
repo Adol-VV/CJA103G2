@@ -361,101 +361,101 @@
 		<div class="d-flex justify-content-between align-items-center mb-3">
 			<div>
 				<h4 class="mb-0">
-					<i class="fas fa-shopping-bag text-warning me-2"></i>人氣周邊
+					<i class="fas fa-shopping-bag text-warning me-2"></i>最新周邊商品
 				</h4>
 			</div>
-			<a href="pages/user/prod-list.html" class="text-decoration-none text-muted small"> 查看更多 <i
+			<a th:href="@{prod/listAllProd}" class="text-decoration-none text-muted small"> 查看更多 <i
 					class="fas fa-arrow-right"></i>
 			</a>
 		</div>
 
 		<div class="row g-3">
 			<!-- Product Card 1 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
+			<div class="col-6 col-md-4 col-lg-2" th:each="prod:${latestProds}">
+				<a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
+						<img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img"
 							style="height: 145px; object-fit: cover;" alt="Product">
-						<span class="badge bg-danger position-absolute top-0 start-0 m-2 small">HOT</span>
+						<span class="badge bg-warning position-absolute top-0 start-0 m-2 small latestProdIcon" style="color:black"><i class="fas fa-crown me-1"></i>最新上架</span>
 						<div
 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">音樂會紀念T恤</h6>
+							<h6 class="text-white mb-0 w-100 text-center" th:text="${prod.prodName}">音樂會紀念T恤</h6>
 						</div>
 					</div>
 				</a>
 			</div>
 
 			<!-- Product Card 2 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
-							style="height: 145px; object-fit: cover;" alt="Product">
-						<div
-							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">經典Logo帆布袋</h6>
-						</div>
-					</div>
-				</a>
-			</div>
+<!-- 			<div class="col-6 col-md-4 col-lg-2"> -->
+<!-- 				<a href="pages/user/prod-detail.html" class="text-decoration-none"> -->
+<!-- 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card"> -->
+<!-- 						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img" -->
+<!-- 							style="height: 145px; object-fit: cover;" alt="Product"> -->
+<!-- 						<div -->
+<!-- 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2"> -->
+<!-- 							<h6 class="text-white mb-0 w-100 text-center">經典Logo帆布袋</h6> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</a> -->
+<!-- 			</div> -->
 
 			<!-- Product Card 3 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
-							style="height: 145px; object-fit: cover;" alt="Product">
-						<span class="badge bg-success position-absolute top-0 start-0 m-2 small">NEW</span>
-						<div
-							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">不鏽鋼保溫杯</h6>
-						</div>
-					</div>
-				</a>
-			</div>
+<!-- 			<div class="col-6 col-md-4 col-lg-2"> -->
+<!-- 				<a href="pages/user/prod-detail.html" class="text-decoration-none"> -->
+<!-- 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card"> -->
+<!-- 						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img" -->
+<!-- 							style="height: 145px; object-fit: cover;" alt="Product"> -->
+<!-- 						<span class="badge bg-success position-absolute top-0 start-0 m-2 small">NEW</span> -->
+<!-- 						<div -->
+<!-- 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2"> -->
+<!-- 							<h6 class="text-white mb-0 w-100 text-center">不鏽鋼保溫杯</h6> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</a> -->
+<!-- 			</div> -->
 
 			<!-- Product Card 4 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
-							style="height: 145px; object-fit: cover;" alt="Product">
-						<div
-							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">刺繡老帽</h6>
-						</div>
-					</div>
-				</a>
-			</div>
+<!-- 			<div class="col-6 col-md-4 col-lg-2"> -->
+<!-- 				<a href="pages/user/prod-detail.html" class="text-decoration-none"> -->
+<!-- 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card"> -->
+<!-- 						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img" -->
+<!-- 							style="height: 145px; object-fit: cover;" alt="Product"> -->
+<!-- 						<div -->
+<!-- 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2"> -->
+<!-- 							<h6 class="text-white mb-0 w-100 text-center">刺繡老帽</h6> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</a> -->
+<!-- 			</div> -->
 
 			<!-- Product Card 5 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
-							style="height: 145px; object-fit: cover;" alt="Product">
-						<div
-							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">限定海報組</h6>
-						</div>
-					</div>
-				</a>
-			</div>
+<!-- 			<div class="col-6 col-md-4 col-lg-2"> -->
+<!-- 				<a href="pages/user/prod-detail.html" class="text-decoration-none"> -->
+<!-- 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card"> -->
+<!-- 						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img" -->
+<!-- 							style="height: 145px; object-fit: cover;" alt="Product"> -->
+<!-- 						<div -->
+<!-- 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2"> -->
+<!-- 							<h6 class="text-white mb-0 w-100 text-center">限定海報組</h6> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</a> -->
+<!-- 			</div> -->
 
 			<!-- Product Card 6 -->
-			<div class="col-6 col-md-4 col-lg-2">
-				<a href="pages/user/prod-detail.html" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
-						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img"
-							style="height: 145px; object-fit: cover;" alt="Product">
-						<span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 small">限量</span>
-						<div
-							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2">
-							<h6 class="text-white mb-0 w-100 text-center">紀念徽章套組</h6>
-						</div>
-					</div>
-				</a>
-			</div>
+<!-- 			<div class="col-6 col-md-4 col-lg-2"> -->
+<!-- 				<a href="pages/user/prod-detail.html" class="text-decoration-none"> -->
+<!-- 					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card"> -->
+<!-- 						<img loading="lazy" src="https://via.placeholder.com/300x300" class="card-img" -->
+<!-- 							style="height: 145px; object-fit: cover;" alt="Product"> -->
+<!-- 						<span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 small">限量</span> -->
+<!-- 						<div -->
+<!-- 							class="prod-overlay position-absolute w-100 h-100 top-0 start-0 d-flex align-items-end p-2"> -->
+<!-- 							<h6 class="text-white mb-0 w-100 text-center">紀念徽章套組</h6> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</a> -->
+<!-- 			</div> -->
 		</div>
 	</section>
 
@@ -662,6 +662,15 @@
 				path: cleanUrl
 			}, '', cleanUrl);
 		}
+		
+		$(document).ready(function(){
+			$("span.latestProdIcon").each(function(i, icon){
+				if(i != 0 ){
+					$(icon).css("display","none");
+				}
+			})
+		})
+
 	</script>
 </body>
 

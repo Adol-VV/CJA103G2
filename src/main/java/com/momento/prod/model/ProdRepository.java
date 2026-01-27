@@ -25,4 +25,9 @@ public interface ProdRepository extends JpaRepository<ProdVO, Integer> {
 	//依主辦方查詢商品
 	@Query(value = "select * from prod where organizer_id = ?1 order by prod_id", nativeQuery = true)
 	List<ProdVO> findProdsByOrgId(Integer organizerId);
+	
+	//首頁最新商品(6筆)
+	
+	@Query(value = "select * from prod where prod_status = 1 order by created_at desc limit 6;", nativeQuery = true)
+	List<ProdVO> findLatestProds();
 }

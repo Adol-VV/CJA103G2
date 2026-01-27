@@ -29,6 +29,8 @@ public class ProdService {
 		repository.save(prodVO);
 	}
 	
+	
+	//變更商品審核狀態
 	@Transactional
 	public void updateProdReviewStatus(Integer prodId, byte reviewStatus) {
 		Optional<ProdVO> optional = repository.findById(prodId);
@@ -37,6 +39,7 @@ public class ProdService {
 		repository.save(prod);
 	}
 	
+	//變更商品上下架狀態
 	@Transactional
 	public void updateProdStatus(Integer prodId, byte prodStatus) {
 		Optional<ProdVO> optional = repository.findById(prodId);
@@ -45,6 +48,7 @@ public class ProdService {
 		repository.save(prod);
 	}
 	
+	//商品單一查詢
 	public ProdDTO getOneProd(Integer prodId) {
 		Optional<ProdVO> optional = repository.findById(prodId);
 		ProdVO prod = optional.get();
@@ -55,6 +59,7 @@ public class ProdService {
         dto.setProdStock(prod.getProdStock());
         dto.setProdContent(prod.getProdContent());
         dto.setOrganizerName(prod.getOrganizerVO().getName());
+        dto.setSortId(prod.getProdSortVO().getSortId());
         dto.setSortName(prod.getProdSortVO().getSortName());
         dto.setCreatedAt(prod.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         
@@ -115,7 +120,7 @@ public class ProdService {
 //        });
 //    }
 	
-	
+	//商品查詢全部
 	public List<ProdDTO> getAllProds() {
         return repository.findAll().stream().map(prod -> {
             ProdDTO dto = new ProdDTO();
@@ -160,8 +165,26 @@ public class ProdService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+	//最新商品
+	public List<ProdDTO> findLatestProds() {
+        return repository.findLatestProds().stream().map(prod -> {
+            ProdDTO dto = new ProdDTO();
+            dto.setProdId(prod.getProdId());
+            dto.setProdName(prod.getProdName());
+            
+            // 取出第一張圖片作為主圖
+            if (prod.getProdImages() == null || prod.getProdImages().isEmpty()) {
+            	dto.setMainImageUrl("/images/default.png"); // 預設圖片
+            } else {
+                dto.setMainImageUrl(prod.getProdImages().get(0).getImageUrl());
+            }
+            return dto;
+        }).collect(Collectors.toList());
+    }
 	
 	
+	//主辦方查詢商品
 	public List<ProdDTO> getProdsByOrg(Integer organizerId){
 		return repository.findProdsByOrgId(organizerId).stream().map(prod -> {
 			ProdDTO dto = new ProdDTO();
@@ -206,6 +229,8 @@ public class ProdService {
 		
 	}
 	
+	
+	//商品模糊名稱查詢
 	public List<ProdDTO> searchProds(String s){
         return repository.findByName(s).stream().map(prod -> {
             ProdDTO dto = new ProdDTO();
@@ -251,7 +276,7 @@ public class ProdService {
         }).collect(Collectors.toList());
 	}
 	
-	
+	//主辦方商品的模糊名稱查詢
 	public List<ProdDTO> orgSearchProds(Integer organizerId,String s){
         return repository.findByOrgAndName(organizerId,s).stream().map(prod -> {
 			ProdDTO dto = new ProdDTO();
