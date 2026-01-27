@@ -72,7 +72,7 @@ export function initOrganizerReviews() {
     // 駁回按鈕
     $('#btnRejectOrganizer').off('click').click(function () {
         if (!currentOrganizerId) return;
-        if (!confirm('確定要駁回此申請嗎？（這將會刪除此申請紀錄）')) return;
+        if (!confirm('確定要駁回此申請嗎？\n(確定將直接刪除本次申請紀錄）')) return;
 
         const btn = $(this);
         btn.prop('disabled', true);
@@ -285,7 +285,7 @@ export function initOrganizerReviews() {
     $(document).off('click', '#btnSuspendOrganizer').on('click', '#btnSuspendOrganizer', function () {
         if (!currentOrganizerId) return;
 
-        const confirmMsg = "【防呆提示】\n您確定要將此主辦單位「停權」嗎？\n停權後該帳號將無法登入並管理活動。";
+        const confirmMsg = "\n您確定要將此主辦單位「停權」嗎？\n\n※停權後該帳號將無法登入並管理活動。";
         if (!confirm(confirmMsg)) return;
 
         performAction('/admin/organizer/review/api/suspend', '主辦單位已停權');
@@ -301,7 +301,7 @@ export function initOrganizerReviews() {
     // 註銷帳號按鈕事件
     $(document).off('click', '#btnDeleteOrganizer').on('click', '#btnDeleteOrganizer', function () {
         if (!currentOrganizerId) return;
-        if (!confirm('【危險操作】\n確定要「註銷」此主辦單位帳號嗎？\n這將會永久刪除此帳號的所有主辦方資訊，且無法復原。')) return;
+        if (!confirm('【注意】\n確認要「永久刪除」這個主辦單位帳號嗎？\n\n※若移除，主辦單位資料將無法復原')) return;
         performAction('/admin/organizer/review/api/reject', '帳號已成功註銷並刪除');
     });
 
