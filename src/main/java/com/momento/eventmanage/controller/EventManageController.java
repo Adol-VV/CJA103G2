@@ -165,9 +165,14 @@ public class EventManageController {
         }
 
         private com.momento.eventmanage.dto.EventListItemDTO convertToListItemDTO(EventVO event) {
+                String bannerUrl = (event.getImages() != null && !event.getImages().isEmpty())
+                                ? event.getImages().get(0).getImageUrl()
+                                : null;
+
                 return new com.momento.eventmanage.dto.EventListItemDTO(
                                 event.getEventId(), event.getTitle(), event.getPlace(),
-                                event.getEventStartAt(), event.getPublishedAt(), event.getStatus());
+                                event.getEventStartAt(), event.getPublishedAt(), event.getStatus(),
+                                bannerUrl);
         }
 
         @GetMapping("/api/stats")

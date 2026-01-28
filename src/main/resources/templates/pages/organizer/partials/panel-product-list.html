@@ -63,9 +63,12 @@
                     <td><span class="badge showProdStatus" th:text="${prod.prodStatus}">上架中</span></td>
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-light btn-edit-product" title="編輯商品">
-                                <i class="fas fa-edit"></i>
-                            </button>
+                            <form method="post" th:action="@{prodEdit}">
+	                            <input type="hidden" name="prodId" th:value="${prod.prodId}">
+	                            <button class="btn btn-sm btn-outline-light btn-edit-product" title="編輯商品">
+	                                <i class="fas fa-edit"></i>
+	                            </button>
+                            </form>
                             <form method="post" th:action="@{changeProdStatus}">
                             	<input type="hidden" name="prodId" th:value="${prod.prodId}">
 	                            <button th:if="${prod.prodStatus=='已下架'}" class="btn btn-sm btn-outline-success btn-publish-product" title="上架商品" type="submit" name="prodStatus" value="1">

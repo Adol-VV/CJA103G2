@@ -4,7 +4,7 @@ export function initEventEdit() {
     console.log('initEventEdit: Module Initialized');
 
     // ========== 核心：開啟編輯器 ==========
-    window.openEventEditor = function (eventId) {
+    window.openEventEditEditor = function (eventId) {
         if (!eventId) return;
 
         // 1. 切換面板

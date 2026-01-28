@@ -163,7 +163,7 @@ export function initEventApprovals() {
             $tbody.empty();
 
             if (events.length === 0) {
-                $tbody.html('<tr><td colspan="6" class="text-center text-muted p-4">此分類目前無活動</td></tr>');
+                $tbody.html('<tr><td colspan="7" class="text-center text-muted p-4">此分類目前無活動</td></tr>');
                 return;
             }
 
@@ -171,6 +171,7 @@ export function initEventApprovals() {
                 const publishedDate = evt.publishedAt ? formatDate(evt.publishedAt) : '-';
                 const eventDate = evt.eventStartAt ? formatDate(evt.eventStartAt) : '-';
                 const organizerName = evt.organizer ? (evt.organizer.name || '未知主辦方') : '系統管理';
+                const bannerUrl = evt.bannerUrl || 'https://picsum.photos/seed/event/200/120';
 
                 let statusBadge = '';
                 switch (evt.status) {
@@ -202,6 +203,11 @@ export function initEventApprovals() {
 
                 const html = `
                     <tr>
+                        <td>
+                            <div class="rounded border border-secondary overflow-hidden" style="width: 80px; aspect-ratio: 16/9;">
+                                <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        </td>
                         <td>${publishedDate}</td>
                         <td>
                             <div class="fw-bold">${evt.title}</div>
@@ -218,7 +224,7 @@ export function initEventApprovals() {
 
         } catch (error) {
             console.error('Error loading events:', error);
-            $tbody.html('<tr><td colspan="6" class="text-center text-danger p-4">載入失敗，請稍後再試</td></tr>');
+            $tbody.html('<tr><td colspan="7" class="text-center text-danger p-4">載入失敗，請稍後再試</td></tr>');
         }
     }
 
@@ -230,25 +236,31 @@ export function initEventApprovals() {
             url: '/admin/event/review/api/' + eventId,
             type: 'GET',
             success: function (event) {
+                const bannerUrl = event.bannerUrl || 'https://picsum.photos/seed/event/800/400';
                 const detailsHtml = `
                     <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-2">活動資訊</h6>
-                            <p><strong>活動名稱：</strong>${event.title}</p>
-                            <p><strong>活動類型：</strong>${event.type?.typeName || '-'}</p>
-                            <p><strong>活動地點：</strong>${event.place}</p>
-                            <p><strong>活動時間：</strong>${event.eventStartAt ? formatDateTime(event.eventStartAt) : '主辦方尚未設定'}</p>
-                            <p><strong>主辦單位：</strong>${event.organizer?.name || '-'}</p>
+                        <div class="col-12 mb-4">
+                            <div class="rounded border border-secondary overflow-hidden" style="width: 100%; aspect-ratio: 16/9;">
+                                <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-muted mb-2">售票資訊 (上架後設定)</h6>
-                            <p><strong>售票開始：</strong>${event.saleStartAt ? formatDateTime(event.saleStartAt) : '-'}</p>
-                            <p><strong>售票結束：</strong>${event.saleEndAt ? formatDateTime(event.saleEndAt) : '-'}</p>
-                            <p><strong>票種數量：</strong>${event.tickets?.length || 0} 種</p>
+                            <h6 class="text-primary fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>活動資訊</h6>
+                            <p class="mb-2"><strong>活動名稱：</strong>${event.title}</p>
+                            <p class="mb-2"><strong>活動類型：</strong>${event.type?.typeName || '-'}</p>
+                            <p class="mb-2"><strong>活動地點：</strong>${event.place}</p>
+                            <p class="mb-2"><strong>活動時間：</strong>${event.eventStartAt ? formatDateTime(event.eventStartAt) : '主辦方尚未設定'}</p>
+                            <p class="mb-2"><strong>主辦單位：</strong>${event.organizer?.name || '-'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary fw-bold mb-3"><i class="fas fa-ticket-alt me-2"></i>售票資訊 (上架後有效)</h6>
+                            <p class="mb-2"><strong>售票開始：</strong>${event.saleStartAt ? formatDateTime(event.saleStartAt) : '-'}</p>
+                            <p class="mb-2"><strong>售票結束：</strong>${event.saleEndAt ? formatDateTime(event.saleEndAt) : '-'}</p>
+                            <p class="mb-2"><strong>票種數量：</strong>${event.tickets?.length || 0} 種</p>
                         </div>
                         <div class="col-12 mt-3">
-                            <h6 class="text-muted mb-2">活動說明</h6>
-                            <div class="border border-secondary p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                            <h6 class="text-primary fw-bold mb-2"><i class="fas fa-align-left me-2"></i>活動說明</h6>
+                            <div class="bg-black border border-secondary p-3 rounded" style="max-height: 300px; overflow-y: auto;">
                                 ${event.content || '無說明'}
                             </div>
                         </div>

@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPartials();
 
     // 3. Initialize Core Modules
+    window.Navigation = Navigation;
+    window.Sidebar = Sidebar;
+    window.Forms = Forms;
+    window.UI = UI;
+
     Navigation.init();
     Sidebar.init();
     Forms.init();

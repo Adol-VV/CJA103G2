@@ -54,7 +54,7 @@ export function initEventList() {
         const $tbody = $('#organizer-event-tbody');
         $tbody.html(`
             <tr>
-                <td colspan="4" class="text-center py-4">
+                <td colspan="5" class="text-center py-4">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -79,7 +79,7 @@ export function initEventList() {
                 updateStats();
             },
             error: function (xhr) {
-                $tbody.html(`<tr><td colspan="4" class="text-center text-danger">載入失敗: ${xhr.responseJSON?.message || '未知錯誤'}</td></tr>`);
+                $tbody.html(`<tr><td colspan="5" class="text-center text-danger">載入失敗: ${xhr.responseJSON?.message || '未知錯誤'}</td></tr>`);
             }
         });
     }
@@ -106,7 +106,7 @@ export function initEventList() {
         if (!events || events.length === 0) {
             $tbody.html(`
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
+                    <td colspan="5" class="text-center text-muted py-4">
                         <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                         尚無活動資料
                     </td>
@@ -119,9 +119,15 @@ export function initEventList() {
             const eventDate = event.eventStartAt ? formatDate(event.eventStartAt) : '未設定時間';
             const statusBadge = getStatusBadge(event);
             const actionButtons = getActionButtons(event);
+            const bannerUrl = event.bannerUrl || 'https://picsum.photos/seed/event/200/120';
 
             const row = `
                 <tr data-event-id="${event.eventId}">
+                    <td>
+                        <div class="rounded border border-secondary overflow-hidden" style="width: 80px; aspect-ratio: 16/9;">
+                            <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </td>
                     <td>
                         <div class="fw-bold">${event.title}</div>
                         <small class="text-muted">${event.place || '未設定地點'}</small>
@@ -131,7 +137,7 @@ export function initEventList() {
                     <td class="text-end">${actionButtons}</td>
                 </tr>
                 <tr id="timeRow-${event.eventId}" class="d-none bg-darker">
-                    <td colspan="4" class="p-0">
+                    <td colspan="5" class="p-0">
                         <div class="time-form-container p-4 border-top border-secondary">
                             <div class="alert alert-info py-2">
                                 <i class="fas fa-info-circle me-2"></i>審核已通過！請設定活動時間以完成上架。

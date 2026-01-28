@@ -9,18 +9,20 @@ public class EventListItemDTO {
     private LocalDateTime eventStartAt;
     private LocalDateTime publishedAt;
     private Byte status;
+    private String bannerUrl;
 
     public EventListItemDTO() {
     }
 
     public EventListItemDTO(Integer eventId, String title, String place, LocalDateTime eventStartAt,
-            LocalDateTime publishedAt, Byte status) {
+            LocalDateTime publishedAt, Byte status, String bannerUrl) {
         this.eventId = eventId;
         this.title = title;
         this.place = place;
         this.eventStartAt = eventStartAt;
         this.publishedAt = publishedAt;
         this.status = status;
+        this.bannerUrl = bannerUrl;
     }
 
     // Getters and Setters
@@ -70,5 +72,13 @@ public class EventListItemDTO {
 
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+    public String getBannerUrl() {
+        return bannerUrl;
+    }
+
+    public void setBannerUrl(String bannerUrl) {
+        this.bannerUrl = bannerUrl;
     }
 }
