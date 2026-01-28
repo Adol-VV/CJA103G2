@@ -56,6 +56,10 @@ public class EventReviewController {
         dto.setPublishedAt(event.getPublishedAt());
         dto.setStatus(event.getStatus());
 
+        if (event.getImages() != null && !event.getImages().isEmpty()) {
+            dto.setBannerUrl(event.getImages().get(0).getImageUrl());
+        }
+
         if (event.getOrganizer() != null) {
             dto.setOrganizer(new com.momento.eventreview.dto.EventReviewDTO.OrganizerDTO(
                     event.getOrganizer().getOrganizerId(),

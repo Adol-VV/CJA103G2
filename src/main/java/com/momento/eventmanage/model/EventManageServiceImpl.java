@@ -17,12 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
@@ -117,34 +111,16 @@ public class EventManageServiceImpl implements EventManageService {
         eventImageRepository.save(eventImage);
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.momento.config.FileUploadService fileUploadService;
+
     @Override
     public String uploadImage(MultipartFile file) {
-        if (file.isEmpty())
-            throw new RuntimeException("檔案不能為空");
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/"))
-            throw new RuntimeException("只能上傳圖片");
-        if (file.getSize() > 5 * 1024 * 1024)
-            throw new RuntimeException("圖片不能超過 5MB");
-
         try {
-            String uploadDir = "uploads/events";
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath))
-                Files.createDirectories(uploadPath);
-
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null && originalFilename.contains(".")
-                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                    : ".jpg";
-            String filename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + extension;
-
-            Path filePath = uploadPath.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/uploads/events/" + filename;
-        } catch (IOException e) {
-            throw new RuntimeException("圖片上傳失敗: " + e.getMessage());
+            // 呼叫統一的檔案上傳服務，指定類型為 "event"
+            return fileUploadService.storeFile(file, "event");
+        } catch (Exception e) {
+            throw new RuntimeException("活動圖片上傳失敗: " + e.getMessage());
         }
     }
 

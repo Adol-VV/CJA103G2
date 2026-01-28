@@ -55,7 +55,7 @@ export function initEventCreate() {
     $(document).on('click', '[data-section="event-create"]', function (e) {
         if (e.originalEvent && !window.IS_EDITING_EVENT) {
             console.log('Sidebar Navigation: Resetting Editor to Create Mode');
-            if (window.openEventEditor) window.openEventEditor(null);
+            if (window.openDraftEditor) window.openDraftEditor(null);
         }
         window.IS_EDITING_EVENT = false;
     });
@@ -105,12 +105,12 @@ export function initEventCreate() {
                 }
                 uploadedBannerUrl = imgUrl;
                 $('#mainImagePreview').attr('src', imgUrl);
-                $('.upload-placeholder').addClass('d-none');
-                $('.upload-preview').removeClass('d-none');
+                $('#panel-event-create .upload-placeholder').addClass('d-none');
+                $('#panel-event-create .upload-preview').removeClass('d-none');
             } else {
                 uploadedBannerUrl = '';
-                $('.upload-preview').addClass('d-none');
-                $('.upload-placeholder').removeClass('d-none');
+                $('#panel-event-create .upload-preview').addClass('d-none');
+                $('#panel-event-create .upload-placeholder').removeClass('d-none');
             }
 
             // 渲染票種
@@ -175,14 +175,14 @@ export function initEventCreate() {
     }
 
     // Expose for external use (from List)
-    window.openEventEditor = function (eventId) {
+    window.openDraftEditor = function (eventId) {
         $('#eventCreateForm')[0].reset();
         $('#editEventId').val('');
         $('#editorTitle').text('建立新活動');
         $('#btnCancelEdit').addClass('d-none');
         $('#rejectReasonAlert').addClass('d-none');
-        $('.upload-preview').addClass('d-none');
-        $('.upload-placeholder').removeClass('d-none');
+        $('#panel-event-create .upload-preview').addClass('d-none');
+        $('#panel-event-create .upload-placeholder').removeClass('d-none');
         uploadedBannerUrl = '';
         $('#ticketZones').html(`
             <div class="ticket-zone-card mb-3 p-3" style="background: #1A1A1A; border-radius: 6px;">
@@ -232,8 +232,8 @@ export function initEventCreate() {
         const reader = new FileReader();
         reader.onload = function (e) {
             $('#mainImagePreview').attr('src', e.target.result);
-            $('.upload-placeholder').addClass('d-none');
-            $('.upload-preview').removeClass('d-none');
+            $('#panel-event-create .upload-placeholder').addClass('d-none');
+            $('#panel-event-create .upload-preview').removeClass('d-none');
         };
         reader.readAsDataURL(file);
 
@@ -244,8 +244,8 @@ export function initEventCreate() {
         const formData = new FormData();
         formData.append('file', file);
 
-        $('.upload-preview').css('opacity', '0.6');
-        $('.upload-preview').append('<div class="upload-spinner position-absolute top-50 start-50 translate-middle"><i class="fas fa-spinner fa-spin fa-2x text-light"></i></div>');
+        $('#panel-event-create .upload-preview').css('opacity', '0.6');
+        $('#panel-event-create .upload-preview').append('<div class="upload-spinner position-absolute top-50 start-50 translate-middle"><i class="fas fa-spinner fa-spin fa-2x text-light"></i></div>');
 
         $.ajax({
             url: '/organizer/event/upload-image',
@@ -257,16 +257,16 @@ export function initEventCreate() {
                 if (response.success && response.imageUrl) {
                     uploadedBannerUrl = response.imageUrl;
                     $('#mainImagePreview').attr('src', response.imageUrl);
-                    $('.upload-spinner').remove();
-                    $('.upload-preview').css('opacity', '1');
+                    $('#panel-event-create .upload-spinner').remove();
+                    $('#panel-event-create .upload-preview').css('opacity', '1');
                     showToast('圖片上傳成功!', 'success');
                 } else {
                     alert('上傳失敗: ' + (response.message || '未知錯誤'));
                 }
             },
             error: function (xhr) {
-                $('.upload-preview').addClass('d-none');
-                $('.upload-placeholder').removeClass('d-none');
+                $('#panel-event-create .upload-preview').addClass('d-none');
+                $('#panel-event-create .upload-placeholder').removeClass('d-none');
                 $('#mainImageInput').val('');
                 alert(xhr.responseJSON?.message || '圖片上傳失敗,請重試');
             }
@@ -279,8 +279,8 @@ export function initEventCreate() {
         if (!confirm('確定要移除此圖片嗎?')) return;
         uploadedBannerUrl = '';
         $('#mainImagePreview').attr('src', '');
-        $('.upload-preview').addClass('d-none');
-        $('.upload-placeholder').removeClass('d-none');
+        $('#panel-event-create .upload-preview').addClass('d-none');
+        $('#panel-event-create .upload-placeholder').removeClass('d-none');
         $('#mainImageInput').val('');
     });
 
@@ -467,8 +467,8 @@ export function initEventCreate() {
             window.Navigation.showSection('event-create');
         }
         setTimeout(() => {
-            if (window.openEventEditor) {
-                window.openEventEditor(eventId);
+            if (window.openDraftEditor) {
+                window.openDraftEditor(eventId);
             }
         }, 100);
     };

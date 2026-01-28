@@ -657,7 +657,7 @@
             });
 
             // 前往購票
-            document.getElementById('btnPurchase').addEventListener('click', function () {
+            document.getElementById('btnPurchase').addEventListener('click', function (e) {
                 const selections = [];
 
                 document.querySelectorAll('.ticket-quantity').forEach(input => {
@@ -673,6 +673,7 @@
                 });
 
                 if (selections.length === 0) {
+                    e.preventDefault();
                     alert('請選擇票種');
                     return;
                 }
@@ -684,6 +685,9 @@
                 const eventId = /*[[${event.eventId}]]*/ 1;
                 window.location.href = '/member/event/order/' + eventId;
             });
+
+            // 初始化計算一次 (確保按鈕狀態正確)
+            calculateTotal();
         });
     </script>
 
