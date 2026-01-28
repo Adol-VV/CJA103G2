@@ -1,26 +1,26 @@
 package com.momento.member.controller;
 
+import com.momento.event.dto.EventListItemDTO;
+import com.momento.event.model.EventService;
+import com.momento.member.model.MemberService;
+import com.momento.member.model.MemberVO;
+import com.momento.notify.model.SystemNotifyService;
+import com.momento.notify.model.SystemNotifyVO;
+import com.momento.prod.model.ProdFavService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
-import com.momento.member.model.MemberService;
-import com.momento.member.model.MemberVO;
-import com.momento.prod.model.ProdFavService;
-import com.momento.event.model.EventService;
-import com.momento.event.dto.EventListItemDTO;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/member")
@@ -34,6 +34,9 @@ public class MemberCenterController {
 	
 	@Autowired
 	ProdFavService prodFavSvc;
+
+	@Autowired
+	SystemNotifyService systemNotifyService;
 
 	@GetMapping("/login")
 	public String showLoginPage(String targetUrl, HttpServletRequest request, Model model, HttpSession session) {
@@ -95,6 +98,11 @@ public class MemberCenterController {
 		if (loginMember != null) {
 			List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(loginMember.getMemberId());
 			model.addAttribute("favoriteCount", favoriteEvents.size());
+
+			// 計算未讀通知數量
+			List<com.momento.notify.model.SystemNotifyVO> allNotifies = systemNotifyService.getByMemId(loginMember.getMemberId());
+			long unreadNotifyCount = allNotifies.stream().filter(n -> n.getIsRead() == 0).count();
+			model.addAttribute("unreadNotifyCount", unreadNotifyCount);
 		}
 		return "pages/user/partials/sidebar";
 	}
@@ -107,8 +115,14 @@ public class MemberCenterController {
 	@GetMapping("/dashboard/overview")
 	public String showDashboardOverview(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
-		Integer loginMemberToken = loginMember.getToken();
-		model.addAttribute("loginMemberToken", loginMemberToken);
+		if (loginMember != null){
+			Integer loginMemberToken = loginMember.getToken();
+			model.addAttribute("loginMemberToken", loginMemberToken);
+
+			// 抓通知清單
+			List<SystemNotifyVO> notifications = systemNotifyService.getByMemId(loginMember.getMemberId());
+			model.addAttribute("notifyListData", notifications);
+		}
 		return "pages/user/partials/panel-overview";
 	}
 
@@ -121,6 +135,33 @@ public class MemberCenterController {
 		}
 		return "pages/user/partials/panel-favorites";
 	}
+
+	@GetMapping("/dashboard/panel-notifications")
+	public String showNotifications(HttpSession session, Model model) {
+		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		if (loginMember != null) {
+			// 抓通知紀錄
+			List<SystemNotifyVO> notifications = systemNotifyService.getByMemId(loginMember.getMemberId());
+			model.addAttribute("notifyListData", notifications);
+		}
+		return "pages/user/partials/panel-notifications";
+	}
+
+	@PostMapping("/dashboard/notifications/mark-read")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId){
+		Map<String, Object> response = new HashMap<>();
+		try {
+			// 更新狀態為1(已讀)
+			systemNotifyService.updateReadStatus(notifyId, 1);
+			response.put("success", true);
+			return ResponseEntity.ok(response);
+		}	catch (Exception e) {
+			response.put("success", false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
 
 	@GetMapping("/dashboard/settings")
 	public String showSettings() {

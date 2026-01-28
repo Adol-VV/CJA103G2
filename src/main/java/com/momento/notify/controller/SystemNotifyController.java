@@ -90,6 +90,25 @@ public class SystemNotifyController {
             return "pages/admin/dashboard";
             }
 
+    @PostMapping("/ajaxUpdateReadStatus")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> ajaxUpdateReadStatus(
+            @RequestParam("systemNotifyId") Integer systemNotifyId,
+            @RequestParam("status") Integer status){
+        Map<String , Object> response = new HashMap<>();
+        try{
+            sysNotifySvc.updateReadStatus(systemNotifyId, status);
+
+            response.put("success", true);
+            response.put("message", "狀態已更新");
+            return ResponseEntity.ok(response);
+        }   catch (Exception e){
+            response.put("success", false);
+            response.put("message", "更新失敗" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
      // 單一通知詳情，並觸發「已讀」邏輯
     @PostMapping("getOne_For_Display")

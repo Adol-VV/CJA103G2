@@ -108,6 +108,28 @@ a:hover {
     color: var(--text-secondary) !important;
 }
 
+.form-label,
+.form-check-label {
+    color: #FFFFFF !important; /* 強制改為白色 */
+}
+
+/* 讓未勾選前的外框變得更明顯 */
+.form-check-input {
+    background-color: transparent;      /* 背景透明 */
+    border: 1px solid #adb5bd !important; /* 邊框改為淺灰色，!important 確保覆蓋預設值 */
+}
+
+/* 滑鼠移上去時, 外框稍微變亮一點  */
+.form-check-input:hover {
+    border-color: #ffffff !important;
+}
+
+/* Checked時的外框與背景顏色 */
+.form-check-input:checked {
+    background-color: var(--momento-green) !important; /* 選中時填滿綠色 */
+    border-color: var(--momento-green) !important;
+}
+
 /* Selection */
 ::selection {
     background-color: var(--momento-green);
