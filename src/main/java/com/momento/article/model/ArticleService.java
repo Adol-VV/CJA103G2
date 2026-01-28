@@ -40,4 +40,8 @@ public class ArticleService {
 	public Page<ArticleVO> getAll(int pageNumber, int pageSize) {
 		return repository.findAll(PageRequest.of(pageNumber, pageSize));
 	}
+
+	public List<ArticleVO> getArticlesByOrganizer(Integer organizerId) {
+		return repository.findByOrganizerVO_OrganizerId(organizerId);
+	}
 }

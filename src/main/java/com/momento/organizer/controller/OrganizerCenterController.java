@@ -7,6 +7,8 @@ import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import com.momento.prod.model.ProdVO;
 
+import com.momento.article.model.ArticleService;
+
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +30,17 @@ public class OrganizerCenterController {
 
     @Autowired
     private ProdService prodSvc;
-    
+
     @Autowired
     private ProdSortService prodSortSvc;
 
+    @Autowired
+    private ArticleService articleSvc;
 
     @GetMapping("/login")
     public String showLoginPage() {
         return "pages/organizer/login";
     }
-
-
 
     @PostMapping("/login")
     public String login(@RequestParam String account,
@@ -75,13 +77,11 @@ public class OrganizerCenterController {
         }
     }
 
-
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }
-
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -90,14 +90,17 @@ public class OrganizerCenterController {
             return "redirect:/organizer/login";
         }
         model.addAttribute("organizer", organizer);
-		model.addAttribute("prodSortList", prodSortSvc.getAll());
-		if (!model.containsAttribute("prodList")) {
-			model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
-		}
-		model.addAttribute("prodVO",new ProdVO());
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        if (!model.containsAttribute("prodList")) {
+            model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
+        }
+
+        // 載入文章列表
+        model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
+
+        model.addAttribute("prodVO", new ProdVO());
         return "pages/organizer/dashboard";
     }
-
 
     @GetMapping("/events")
     public String events(HttpSession session) {
@@ -107,7 +110,6 @@ public class OrganizerCenterController {
         return "pages/organizer/events";
     }
 
-
     @GetMapping("/products")
     public String products(HttpSession session) {
         if (session.getAttribute("loginOrganizer") == null) {
@@ -115,7 +117,6 @@ public class OrganizerCenterController {
         }
         return "pages/organizer/products";
     }
-
 
     @GetMapping("/orders")
     public String orders(HttpSession session) {
@@ -125,7 +126,6 @@ public class OrganizerCenterController {
         return "pages/organizer/orders";
     }
 
-
     @GetMapping("/settlements")
     public String settlements(HttpSession session) {
         if (session.getAttribute("loginOrganizer") == null) {
@@ -134,7 +134,7 @@ public class OrganizerCenterController {
         return "pages/organizer/settlements";
     }
 
-    /* 數據分析頁面（需要登入）*/
+    /* 數據分析頁面（需要登入） */
 
     @GetMapping("/analytics")
     public String analytics(HttpSession session) {
@@ -144,7 +144,7 @@ public class OrganizerCenterController {
         return "pages/organizer/analytics";
     }
 
-    /* 帳戶設定頁面（需要登入）*/
+    /* 帳戶設定頁面（需要登入） */
 
     @GetMapping("/settings")
     public String settings(HttpSession session) {
@@ -289,29 +289,30 @@ public class OrganizerCenterController {
 
         return "redirect:/organizer/dashboard#settings";
     }
-    
-    //商品列表裡面的搜尋商品
-	@PostMapping("/orgSearchProds")
-	public String orgSearchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
+
+    // 商品列表裡面的搜尋商品
+    @PostMapping("/orgSearchProds")
+    public String orgSearchProds(@RequestParam("prodNameLike") String s, HttpSession session, RedirectAttributes ra) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-		ra.addFlashAttribute("prodList",prodSvc.orgSearchProds(organizer.getOrganizerId(),s));
+        ra.addFlashAttribute("prodList", prodSvc.orgSearchProds(organizer.getOrganizerId(), s));
 
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//變更商品上下架狀態
-	@PostMapping("/changeProdStatus")
-	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
-		prodSvc.updateProdStatus(prodId, prodStatus);
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//新增商品
-	@PostMapping("/addProd")
-	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 變更商品上下架狀態
+    @PostMapping("/changeProdStatus")
+    public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
+            @RequestParam("prodStatus") Byte prodStatus) {
+        prodSvc.updateProdStatus(prodId, prodStatus);
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 新增商品
+    @PostMapping("/addProd")
+    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -322,9 +323,8 @@ public class OrganizerCenterController {
         prodVO.setUpdatedAt(LocalDateTime.now());
         prodVO.setProdStatus((byte) 0);
         prodVO.setReviewStatus((byte) 0);
-        
-        
+
         prodSvc.addProd(prodVO);
         return "redirect:/organizer/dashboard#product-list";
-	}
+    }
 }
