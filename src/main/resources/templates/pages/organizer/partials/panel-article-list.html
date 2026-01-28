@@ -15,42 +15,24 @@
                         <th>分類</th>
                         <th>發布日期</th>
                         <th>狀態</th>
-                        <th>瀏覽</th>
+                        <!-- <th>瀏覽</th> -->
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>專訪「草東沒有派對」：在喧囂中尋找寧靜</td>
-                        <td>人物專訪</td>
-                        <td>2024/12/20</td>
+                    <tr th:each="article : ${articleList}">
+                        <td th:text="${article.title}">文章標題</td>
+                        <td>一般文章</td>
+                        <td th:text="${#dates.format(article.createdAt, 'yyyy/MM/dd')}">2025/01/01</td>
                         <td><span class="badge bg-success">已發布</span></td>
-                        <td>12,548</td>
+                        <!-- <td>-</td> -->
                         <td>
                             <button class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>2025 跨年晚會入場須知與交通管制資訊</td>
-                        <td>官方公告</td>
-                        <td>2024/12/18</td>
-                        <td><span class="badge bg-success">已發布</span></td>
-                        <td>8,200</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>五月天演唱會幕後花絮 (草稿)</td>
-                        <td>幕後花絮</td>
-                        <td>-</td>
-                        <td><span class="badge bg-secondary">草稿</span></td>
-                        <td>-</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                    <tr th:if="${#lists.isEmpty(articleList)}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            目前沒有文章
                         </td>
                     </tr>
                 </tbody>

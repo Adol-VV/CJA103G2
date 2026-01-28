@@ -38,64 +38,81 @@ function loadEventsForSelector() {
     const container = $('#featuredEventSelectorContainer');
     container.html('<div class="text-center w-100 py-5"><div class="spinner-border text-light" role="status"></div></div>');
 
+    // First fetch currently featured events to filter them out
     $.ajax({
-        url: '/event/api/list',
+        url: '/featured/api/list',
         method: 'GET',
-        data: {
-            page: 0,
-            size: 100, // Fetch top 100 events
-            sort: 'newest'
-        },
-        success: function (response) {
-            container.empty();
-            const events = response.content;
+        success: function (featuredList) {
+            const featuredEventIds = new Set(featuredList.map(item => item.eventId));
 
-            if (events && events.length > 0) {
-                events.forEach((event) => {
-                    const eventHtml = `
-                        <div class="col-md-3">
-                            <div class="card bg-dark border-secondary selector-item h-100" style="cursor: pointer;" 
-                                 data-id="${event.eventId}" data-organizer-id="${event.organizerId}">
-                                <div class="position-relative">
-                                    <img loading="lazy" src="${event.coverImageUrl || 'https://placehold.co/300x200?text=No+Image'}" 
-                                         class="card-img-top" style="height: 120px; object-fit: cover;">
+            // Then fetch all events
+            $.ajax({
+                url: '/event/api/list',
+                method: 'GET',
+                data: {
+                    page: 0,
+                    size: 100, // Fetch top 100 events
+                    sort: 'newest'
+                },
+                success: function (response) {
+                    container.empty();
+                    const events = response.content;
+
+                    // Filter out events that are already featured
+                    const availableEvents = events.filter(event => !featuredEventIds.has(event.eventId));
+
+                    if (availableEvents && availableEvents.length > 0) {
+                        availableEvents.forEach(event => {
+                            const eventHtml = `
+                                <div class="col-md-3">
+                                    <div class="card bg-dark border-secondary selector-item h-100" style="cursor: pointer;" 
+                                         data-id="${event.eventId}" data-organizer-id="${event.organizerId}">
+                                        <div class="position-relative">
+                                            <img loading="lazy" src="${event.coverImageUrl || 'https://placehold.co/300x200?text=No+Image'}" 
+                                                 class="card-img-top" style="height: 120px; object-fit: cover;">
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <h6 class="small mb-0 text-white text-truncate" title="${event.title}">${event.title}</h6>
+                                            <small class="text-muted">${event.place || '線上活動'}</small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body p-2">
-                                    <h6 class="small mb-0 text-white text-truncate" title="${event.title}">${event.title}</h6>
-                                    <small class="text-muted">${event.place || '線上活動'}</small>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.append(eventHtml);
-                });
+                            `;
+                            container.append(eventHtml);
+                        });
 
-                // Bind click event for selection
-                $('.selector-item').on('click', function () {
-                    $('.selector-item').removeClass('border-success').css('border-color', '');
-                    $('.selector-item .check-mark').remove();
+                        // Bind click event for selection
+                        $('.selector-item').on('click', function () {
+                            $('.selector-item').removeClass('border-success').css('border-color', '');
+                            $('.selector-item .check-mark').remove();
 
-                    $(this).addClass('border-success').css('border-color', '#198754 !important');
-                    $(this).find('.position-relative').append(`
-                        <span class="check-mark position-absolute top-0 end-0 m-1 text-success">
-                            <i class="fas fa-check-circle bg-dark rounded-circle"></i>
-                        </span>
-                    `);
+                            $(this).addClass('border-success').css('border-color', '#198754 !important');
+                            $(this).find('.position-relative').append(`
+                                <span class="check-mark position-absolute top-0 end-0 m-1 text-success">
+                                    <i class="fas fa-check-circle bg-dark rounded-circle"></i>
+                                </span>
+                            `);
 
-                    // Store selection
-                    selectedEventForFeature = {
-                        eventId: $(this).data('id'),
-                        organizerId: $(this).data('organizer-id')
-                    };
-                });
+                            // Store selection
+                            selectedEventForFeature = {
+                                eventId: $(this).data('id'),
+                                organizerId: $(this).data('organizer-id')
+                            };
+                        });
 
-            } else {
-                container.html('<div class="text-center w-100 text-muted">暫無活動</div>');
-            }
+                    } else {
+                        container.html('<div class="text-center w-100 text-muted">暫無可選活動 (或其他活動已設為主打)</div>');
+                    }
+                },
+                error: function (err) {
+                    console.error('Error fetching events:', err);
+                    container.html('<div class="text-center w-100 text-danger">無法載入活動列表</div>');
+                }
+            });
         },
         error: function (err) {
-            console.error('Error fetching events:', err);
-            container.html('<div class="text-center w-100 text-danger">無法載入活動列表</div>');
+            console.error('Error fetching featured info:', err);
+            container.html('<div class="text-center w-100 text-danger">系統錯誤：無法讀取主打資訊</div>');
         }
     });
 
@@ -103,11 +120,6 @@ function loadEventsForSelector() {
     $('#btnConfirmFeaturedSelection').off('click').on('click', function () {
         if (!selectedEventForFeature) {
             alert('請選擇一個活動');
-            // Prevent modal close if needed, but data-bs-dismiss handles it. 
-            // We return here, effectively letting the modal close if user clicked the button.
-            // But if we want to stop it, we should stopPropagation if it wasn't already dismissed.
-            // Since data-bs-dismiss is attribute-driven, we can't easily stop it in JS handler unless we remove the attribute.
-            // For now, simple alert is fine.
             return;
         }
 

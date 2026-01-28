@@ -20,6 +20,8 @@ import com.momento.event.model.EventRepository;
 import com.momento.event.model.TypeRepository;
 import com.momento.event.model.TypeVO;
 import com.momento.featured.model.FeaturedService;
+import com.momento.prod.dto.ProdDTO;
+import com.momento.prod.model.ProdService;
 
 //@PropertySource("classpath:application.properties") // 於https://start.spring.io建立Spring Boot專案時, application.properties文件預設已經放在我們的src/main/resources 目錄中，它會被自動檢測到
 @Controller
@@ -43,6 +45,9 @@ public class IndexController_inSpringBoot {
 
     @Autowired
     private EventRepository eventRepository;
+    
+    @Autowired
+    private ProdService prodSvc;
 
     // inject(注入資料) via application.properties
     @Value("${welcome.message}")
@@ -86,7 +91,10 @@ public class IndexController_inSpringBoot {
             return new TypeCountDTO(type, count);
         }).collect(java.util.stream.Collectors.toList());
         model.addAttribute("eventTypes", typeCounts);
-
+        
+        //撈取最新活動(6筆)
+        List<ProdDTO> latestProds = prodSvc.findLatestProds();
+        model.addAttribute("latestProds", latestProds);       
         return "index"; // view
     }
 
