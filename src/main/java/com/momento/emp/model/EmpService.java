@@ -137,8 +137,9 @@ public class EmpService {
     public List<EmpAuthorityVO> getEmployeePermissions(Integer empId) {
 
         if (isSuperAdmin(empId)) {
-
-            return new ArrayList<>(); //
+            // 超級管理員：回傳空列表
+            // 前端透過 isSuperAdmin 判斷來顯示所有選單
+            return new ArrayList<>();
         }
         return empAuthorityRepository.findByEmpId(empId);
     }

@@ -6,10 +6,10 @@
     <div class="card bg-dark border-secondary">
         <div class="table-responsive">
             <!-- 從後端 model.employees 動態渲染資料 -->
-            <table class="table table-dark table-hover align-middle mb-0">
+            <table class="table table-dark table-hover table-bordered align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>員工編號</th>
+                        <th style="text-align: center !important; vertical-align: middle;">員工編號</th>
                         <th>職稱</th>
                         <th>帳號</th>
                         <th>目前狀態</th>
@@ -18,8 +18,8 @@
                 </thead>
                 <tbody>
                     <!-- Thymeleaf Loop -->
-                    <tr th:each="emp : ${employees}">
-                        <td th:text="${emp.empId}">1</td>
+                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'table-dark' : ''}">
+                        <td style="text-align: center !important; vertical-align: middle;" th:text="${emp.empId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
@@ -32,13 +32,26 @@
                         </td>
                         <td th:text="${emp.account}">admin</td>
                         <td>
-                            <span class="badge" th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
+                            <!-- 超級管理員特殊標籤 -->
+                            <span th:if="${emp.empId == 1}" class="badge bg-danger">
+                                <i class="fas fa-crown me-1"></i>超級管理員
+                            </span>
+                            <!-- 一般員工狀態 -->
+                            <span th:unless="${emp.empId == 1}" class="badge"
+                                th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
                                 th:text="${emp.status == 1 ? '在職' : '離職/停權'}">正常</span>
                         </td>
                         <td>
-                            <!-- 權限設定按鈕 -->
-                            <button class="btn btn-sm btn-outline-info me-1"
-                                th:onclick="'openPermissionModal(' + ${emp.empId} + ', \'' + ${emp.empName} + '\')'">
+                            <!-- 超級管理員：禁止圖示 -->
+                            <button th:if="${emp.empId == 1}" class="btn btn-sm btn-outline-danger" disabled
+                                title="超級管理員權限不可變更">
+                                <i class="fas fa-ban"></i>
+                            </button>
+
+                            <!-- 一般員工：權限設定按鈕 -->
+                            <button th:unless="${emp.empId == 1}" class="btn btn-sm btn-outline-info me-1"
+                                th:data-emp-id="${emp.empId}" th:data-emp-name="${emp.empName}"
+                                onclick="openPermissionModal(this.dataset.empId, this.dataset.empName)">
                                 <i class="fas fa-user-cog"></i> 設定權限
                             </button>
                         </td>
@@ -66,42 +79,53 @@
                         </div>
 
                         <div class="row g-3" id="checkboxContainer">
-                            <!-- 功能列表 1~9 -->
+                            <!-- 功能列表 1~8 (暫時硬編碼) -->
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1"
-                                        id="f1"><label class="form-check-label" for="f1">會員管理 (1)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="1" id="f1">
+                                    <label class="form-check-label" for="f1">會員管理 </label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="2"
-                                        id="f2"><label class="form-check-label" for="f2">主辦方管理 (2)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="2" id="f2">
+                                    <label class="form-check-label" for="f2">主辦方管理</label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="3"
-                                        id="f3"><label class="form-check-label" for="f3">商品審核 (3)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="3" id="f3">
+                                    <label class="form-check-label" for="f3">商品審核 /label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="4"
-                                        id="f4"><label class="form-check-label" for="f4">活動審核 (4)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="4" id="f4">
+                                    <label class="form-check-label" for="f4">活動審核</label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="5"
-                                        id="f5"><label class="form-check-label" for="f5">訂單管理 (5)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="5" id="f5">
+                                    <label class="form-check-label" for="f5">訂單管理</label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="6"
-                                        id="f6"><label class="form-check-label" for="f6">結算管理 (6)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="6" id="f6">
+                                    <label class="form-check-label" for="f6">結算管理</label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="7"
-                                        id="f7"><label class="form-check-label" for="f7">公告管理 (7)</label></div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="7" id="f7">
+                                    <label class="form-check-label" for="f7">公告管理</label>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="8"
-                                        id="f8"><label class="form-check-label" for="f8">檢舉處理 (8)</label></div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="9"
-                                        id="f9"><label class="form-check-label text-warning" for="f9">權限管理 (9)</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="8" id="f8">
+                                    <label class="form-check-label" for="f8">檢舉處理</label>
                                 </div>
                             </div>
                         </div>
