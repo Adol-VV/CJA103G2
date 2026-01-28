@@ -95,9 +95,15 @@
 					<h4 class="text-success mb-3">核銷成功</h4>
 					<div class="text-start bg-dark rounded p-3 mb-3">
 						<div class="row mb-2">
+							<div class="col-4 text-muted">訂單編號</div>
+							<div class="col-8">
+								<code id="info-order-id"  th:text="${information.eventOrder.eventOrderId}">${ticketCode}</code>
+							</div>
+						</div>
+						<div class="row mb-2">
 							<div class="col-4 text-muted">票券編號</div>
 							<div class="col-8">
-								<code id="info-ticket-id"  th:text="${information.qrcode}">${ticketCode}</code>
+								<code id="info-ticket-id"  th:text="${information.eventOrderItemId}">${ticketCode}</code>
 							</div>
 						</div>
 						<div class="row mb-2">
@@ -110,12 +116,6 @@
 							<div class="col-4 text-muted">購票人</div>
 							<div class="col-8">
 								<code  id="info-user-name" th:text="${information.eventOrder.member.name}">林書涵</code>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-4 text-muted">訂單編號</div>
-							<div class="col-8">
-								<code th:text="${information.eventOrder.eventOrderId}"></code>
 							</div>
 						</div>
 					</div>
@@ -191,7 +191,8 @@
 		<table class="table table-dark table-hover mb-0">
 			<thead>
 				<tr>
-					<th>票券代碼</th>
+					<th>訂單編號</th>
+					<th>票券編號</th>
 					<th>票種</th>
 					<th>購票人</th>
 					<th>狀態</th>
@@ -199,7 +200,8 @@
 			</thead>
 			<tbody id="recentVerifications">
 				<tr th:each="info : ${checkedIn}" th:if="${checkedIn != null}">
-					<td><code th:text="${info.qrcode}">QR-EVT001-156-20241231</code></td>
+					<td><code th:text="${info.eventOrder.eventOrderId}">QR-EVT001-156-20241231</code></td>
+					<td><code th:text="${info.eventOrderItemId}">QR-EVT001-156-20241231</code></td>
 					<td th:text="${info.ticket.ticketName}">貴賓席</td>
 					<td th:text="${info.eventOrder.member.name}">林書涵</td>
 					<td><span class="badge bg-success">已核銷</span></td>

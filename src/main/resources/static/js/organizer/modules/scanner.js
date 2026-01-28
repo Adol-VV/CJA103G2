@@ -256,7 +256,8 @@ function addVerificationRecord(code, success, reason) {
 }
 function updateRecordTableManually() {
 	// 從畫面上獲取剛剛核銷成功的資訊 (對應圖2的欄位)
-	const ticketCode = document.querySelector("#info-ticket-id").innerText; // 假設你給票券編號一個 ID
+	const orderId = document.querySelector("#info-order-id").innerText; // 假設你給票券編號一個 ID
+	const ticketId = document.querySelector("#info-ticket-id").innerText;
 	const ticketName = document.querySelector("#info-ticket-name").innerText;
 	const userName = document.querySelector("#info-user-name").innerText;
 
@@ -266,7 +267,8 @@ function updateRecordTableManually() {
 	// 建立新的 HTML Row
 	const newRow = `
         <tr>
-            <td><code>${ticketCode}</code></td>
+            <td><code>${orderId}</code></td>
+			<td><code>${ticketId}</code></td>
             <td>${ticketName}</td>
             <td>${userName}</td>
             <td><span class="badge bg-success">已核銷</span></td>

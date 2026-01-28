@@ -4,17 +4,17 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <select class="form-select bg-dark text-white border-secondary">
+                    <select class="form-select bg-dark text-white border-secondary" id="memberStatus">
                         <option value="">所有狀態</option>
-                        <option value="active">正常</option>
-                        <option value="banned">停權</option>
+                        <option value="0">正常</option>
+                        <option value="1">停權</option>
                     </select>
                 </div>
                 <div class="col-md-9">
                     <div class="input-group">
-                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                        <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
                             placeholder="搜尋會員姓名、Email...">
-                        <button class="btn btn-outline-secondary">搜尋</button>
+                        <button class="btn btn-outline-secondary" id="search">搜尋</button>
                     </div>
                 </div>
             </div>
@@ -23,54 +23,138 @@
 
     <div class="card bg-dark border-secondary">
         <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle mb-0">
+            <table class="table table-dark table-hover align-middle mb-0" id="memberTableBody" th:fragment="memberTable">
                 <thead>
                     <tr>
+                        <th>會員編號</th>
                         <th>會員</th>
                         <th>Email</th>
                         <th>註冊日期</th>
-                        <th>訂單數</th>
                         <th>狀態</th>
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody >
+                    <tr th:each="member: ${memberList}">
+                    	<td class="text-center align-middle pe-5" th:text="${member.memberId}">12</td>
+                        <td th:text="${member.name}"> User One</td>
+                        <td th:text="${member.account}">user1@example.com</td>
+                        <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2024/01/15</td>                       
                         <td>
-                            <div class="d-flex align-items-center">
-                                <img loading="lazy" src="https://ui-avatars.com/api/?name=User+One&background=random"
-                                    class="rounded-circle me-3" width="32" height="32">
-                                <span>User One</span>
-                            </div>
+                        	<span class="badge bg-success" th:if="${member.status == 0}">正常</span>
+                        	<span class="badge bg-danger" th:if="${member.status == 1}">停權</span>
                         </td>
-                        <td>user1@example.com</td>
-                        <td>2024/01/15</td>
-                        <td>12</td>
-                        <td><span class="badge bg-success">正常</span></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary btn-view-member" data-id="1">詳情</button>
-                            <button class="btn btn-sm btn-outline-danger">停權</button>
+                            <button class="btn btn-sm btn-outline-primary btn-view-member" th:id="${member.memberId}">詳情</button>
+                            <button class="btn btn-sm btn-outline-secondary accountRecovery" th:if="${member.status == 1}">復原</button>
+                            <button class="btn btn-sm btn-outline-danger accountSuspend" th:if="${member.status == 0}">停權</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img loading="lazy" src="https://ui-avatars.com/api/?name=Bad+User&background=random"
-                                    class="rounded-circle me-3" width="32" height="32">
-                                <span>Bad User</span>
-                            </div>
-                        </td>
-                        <td>bad@example.com</td>
-                        <td>2024/03/20</td>
-                        <td>0</td>
-                        <td><span class="badge bg-danger">停權</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary btn-view-member" data-id="2">詳情</button>
-                            <button class="btn btn-sm btn-outline-secondary">復原</button>
-                        </td>
-                    </tr>
+<!--                     <tr> -->
+<!--                         <td> -->
+<!--                             <div class="d-flex align-items-center"> -->
+<!--                                 <img loading="lazy" src="https://ui-avatars.com/api/?name=Bad+User&background=random" -->
+<!--                                     class="rounded-circle me-3" width="32" height="32"> -->
+<!--                                 <span>Bad User</span> -->
+<!--                             </div> -->
+<!--                         </td> -->
+<!--                         <td>bad@example.com</td> -->
+<!--                         <td>2024/03/20</td> -->
+<!--                         <td>0</td> -->
+<!--                         <td><span class="badge bg-danger">停權</span></td> -->
+<!--                         <td> -->
+<!--                             <button class="btn btn-sm btn-outline-primary btn-view-member" data-id="2">詳情</button> -->
+<!--                         </td> -->
+<!--                     </tr> -->
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+<!-- 會員詳情 -->
+<div class="modal fade" id="memberDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5>會員詳情</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" th:fragment="detailBody">
+                <div class="row" th:if="${detail != null}">
+                    <div class="col-md-5 text-center border-end border-secondary">
+                        <h4 th:text="${detail.name}">User One</h4>
+                        <p class="text-muted" th:text="${detail.account}">user1@example.com</p>
+                        <p class="text-muted" style="margin:0;">電話：<span th:text="${detail.phone}"></span></p>
+                        <p class="text-muted">地址：<span th:text="${detail.address}"></span></p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-warning " id="btn-updateMember">修改資料</button>
+
+                        </div>
+                    </div>
+                    <div class="col-md-7 ps-3">
+                        <h6 class="border-bottom border-secondary pb-2 mb-3" id="accountData">帳號統計</h6>
+                        <div class="row g-3 mb-4" id="information">
+                            <div class="col-4">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted ">訂單總數</small>
+                                    <h4 class="mb-0 text-center" th:text="${orders}">12</h4>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="px-2 py-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted text-center">總消費</small>
+                                    <h4 class="mb-0 text-center" th:text="|$${expense}|">24k</h4>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded">
+                                    <small class="text-muted text-center">代幣總數</small>
+                                    <h4 class="mb-0 text-success text-center" th:text="${detail.token}">0</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="memberId" th:value="${detail.memberId}">
+                        <div class="row g-3 mb-4 -none" id="updateMember">
+                            <div class="col-md-6">
+								<label class="form-label text-white">密碼</label>
+								<input type="text"
+								class="form-control bg-dark text-white border-secondary"
+								name="password">
+							</div>
+                            <div class="col-md-6">
+								<label class="form-label text-white">聯絡電話</label>
+								<input type="tel"
+								class="form-control bg-dark text-white border-secondary"
+								name="phone">
+							</div>
+                            <div class="col-md-12">
+								<label class="form-label text-white">電子信箱</label>
+								<input type="text"
+								class="form-control bg-dark text-white border-secondary"
+								name="account">
+							</div>
+                            <div class="col-md-12">
+								<label class="form-label text-white">地址</label>
+								<input type="text"
+								class="form-control bg-dark text-white border-secondary"
+								name="address">
+							</div>
+							<div class="col-md-4 text-end ms-auto">
+								<button class="btn btn-sm btn-outline-primary" id="checkUpdate">送出</button>
+                            	<button class="btn btn-sm btn-outline-danger" id="cancelUpdate">取消</button>
+                            </div>
+                        </div>
+                   </div>
+<!--                         <h6 class="border-bottom border-secondary pb-2 mb-3">近期活動</h6> -->
+<!--                         <ul class="list-unstyled"> -->
+<!--                             <li class="mb-2"><small class="text-muted">2024/12/25</small> 購買了 <span -->
+<!--                                     class="text-white">五月天演唱會</span></li> -->
+<!--                             <li class="mb-2"><small class="text-muted">2024/12/20</small> 登入平台</li> -->
+<!--                         </ul> -->
+                    </div>
+                    
+                </div>
+            </div>
         </div>
     </div>
 </div>

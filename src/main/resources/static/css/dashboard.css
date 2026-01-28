@@ -743,3 +743,7 @@ img.prodImage:hover {
 .navbar .d-flex {
     overflow: visible !important;
 }
+
+.-none{
+	display:none;
+}

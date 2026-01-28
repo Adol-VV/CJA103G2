@@ -44,4 +44,14 @@ public class MemberService {
 		Optional<MemberVO> optional = Optional.ofNullable(repository.findByAccount(account));
 		return optional.orElse(null);
 	}
+	
+	public List<MemberVO> searchMembers(Integer status, String keyword) {
+        // 處理關鍵字：如果是空字串或全是空格，轉為 null
+        String searchKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+        
+        // 處理狀態：假設前端「所有狀態」傳來的是 -1 或 null
+        Integer searchStatus = (status != null && status != -1) ? status : null;
+
+        return repository.findByFilters(searchStatus, searchKeyword);
+    }
 }
