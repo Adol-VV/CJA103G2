@@ -20,16 +20,6 @@ export function initNotifications() {
                 $btn.fadeOut(function() { $(this).remove(); });
                 // 移除左側的藍色未讀提示條
                 updateAllBadges();
-
-                // // 更新小紅點數字
-                // $('.badge.bg-danger').each(function() {
-                //     let currentCount = parseInt($(this).text() || '0');
-                //     if (currentCount > 0) {
-                //         const newCount = currentCount - 1;
-                //         $(this).text(newCount > 0 ? newCount : '');
-                //         if (newCount === 0) $(this).hide();
-                //     }
-                // });
                 console.log("資料庫狀態更新成功，已讀率將會同步更新");
             }
         });
