@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(18, 18, 18, 0.95);">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="../../index.html" style="letter-spacing: 2px;">
+            <a class="navbar-brand fw-bold" th:href="@{/}" style="letter-spacing: 2px;">
                 MOMENTO
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -30,9 +30,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto text-uppercase small" style="letter-spacing: 1px;">
-                    <li class="nav-item"><a class="nav-link" href="../public/event-list.html">探索活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">探索活動</a></li>
                     <li class="nav-item"><a class="nav-link" href="../public/article-list.html">最新消息</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../public/product-list.html">周邊商品</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">周邊商品</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i> 會員中心
@@ -82,7 +82,7 @@
 
                 <!-- Favorites Section -->
                 <div class="content-section" id="section-favorites"
-                    data-partial="/member/dashboard/panel-favorites"></div>
+                    th:insert="pages/user/partials/panel-favorites"></div>
 
                 <!-- Tokens Section -->
                 <div class="content-section" id="section-tokens"
