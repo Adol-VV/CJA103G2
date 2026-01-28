@@ -58,6 +58,7 @@ public class EventReviewController {
 
         if (event.getImages() != null && !event.getImages().isEmpty()) {
             dto.setBannerUrl(event.getImages().get(0).getImageUrl());
+            dto.setImageUrls(event.getImages().stream().map(img -> img.getImageUrl()).toList());
         }
 
         if (event.getOrganizer() != null) {

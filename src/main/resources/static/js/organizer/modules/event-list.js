@@ -217,6 +217,8 @@ export function initEventList() {
         $pager.html(html);
     }
 
+    window.viewEventDetail = viewEventDetail;
+
     function getStatusBadge(event) {
         switch (event.status) {
             case 0: return '<span class="badge bg-secondary">草稿</span>';
@@ -231,6 +233,13 @@ export function initEventList() {
 
     function getActionButtons(event) {
         let buttons = '<div class="btn-group">';
+
+        // 所有狀態都有內部檢視按鈕
+        buttons += `
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="window.viewEventDetail(${event.eventId})" title="內部檢視">
+                <i class="fas fa-search-plus"></i>
+            </button>
+        `;
 
         // 草稿(0) 或 駁回(4)
         if (event.status === 0 || event.status === 4) {
@@ -442,6 +451,120 @@ export function initEventList() {
             }
         });
     };
+
+    /**
+     * 內部檢視詳情
+     */
+    async function viewEventDetail(eventId) {
+        const $body = $('#organizerEventDetailBody');
+        $body.html(`
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">正在載入活動內容...</p>
+            </div>
+        `);
+        $('#organizerEventDetailModal').modal('show');
+
+        try {
+            const response = await fetch(`/organizer/event/api/detail/${eventId}`);
+            const res = await response.json();
+
+            if (res.success) {
+                const event = res.data.event;
+                const tickets = res.data.tickets;
+                const images = res.data.images;
+
+                // 排序圖片：banner(0) 在前
+                images.sort((a, b) => (a.imageOrder || 0) - (b.imageOrder || 0));
+
+                const bannerUrl = images.length > 0 ? images[0].imageUrl : 'https://picsum.photos/seed/event/800/400';
+
+                let galleryHtml = '';
+                if (images.length > 1) {
+                    galleryHtml = `
+                        <div class="mt-3">
+                            <h6 class="text-primary fw-bold mb-2 small text-uppercase">活動相簿</h6>
+                            <div class="d-flex gap-2 flex-wrap">
+                    `;
+                    images.forEach((img, idx) => {
+                        if (idx === 0) return;
+                        galleryHtml += `
+                            <div class="rounded border border-secondary overflow-hidden bg-darker" style="width: 100px; height: 100px;">
+                                <img src="${img.imageUrl}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="window.open('${img.imageUrl}', '_blank')">
+                            </div>
+                        `;
+                    });
+                    galleryHtml += '</div></div>';
+                }
+
+                let ticketsHtml = '';
+                if (tickets && tickets.length > 0) {
+                    ticketsHtml = `
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark table-bordered border-secondary mb-0 mt-2">
+                                <thead class="table-secondary text-dark text-nowrap">
+                                    <tr><th>票種名稱</th><th>價格</th><th>總數</th><th>剩餘</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${tickets.map(t => `<tr><td>${t.ticketName}</td><td>$${t.price}</td><td>${t.total}</td><td>${t.remain}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                const html = `
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="rounded border border-secondary overflow-hidden shadow-lg" style="width: 100%; aspect-ratio: 16/9;">
+                                <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            ${galleryHtml}
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="bg-darker p-3 rounded border border-secondary h-100">
+                                <h6 class="text-primary fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>基本資訊</h6>
+                                <p class="mb-2"><span class="text-muted">名稱：</span><span class="text-white">${event.title}</span></p>
+                                <p class="mb-2"><span class="text-muted">地點：</span><span class="text-white">${event.place || '-'}</span></p>
+                                <p class="mb-2"><span class="text-muted">類型：</span><span class="badge bg-secondary">${event.typeName || '-'}</span></p>
+                                <p class="mb-2"><span class="text-muted">活動日期：</span><span class="text-white">${event.eventStartAt ? formatDateTime(event.eventStartAt) : '-'}</span></p>
+                                
+                                <hr class="border-secondary">
+                                
+                                <h6 class="text-primary fw-bold mb-3"><i class="fas fa-ticket-alt me-2"></i>票務資訊</h6>
+                                <p class="mb-2 small"><span class="text-muted">售票期間：</span><span class="text-info">${event.saleStartAt ? formatDateTime(event.saleStartAt) : '-'}</span> 至 <span class="text-info">${event.saleEndAt ? formatDateTime(event.saleEndAt) : '-'}</span></p>
+                                ${ticketsHtml}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <h6 class="text-primary fw-bold mb-2"><i class="fas fa-align-left me-2"></i>活動詳細說明</h6>
+                            <div class="bg-black border border-secondary p-3 rounded" style="max-height: 250px; overflow-y: auto; color: #a1a1aa; font-size: 0.95rem; line-height: 1.6;">
+                                ${event.content || '無說明'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $body.html(html);
+            } else {
+                $body.html(`<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>${res.message}</div>`);
+            }
+        } catch (error) {
+            console.error('Error fetching event detail:', error);
+            $body.html(`<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>載入失敗，伺服器可能無回應</div>`);
+        }
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        return d.toLocaleString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
     function showToast(msg, type) {
         if (window.showToast) window.showToast(msg, type);

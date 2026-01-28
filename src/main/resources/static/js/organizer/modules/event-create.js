@@ -9,6 +9,7 @@ export function initEventCreate() {
     window.EVENT_CREATE_INITIALIZED = true;
 
     let uploadedBannerUrl = '';
+    let uploadedGalleryUrls = [];
 
     console.log('initEventCreate: Module Fully Initialized');
 
@@ -96,21 +97,31 @@ export function initEventCreate() {
             $('#eventType').val(event.type?.typeId || '');
             $('#eventContent').val(event.content || '');
 
-            // 處理圖片 (主視覺)
+            // 處理圖片 (主視覺 + 相簿)
             console.log('loadEventData: Handling images...');
-            if (images && images.length > 0 && images[0].imageUrl) {
-                let imgUrl = images[0].imageUrl;
-                if (imgUrl && !imgUrl.startsWith('/') && !imgUrl.startsWith('http')) {
-                    imgUrl = '/' + imgUrl;
+            if (images && images.length > 0) {
+                // 主視覺 (Order 0)
+                const banner = images.find(img => img.imageOrder === 0) || images[0];
+                let bannerUrl = banner.imageUrl;
+                if (bannerUrl && !bannerUrl.startsWith('/') && !bannerUrl.startsWith('http')) {
+                    bannerUrl = '/' + bannerUrl;
                 }
-                uploadedBannerUrl = imgUrl;
-                $('#mainImagePreview').attr('src', imgUrl);
+                uploadedBannerUrl = bannerUrl;
+                $('#mainImagePreview').attr('src', bannerUrl);
                 $('#panel-event-create .upload-placeholder').addClass('d-none');
                 $('#panel-event-create .upload-preview').removeClass('d-none');
+
+                // 其他圖片 (Order > 0)
+                uploadedGalleryUrls = images
+                    .filter(img => img.imageOrder > 0)
+                    .map(img => img.imageUrl);
+                renderGallery();
             } else {
                 uploadedBannerUrl = '';
+                uploadedGalleryUrls = [];
                 $('#panel-event-create .upload-preview').addClass('d-none');
                 $('#panel-event-create .upload-placeholder').removeClass('d-none');
+                renderGallery();
             }
 
             // 渲染票種
@@ -184,6 +195,8 @@ export function initEventCreate() {
         $('#panel-event-create .upload-preview').addClass('d-none');
         $('#panel-event-create .upload-placeholder').removeClass('d-none');
         uploadedBannerUrl = '';
+        uploadedGalleryUrls = [];
+        renderGallery();
         $('#ticketZones').html(`
             <div class="ticket-zone-card mb-3 p-3" style="background: #1A1A1A; border-radius: 6px;">
                 <div class="d-flex justify-content-between mb-3">
@@ -284,6 +297,99 @@ export function initEventCreate() {
         $('#mainImageInput').val('');
     });
 
+    // ========== 相簿圖片處理 ==========
+    $(document).on('change', '#galleryImageInput', function (e) {
+        const files = e.target.files;
+        if (!files.length) return;
+
+        const limit = 5;
+        const remaining = limit - uploadedGalleryUrls.length;
+
+        if (remaining <= 0) {
+            alert('最多只能上傳 5 張相簿圖片');
+            this.value = '';
+            return;
+        }
+
+        const filesToUpload = Array.from(files).slice(0, remaining);
+
+        filesToUpload.forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Add a temporary loading placeholder
+            const tempId = 'gallery-loading-' + Date.now() + Math.random().toString(36).substr(2, 9);
+            const loadingHtml = `
+                <div id="${tempId}" class="gallery-item-loading" style="width: 120px; height: 120px; border: 1px solid #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
+                    <i class="fas fa-spinner fa-spin text-primary"></i>
+                </div>
+            `;
+            $('.gallery-add-zone').before(loadingHtml);
+
+            $.ajax({
+                url: '/organizer/event/upload-image',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#' + tempId).remove();
+                    if (response.success && response.imageUrl) {
+                        uploadedGalleryUrls.push(response.imageUrl);
+                        renderGallery();
+                    } else {
+                        showToast('相簿圖片上傳失敗', 'danger');
+                    }
+                },
+                error: function () {
+                    $('#' + tempId).remove();
+                    showToast('系統錯誤，圖片上傳失敗', 'danger');
+                }
+            });
+        });
+
+        this.value = ''; // Reset input
+    });
+
+    function renderGallery() {
+        const $container = $('#galleryContainer');
+        $container.find('.gallery-item-preview').remove();
+
+        uploadedGalleryUrls.forEach((url, index) => {
+            let fullUrl = url;
+            if (fullUrl && !fullUrl.startsWith('/') && !fullUrl.startsWith('http')) {
+                fullUrl = '/' + fullUrl;
+            }
+
+            const itemHtml = `
+                <div class="gallery-item-preview position-relative" style="width: 120px; height: 120px;">
+                    <img src="${fullUrl}" class="img-fluid rounded border border-secondary h-100 w-100" style="object-fit: cover;">
+                    <button type="button" class="btn btn-sm btn-danger p-0 position-absolute top-0 end-0 m-1 btn-remove-gallery" 
+                        data-index="${index}" style="width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 15;">
+                        <i class="fas fa-times" style="font-size: 10px;"></i>
+                    </button>
+                </div>
+            `;
+            $('.gallery-add-zone').before(itemHtml);
+        });
+
+        // Toggle add button visibility
+        if (uploadedGalleryUrls.length >= 5) {
+            $('.gallery-add-zone').addClass('d-none');
+        } else {
+            $('.gallery-add-zone').removeClass('d-none');
+        }
+    }
+
+    $(document).on('click', '.btn-remove-gallery', function (e) {
+        e.preventDefault();
+        const index = $(this).data('index');
+        uploadedGalleryUrls.splice(index, 1);
+        renderGallery();
+    });
+
     // ========== 新增票種 ==========
     $(document).on('click', '#btnAddTicketZone', function () {
         const count = $('#ticketZones .ticket-zone-card').length + 1;
@@ -354,6 +460,7 @@ export function initEventCreate() {
             place: $('[name="eventVenue"]').val(),
             content: $('#eventContent').val(),
             bannerUrl: uploadedBannerUrl,
+            imageUrls: uploadedGalleryUrls,
             tickets: []
         };
 

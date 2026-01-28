@@ -237,12 +237,28 @@ export function initEventApprovals() {
             type: 'GET',
             success: function (event) {
                 const bannerUrl = event.bannerUrl || 'https://picsum.photos/seed/event/800/400';
+
+                let galleryHtml = '';
+                if (event.imageUrls && event.imageUrls.length > 1) {
+                    galleryHtml = '<div class="d-flex gap-2 flex-wrap mt-2">';
+                    event.imageUrls.forEach((url, idx) => {
+                        if (idx === 0) return; // Skip banner
+                        galleryHtml += `
+                            <div class="rounded border border-secondary overflow-hidden" style="width: 100px; height: 100px;">
+                                <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="window.open('${url}', '_blank')">
+                            </div>
+                        `;
+                    });
+                    galleryHtml += '</div>';
+                }
+
                 const detailsHtml = `
                     <div class="row">
                         <div class="col-12 mb-4">
                             <div class="rounded border border-secondary overflow-hidden" style="width: 100%; aspect-ratio: 16/9;">
                                 <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
+                            ${galleryHtml}
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-primary fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>活動資訊</h6>

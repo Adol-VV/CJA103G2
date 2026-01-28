@@ -216,7 +216,8 @@ public class EventManageController {
                         if (detail.getImages() != null) {
                                 for (com.momento.event.model.EventImageVO img : detail.getImages()) {
                                         images.add(Map.of("eventImageId", img.getEventImageId(), "imageUrl",
-                                                        img.getImageUrl()));
+                                                        img.getImageUrl(), "imageOrder",
+                                                        img.getImageOrder() != null ? img.getImageOrder() : 0));
                                 }
                         }
 

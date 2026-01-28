@@ -108,6 +108,7 @@ public class EventManageServiceImpl implements EventManageService {
         EventImageVO eventImage = new EventImageVO();
         eventImage.setEvent(event);
         eventImage.setImageUrl(imageUrl);
+        eventImage.setImageOrder(displayOrder);
         eventImageRepository.save(eventImage);
     }
 
@@ -152,11 +153,23 @@ public class EventManageServiceImpl implements EventManageService {
             event.setType(type);
         }
 
-        // 圖片處理 (簡化版: 若有新主圖則替換舊的)
+        // 圖片處理
         if (dto.getBannerUrl() != null && !dto.getBannerUrl().isEmpty()) {
             eventImageRepository
                     .deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(event.getEventId()));
+
+            // 儲存主視覺 (Order 0)
             saveEventImage(event, dto.getBannerUrl(), 0);
+
+            // 儲存其他圖片 (Order 1, 2...)
+            if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
+                int order = 1;
+                for (String imageUrl : dto.getImageUrls()) {
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        saveEventImage(event, imageUrl, order++);
+                    }
+                }
+            }
         }
 
         // 票種處理
