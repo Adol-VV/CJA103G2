@@ -90,6 +90,7 @@ export function initEventList() {
             method: 'GET',
             success: function (stats) {
                 $('#count-all').text(stats.allCount || 0);
+                $('#count-draft').text(stats.draftCount || 0);
                 $('#count-pending').text(stats.pendingCount || 0);
                 $('#count-rejected').text(stats.rejectedCount || 0);
                 $('#count-approved').text(stats.approvedCount || 0);
@@ -220,6 +221,14 @@ export function initEventList() {
     window.viewEventDetail = viewEventDetail;
 
     function getStatusBadge(event) {
+        const now = new Date();
+        const eventEnd = event.eventEndAt ? new Date(event.eventEndAt) : null;
+
+        // 如果資料庫狀態是 3 (已上架)，但時間已經超過結束時間，前端顯示為已結束
+        if (event.status === 3 && eventEnd && now > eventEnd) {
+            return '<span class="badge bg-secondary">已結束</span>';
+        }
+
         switch (event.status) {
             case 0: return '<span class="badge bg-secondary">草稿</span>';
             case 1: return '<span class="badge bg-warning text-dark">待審核</span>';
@@ -232,65 +241,64 @@ export function initEventList() {
     }
 
     function getActionButtons(event) {
-        let buttons = '<div class="btn-group">';
+        let buttons = '<div class="btn-group gap-2">';
 
-        // 所有狀態都有內部檢視按鈕
-        buttons += `
-            <button type="button" class="btn btn-sm btn-outline-info" onclick="window.viewEventDetail(${event.eventId})" title="內部檢視">
-                <i class="fas fa-search-plus"></i>
-            </button>
-        `;
-
-        // 草稿(0) 或 駁回(4)
-        if (event.status === 0 || event.status === 4) {
+        // 1. 待審核 (Pending)
+        if (event.status === 1) {
             buttons += `
-                <button type="button" class="btn btn-sm btn-outline-light" onclick="window.editDraft(${event.eventId})" title="編輯">
-                    <i class="fas fa-edit"></i>
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="window.viewEventDetail(${event.eventId})">
+                    <i class="fas fa-search-plus me-1"></i>詳情
                 </button>
-                <button class="btn btn-sm btn-outline-success" onclick="window.submitEvent(${event.eventId})" title="送審">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="window.deleteEvent(${event.eventId})" title="刪除">
-                    <i class="fas fa-trash-alt"></i>
+                <button type="button" class="btn btn-sm btn-outline-warning" onclick="window.withdrawEvent(${event.eventId})">
+                    <i class="fas fa-undo me-1"></i>撤回
                 </button>
             `;
         }
-        // 待審核(1)
-        else if (event.status === 1) {
+        // 2. 草稿 (0) 或 已駁回 (4)
+        else if (event.status === 0 || event.status === 4) {
             buttons += `
-                <button class="btn btn-sm btn-outline-warning" onclick="window.withdrawEvent(${event.eventId})">
-                    <i class="fas fa-undo"></i> 撤回
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.editDraft(${event.eventId})">
+                    <i class="fas fa-edit me-1"></i>編輯
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="window.submitEvent(${event.eventId})">
+                    <i class="fas fa-paper-plane me-1"></i>送審
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.deleteEvent(${event.eventId})">
+                    <i class="fas fa-trash-alt me-1"></i>刪除
                 </button>
             `;
         }
-        // 審核成功(2)
+        // 3. 審核成功 (Approved - Status 2)
         else if (event.status === 2) {
             buttons += `
-                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info" title="查看活動詳情">
-                    <i class="fas fa-eye"></i>
+                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-external-link-alt me-1"></i>詳情
                 </a>
-                <button class="btn btn-sm btn-primary" onclick="window.toggleTimeForm(${event.eventId})">
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.toggleTimeForm(${event.eventId})">
                     <i class="fas fa-clock me-1"></i>設定時間
                 </button>
             `;
         }
-        // 已上架(3)
+        // 4. 上架中 (Published - Status 3)
         else if (event.status === 3) {
             buttons += `
-                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info" title="查看">
-                    <i class="fas fa-external-link-alt"></i>
+                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-external-link-alt me-1"></i>詳情
                 </a>
-                <button class="btn btn-sm btn-danger" onclick="window.forceClose(${event.eventId})" title="強制下架">
-                    <i class="fas fa-stop-circle"></i>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.forceClose(${event.eventId})">
+                    <i class="fas fa-stop-circle me-1"></i>下架
                 </button>
             `;
         }
-        // 已下架(5)
+        // 5. 已下架 (Ended - Status 5)
         else if (event.status === 5) {
             buttons += `
-                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                    詳情
+                <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-external-link-alt me-1"></i>詳情
                 </a>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.deleteEvent(${event.eventId})">
+                    <i class="fas fa-trash-alt me-1"></i>刪除
+                </button>
             `;
         }
 
@@ -428,18 +436,22 @@ export function initEventList() {
     };
 
     window.deleteEvent = function (eventId) {
-        if (!confirm('確定要刪除嗎？')) return;
+        if (!confirm('⚠️ 警告：確定要刪除此活動嗎？\n此操作將會永久刪除活動內容且無法復原。')) return;
         $.ajax({
             url: '/organizer/event/' + eventId, type: 'DELETE', success: function (res) {
-                if (res.success) { showToast('已刪除！', 'success'); loadOrganizerEvents(); }
+                if (res.success) { showToast('已成功刪除活動！', 'success'); loadOrganizerEvents(); }
                 else alert(res.message);
             }
         });
     };
 
     window.forceClose = function (eventId) {
-        const reason = prompt('請輸入下架原因：');
-        if (reason === null) return;
+        if (!confirm('🛑 確定要「強制下架」此活動嗎？\n下架後前台將立即停止該活動的所有售票。')) return;
+        const reason = prompt('請輸入下架原因（必填）：');
+        if (reason === null || reason.trim() === '') {
+            if (reason !== null) alert('請輸入下架原因方可進行操作。');
+            return;
+        }
         $.ajax({
             url: `/organizer/event/${eventId}/force-close`,
             type: 'POST',
@@ -466,13 +478,13 @@ export function initEventList() {
         $('#organizerEventDetailModal').modal('show');
 
         try {
-            const response = await fetch(`/organizer/event/api/detail/${eventId}`);
+            const response = await fetch(`/organizer/event/api/${eventId}`);
             const res = await response.json();
 
             if (res.success) {
-                const event = res.data.event;
-                const tickets = res.data.tickets;
-                const images = res.data.images;
+                const event = res.event;
+                const tickets = res.tickets;
+                const images = res.images;
 
                 // 排序圖片：banner(0) 在前
                 images.sort((a, b) => (a.imageOrder || 0) - (b.imageOrder || 0));
@@ -500,15 +512,39 @@ export function initEventList() {
                 let ticketsHtml = '';
                 if (tickets && tickets.length > 0) {
                     ticketsHtml = `
-                        <div class="table-responsive">
-                            <table class="table table-sm table-dark table-bordered border-secondary mb-0 mt-2">
-                                <thead class="table-secondary text-dark text-nowrap">
-                                    <tr><th>票種名稱</th><th>價格</th><th>總數</th><th>剩餘</th></tr>
-                                </thead>
-                                <tbody>
-                                    ${tickets.map(t => `<tr><td>${t.ticketName}</td><td>$${t.price}</td><td>${t.total}</td><td>${t.remain}</td></tr>`).join('')}
-                                </tbody>
-                            </table>
+                        <div class="mt-3">
+                            <h6 class="text-secondary small fw-bold mb-2">票種清單</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-dark table-bordered border-secondary mb-0">
+                                    <thead class="bg-darker">
+                                        <tr class="small text-muted">
+                                            <th>名稱</th>
+                                            <th>價格</th>
+                                            <th>總額</th>
+                                            <th>剩餘</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        ${tickets.map(t => `
+                                            <tr>
+                                                <td>${t.ticketName}</td>
+                                                <td>$${t.price}</td>
+                                                <td>${t.total}</td>
+                                                <td class="${t.remain < 10 ? 'text-danger fw-bold' : 'text-success'}">${t.remain}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    ticketsHtml = `
+                        <div class="mt-3">
+                            <h6 class="text-secondary small fw-bold mb-2">票種清單</h6>
+                            <div class="text-center py-2 bg-darker rounded border border-secondary text-muted small">
+                                目前無設定票種
+                            </div>
                         </div>
                     `;
                 }
@@ -526,7 +562,7 @@ export function initEventList() {
                                 <h6 class="text-primary fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>基本資訊</h6>
                                 <p class="mb-2"><span class="text-muted">名稱：</span><span class="text-white">${event.title}</span></p>
                                 <p class="mb-2"><span class="text-muted">地點：</span><span class="text-white">${event.place || '-'}</span></p>
-                                <p class="mb-2"><span class="text-muted">類型：</span><span class="badge bg-secondary">${event.typeName || '-'}</span></p>
+                                <p class="mb-2"><span class="text-muted">類型：</span><span class="badge bg-secondary">${event.type ? (event.type.typeName || event.type.type_name || '-') : '-'}</span></p>
                                 <p class="mb-2"><span class="text-muted">活動日期：</span><span class="text-white">${event.eventStartAt ? formatDateTime(event.eventStartAt) : '-'}</span></p>
                                 
                                 <hr class="border-secondary">

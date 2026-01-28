@@ -8,6 +8,8 @@ import com.momento.organizer.model.OrganizerVO;
 import com.momento.organizer.model.OrganizerRepository;
 import com.momento.notify.model.OrganizerNotifyRepository;
 import com.momento.notify.model.OrganizerNotifyVO;
+import com.momento.eventfav.model.EventFavRepository;
+import com.momento.eventorder.model.EventOrderRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,12 @@ public class EventManageServiceImpl implements EventManageService {
     @Autowired
     private OrganizerNotifyRepository organizerNotifyRepository;
 
+    @Autowired
+    private EventFavRepository eventFavRepository;
+
+    @Autowired
+    private EventOrderRepository eventOrderRepository;
+
     @Override
     @Transactional
     public Integer saveDraft(EventCreateDTO dto) {
@@ -55,6 +63,14 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     @Transactional
     public Integer createEvent(EventCreateDTO dto) {
+        // 限制草稿數量 (包含 0:草稿 與 4:駁回)
+        java.util.List<Byte> draftStatuses = java.util.List.of(EventVO.STATUS_DRAFT, EventVO.STATUS_REJECTED);
+        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatusIn(dto.getOrganizerId(), draftStatuses);
+
+        if (draftCount >= 3) {
+            throw new RuntimeException("草稿區容量已達上限！您的「草稿區」最多只能存放 3 個活動（包含編輯中與被駁回的活動）。請先送審現有草稿，或刪除不需要的內容後再建立新活動。");
+        }
+
         // 1. 建立活動實體 (初始狀態為草稿)
         EventVO event = new EventVO();
 
@@ -298,6 +314,15 @@ public class EventManageServiceImpl implements EventManageService {
         if (!event.isPending())
             throw new RuntimeException("僅限待審核狀態可撤回");
 
+        // 限制草稿數量 (包含 0:草稿 與 4:駁回)
+        java.util.List<Byte> draftStatuses = java.util.List.of(EventVO.STATUS_DRAFT, EventVO.STATUS_REJECTED);
+        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatusIn(event.getOrganizer().getOrganizerId(),
+                draftStatuses);
+
+        if (draftCount >= 3) {
+            throw new RuntimeException("無法撤回！您的「草稿區」容量已滿（上限 3 個），請先處理現有草稿或刪除內容。");
+        }
+
         event.setStatus(EventVO.STATUS_DRAFT);
         event.setPublishedAt(null);
         eventRepository.save(event);
@@ -309,9 +334,16 @@ public class EventManageServiceImpl implements EventManageService {
         EventVO event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("活動不存在"));
 
-        if (!event.isDraft() && !event.isRejected()) {
-            throw new RuntimeException("僅限草稿或駁回狀態可刪除");
+        if (!event.isDraft() && !event.isRejected() && !event.isClosed()) {
+            throw new RuntimeException("僅限草稿、駁回或已下架狀態可刪除");
         }
+
+        // 刪除相關紀錄 (收藏、訂單、票種、圖片)
+        eventFavRepository.deleteAll(eventFavRepository.findByEvent_EventId(eventId));
+
+        // 注意：訂單刪除在正式環境可能不適合，但在專題開發中為了能徹底刪除資料而執行
+        // 我們假設 EventOrderVO 的 eventOrderItems 是 CascadeType.ALL
+        eventOrderRepository.deleteAll(eventOrderRepository.findByEvent_EventId(eventId));
 
         ticketRepository.deleteAll(ticketRepository.findByEvent_EventId(eventId));
         eventImageRepository.deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId));
@@ -353,9 +385,6 @@ public class EventManageServiceImpl implements EventManageService {
         return eventRepository.searchOrganizerEvents(organizerId, statuses, keyword, pageable);
     }
 
-    @Autowired
-    private com.momento.eventfav.model.EventFavRepository eventFavRepository;
-
     @Override
     public com.momento.eventmanage.dto.EventStatsDTO getOrganizerStats(Integer organizerId) {
         long activeCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(organizerId, EventVO.STATUS_PUBLISHED);
@@ -366,10 +395,11 @@ public class EventManageServiceImpl implements EventManageService {
         long endedCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(organizerId, EventVO.STATUS_CLOSED);
         long approvedCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(organizerId,
                 EventVO.STATUS_APPROVED);
-        long allCount = eventRepository.countByOrganizer_OrganizerIdAndStatusNot(organizerId, EventVO.STATUS_DRAFT);
+        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(organizerId, EventVO.STATUS_DRAFT);
+        long allCount = eventRepository.countByOrganizer_OrganizerId(organizerId);
 
         return new com.momento.eventmanage.dto.EventStatsDTO(activeCount, pendingCount, totalFavorites, rejectedCount,
-                endedCount, approvedCount, allCount);
+                endedCount, approvedCount, draftCount, allCount);
     }
 
     @Override

@@ -70,6 +70,12 @@ public class EventVO {
     @Column(name = "PUBLISHED_AT", nullable = true)
     private LocalDateTime publishedAt;
 
+    @Column(name = "CREATED_AT", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "UPDATED_AT", insertable = false, updatable = false)
+    private LocalDateTime updatedAt;
+
     @org.hibernate.annotations.Formula("(SELECT MIN(t.PRICE) FROM TICKET t WHERE t.EVENT_ID = EVENT_ID)")
     private Integer minPrice;
 
@@ -190,6 +196,22 @@ public class EventVO {
 
     public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public java.util.List<com.momento.ticket.model.TicketVO> getTickets() {

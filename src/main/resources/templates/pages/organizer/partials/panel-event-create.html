@@ -53,8 +53,7 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label required">活動主視覺</label>
-                        <label class="upload-zone d-block position-relative" for="mainImageInput" id="mainImageUpload"
-                            style="cursor: pointer; border: 2px dashed #6c757d; padding: 40px; text-align: center; border-radius: 8px; overflow: hidden;">
+                        <label class="upload-zone d-block position-relative" for="mainImageInput" id="mainImageUpload">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
                                 <p class="text-muted">點擊或拖曳圖片至此 (建議尺寸 16:9)</p>
@@ -62,10 +61,9 @@
                             <input type="file" id="mainImageInput" accept="image/*"
                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
 
-                            <div class="upload-preview d-none position-relative" style="z-index: 10;">
-                                <img src="" id="mainImagePreview" class="img-fluid rounded" style="max-height: 300px;">
-                                <button type="button" class="btn btn-sm btn-danger btn-remove-preview"
-                                    style="position: absolute; top: 10px; right: 10px;">
+                            <div class="upload-preview d-none">
+                                <img src="" id="mainImagePreview">
+                                <button type="button" class="btn btn-remove-preview" title="移除圖片">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>

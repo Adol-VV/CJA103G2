@@ -25,10 +25,10 @@ public class EventScheduledTask {
     private EventRepository eventRepository;
 
     /**
-     * 每小時整點執行一次，自動下架已結束的活動
-     * Cron: 0 0 * * * *
+     * 每分鐘執行一次，自動下架已結束的活動
+     * Cron: 0 * * * * *
      */
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     @Transactional
     public void autoCloseExpiredEvents() {
         logger.info("[Scheduled] 開始執行自動下架已結束活動任務...");

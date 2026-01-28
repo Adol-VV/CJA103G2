@@ -37,6 +37,9 @@ public class EventServiceImpl implements EventService {
         @Autowired
         private TicketService ticketService;
 
+        @Autowired
+        private com.momento.prod.model.ProdService prodService;
+
         @Override
         public Page<EventListItemDTO> getAllEvents(int page, int size, String sort) {
                 // 優先顯示 STATUS=3 (上架中) 和 STATUS=5 (已結束)
@@ -100,6 +103,28 @@ public class EventServiceImpl implements EventService {
                 dto.setTickets(tickets);
                 dto.setMinPrice(minPrice);
                 dto.setMaxPrice(maxPrice);
+
+                // 抓取同主辦的相關商品
+                if (event.getOrganizer() != null) {
+                        List<com.momento.prod.dto.ProdDTO> relatedProducts = prodService
+                                        .getProdsByOrg(event.getOrganizer().getOrganizerId());
+
+                        // 嘗試過濾已上架並通過審核的商品
+                        List<com.momento.prod.dto.ProdDTO> filteredProducts = relatedProducts.stream()
+                                        .filter(p -> p.getProdStatus() != null && p.getProdStatus().contains("上架")
+                                                        && p.getReviewStatus() != null
+                                                        && p.getReviewStatus().contains("通過"))
+                                        .limit(4)
+                                        .collect(Collectors.toList());
+
+                        // 如果過濾後為空，且原始列表不為空，則顯示原始列表前4筆 (供開發測試用)
+                        if (filteredProducts.isEmpty() && !relatedProducts.isEmpty()) {
+                                filteredProducts = relatedProducts.stream().limit(4).collect(Collectors.toList());
+                        }
+
+                        dto.setRelatedProducts(filteredProducts);
+                }
+
                 return dto;
         }
 

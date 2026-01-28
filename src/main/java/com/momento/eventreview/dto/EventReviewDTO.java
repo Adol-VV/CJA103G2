@@ -15,6 +15,7 @@ public class EventReviewDTO {
     private LocalDateTime publishedAt;
     private String bannerUrl;
     private List<String> imageUrls;
+    private String rejectReason;
 
     // Nested DTOs
     private OrganizerDTO organizer;
@@ -183,6 +184,14 @@ public class EventReviewDTO {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 
     public List<TicketDTO> getTickets() {

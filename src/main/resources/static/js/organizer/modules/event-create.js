@@ -108,6 +108,7 @@ export function initEventCreate() {
                 }
                 uploadedBannerUrl = bannerUrl;
                 $('#mainImagePreview').attr('src', bannerUrl);
+                $('#mainImageUpload').addClass('has-preview');
                 $('#panel-event-create .upload-placeholder').addClass('d-none');
                 $('#panel-event-create .upload-preview').removeClass('d-none');
 
@@ -119,6 +120,7 @@ export function initEventCreate() {
             } else {
                 uploadedBannerUrl = '';
                 uploadedGalleryUrls = [];
+                $('#mainImageUpload').removeClass('has-preview');
                 $('#panel-event-create .upload-preview').addClass('d-none');
                 $('#panel-event-create .upload-placeholder').removeClass('d-none');
                 renderGallery();
@@ -194,6 +196,7 @@ export function initEventCreate() {
         $('#rejectReasonAlert').addClass('d-none');
         $('#panel-event-create .upload-preview').addClass('d-none');
         $('#panel-event-create .upload-placeholder').removeClass('d-none');
+        $('#mainImageUpload').removeClass('has-preview');
         uploadedBannerUrl = '';
         uploadedGalleryUrls = [];
         renderGallery();
@@ -245,6 +248,7 @@ export function initEventCreate() {
         const reader = new FileReader();
         reader.onload = function (e) {
             $('#mainImagePreview').attr('src', e.target.result);
+            $('#mainImageUpload').addClass('has-preview');
             $('#panel-event-create .upload-placeholder').addClass('d-none');
             $('#panel-event-create .upload-preview').removeClass('d-none');
         };
@@ -292,6 +296,7 @@ export function initEventCreate() {
         if (!confirm('確定要移除此圖片嗎?')) return;
         uploadedBannerUrl = '';
         $('#mainImagePreview').attr('src', '');
+        $('#mainImageUpload').removeClass('has-preview');
         $('#panel-event-create .upload-preview').addClass('d-none');
         $('#panel-event-create .upload-placeholder').removeClass('d-none');
         $('#mainImageInput').val('');
@@ -428,6 +433,31 @@ export function initEventCreate() {
         }
     });
 
+    // 強制限制票價與數量只能輸入數字 (擋掉 e, ., -, + 等)
+    $(document).on('keydown', '.zone-price, .zone-qty', function (e) {
+        // 允許: Backspace, Tab, Enter, Escape, Delete, 左右箭頭
+        const allowedKeys = [46, 8, 9, 27, 13, 37, 39];
+        if (allowedKeys.indexOf(e.keyCode) !== -1 ||
+            // 允許: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            ((e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 88) && (e.ctrlKey === true || e.metaKey === true)) ||
+            // 允許: Home, End
+            (e.keyCode >= 35 && e.keyCode <= 36)) {
+            return;
+        }
+        // 確保它是數字，否則防止預設行為 (鍵盤上方的數字鍵與右側小鍵盤)
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    $(document).on('paste', '.zone-price, .zone-qty', function (e) {
+        const pasteData = e.originalEvent.clipboardData.getData('text');
+        if (!/^\d+$/.test(pasteData)) {
+            e.preventDefault();
+            alert('只能貼上數字內容');
+        }
+    });
+
     // ========== 建立活動邏輯 (無時間設定) ==========
     async function createEvent(isDraft = true) {
         const title = $('[name="eventName"]').val();
@@ -464,15 +494,43 @@ export function initEventCreate() {
             tickets: []
         };
 
+        let ticketsValid = true;
         $('#ticketZones .ticket-zone-card').each(function () {
+            const priceRaw = $(this).find('.zone-price').val();
+            const qtyRaw = $(this).find('.zone-qty').val();
+            const name = $(this).find('.zone-name').val()?.trim();
+
+            if (!isDraft && !name) {
+                alert('請填寫所有票種名稱');
+                ticketsValid = false;
+                return false;
+            }
+
+            // 強制檢查：如果是空值或包含非數字字元 (雖然 type=number 會擋一些，但 JS 再次檢查更保險)
+            if (priceRaw === "" || !/^\d+$/.test(priceRaw)) {
+                alert('票價欄位請輸入純數字');
+                $(this).find('.zone-price').focus();
+                ticketsValid = false;
+                return false;
+            }
+
+            if (qtyRaw === "" || !/^\d+$/.test(qtyRaw)) {
+                alert('數量欄位請輸入純數字');
+                $(this).find('.zone-qty').focus();
+                ticketsValid = false;
+                return false;
+            }
+
             const ticketId = $(this).find('.zone-id').val();
             eventData.tickets.push({
                 ticketId: ticketId ? parseInt(ticketId) : null,
-                name: $(this).find('.zone-name').val(),
-                price: parseInt($(this).find('.zone-price').val()) || 0,
-                total: parseInt($(this).find('.zone-qty').val()) || 0
+                name: name,
+                price: parseInt(priceRaw),
+                total: parseInt(qtyRaw)
             });
         });
+
+        if (!ticketsValid) return;
 
         const btn = isDraft ? $('#btnSaveDraft') : $('#btnSubmitReview');
         const originalHtml = btn.html();
