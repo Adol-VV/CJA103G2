@@ -21,6 +21,9 @@ public class EventReviewController {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Autowired
+    private com.momento.notify.model.OrganizerNotifyRepository organizerNotifyRepository;
+
     @GetMapping("/list")
     public ResponseEntity<?> getEvents(@RequestParam(defaultValue = "all") String tab,
             @RequestParam(required = false) String keyword,
@@ -80,11 +83,27 @@ public class EventReviewController {
                     .toList());
         }
 
+        if (event.isRejected()) {
+            List<com.momento.notify.model.OrganizerNotifyVO> notifies = organizerNotifyRepository
+                    .findByOrganizerVO_OrganizerIdAndTitleContainingOrderByCreatedAtDesc(
+                            event.getOrganizer().getOrganizerId(),
+                            "活動審核未通過通知: " + event.getTitle());
+
+            if (notifies != null && !notifies.isEmpty()) {
+                String fullContent = notifies.get(0).getContent();
+                if (fullContent != null && fullContent.contains("退回原因: ")) {
+                    dto.setRejectReason(fullContent.split("退回原因: ")[1]);
+                } else {
+                    dto.setRejectReason(fullContent);
+                }
+            }
+        }
+
         return dto;
     }
 
     @PostMapping("/approve")
-    public ResponseEntity<Map<String, String>> approveEvent(@RequestBody Map<String, Integer> request,
+    public ResponseEntity<Map<String, Object>> approveEvent(@RequestBody Map<String, Integer> request,
             jakarta.servlet.http.HttpSession session) {
         if (session.getAttribute("loginEmp") == null)
             return ResponseEntity.status(401).body(Map.of("error", "未登入"));
@@ -92,14 +111,14 @@ public class EventReviewController {
         Integer eventId = ((Number) request.get("eventId")).intValue();
         try {
             eventReviewService.approveEvent(eventId);
-            return ResponseEntity.ok(Map.of("message", "活動已核准"));
+            return ResponseEntity.ok(Map.of("success", true, "message", "活動已核准"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
     @PostMapping("/reject")
-    public ResponseEntity<Map<String, String>> rejectEvent(@RequestBody Map<String, Object> request,
+    public ResponseEntity<Map<String, Object>> rejectEvent(@RequestBody Map<String, Object> request,
             jakarta.servlet.http.HttpSession session) {
         if (session.getAttribute("loginEmp") == null)
             return ResponseEntity.status(401).body(Map.of("error", "未登入"));
@@ -110,7 +129,7 @@ public class EventReviewController {
 
         try {
             eventReviewService.rejectEvent(eventId, reason, emp);
-            return ResponseEntity.ok(Map.of("message", "活動已駁回"));
+            return ResponseEntity.ok(Map.of("success", true, "message", "活動已駁回"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

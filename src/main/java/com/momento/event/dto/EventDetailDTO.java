@@ -43,6 +43,9 @@ public class EventDetailDTO {
     /** 相關活動推薦 */
     private List<EventListItemDTO> relatedEvents;
 
+    /** 相關商品推薦 (同主辦) */
+    private List<com.momento.prod.dto.ProdDTO> relatedProducts;
+
     // ========== Getter & Setter ==========
 
     public EventVO getEvent() {
@@ -123,5 +126,13 @@ public class EventDetailDTO {
 
     public void setRelatedEvents(List<EventListItemDTO> relatedEvents) {
         this.relatedEvents = relatedEvents;
+    }
+
+    public List<com.momento.prod.dto.ProdDTO> getRelatedProducts() {
+        return relatedProducts;
+    }
+
+    public void setRelatedProducts(List<com.momento.prod.dto.ProdDTO> relatedProducts) {
+        this.relatedProducts = relatedProducts;
     }
 }

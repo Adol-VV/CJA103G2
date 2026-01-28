@@ -110,7 +110,7 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
                         "AND (:statuses IS NULL OR e.status IN :statuses) " +
                         "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
                         +
-                        "ORDER BY e.status ASC, e.eventStartAt DESC")
+                        "ORDER BY e.updatedAt DESC, e.eventId DESC")
         Page<EventVO> searchOrganizerEvents(
                         @Param("organizerId") Integer organizerId,
                         @Param("statuses") java.util.Collection<Byte> statuses,
@@ -122,7 +122,7 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         @Query("SELECT e FROM EventVO e WHERE (:statuses IS NULL OR e.status IN :statuses) " +
                         "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
                         +
-                        "ORDER BY e.status ASC, e.eventId DESC")
+                        "ORDER BY e.updatedAt DESC, e.eventId DESC")
         List<EventVO> searchAdminEvents(
                         @Param("statuses") java.util.Collection<Byte> statuses,
                         @Param("keyword") String keyword);

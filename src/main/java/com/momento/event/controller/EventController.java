@@ -208,6 +208,7 @@ public class EventController {
         model.addAttribute("favoriteCount", eventDetail.getFavoriteCount());
         model.addAttribute("isFavorited", eventDetail.getIsFavorited());
         model.addAttribute("relatedEvents", eventDetail.getRelatedEvents());
+        model.addAttribute("relatedProducts", eventDetail.getRelatedProducts());
 
         // 傳到結帳頁面
         model.addAttribute("selectionForm", new SelectionFormDTO());

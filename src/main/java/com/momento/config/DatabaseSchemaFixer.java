@@ -57,9 +57,10 @@ public class DatabaseSchemaFixer implements CommandLineRunner {
             // Fix 3: Make Time fields nullable
             try {
                 System.out.println("DatabaseSchemaFixer: Altering EVENT time fields to NULL...");
-                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN STARTED_AT DATETIME NULL");
-                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN ENDED_AT DATETIME NULL");
-                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN EVENT_AT DATETIME NULL");
+                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN SALE_START_AT DATETIME NULL");
+                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN SALE_END_AT DATETIME NULL");
+                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN EVENT_START_AT DATETIME NULL");
+                stmt.executeUpdate("ALTER TABLE EVENT MODIFY COLUMN EVENT_END_AT DATETIME NULL");
                 System.out.println("DatabaseSchemaFixer: EVENT time fields are now nullable.");
             } catch (Exception e) {
                 System.err.println("DatabaseSchemaFixer: Failed to alter time fields. " + e.getMessage());

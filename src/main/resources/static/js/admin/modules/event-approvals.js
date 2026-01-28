@@ -70,7 +70,7 @@ export function initEventApprovals() {
             }),
             success: function (response) {
                 if (response.success) {
-                    alert('活動已駁回');
+                    alert(response.message || '活動已駁回');
                     $('#eventReviewModal').modal('hide');
                     loadEventApprovals(currentTab);
                 } else {
@@ -101,7 +101,7 @@ export function initEventApprovals() {
             data: JSON.stringify({ eventId: currentEventId }),
             success: function (response) {
                 if (response.success) {
-                    alert('活動已核准通過');
+                    alert(response.message || '活動已核准通過');
                     $('#eventReviewModal').modal('hide');
                     loadEventApprovals(currentTab);
                 } else {
@@ -252,6 +252,18 @@ export function initEventApprovals() {
                     galleryHtml += '</div>';
                 }
 
+                let rejectReasonHtml = '';
+                if (event.status === 4 && event.rejectReason) {
+                    rejectReasonHtml = `
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-danger mb-0 border-0 bg-danger bg-opacity-10">
+                                <h6 class="text-danger fw-bold mb-2"><i class="fas fa-times-circle me-2"></i>審核駁回原因</h6>
+                                <p class="mb-0 small">${event.rejectReason}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const detailsHtml = `
                     <div class="row">
                         <div class="col-12 mb-4">
@@ -272,7 +284,27 @@ export function initEventApprovals() {
                             <h6 class="text-primary fw-bold mb-3"><i class="fas fa-ticket-alt me-2"></i>售票資訊 (上架後有效)</h6>
                             <p class="mb-2"><strong>售票開始：</strong>${event.saleStartAt ? formatDateTime(event.saleStartAt) : '-'}</p>
                             <p class="mb-2"><strong>售票結束：</strong>${event.saleEndAt ? formatDateTime(event.saleEndAt) : '-'}</p>
-                            <p class="mb-2"><strong>票種數量：</strong>${event.tickets?.length || 0} 種</p>
+                            
+                            <div class="mt-3">
+                                <h6 class="text-secondary small fw-bold mb-2">票種清單</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-dark table-bordered border-secondary mb-0">
+                                        <thead class="bg-darker">
+                                            <tr class="small text-muted">
+                                                <th>名稱</th>
+                                                <th>價格</th>
+                                                <th>總額</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="small">
+                                            ${event.tickets && event.tickets.length > 0
+                        ? event.tickets.map(t => `<tr><td>${t.ticketName}</td><td>$${t.price}</td><td>${t.total}</td></tr>`).join('')
+                        : '<tr><td colspan="3" class="text-center py-2 text-muted">目前無設定票種</td></tr>'
+                    }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-12 mt-3">
                             <h6 class="text-primary fw-bold mb-2"><i class="fas fa-align-left me-2"></i>活動說明</h6>
@@ -280,15 +312,24 @@ export function initEventApprovals() {
                                 ${event.content || '無說明'}
                             </div>
                         </div>
+                        ${rejectReasonHtml}
                     </div>
                 `;
                 $('#eventReviewDetails').html(detailsHtml);
 
-                // 控制按鈕顯示
-                if (event.status === 1) {
-                    $('#btnConfirmReject, #btnConfirmApprove').show();
+                // 控制按鈕與審核 UI 顯示 (修正 selector 以對應 panel-event-approval.html)
+                const $reviewHr = $('#eventReviewModal hr.my-4');
+                const $reasonInputSection = $('#rejectReason').closest('.mb-3');
+                const $actionButtons = $('#btnConfirmReject, #btnConfirmApprove');
+
+                if (event.status === 1) { // 待審核 (Pending)
+                    $reviewHr.show();
+                    $reasonInputSection.show();
+                    $actionButtons.show();
                 } else {
-                    $('#btnConfirmReject, #btnConfirmApprove').hide();
+                    $reviewHr.hide();
+                    $reasonInputSection.hide();
+                    $actionButtons.hide();
                 }
 
                 $('#eventReviewModal').modal('show');
@@ -307,7 +348,7 @@ export function initEventApprovals() {
             data: JSON.stringify({ eventId: id }),
             success: function (res) {
                 if (res.success) {
-                    alert('活動已批准通過');
+                    alert(res.message || '活動已批准通過');
                     loadEventApprovals(currentTab);
                 } else {
                     alert('操作失敗: ' + res.message);

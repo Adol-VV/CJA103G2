@@ -8,6 +8,7 @@ public class EventListItemDTO {
     private String place;
     private LocalDateTime eventStartAt;
     private LocalDateTime publishedAt;
+    private LocalDateTime eventEndAt;
     private Byte status;
     private String bannerUrl;
 
@@ -15,12 +16,13 @@ public class EventListItemDTO {
     }
 
     public EventListItemDTO(Integer eventId, String title, String place, LocalDateTime eventStartAt,
-            LocalDateTime publishedAt, Byte status, String bannerUrl) {
+            LocalDateTime publishedAt, LocalDateTime eventEndAt, Byte status, String bannerUrl) {
         this.eventId = eventId;
         this.title = title;
         this.place = place;
         this.eventStartAt = eventStartAt;
         this.publishedAt = publishedAt;
+        this.eventEndAt = eventEndAt;
         this.status = status;
         this.bannerUrl = bannerUrl;
     }
@@ -64,6 +66,14 @@ public class EventListItemDTO {
 
     public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
+    }
+
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
     }
 
     public Byte getStatus() {

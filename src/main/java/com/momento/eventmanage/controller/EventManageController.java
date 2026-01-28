@@ -171,7 +171,8 @@ public class EventManageController {
 
                 return new com.momento.eventmanage.dto.EventListItemDTO(
                                 event.getEventId(), event.getTitle(), event.getPlace(),
-                                event.getEventStartAt(), event.getPublishedAt(), event.getStatus(),
+                                event.getEventStartAt(), event.getPublishedAt(),
+                                event.getEventEndAt(), event.getStatus(),
                                 bannerUrl);
         }
 
@@ -238,6 +239,7 @@ public class EventManageController {
                         if (event.isRejected())
                                 response.put("rejectReason", detail.getRejectReason());
 
+                        response.put("success", true);
                         return ResponseEntity.ok(response);
                 } catch (Exception e) {
                         return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));

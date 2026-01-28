@@ -14,19 +14,21 @@ public class EventStatsDTO implements Serializable {
     private long rejectedCount; // 已駁回 (STATUS=4)
     private long endedCount; // 已結束/取消 (STATUS=5)
     private long approvedCount; // 審核成功 (STATUS=2)
-    private long allCount; // 全部 (非草稿)
+    private long draftCount; // 草稿箱 (STATUS=0)
+    private long allCount; // 全部 (包含草稿)
 
     public EventStatsDTO() {
     }
 
     public EventStatsDTO(long activeCount, long pendingCount, long totalFavorites, long rejectedCount,
-            long endedCount, long approvedCount, long allCount) {
+            long endedCount, long approvedCount, long draftCount, long allCount) {
         this.activeCount = activeCount;
         this.pendingCount = pendingCount;
         this.totalFavorites = totalFavorites;
         this.rejectedCount = rejectedCount;
         this.endedCount = endedCount;
         this.approvedCount = approvedCount;
+        this.draftCount = draftCount;
         this.allCount = allCount;
     }
 
@@ -76,6 +78,14 @@ public class EventStatsDTO implements Serializable {
 
     public void setApprovedCount(long approvedCount) {
         this.approvedCount = approvedCount;
+    }
+
+    public long getDraftCount() {
+        return draftCount;
+    }
+
+    public void setDraftCount(long draftCount) {
+        this.draftCount = draftCount;
     }
 
     public long getAllCount() {
