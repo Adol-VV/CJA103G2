@@ -210,10 +210,20 @@
                     </div>
                 </form>
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
-                    <a href="#" class="position-relative text-white text-decoration-none">
+                    <a href="pages/user/cart.html" class="position-relative text-white text-decoration-none">
                         <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem;"> 2 </span>
                     </a>
-                    <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">會員登入</a>
+                    <div th:if="${session.loginMember}" class="d-flex align-items-center gap-3">
+                        <span class="text-white" th:text="${session.loginMember.name}">會員姓名</span>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                    </div>
+                    <div th:unless="${session.loginMember}">
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -252,11 +262,60 @@
                     </div>
                 </div>
 
+                <!-- Event Status Banner -->
+                <div class="status-banner mb-4" th:with="now=${T(java.time.LocalDateTime).now()}">
+                    <!-- NATURAL CLOSED -->
+                    <div th:if="${event.status == 3 && event.eventEndAt != null && !now.isBefore(event.eventEndAt)}"
+                        class="alert alert-secondary border-0 mb-0 py-3">
+                        <h4 class="alert-heading mb-1"><i class="fas fa-check-circle me-2"></i>活動已結束</h4>
+                        <p class="mb-0 opacity-75">感謝您的參與！本活動已圓滿結束。</p>
+                    </div>
+                    <!-- MANUALLY CLOSED / CANCELED -->
+                    <div th:if="${event.status == 5}" class="alert alert-danger border-0 mb-0 py-3">
+                        <h4 class="alert-heading mb-1"><i class="fas fa-times-circle me-2"></i>活動已取消 / 下架</h4>
+                        <p class="mb-0 opacity-75">本活動因故取消或下架，已購票者請聯繫主辦方。</p>
+                    </div>
+                    <!-- ACTIVE PHASES -->
+                    <th:block
+                        th:if="${event.status == 3 && event.eventEndAt != null && now.isBefore(event.eventEndAt)}">
+                        <!-- COMING SOON -->
+                        <div th:if="${event.saleStartAt != null && now.isBefore(event.saleStartAt)}"
+                            class="alert alert-info border-0 mb-0 py-3">
+                            <h4 class="alert-heading mb-1"><i class="fas fa-clock me-2"></i>即將開賣</h4>
+                            <p class="mb-0">開賣時間：<span
+                                    th:text="${#temporals.format(event.saleStartAt, 'yyyy/MM/dd HH:mm')}">2025/01/01
+                                    12:00</span></p>
+                        </div>
+                        <!-- ON SALE -->
+                        <div th:if="${event.saleStartAt != null && event.saleEndAt != null && !now.isBefore(event.saleStartAt) && now.isBefore(event.saleEndAt)}"
+                            class="alert alert-success border-0 mb-0 py-3">
+                            <h4 class="alert-heading mb-1"><i class="fas fa-ticket-alt me-2"></i>可購票</h4>
+                            <p class="mb-0">售票至：<span
+                                    th:text="${#temporals.format(event.saleEndAt, 'yyyy/MM/dd HH:mm')}">2025/01/05
+                                    18:00</span></p>
+                        </div>
+                        <!-- SALE ENDED -->
+                        <div th:if="${event.saleEndAt != null && event.eventStartAt != null && !now.isBefore(event.saleEndAt) && now.isBefore(event.eventStartAt)}"
+                            class="alert alert-warning border-0 mb-0 py-3 text-dark">
+                            <h4 class="alert-heading mb-1"><i class="fas fa-hourglass-end me-2"></i>售票已結束</h4>
+                            <p class="mb-0">本活動已停止售票。活動時間：<span
+                                    th:text="${#temporals.format(event.eventStartAt, 'yyyy/MM/dd HH:mm')}">2025/01/05
+                                    19:30</span></p>
+                        </div>
+                        <!-- IN PROGRESS -->
+                        <div th:if="${event.eventStartAt != null && event.eventEndAt != null && !now.isBefore(event.eventStartAt) && now.isBefore(event.eventEndAt)}"
+                            class="alert alert-danger border-0 mb-0 py-3">
+                            <h4 class="alert-heading mb-1"><i class="fas fa-bullhorn me-2"></i>活動進行中</h4>
+                            <p class="mb-0">活動正在舉行中，祝您玩得愉快！</p>
+                        </div>
+                    </th:block>
+                </div>
+
                 <!-- Event Details -->
                 <h1 class="event-title mb-3" th:text="${event.title}">2025新年音樂會｜維也納之夜</h1>
                 <div class="event-meta d-flex flex-wrap gap-3 mb-4 text-muted">
                     <span> <i class="far fa-calendar me-2"></i> <span
-                            th:text="${#temporals.format(event.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+                            th:text="${#temporals.format(event.eventStartAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
                             (二) 19:30</span>
                     </span> <span> <i class="fas fa-map-marker-alt me-2"></i> <span
                             th:text="${event.place}">中山堂中正廳</span>
@@ -509,9 +568,20 @@
                                         0</strong>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary w-100 btn-lg" id="btnPurchase">
-                                    <i class="fas fa-shopping-cart me-2"></i>立即購票
-                                </button>
+                                <th:block th:with="now=${T(java.time.LocalDateTime).now()}">
+                                    <th:block
+                                        th:with="canPurchase=${event.status == 3 && event.saleStartAt != null && event.saleEndAt != null && !now.isBefore(event.saleStartAt) && now.isBefore(event.saleEndAt)}">
+                                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="btnPurchase"
+                                            th:disabled="${!canPurchase}">
+                                            <i class="fas fa-shopping-cart me-2"></i>
+                                            <span
+                                                th:text="${canPurchase ? '立即購票' : (event.status == 5 ? '活動已取消' : (event.saleStartAt != null && now.isBefore(event.saleStartAt) ? '尚未開賣' : '售票已結束'))}">立即購票</span>
+                                        </button>
+                                        <p th:if="${!canPurchase}" class="text-center text-danger small mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>目前非售票期間
+                                        </p>
+                                    </th:block>
+                                </th:block>
 
                                 <p class="text-center text-muted small mt-3 mb-0">
                                     購票即同意 <a href="#" class="text-muted">服務條款</a>
@@ -548,13 +618,18 @@
                 btn.addEventListener('click', function (event) {
                     event.preventDefault(); // 防止頁面跳轉
                     const ticketId = this.dataset.ticketId;
-                    const max = parseInt(this.dataset.max);
+                    const maxStock = parseInt(this.dataset.max);
                     const input = document.querySelector(`.ticket-quantity[data-ticket-id="${ticketId}"]`);
                     const currentValue = parseInt(input.value) || 0;
 
-                    if (currentValue < max) {
+                    // 限制每種票最多買 4 張，且不能超過庫存
+                    const limit = Math.min(maxStock, 4);
+
+                    if (currentValue < limit) {
                         input.value = currentValue + 1;
                         calculateTotal();
+                    } else if (currentValue >= 4) {
+                        alert('每種票限制最多購買 4 張');
                     }
                 });
             });

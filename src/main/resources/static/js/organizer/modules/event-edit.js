@@ -266,27 +266,43 @@ export function initEventEdit() {
     // 儲存邏輯
     async function saveUpdate(submitReview = false) {
         const eventId = $('#updateEventId').val();
+
+        // 票種處理
+        const tickets = [];
+        $('#editTicketZones .ticket-zone-card').each(function () {
+            const ticketIdVal = $(this).find('.zone-id').val();
+            const priceVal = parseInt($(this).find('.zone-price').val());
+            const totalVal = parseInt($(this).find('.zone-qty').val());
+
+            tickets.push({
+                ticketId: ticketIdVal ? parseInt(ticketIdVal) : null,
+                name: $(this).find('.zone-name').val(),
+                price: isNaN(priceVal) ? 0 : priceVal,
+                total: isNaN(totalVal) ? 0 : totalVal
+            });
+        });
+
+        const typeIdVal = parseInt($('#editEventType').val());
+
         const data = {
             eventId: eventId,
             title: $('#eventUpdateForm [name="eventName"]').val(),
-            typeId: parseInt($('#editEventType').val()),
+            typeId: isNaN(typeIdVal) ? null : typeIdVal,
             place: $('#eventUpdateForm [name="eventVenue"]').val(),
             content: $('#editEventContent').val(),
-            eventAt: $('#editEventDateTime').val() + ':00',
-            startedAt: $('#editSaleStart').val() + ':00',
-            endedAt: $('#editSaleEnd').val() + ':00',
-            bannerUrl: uploadedEditBannerUrl || '', // 確保有值才傳,空字串表示不更新
-            tickets: []
+            bannerUrl: uploadedEditBannerUrl || '',
+            tickets: tickets
         };
 
-        $('#editTicketZones .ticket-zone-card').each(function () {
-            data.tickets.push({
-                ticketId: $(this).find('.zone-id').val() ? parseInt($(this).find('.zone-id').val()) : null,
-                name: $(this).find('.zone-name').val(),
-                price: parseInt($(this).find('.zone-price').val()),
-                total: parseInt($(this).find('.zone-qty').val())
-            });
-        });
+        // 僅當時間欄位存在於 DOM 中時才傳送 (避免 undefined:00 導致 400 錯誤)
+        const $eventAt = $('#editEventDateTime');
+        if ($eventAt.length && $eventAt.val()) data.eventStartAt = $eventAt.val() + ':00';
+
+        const $saleStart = $('#editSaleStart');
+        if ($saleStart.length && $saleStart.val()) data.saleStartAt = $saleStart.val() + ':00';
+
+        const $saleEnd = $('#editSaleEnd');
+        if ($saleEnd.length && $saleEnd.val()) data.saleEndAt = $saleEnd.val() + ':00';
 
         const btn = submitReview ? $('#btnUpdateSubmit') : $('#btnUpdateSave');
         const originalHtml = btn.html();
@@ -302,13 +318,33 @@ export function initEventEdit() {
 
             if (submitReview) {
                 await $.post(`/organizer/event/submit/${eventId}`);
-                alert('已儲存並重新送出審核');
+                Swal.fire({
+                    icon: 'success',
+                    title: '成功',
+                    text: '活動已送出審核',
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
                 if (window.Navigation) window.Navigation.showSection('events-list');
             } else {
-                alert('修改已儲存');
+                Swal.fire({
+                    icon: 'success',
+                    title: '成功',
+                    text: '修改已儲存',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
             }
         } catch (e) {
-            alert('操作失敗: ' + (e.responseJSON?.message || '發生錯誤'));
+            Swal.fire({
+                icon: 'error',
+                title: '錯誤',
+                text: '操作失敗: ' + (e.responseJSON?.message || '發生錯誤'),
+                background: '#1a1d20',
+                color: '#fff'
+            });
         } finally {
             btn.prop('disabled', false).html(originalHtml);
         }

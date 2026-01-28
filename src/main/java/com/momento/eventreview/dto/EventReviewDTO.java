@@ -6,11 +6,12 @@ import java.util.List;
 public class EventReviewDTO {
     private Integer eventId;
     private String title;
-    private String content; // Content
+    private String content;
     private String place;
-    private LocalDateTime startedAt;
-    private LocalDateTime endedAt;
-    private LocalDateTime eventAt;
+    private LocalDateTime saleStartAt;
+    private LocalDateTime saleEndAt;
+    private LocalDateTime eventStartAt;
+    private LocalDateTime eventEndAt;
     private LocalDateTime publishedAt;
 
     // Nested DTOs
@@ -19,7 +20,6 @@ public class EventReviewDTO {
 
     // Status
     private Byte status;
-    private Byte reviewStatus;
 
     // Tickets
     private List<TicketDTO> tickets;
@@ -61,7 +61,7 @@ public class EventReviewDTO {
     }
 
     public static class TicketDTO {
-        private String ticketName; // Frontend might use name but VO uses ticketName
+        private String ticketName;
         private Integer price;
         private Integer total;
 
@@ -70,10 +70,6 @@ public class EventReviewDTO {
             this.price = price;
             this.total = total;
         }
-
-        public String getName() {
-            return ticketName;
-        } // Alias for frontend name
 
         public String getTicketName() {
             return ticketName;
@@ -91,7 +87,6 @@ public class EventReviewDTO {
     public EventReviewDTO() {
     }
 
-    // Getters and Setters
     public Integer getEventId() {
         return eventId;
     }
@@ -124,28 +119,36 @@ public class EventReviewDTO {
         this.place = place;
     }
 
-    public LocalDateTime getStartedAt() {
-        return startedAt;
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
     }
 
-    public LocalDateTime getEndedAt() {
-        return endedAt;
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
     }
 
-    public void setEndedAt(LocalDateTime endedAt) {
-        this.endedAt = endedAt;
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
+    }
+
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
+    }
+
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
     }
 
     public LocalDateTime getPublishedAt() {
@@ -162,14 +165,6 @@ public class EventReviewDTO {
 
     public void setStatus(Byte status) {
         this.status = status;
-    }
-
-    public Byte getReviewStatus() {
-        return reviewStatus;
-    }
-
-    public void setReviewStatus(Byte reviewStatus) {
-        this.reviewStatus = reviewStatus;
     }
 
     public List<TicketDTO> getTickets() {

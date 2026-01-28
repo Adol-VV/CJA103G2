@@ -18,337 +18,112 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<EventVO, Integer> {
 
-        // ========== 基本查詢 ==========
+        // ========== 前台公開查詢 (僅 STATUS = 3 或 5) ==========
 
         /**
-         * 查詢已上架且審核通過的活動（分頁）
-         * 
-         * @param status       活動狀態 (1:已上架)
-         * @param reviewStatus 審核狀態 (1:通過)
-         * @param pageable     分頁參數
-         * @return 活動分頁列表
+         * 查詢已上架的活動（分頁）
          */
-        Page<EventVO> findByStatusAndReviewStatus(
-                        Byte status,
-                        Byte reviewStatus,
-                        Pageable pageable);
+        Page<EventVO> findByStatus(Byte status, Pageable pageable);
 
         /**
-         * 查詢已上架且審核通過的活動（列表）
-         * 
-         * @param status       活動狀態 (1:已上架)
-         * @param reviewStatus 審核狀態 (1:通過)
-         * @return 活動列表
+         * 查詢已上架的活動（列表）
          */
-        List<EventVO> findByStatusAndReviewStatus(
-                        Byte status,
-                        Byte reviewStatus);
-        
+        List<EventVO> findByStatus(Byte status);
+
+        List<EventVO> findByStatusAndEventEndAtBefore(Byte status, LocalDateTime dateTime);
+
         List<EventVO> findByOrganizer_OrganizerId(Integer organizerId);
 
         // ========== 篩選查詢 ==========
 
-        /**
-         * 依活動類型篩選（分頁）
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @param typeId       活動類型 ID
-         * @param pageable     分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByStatusAndReviewStatusAndType_TypeId(
-                        Byte status,
-                        Byte reviewStatus,
-                        Integer typeId,
-                        Pageable pageable);
+        Page<EventVO> findByStatusAndType_TypeId(Byte status, Integer typeId, Pageable pageable);
 
-        /**
-         * 依地區篩選（模糊搜尋 PLACE 欄位）
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @param place        地區關鍵字
-         * @param pageable     分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByStatusAndReviewStatusAndPlaceContaining(
-                        Byte status,
-                        Byte reviewStatus,
-                        String place,
-                        Pageable pageable);
+        Page<EventVO> findByStatusAndPlaceContaining(Byte status, String place, Pageable pageable);
 
-        /**
-         * 依活動舉辦日期範圍篩選
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @param startDate    開始日期
-         * @param endDate      結束日期
-         * @param pageable     分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByStatusAndReviewStatusAndEventAtBetween(
-                        Byte status,
-                        Byte reviewStatus,
-                        LocalDateTime startDate,
-                        LocalDateTime endDate,
+        Page<EventVO> findByStatusAndEventStartAtBetween(Byte status, LocalDateTime startDate, LocalDateTime endDate,
                         Pageable pageable);
 
         // ========== 搜尋查詢 ==========
 
-        /**
-         * 關鍵字搜尋（標題或內容）
-         * 
-         * @param status         活動狀態
-         * @param reviewStatus   審核狀態
-         * @param titleKeyword   標題關鍵字
-         * @param contentKeyword 內容關鍵字
-         * @param pageable       分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByStatusAndReviewStatusAndTitleContainingOrContentContaining(
-                        Byte status,
-                        Byte reviewStatus,
-                        String titleKeyword,
-                        String contentKeyword,
-                        Pageable pageable);
+        Page<EventVO> findByStatusAndTitleContainingOrContentContaining(Byte status, String titleKeyword,
+                        String contentKeyword, Pageable pageable);
 
-        // ========== 複合篩選查詢（使用 @Query） ==========
+        // ========== 複合篩選查詢 (使用 @Query) ==========
 
-        /**
-         * 複合篩選：類型 + 地區 + 日期範圍 + 價格範圍
-         * 使用 JOIN TICKET 表來篩選價格
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @param typeId       活動類型 ID (可為 null)
-         * @param place        地區關鍵字 (可為 null)
-         * @param startDate    活動開始日期 (可為 null)
-         * @param endDate      活動結束日期 (可為 null)
-         * @param minPrice     最低票價 (可為 null)
-         * @param maxPrice     最高票價 (可為 null)
-         * @param pageable     分頁參數
-         * @return 活動分頁列表
-         */
-        @Query("SELECT DISTINCT e FROM EventVO e " +
-                        "LEFT JOIN TicketVO t ON t.event.eventId = e.eventId " +
-                        "WHERE e.status = :status " +
-                        "AND e.reviewStatus = :reviewStatus " +
+        @Query("SELECT e FROM EventVO e " +
+                        "WHERE e.status IN :statuses " +
                         "AND (:typeId IS NULL OR e.type.typeId = :typeId) " +
                         "AND (:place IS NULL OR e.place LIKE %:place%) " +
-                        "AND (:startDate IS NULL OR e.eventAt >= :startDate) " +
-                        "AND (:endDate IS NULL OR e.eventAt <= :endDate) " +
-                        "AND (:minPrice IS NULL OR t.price >= :minPrice) " +
-                        "AND (:maxPrice IS NULL OR t.price <= :maxPrice)")
+                        "AND (:startDate IS NULL OR e.eventStartAt >= :startDate) " +
+                        "AND (:endDate IS NULL OR e.eventStartAt <= :endDate) " +
+                        "AND (:minPrice IS NULL OR e.minPrice >= :minPrice) " +
+                        "AND (:maxPrice IS NULL OR e.minPrice <= :maxPrice) " +
+                        "AND (:onSaleOnly = false OR (e.saleStartAt IS NOT NULL AND e.saleEndAt IS NOT NULL AND e.saleStartAt <= :now AND e.saleEndAt >= :now))")
         Page<EventVO> filterEvents(
-                        @Param("status") Byte status,
-                        @Param("reviewStatus") Byte reviewStatus,
+                        @Param("statuses") java.util.List<Byte> statuses,
                         @Param("typeId") Integer typeId,
                         @Param("place") String place,
-                        @Param("startDate") LocalDateTime startDate,
-                        @Param("endDate") LocalDateTime endDate,
+                        @Param("startDate") java.time.LocalDateTime startDate,
+                        @Param("endDate") java.time.LocalDateTime endDate,
                         @Param("minPrice") Integer minPrice,
                         @Param("maxPrice") Integer maxPrice,
+                        @Param("onSaleOnly") Boolean onSaleOnly,
+                        @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
 
         // ========== 主辦方相關 ==========
 
-        /**
-         * 查詢特定主辦方的所有活動
-         * 
-         * @param organizerId 主辦方 ID
-         * @param pageable    分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByOrganizer_OrganizerId(
-                        Integer organizerId,
+        Page<EventVO> findByOrganizer_OrganizerId(Integer organizerId, Pageable pageable);
+
+        Page<EventVO> findByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status, Pageable pageable);
+
+        List<EventVO> findByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status);
+
+        Page<EventVO> findByOrganizer_OrganizerIdAndTitleContaining(Integer organizerId, String keyword,
                         Pageable pageable);
 
-        /**
-         * 查詢特定主辦方的已上架活動
-         * 
-         * @param organizerId  主辦方 ID
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @return 活動列表
-         */
-        List<EventVO> findByOrganizer_OrganizerIdAndStatusAndReviewStatus(
-                        Integer organizerId,
-                        Byte status,
-                        Byte reviewStatus);
+        Page<EventVO> findByOrganizer_OrganizerIdAndStatusAndTitleContaining(Integer organizerId, Byte status,
+                        String keyword, Pageable pageable);
 
-        /**
-         * 查詢特定主辦方的活動 (依狀態篩選)
-         * 
-         * @param organizerId 主辦方 ID
-         * @param status      活動狀態
-         * @param pageable    分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByOrganizer_OrganizerIdAndStatus(
-                        Integer organizerId,
-                        Byte status,
-                        Pageable pageable);
+        List<EventVO> findByOrganizer_OrganizerIdAndStatusInAndPublishedAtIsNull(Integer organizerId,
+                        List<Byte> statuses);
 
-        /**
-         * 查詢特定主辦方的活動 (依標題關鍵字搜尋)
-         * 
-         * @param organizerId 主辦方 ID
-         * @param keyword     標題關鍵字
-         * @param pageable    分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByOrganizer_OrganizerIdAndTitleContaining(
-                        Integer organizerId,
-                        String keyword,
-                        Pageable pageable);
+        // ========== 統計與狀態數查詢 ==========
 
-        /**
-         * 查詢特定主辦方的活動 (依狀態 + 標題關鍵字)
-         * 
-         * @param organizerId 主辦方 ID
-         * @param status      活動狀態
-         * @param keyword     標題關鍵字
-         * @param pageable    分頁參數
-         * @return 活動分頁列表
-         */
-        Page<EventVO> findByOrganizer_OrganizerIdAndStatusAndTitleContaining(
-                        Integer organizerId,
-                        Byte status,
-                        String keyword,
-                        Pageable pageable);
+        long countByStatus(Byte status);
 
-        // ========== 統計查詢 ==========
+        long countByStatusAndType_TypeId(Byte status, Integer typeId);
 
-        /**
-         * 計算已上架活動總數
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @return 活動數量
-         */
-        long countByStatusAndReviewStatus(Byte status, Byte reviewStatus);
-
-        /**
-         * 計算所有主辦方的特定狀態集合活動數量
-         */
         long countByStatusIn(java.util.Collection<Byte> statuses);
 
-        /**
-         * 計算特定類型的活動數量
-         * 
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @param typeId       活動類型 ID
-         * @return 活動數量
-         */
-        long countByStatusAndReviewStatusAndType_TypeId(
-                        Byte status,
-                        Byte reviewStatus,
-                        Integer typeId);
-        // ========== 主辦方統計查詢 ==========
+        long countByOrganizer_OrganizerId(Integer organizerId);
 
-        /**
-         * 計算主辦方的特定狀態活動數量
-         * 
-         * @param organizerId 主辦方 ID
-         * @param status      活動狀態
-         * @return 數量
-         */
+        long countByOrganizer_OrganizerIdAndStatusNot(Integer organizerId, Byte status);
+
         long countByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status);
 
-        /**
-         * 計算主辦方的特定狀態與審核狀態活動數量
-         * 
-         * @param organizerId  主辦方 ID
-         * @param status       活動狀態
-         * @param reviewStatus 審核狀態
-         * @return 數量
-         */
-        long countByOrganizer_OrganizerIdAndStatusAndReviewStatus(Integer organizerId, Byte status, Byte reviewStatus);
-
-        /**
-         * 計算特定主辦方的待審核活動數量 (S=0, R=0, P!=null)
-         */
-        long countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNotNull(
-                        Integer organizerId, Byte status, Byte reviewStatus);
-
-        /**
-         * 查詢待審核活動 (S=0, R=0, P!=null)
-         */
-        List<EventVO> findByStatusAndReviewStatusAndPublishedAtIsNotNull(Byte status, Byte reviewStatus);
-
-        /**
-         * 計算待審核活動數量 (S=0, R=0, P!=null)
-         */
-        long countByStatusAndReviewStatusAndPublishedAtIsNotNull(Byte status, Byte reviewStatus);
-
-        /**
-         * 查詢草稿：S=0, R=0, P=null
-         */
-        List<EventVO> findByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(
-                        Integer organizerId,
-                        Byte status,
-                        Byte reviewStatus);
-
-        /**
-         * 計算特定主辦方的特定狀態集合活動數量 (S IN :statuses)
-         */
         long countByOrganizer_OrganizerIdAndStatusIn(Integer organizerId, java.util.Collection<Byte> statuses);
 
-        /**
-         * 計算主辦方的特定狀態與審核狀態且送審時間為空 (S=0, R=2, P=NULL)
-         */
-        long countByOrganizer_OrganizerIdAndStatusAndReviewStatusAndPublishedAtIsNull(Integer organizerId, Byte status,
-                        Byte reviewStatus);
+        // ========== 複合搜尋 (主辦方) ==========
 
-        /**
-         * 搜尋主辦方活動 (複合篩選)
-         * 
-         * @param organizerId  主辦方 ID (必填)
-         * @param status       活動狀態 (可選)
-         * @param reviewStatus 審核狀態 (可選)
-         * @param keyword      關鍵字 (可選)
-         * @param pageable     分頁參數
-         * @return 活動分頁
-         */
         @Query("SELECT e FROM EventVO e WHERE e.organizer.organizerId = :organizerId " +
-                        "AND (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
-                        "AND (COALESCE(:statuses, NULL) IS NULL OR e.status IN :statuses) " +
-                        "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
+                        "AND (:statuses IS NULL OR e.status IN :statuses) " +
                         "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
                         +
-                        "ORDER BY " +
-                        "CASE " +
-                        "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending
-                        "  WHEN (e.status = 0 AND e.reviewStatus = 2) THEN 2 " + // Rejected
-                        "  WHEN (e.status = 1) THEN 3 " + // Published
-                        "  WHEN (e.status = 2 OR e.status = 3) THEN 4 " + // Ended/Cancelled
-                        "  ELSE 5 " +
-                        "END ASC, e.eventAt DESC")
+                        "ORDER BY e.status ASC, e.eventStartAt DESC")
         Page<EventVO> searchOrganizerEvents(
                         @Param("organizerId") Integer organizerId,
                         @Param("statuses") java.util.Collection<Byte> statuses,
-                        @Param("reviewStatus") Byte reviewStatus,
                         @Param("keyword") String keyword,
                         Pageable pageable);
 
-        @Query("SELECT e FROM EventVO e WHERE (e.publishedAt IS NOT NULL OR e.reviewStatus = 2) " +
-                        "AND (COALESCE(:statuses, NULL) IS NULL OR e.status IN :statuses) " +
-                        "AND (:reviewStatus IS NULL OR e.reviewStatus = :reviewStatus) " +
+        // ========== 複合搜尋 (管理員) ==========
+
+        @Query("SELECT e FROM EventVO e WHERE (:statuses IS NULL OR e.status IN :statuses) " +
                         "AND (:keyword IS NULL OR :keyword = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
                         +
-                        "ORDER BY " +
-                        "CASE " +
-                        "  WHEN (e.status = 0 AND e.reviewStatus = 0 AND e.publishedAt IS NOT NULL) THEN 1 " + // Pending
-                        "  WHEN (e.status = 0 AND e.reviewStatus = 2) THEN 2 " + // Rejected
-                        "  WHEN (e.status = 1) THEN 3 " + // Published
-                        "  WHEN (e.status = 2 OR e.status = 3) THEN 4 " + // Ended/Cancelled
-                        "  ELSE 5 " +
-                        "END ASC, e.eventAt DESC")
+                        "ORDER BY e.status ASC, e.eventId DESC")
         List<EventVO> searchAdminEvents(
                         @Param("statuses") java.util.Collection<Byte> statuses,
-                        @Param("reviewStatus") Byte reviewStatus,
                         @Param("keyword") String keyword);
 }

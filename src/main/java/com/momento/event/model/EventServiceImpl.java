@@ -8,6 +8,7 @@ import com.momento.ticket.model.TicketVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -16,9 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * Event Service 實作
- * 實作活動相關的業務邏輯
- * 
- * 注意：票種 (Ticket) 相關功能由 ticket 模組負責
  */
 @Service
 @Transactional
@@ -39,93 +37,59 @@ public class EventServiceImpl implements EventService {
         @Autowired
         private TicketService ticketService;
 
-        // 常數：已上架且審核通過
-        private static final Byte STATUS_PUBLISHED = 1;
-        private static final Byte REVIEW_STATUS_APPROVED = 1;
-
         @Override
         public Page<EventListItemDTO> getAllEvents(int page, int size, String sort) {
-                // 建立分頁與排序
+                // 優先顯示 STATUS=3 (上架中) 和 STATUS=5 (已結束)
                 Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-
-                // 查詢已上架活動
-                Page<EventVO> eventPage = eventRepository.findByStatusAndReviewStatus(
-                                STATUS_PUBLISHED,
-                                REVIEW_STATUS_APPROVED,
-                                pageable);
-
-                // 轉換為 DTO
+                Page<EventVO> eventPage = eventRepository.findByStatus(EventVO.STATUS_PUBLISHED, pageable);
                 return eventPage.map(this::convertToListItemDTO);
         }
 
         @Override
         public Page<EventListItemDTO> filterEvents(EventFilterDTO filterDTO) {
-                // 建立分頁與排序
-                Sort.Direction direction = "DESC".equalsIgnoreCase(filterDTO.getDirection())
-                                ? Sort.Direction.DESC
+                Sort.Direction direction = "DESC".equalsIgnoreCase(filterDTO.getDirection()) ? Sort.Direction.DESC
                                 : Sort.Direction.ASC;
-                Pageable pageable = PageRequest.of(
-                                filterDTO.getPage(),
-                                filterDTO.getSize(),
+                Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(),
                                 Sort.by(direction, filterDTO.getSort()));
 
-                // 執行複合篩選查詢
+                // 顯示已上架 (3) 和已結束/取消 (5)
+                java.util.List<Byte> statuses = java.util.List.of(EventVO.STATUS_PUBLISHED, EventVO.STATUS_CLOSED);
                 Page<EventVO> eventPage = eventRepository.filterEvents(
-                                STATUS_PUBLISHED,
-                                REVIEW_STATUS_APPROVED,
+                                statuses,
                                 filterDTO.getTypeId(),
                                 filterDTO.getPlace(),
                                 filterDTO.getStartDate(),
                                 filterDTO.getEndDate(),
                                 filterDTO.getMinPrice(),
                                 filterDTO.getMaxPrice(),
+                                filterDTO.getOnSaleOnly(),
+                                java.time.LocalDateTime.now(),
                                 pageable);
 
-                // 轉換為 DTO
                 return eventPage.map(this::convertToListItemDTO);
         }
 
         @Override
         public Page<EventListItemDTO> searchEvents(String keyword, int page, int size) {
-                Pageable pageable = PageRequest.of(page, size,
-                                Sort.by("eventAt").ascending());
-
-                Page<EventVO> eventPage = eventRepository
-                                .findByStatusAndReviewStatusAndTitleContainingOrContentContaining(
-                                                STATUS_PUBLISHED,
-                                                REVIEW_STATUS_APPROVED,
-                                                keyword,
-                                                keyword,
-                                                pageable);
-
+                Pageable pageable = PageRequest.of(page, size, Sort.by("eventStartAt").ascending());
+                Page<EventVO> eventPage = eventRepository.findByStatusAndTitleContainingOrContentContaining(
+                                EventVO.STATUS_PUBLISHED, keyword, keyword, pageable);
                 return eventPage.map(this::convertToListItemDTO);
         }
 
         @Override
         public EventDetailDTO getEventDetail(Integer eventId, Integer memberId) {
-                // 查詢活動
-                EventVO event = eventRepository.findById(eventId)
+                EventVO event = eventRepository.findById(java.util.Objects.requireNonNull(eventId))
                                 .orElseThrow(() -> new RuntimeException("活動不存在"));
-
-                // 查詢圖片 (按 ID 排序,確保與列表頁一致)
                 List<EventImageVO> images = eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId);
-
-                // 查詢收藏數量
                 Long favoriteCount = eventFavRepository.countByEvent_EventId(eventId);
-
-                // 檢查是否已收藏
-                Boolean isFavorited = memberId != null &&
-                                eventFavRepository.existsByMember_MemberIdAndEvent_EventId(memberId, eventId);
-
-                // 查詢相關活動
+                Boolean isFavorited = memberId != null
+                                && eventFavRepository.existsByMember_MemberIdAndEvent_EventId(memberId, eventId);
                 List<EventListItemDTO> relatedEvents = getRelatedEvents(eventId, 3);
-
-                // 查詢票種資訊
                 List<TicketVO> tickets = ticketService.getAvailableTickets(eventId);
                 Integer minPrice = ticketService.getMinPrice(eventId);
                 Integer maxPrice = ticketService.getMaxPrice(eventId);
 
-                // 組裝 DTO
                 EventDetailDTO dto = new EventDetailDTO();
                 dto.setEvent(event);
                 dto.setImages(images);
@@ -136,26 +100,19 @@ public class EventServiceImpl implements EventService {
                 dto.setTickets(tickets);
                 dto.setMinPrice(minPrice);
                 dto.setMaxPrice(maxPrice);
-
                 return dto;
         }
 
         @Override
         public List<EventListItemDTO> getRelatedEvents(Integer eventId, int limit) {
-                // 查詢當前活動
                 EventVO currentEvent = eventRepository.findById(eventId)
                                 .orElseThrow(() -> new RuntimeException("活動不存在"));
-
-                // 查詢同類型的其他活動
                 Pageable pageable = PageRequest.of(0, limit + 1);
-                Page<EventVO> relatedPage = eventRepository
-                                .findByStatusAndReviewStatusAndType_TypeId(
-                                                STATUS_PUBLISHED,
-                                                REVIEW_STATUS_APPROVED,
-                                                currentEvent.getType().getTypeId(),
-                                                pageable);
+                Page<EventVO> relatedPage = eventRepository.findByStatusAndType_TypeId(
+                                EventVO.STATUS_PUBLISHED,
+                                currentEvent.getType().getTypeId(),
+                                pageable);
 
-                // 排除當前活動
                 return relatedPage.getContent().stream()
                                 .filter(e -> !e.getEventId().equals(eventId))
                                 .limit(limit)
@@ -165,42 +122,28 @@ public class EventServiceImpl implements EventService {
 
         @Override
         public List<EventListItemDTO> getOrganizerEvents(Integer organizerId, int limit) {
-                List<EventVO> events = eventRepository
-                                .findByOrganizer_OrganizerIdAndStatusAndReviewStatus(
-                                                organizerId,
-                                                STATUS_PUBLISHED,
-                                                REVIEW_STATUS_APPROVED);
-
-                return events.stream()
-                                .limit(limit)
-                                .map(this::convertToListItemDTO)
-                                .collect(Collectors.toList());
+                List<EventVO> events = eventRepository.findByOrganizer_OrganizerIdAndStatus(organizerId,
+                                EventVO.STATUS_PUBLISHED);
+                return events.stream().limit(limit).map(this::convertToListItemDTO).collect(Collectors.toList());
         }
 
-        @Override
         @Transactional
         public boolean toggleFavorite(Integer eventId, Integer memberId) {
-                // 先查詢是否已收藏
-                Optional<EventFavVO> existing = eventFavRepository
-                                .findByMember_MemberIdAndEvent_EventId(memberId, eventId);
-
+                Optional<EventFavVO> existing = eventFavRepository.findByMember_MemberIdAndEvent_EventId(memberId,
+                                eventId);
                 if (existing.isPresent()) {
-                        // 已收藏 → 取消收藏
-                        eventFavRepository.deleteByMember_MemberIdAndEvent_EventId(memberId, eventId);
-                        return false; // 回傳 false 表示已取消收藏
+                        eventFavRepository.delete(existing.get());
+                        eventFavRepository.flush();
+                        return false;
                 } else {
-                        // 未收藏 → 新增收藏
                         EventVO event = eventRepository.findById(eventId)
                                         .orElseThrow(() -> new RuntimeException("活動不存在"));
-
-                        // 從資料庫查詢 member entity (關鍵修正)
                         com.momento.member.model.MemberVO member = memberRepository.findById(memberId)
                                         .orElseThrow(() -> new RuntimeException("會員不存在"));
-
                         EventFavVO fav = new EventFavVO(event, member);
                         eventFavRepository.save(fav);
                         eventFavRepository.flush();
-                        return true; // 回傳 true 表示已新增收藏
+                        return true;
                 }
         }
 
@@ -212,53 +155,32 @@ public class EventServiceImpl implements EventService {
         @Override
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public List<EventListItemDTO> getMemberFavorites(Integer memberId) {
-                // 先執行 flush 確保所有變更已同步到資料庫
                 eventFavRepository.flush();
-
-                // 清除一級快取
-                eventFavRepository.findAll(); // 觸發查詢
-
-                // 重新查詢會員的收藏
                 List<EventFavVO> favorites = eventFavRepository.findByMember_MemberId(memberId);
-
-                return favorites.stream()
-                                .map(fav -> convertToListItemDTO(fav.getEvent()))
-                                .collect(Collectors.toList());
+                return favorites.stream().map(fav -> convertToListItemDTO(fav.getEvent())).collect(Collectors.toList());
         }
 
-        // ========== 私有輔助方法 ==========
-
-        /**
-         * 將 EventVO 轉換為 EventListItemDTO
-         * 🔥 修改：使用 Picsum 網路圖片
-         */
         private EventListItemDTO convertToListItemDTO(EventVO event) {
                 EventListItemDTO dto = new EventListItemDTO();
                 dto.setEventId(event.getEventId());
                 dto.setTitle(event.getTitle());
                 dto.setPlace(event.getPlace());
-                dto.setEventAt(event.getEventAt());
-                dto.setTypeName(event.getType().getTypeName());
+                dto.setSaleStartAt(event.getSaleStartAt());
+                dto.setSaleEndAt(event.getSaleEndAt());
+                dto.setEventStartAt(event.getEventStartAt());
+                dto.setEventEndAt(event.getEventEndAt());
+                dto.setStatus(event.getStatus());
+                dto.setTypeName(event.getType() != null ? event.getType().getTypeName() : null);
                 dto.setOrganizerName(event.getOrganizer().getName());
                 dto.setOrganizerId(event.getOrganizer().getOrganizerId());
 
-                // 查詢封面圖片 URL
                 Optional<EventImageVO> coverImage = eventImageRepository
                                 .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
-
-                dto.setCoverImageUrl(
-                                coverImage.isPresent() && coverImage.get().getImageUrl() != null
-                                                ? coverImage.get().getImageUrl()
-                                                : "https://picsum.photos/seed/evento" + event.getEventId()
-                                                                + "/800/450");
-
-                // 查詢收藏數量
-                Long favoriteCount = eventFavRepository.countByEvent_EventId(event.getEventId());
-                dto.setFavoriteCount(favoriteCount);
-
-                // 查詢最低票價
-                Integer minPrice = ticketService.getMinPrice(event.getEventId());
-                dto.setMinPrice(minPrice);
+                dto.setCoverImageUrl(coverImage.isPresent() && coverImage.get().getImageUrl() != null
+                                ? coverImage.get().getImageUrl()
+                                : "https://picsum.photos/seed/evento" + event.getEventId() + "/800/450");
+                dto.setFavoriteCount(eventFavRepository.countByEvent_EventId(event.getEventId()));
+                dto.setMinPrice(ticketService.getMinPrice(event.getEventId()));
 
                 return dto;
         }

@@ -6,23 +6,21 @@ public class EventListItemDTO {
     private Integer eventId;
     private String title;
     private String place;
-    private LocalDateTime eventAt;
+    private LocalDateTime eventStartAt;
     private LocalDateTime publishedAt;
     private Byte status;
-    private Byte reviewStatus;
 
     public EventListItemDTO() {
     }
 
-    public EventListItemDTO(Integer eventId, String title, String place, LocalDateTime eventAt,
-            LocalDateTime publishedAt, Byte status, Byte reviewStatus) {
+    public EventListItemDTO(Integer eventId, String title, String place, LocalDateTime eventStartAt,
+            LocalDateTime publishedAt, Byte status) {
         this.eventId = eventId;
         this.title = title;
         this.place = place;
-        this.eventAt = eventAt;
+        this.eventStartAt = eventStartAt;
         this.publishedAt = publishedAt;
         this.status = status;
-        this.reviewStatus = reviewStatus;
     }
 
     // Getters and Setters
@@ -50,12 +48,12 @@ public class EventListItemDTO {
         this.place = place;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
     }
 
     public LocalDateTime getPublishedAt() {
@@ -72,13 +70,5 @@ public class EventListItemDTO {
 
     public void setStatus(Byte status) {
         this.status = status;
-    }
-
-    public Byte getReviewStatus() {
-        return reviewStatus;
-    }
-
-    public void setReviewStatus(Byte reviewStatus) {
-        this.reviewStatus = reviewStatus;
     }
 }

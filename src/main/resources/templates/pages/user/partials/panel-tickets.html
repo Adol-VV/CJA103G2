@@ -1,19 +1,17 @@
 <h3 class="mb-4">我的票券</h3>
 <ul class="nav nav-tabs mb-4 border-secondary">
 	<li class="nav-item"><a
-		class="nav-link active bg-transparent text-white border-bottom border-success border-0 border-bottom-2"
-		data-bs-toggle="tab" href="#ticketsActive"> 待使用
-	</a></li>
-	<li class="nav-item"><a
-		class="nav-link bg-transparent text-muted border-0"
-		data-bs-toggle="tab" href="#ticketsUsed">已使用</a></li>
+			class="nav-link active bg-transparent text-white border-bottom border-success border-0 border-bottom-2"
+			data-bs-toggle="tab" href="#ticketsActive"> 待使用
+		</a></li>
+	<li class="nav-item"><a class="nav-link bg-transparent text-muted border-0" data-bs-toggle="tab"
+			href="#ticketsUsed">已使用</a></li>
 </ul>
 
 <div class="tab-content">
 	<!-- Active Tickets -->
 	<div class="tab-pane fade show active" id="ticketsActive">
-		<div class="card ticket-card mb-3"
-			th:each="order, s : ${eventOrderList}">
+		<div class="card ticket-card mb-3" th:each="order, s : ${eventOrderList}">
 			<div class="row g-0">
 				<div class="order-container">
 
@@ -28,35 +26,31 @@
 							</div>
 							<p class="card-text text-muted mb-1">
 								<i class="far fa-calendar me-2"></i> <span
-									th:text="${#temporals.format(order.event.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+									th:text="${#temporals.format(order.event.eventStartAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
 									(二) 19:30</span>
 							</p>
 							<div class="d-flex justify-content-between align-items-center">
-								<span class="card-text text-muted mb-2"> <i
-									class="fas fa-map-marker-alt me-2"></i> <span
-									th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
+								<span class="card-text text-muted mb-2"> <i class="fas fa-map-marker-alt me-2"></i>
+									<span th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
 								</span> <span>
-<!-- 									<button class="btn btn-outline-danger btn-sm" -->
-<!-- 										data-bs-toggle="modal" data-bs-target="#refundModal" -->
-<!-- 										data-order-id="MOM2024122801" -->
-<!-- 										data-event-name="2025新年音樂會｜維也納之夜"> -->
-<!-- 										<i class="fas fa-undo me-1"></i> 申請退票 -->
-<!-- 									</button> -->
+									<!-- 									<button class="btn btn-outline-danger btn-sm" -->
+									<!-- 										data-bs-toggle="modal" data-bs-target="#refundModal" -->
+									<!-- 										data-order-id="MOM2024122801" -->
+									<!-- 										data-event-name="2025新年音樂會｜維也納之夜"> -->
+									<!-- 										<i class="fas fa-undo me-1"></i> 申請退票 -->
+									<!-- 									</button> -->
 								</span>
 							</div>
 
-							<div class="order-details mt-3 d-none"
-								th:id="|details-${s.index}|"
+							<div class="order-details mt-3 d-none" th:id="|details-${s.index}|"
 								style="padding: 0; padding-top: 20px">
 								<span th:each="item: ${order.eventOrderItems}">
-									<div
-										class="d-flex justify-content-between align-items-center mb-2"
+									<div class="d-flex justify-content-between align-items-center mb-2"
 										style="padding: 10px">
 										<span class="card-title mb-0" th:id="${item.eventOrderItemId}"
 											th:text="${item.ticket.ticketName}">貴賓席</span>
 
-										<button class="btn btn-primary btn-sm btn-show-qr"
-											data-bs-target="#qrModal">
+										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal">
 											<i class="fas fa-qrcode me-1"></i> 電子票券
 										</button>
 									</div>
@@ -70,8 +64,7 @@
 	</div>
 	<!-- Used Tickets placeholder -->
 	<div class="tab-pane fade" id="ticketsUsed">
-		<div class="card ticket-card mb-3"
-			th:each="order, s : ${eventOrderFinished}">
+		<div class="card ticket-card mb-3" th:each="order, s : ${eventOrderFinished}">
 			<div class="row g-0">
 				<div class="order-container">
 
@@ -86,35 +79,30 @@
 							</div>
 							<p class="card-text text-muted mb-1">
 								<i class="far fa-calendar me-2"></i> <span
-									th:text="${#temporals.format(order.event.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+									th:text="${#temporals.format(order.event.eventStartAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
 									(二) 19:30</span>
 							</p>
 							<div class="d-flex justify-content-between align-items-center">
-								<span class="card-text text-muted mb-2"> <i
-									class="fas fa-map-marker-alt me-2"></i> <span
-									th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
+								<span class="card-text text-muted mb-2"> <i class="fas fa-map-marker-alt me-2"></i>
+									<span th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
 								</span> <span>
-									<button class="btn btn-outline-danger btn-sm"
-										data-bs-toggle="modal" data-bs-target="#refundModal"
-										data-order-id="MOM2024122801"
+									<button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+										data-bs-target="#refundModal" data-order-id="MOM2024122801"
 										data-event-name="2025新年音樂會｜維也納之夜">
 										<i class="fas fa-undo me-1"></i> 申請退票
 									</button>
 								</span>
 							</div>
 
-							<div class="order-details mt-3 d-none"
-								th:id="|details-${s.index}|"
+							<div class="order-details mt-3 d-none" th:id="|details-${s.index}|"
 								style="padding: 0; padding-top: 20px">
 								<span th:each="item: ${order.eventOrderItems}">
-									<div
-										class="d-flex justify-content-between align-items-center mb-2"
+									<div class="d-flex justify-content-between align-items-center mb-2"
 										style="padding: 10px">
 										<span class="card-title mb-0" th:id="${item.eventOrderItemId}"
 											th:text="${item.ticket.ticketName}">貴賓席</span>
 
-										<button class="btn btn-primary btn-sm btn-show-qr"
-											data-bs-target="#qrModal">
+										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal">
 											<i class="fas fa-qrcode me-1"></i> 電子票券
 										</button>
 									</div>
@@ -136,8 +124,7 @@
 					<h5 class="modal-title">
 						<i class="fas fa-undo me-2"></i> 申請退票/退款
 					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body">
 					<div class="alert alert-warning">
@@ -150,18 +137,18 @@
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">訂單編號</label> <input type="text"
-							class="form-control" id="refundOrderId" readonly>
+						<label class="form-label">訂單編號</label> <input type="text" class="form-control"
+							id="refundOrderId" readonly>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">活動名稱</label> <input type="text"
-							class="form-control" id="refundEventName" readonly>
+						<label class="form-label">活動名稱</label> <input type="text" class="form-control"
+							id="refundEventName" readonly>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label">退款原因 <span class="text-danger">*</span></label>
-						<select class="form-select" id="refundReason_ticket" required>
+						<select class="form-select" id="refundReason" required>
 							<option value="">請選擇退款原因</option>
 							<option value="schedule">行程異動無法參加</option>
 							<option value="duplicate">重複購買</option>
@@ -177,24 +164,21 @@
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">退款方式</label> <select class="form-select"
-							id="refundMethod">
+						<label class="form-label">退款方式</label> <select class="form-select" id="refundMethod">
 							<option value="original">原付款方式退款</option>
 							<option value="token">轉為代幣（可獲得 110% 金額）</option>
 						</select> <small class="text-muted">選擇轉為代幣可獲得額外 10% 回饋</small>
 					</div>
 
 					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="refundAgree"
-							required> <label class="form-check-label small"
-							for="refundAgree"> 我已閱讀並同意 <a href="#"
-							class="text-primary">退款條款</a>
+						<input class="form-check-input" type="checkbox" id="refundAgree" required> <label
+							class="form-check-label small" for="refundAgree"> 我已閱讀並同意 <a href="#"
+								class="text-primary">退款條款</a>
 						</label>
 					</div>
 				</div>
 				<div class="modal-footer border-secondary">
-					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
 					<button type="button" class="btn btn-danger" id="btnSubmitRefund">
 						<i class="fas fa-paper-plane me-1"></i> 提交申請
 					</button>
@@ -209,8 +193,7 @@
 		<div class="modal-content" style="background: #1A1A1A;">
 			<div class="modal-header border-bottom border-secondary">
 				<h5 class="modal-title">電子票券QR code</h5>
-				<button type="button" class="btn-close btn-close-white"
-					data-bs-dismiss="modal"></button>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 			</div>
 			<div class="modal-body text-center py-5">
 				<h5 class="mb-4 text-white" id="eventName">五月天 [回到那一天]</h5>
@@ -219,8 +202,7 @@
 				</div>
 				<p class="text-muted small">請於入場時出示此 QR Code</p>
 
-				<div
-					class="alert alert-warning d-inline-block text-start mt-3 small">
+				<div class="alert alert-warning d-inline-block text-start mt-3 small">
 					<i class="fas fa-exclamation-triangle me-1"></i> 此票券為一次性有效，掃描後即失效。
 				</div>
 
@@ -235,53 +217,53 @@
 </div>
 
 <script>
-    // 退款申請邏輯
-    $(document).ready(function () {
-        // 開啟 Modal 時填入資料
-        $('#refundModal').on('show.bs.modal', function (event) {
-            const button = $(event.relatedTarget);
-            const orderId = button.data('order-id');
-            const eventName = button.data('event-name');
+	// 退款申請邏輯
+	$(document).ready(function () {
+		// 開啟 Modal 時填入資料
+		$('#refundModal').on('show.bs.modal', function (event) {
+			const button = $(event.relatedTarget);
+			const orderId = button.data('order-id');
+			const eventName = button.data('event-name');
 
-            $('#refundOrderId').val(orderId);
-            $('#refundEventName').val(eventName);
-        });
+			$('#refundOrderId').val(orderId);
+			$('#refundEventName').val(eventName);
+		});
 
-        // 提交退款申請
-        $('#btnSubmitRefund').click(function () {
-            const reason = $('#refundReason').val();
-            const agreed = $('#refundAgree').is(':checked');
+		// 提交退款申請
+		$('#btnSubmitRefund').click(function () {
+			const reason = $('#refundReason').val();
+			const agreed = $('#refundAgree').is(':checked');
 
-            if (!reason) {
-                showToast('請選擇退款原因', 'warning');
-                return;
-            }
+			if (!reason) {
+				showToast('請選擇退款原因', 'warning');
+				return;
+			}
 
-            if (!agreed) {
-                showToast('請同意退款條款', 'warning');
-                return;
-            }
+			if (!agreed) {
+				showToast('請同意退款條款', 'warning');
+				return;
+			}
 
-            // TODO: 呼叫後端 API 提交退款申請
-            // const refundData = {
-            //     orderId: $('#refundOrderId').val(),
-            //     reason: reason,
-            //     description: $('#refundDescription').val(),
-            //     method: $('#refundMethod').val()
-            // };
+			// TODO: 呼叫後端 API 提交退款申請
+			// const refundData = {
+			//     orderId: $('#refundOrderId').val(),
+			//     reason: reason,
+			//     description: $('#refundDescription').val(),
+			//     method: $('#refundMethod').val()
+			// };
 
-            // Mock 實作
-            $('#refundModal').modal('hide');
-            showToast('退款申請已提交，我們將在 3 個工作天內處理', 'success');
+			// Mock 實作
+			$('#refundModal').modal('hide');
+			showToast('退款申請已提交，我們將在 3 個工作天內處理', 'success');
 
-            // 重置表單
-            setTimeout(() => {
-                $('#refundReason').val('');
-                $('#refundDescription').val('');
-                $('#refundAgree').prop('checked', false);
-            }, 500);
-        });
-    });
+			// 重置表單
+			setTimeout(() => {
+				$('#refundReason').val('');
+				$('#refundDescription').val('');
+				$('#refundAgree').prop('checked', false);
+			}, 500);
+		});
+	});
 
 
 </script>

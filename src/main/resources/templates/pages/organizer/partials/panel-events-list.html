@@ -8,23 +8,28 @@
                         class="badge bg-info ms-1" id="count-all">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)" data-tab="pending" data-review-status="0">
+                <a class="nav-link" href="javascript:void(0)" data-tab="pending" data-status="1">
                     待審核 <span class="badge rounded-pill bg-warning text-dark ms-1" id="count-pending">0</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)" data-tab="rejected" data-review-status="2">
+                <a class="nav-link" href="javascript:void(0)" data-tab="rejected" data-status="4">
                     已駁回 <span class="badge rounded-pill bg-danger ms-1" id="count-rejected">0</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)" data-tab="published" data-status="1">
+                <a class="nav-link" href="javascript:void(0)" data-tab="approved" data-status="2">
+                    審核成功 <span class="badge rounded-pill bg-info text-white ms-1" id="count-approved">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" data-tab="published" data-status="3">
                     上架中 <span class="badge rounded-pill bg-success ms-1" id="count-published">0</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)" data-tab="ended" data-status="2,3">
-                    已結束/取消 <span class="badge rounded-pill bg-secondary ms-1" id="count-ended">0</span>
+                <a class="nav-link" href="javascript:void(0)" data-tab="ended" data-status="5">
+                    已下架 <span class="badge rounded-pill bg-secondary ms-1" id="count-ended">0</span>
                 </a>
             </li>
         </ul>

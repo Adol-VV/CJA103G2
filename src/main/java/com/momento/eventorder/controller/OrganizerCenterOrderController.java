@@ -52,7 +52,7 @@ public class OrganizerCenterOrderController {
 		List<EventVO> finishedEvents = new ArrayList();
 
 		for (EventVO event : events) {
-			if (now.isBefore(event.getEventAt())) {
+			if (event.getEventStartAt() != null && now.isBefore(event.getEventStartAt())) {
 				activeEvents.add(event);
 			} else {
 				finishedEvents.add(event);
@@ -83,10 +83,10 @@ public class OrganizerCenterOrderController {
 		List<EventVO> activeEvents = new ArrayList();
 
 		for (EventVO event : events) {
-			if (LocalDateTime.now().isBefore(event.getEventAt()))
+			if (event.getEventStartAt() != null && LocalDateTime.now().isBefore(event.getEventStartAt()))
 				activeEvents.add(event);
 		}
-		
+
 		List<EventOrderItemVO> checkedIn = eventOrderItemSvc.getEventOrderItemBystatus(1);
 		model.addAttribute("activeEvents", activeEvents);
 		model.addAttribute("checkedIn", checkedIn);
@@ -99,14 +99,14 @@ public class OrganizerCenterOrderController {
 				item.setStatus(1);
 				eventOrderItemSvc.updateItems(item);
 				System.out.println(item.getEventOrderItemId());
-				model.addAttribute("information", item);				
-				
+				model.addAttribute("information", item);
+
 			} else if (item.getEventOrder().getEvent().getEventId() != eventId) {
 				model.addAttribute("msg", "活動不符");
-			} else if (item.getStatus() ==1){
+			} else if (item.getStatus() == 1) {
 				model.addAttribute("msg", "重複驗票");
-			}else {
-				model.addAttribute("msg", "無效票券");				
+			} else {
+				model.addAttribute("msg", "無效票券");
 			}
 			return "pages/organizer/partials/panel-ticket-scanner :: success";
 		}

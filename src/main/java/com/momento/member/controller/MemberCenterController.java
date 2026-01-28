@@ -162,8 +162,10 @@ public class MemberCenterController {
 
 	@GetMapping("/dashboard/{pageName}")
 	public String showDashboardPage(@PathVariable String pageName) {
-		// 假設你的檔案都放在 pages/user/ 目錄下
-		// 例如：點擊「我的票券」網址為 /dashboard/myTickets -> 回傳 pages/user/myTickets
+		// 排除由 MemberCenterOrderController 處理的特定面板，避免路徑衝突
+		if ("panel-tickets".equals(pageName) || "panel-tokens".equals(pageName)) {
+			return null;
+		}
 		return "pages/user/partials/" + pageName;
 	}
 

@@ -45,9 +45,6 @@ public class EventVO {
     @Column(name = "STATUS")
     private Byte status = 0;
 
-    @Column(name = "REVIEW_STATUS")
-    private Byte reviewStatus = 0;
-
     @Column(name = "TITLE", length = 100)
     private String title;
 
@@ -58,14 +55,17 @@ public class EventVO {
     @Column(name = "PLACE", length = 200)
     private String place;
 
-    @Column(name = "STARTED_AT", nullable = true)
-    private LocalDateTime startedAt;
+    @Column(name = "SALE_START_AT", nullable = true)
+    private LocalDateTime saleStartAt;
 
-    @Column(name = "ENDED_AT", nullable = true)
-    private LocalDateTime endedAt;
+    @Column(name = "SALE_END_AT", nullable = true)
+    private LocalDateTime saleEndAt;
 
-    @Column(name = "EVENT_AT", nullable = true)
-    private LocalDateTime eventAt;
+    @Column(name = "EVENT_START_AT", nullable = true)
+    private LocalDateTime eventStartAt;
+
+    @Column(name = "EVENT_END_AT", nullable = true)
+    private LocalDateTime eventEndAt;
 
     @Column(name = "PUBLISHED_AT", nullable = true)
     private LocalDateTime publishedAt;
@@ -128,14 +128,6 @@ public class EventVO {
         this.status = status;
     }
 
-    public Byte getReviewStatus() {
-        return reviewStatus;
-    }
-
-    public void setReviewStatus(Byte reviewStatus) {
-        this.reviewStatus = reviewStatus;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -160,28 +152,36 @@ public class EventVO {
         this.place = place;
     }
 
-    public LocalDateTime getStartedAt() {
-        return startedAt;
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
     }
 
-    public LocalDateTime getEndedAt() {
-        return endedAt;
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
     }
 
-    public void setEndedAt(LocalDateTime endedAt) {
-        this.endedAt = endedAt;
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
+    }
+
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
+    }
+
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
     }
 
     public LocalDateTime getPublishedAt() {
@@ -217,5 +217,78 @@ public class EventVO {
 
     public void setRejectReason(String rejectReason) {
         this.rejectReason = rejectReason;
+    }
+
+    // ========== Status Constants & Helpers ==========
+    public static final byte STATUS_DRAFT = 0;
+    public static final byte STATUS_PENDING = 1;
+    public static final byte STATUS_APPROVED = 2;
+    public static final byte STATUS_PUBLISHED = 3;
+    public static final byte STATUS_REJECTED = 4;
+    public static final byte STATUS_CLOSED = 5;
+
+    public boolean isDraft() {
+        return status == STATUS_DRAFT;
+    }
+
+    public boolean isPending() {
+        return status == STATUS_PENDING;
+    }
+
+    public boolean isApproved() {
+        return status == STATUS_APPROVED;
+    }
+
+    public boolean isPublished() {
+        return status == STATUS_PUBLISHED;
+    }
+
+    public boolean isRejected() {
+        return status == STATUS_REJECTED;
+    }
+
+    public boolean isClosed() {
+        return status == STATUS_CLOSED;
+    }
+
+    // ========== Frontend Display Helpers ==========
+    public enum FrontendDisplayStatus {
+        NOT_AVAILABLE, COMING_SOON, ON_SALE, SALE_ENDED, IN_PROGRESS, FINISHED
+    }
+
+    public FrontendDisplayStatus getFrontendStatus() {
+        if (status != STATUS_PUBLISHED && status != STATUS_CLOSED) {
+            return FrontendDisplayStatus.NOT_AVAILABLE;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (status == STATUS_CLOSED) {
+            return FrontendDisplayStatus.FINISHED;
+        }
+
+        if (saleStartAt != null && now.isBefore(saleStartAt)) {
+            return FrontendDisplayStatus.COMING_SOON;
+        }
+        if (saleEndAt != null && now.isBefore(saleEndAt)) {
+            return FrontendDisplayStatus.ON_SALE;
+        }
+        if (eventStartAt != null && now.isBefore(eventStartAt)) {
+            return FrontendDisplayStatus.SALE_ENDED;
+        }
+        if (eventEndAt != null && now.isBefore(eventEndAt)) {
+            return FrontendDisplayStatus.IN_PROGRESS;
+        }
+        return FrontendDisplayStatus.FINISHED;
+    }
+
+    public boolean canPurchase() {
+        return getFrontendStatus() == FrontendDisplayStatus.ON_SALE;
+    }
+
+    public boolean isManuallyClosed() {
+        if (status != STATUS_CLOSED)
+            return false;
+        return eventEndAt != null && LocalDateTime.now().isBefore(eventEndAt);
     }
 }

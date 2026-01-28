@@ -11,6 +11,8 @@ import com.momento.notify.model.OrganizerNotifyVO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class EventReviewService {
@@ -21,33 +23,38 @@ public class EventReviewService {
     @Autowired
     private OrganizerNotifyRepository organizerNotifyRepository;
 
-    /**
-     * 根據 Tab 類型取得活動列表
-     * type: pending, rejected, approved
-     */
-    /**
-     * 根據 Tab 類型取得活動列表
-     * type: pending, rejected, approved
-     */
     public List<EventVO> getEventsByTab(String tabType, String keyword) {
-        switch (tabType) {
+        if (tabType == null)
+            tabType = "all";
+
+        switch (tabType.toLowerCase()) {
             case "all":
-                // 全部: 非草稿 (由 Repository query 過濾)
-                return eventRepository.searchAdminEvents(null, null, keyword);
+                return eventRepository.searchAdminEvents(List.of(
+                        EventVO.STATUS_PENDING, EventVO.STATUS_APPROVED, EventVO.STATUS_PUBLISHED,
+                        EventVO.STATUS_REJECTED, EventVO.STATUS_CLOSED), keyword);
             case "pending":
-                // 待審核: S=0, R=0, P!=null
-                return eventRepository.searchAdminEvents(java.util.List.of((byte) 0), (byte) 0, keyword);
+            case "1":
+                return eventRepository.searchAdminEvents(List.of(EventVO.STATUS_PENDING), keyword);
             case "rejected":
-                // 已駁回: S=0, R=2
-                return eventRepository.searchAdminEvents(java.util.List.of((byte) 0), (byte) 2, keyword);
+            case "4":
+                return eventRepository.searchAdminEvents(List.of(EventVO.STATUS_REJECTED), keyword);
             case "approved":
-                // 上架中: S=1
-                return eventRepository.searchAdminEvents(java.util.List.of((byte) 1), null, keyword);
+            case "2":
+                return eventRepository.searchAdminEvents(List.of(EventVO.STATUS_APPROVED), keyword);
+            case "published":
+            case "3":
+                return eventRepository.searchAdminEvents(List.of(EventVO.STATUS_PUBLISHED), keyword);
             case "ended":
-                // 已結束/取消: S=2,3
-                return eventRepository.searchAdminEvents(java.util.List.of((byte) 2, (byte) 3), null, keyword);
+            case "5":
+                return eventRepository.searchAdminEvents(List.of(EventVO.STATUS_CLOSED), keyword);
             default:
-                return List.of();
+                // 如果找不到對應標籤，嘗試當作單一狀態查詢
+                try {
+                    byte status = Byte.parseByte(tabType);
+                    return eventRepository.searchAdminEvents(List.of(status), keyword);
+                } catch (NumberFormatException e) {
+                    return eventRepository.searchAdminEvents(null, keyword);
+                }
         }
     }
 
@@ -55,44 +62,38 @@ public class EventReviewService {
         return eventRepository.findById(id).orElse(null);
     }
 
-    /**
-     * 批准活動
-     */
     @Transactional
     public void approveEvent(Integer eventId) {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
-            event.setStatus((byte) 1); // 已上架
-            event.setReviewStatus((byte) 1); // 審核通過
+            if (!event.isPending())
+                throw new RuntimeException("活動非待審核狀態");
+            event.setStatus(EventVO.STATUS_APPROVED); // 審核通過，等待主辦設定時間
             eventRepository.save(event);
         } else {
             throw new RuntimeException("活動不存在: " + eventId);
         }
     }
 
-    /**
-     * 駁回活動
-     */
     @Transactional
     public void rejectEvent(Integer eventId, String reason, com.momento.emp.model.EmpVO emp) {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
-            event.setStatus((byte) 0);
-            event.setReviewStatus((byte) 2);
-            event.setPublishedAt(null); // 清空送審時間
+            if (!event.isPending())
+                throw new RuntimeException("活動非待審核狀態");
+            event.setStatus(EventVO.STATUS_REJECTED);
+            event.setPublishedAt(null);
             eventRepository.save(event);
 
-            // 發送通知
             OrganizerNotifyVO notify = new OrganizerNotifyVO();
             notify.setOrganizerVO(event.getOrganizer());
-            notify.setEmpVO(emp); // 設定審核員工
+            notify.setEmpVO(emp);
             notify.setTitle("活動審核未通過通知: " + event.getTitle());
             notify.setContent("您的活動「" + event.getTitle() + "」未能通過審核。\n退回原因: " + reason);
             notify.setNotifyStatus(0);
             notify.setTargetId(String.valueOf(eventId));
-
             organizerNotifyRepository.save(notify);
 
         } else {
@@ -100,28 +101,16 @@ public class EventReviewService {
         }
     }
 
-    /**
-     * 取得各審核狀態的統計數量
-     */
-    public java.util.Map<String, Long> getReviewStats() {
-        java.util.Map<String, Long> stats = new java.util.HashMap<>();
-
-        // Pending: S=0, R=0, P!=null
-        stats.put("pending", eventRepository.countByStatusAndReviewStatusAndPublishedAtIsNotNull((byte) 0, (byte) 0));
-
-        // Rejected: S=0, R=2
-        stats.put("rejected", eventRepository.countByStatusAndReviewStatus((byte) 0, (byte) 2));
-
-        // Approved (Published): S=1
-        stats.put("approved", eventRepository.countByStatusAndReviewStatus((byte) 1, (byte) 1));
-
-        // Ended/Cancelled: S=2,3
-        stats.put("ended",
-                eventRepository.countByStatusIn(java.util.List.of((byte) 2, (byte) 3)));
-
-        // Total (Non-draft)
-        stats.put("all", stats.get("pending") + stats.get("rejected") + stats.get("approved") + stats.get("ended"));
-
+    public Map<String, Long> getReviewStats() {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("pending", eventRepository.countByStatus(EventVO.STATUS_PENDING));
+        stats.put("rejected", eventRepository.countByStatus(EventVO.STATUS_REJECTED));
+        stats.put("approved", eventRepository.countByStatus(EventVO.STATUS_APPROVED));
+        stats.put("published", eventRepository.countByStatus(EventVO.STATUS_PUBLISHED));
+        stats.put("ended", eventRepository.countByStatus(EventVO.STATUS_CLOSED));
+        stats.put("all", eventRepository.countByStatusIn(List.of(
+                EventVO.STATUS_PENDING, EventVO.STATUS_REJECTED, EventVO.STATUS_APPROVED,
+                EventVO.STATUS_PUBLISHED, EventVO.STATUS_CLOSED)));
         return stats;
     }
 }

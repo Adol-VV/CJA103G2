@@ -8,38 +8,21 @@ import java.time.LocalDateTime;
  */
 public class EventListItemDTO {
 
-    /** 活動 ID */
     private Integer eventId;
-
-    /** 活動標題 */
     private String title;
-
-    /** 活動地點 */
     private String place;
-
-    /** 活動舉辦時間 */
-    private LocalDateTime eventAt;
-
-    /** 封面圖片 URL */
+    private LocalDateTime saleStartAt;
+    private LocalDateTime saleEndAt;
+    private LocalDateTime eventStartAt;
+    private LocalDateTime eventEndAt;
     private String coverImageUrl;
-
-    /** 最低票價 */
     private Integer minPrice;
-
-    /** 活動類型名稱 */
     private String typeName;
-
-    /** 主辦方名稱 */
     private String organizerName;
-
-    /** 主辦方 ID */
     private Integer organizerId;
-
-    /** 收藏數量 */
     private Long favoriteCount;
-
-    /** 當前會員是否已收藏 */
     private Boolean isFavorited;
+    private Byte status;
 
     // ========== Getter & Setter ==========
 
@@ -67,12 +50,36 @@ public class EventListItemDTO {
         this.place = place;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
+    }
+
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
+    }
+
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
+    }
+
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
+    }
+
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
+    }
+
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
+    }
+
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
     }
 
     public String getCoverImageUrl() {
@@ -129,5 +136,13 @@ public class EventListItemDTO {
 
     public void setIsFavorited(Boolean isFavorited) {
         this.isFavorited = isFavorited;
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

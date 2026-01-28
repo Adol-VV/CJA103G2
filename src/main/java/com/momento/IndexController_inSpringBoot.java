@@ -86,7 +86,7 @@ public class IndexController_inSpringBoot {
         // 撈取活動類型及其數量
         List<TypeVO> types = typeRepository.findAll();
         List<TypeCountDTO> typeCounts = types.stream().map(type -> {
-            long count = eventRepository.countByStatusAndReviewStatusAndType_TypeId((byte) 1, (byte) 1,
+            long count = eventRepository.countByStatusAndType_TypeId(com.momento.event.model.EventVO.STATUS_PUBLISHED,
                     type.getTypeId());
             return new TypeCountDTO(type, count);
         }).collect(java.util.stream.Collectors.toList());
