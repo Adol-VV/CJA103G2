@@ -10,11 +10,8 @@
                     style="right: -20px; bottom: -20px; opacity: 0.2; transform: rotate(-15deg);"></i>
                 <h5 class="text-white-50">目前餘額</h5>
                 <div class="d-flex align-items-baseline mb-2">
-                    <h1 class="display-3 fw-bold mb-0" id="tokenBalanceDisplay">--</h1>
+                    <h3 class="display-3 fw-bold mb-0" id="tokenBalanceDisplay" th:text="${session.loginMember.token}">--</h3>
                     <span class="fs-4 ms-2">Tokens</span>
-                </div>
-                <div class="badge bg-white text-success bg-opacity-75 mb-3">
-                    <i class="fas fa-exclamation-circle"></i> 50 代幣將於 30 天後過期
                 </div>
                 <hr class="border-white opacity-25">
                 <p class="mb-0 small"><i class="fas fa-info-circle"></i> 賺取規則：每消費 NT$300 贈 5 元代幣</p>

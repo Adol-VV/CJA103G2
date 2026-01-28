@@ -69,5 +69,18 @@ public class MemberCenterOrderController {
 	    map.put("eventName", eventName);
 	    return map;
 	}
+	
+	@GetMapping("/tokens")
+	public String showToken(HttpSession session, Model model) {
+		
+		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		Integer memberId = loginMember.getMemberId();
+		
+		List<EventOrderVO> eventOrderList = eventOrderSvc.getEventOrderByMemberId(memberId);
+		
+		model.addAttribute("tokenList", eventOrderList);
+		
+		return "pages/user/partials/panel-tokens";
+	}
 
 }

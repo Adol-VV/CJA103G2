@@ -26,7 +26,7 @@
 
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-dark"
-        style="z-index: 1050;">
+        style="padding-top: 0.5rem; padding-bottom: 0.5rem;">
         <div class="container-fluid px-4">
             <!-- Mobile Menu Toggle -->
             <button class="btn btn-link text-white d-md-none me-2" type="button" data-bs-toggle="offcanvas"
@@ -34,8 +34,10 @@
                 <i class="fas fa-bars fs-5"></i>
             </button>
 
-            <a class="navbar-brand fw-bold" th:href="@{/}">Momento <span class="badge bg-secondary ms-2"
-                    style="font-size: 0.7rem;">Organizer</span></a>
+            <a class="navbar-brand fw-bold" th:href="@{/organizer/dashboard}">
+                <span class="text-success">Momento</span>
+                <span class="badge bg-secondary ms-2" style="font-size: 0.7rem;">Organizer</span>
+            </a>
 
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <!-- Notifications -->
@@ -88,13 +90,11 @@
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg">
                         <li class="dropdown-header border-bottom border-secondary pb-2 mb-2">帳號管理</li>
                         <li><a class="dropdown-item py-2" href="#settings" data-section="settings"><i
-                                    class="fas fa-id-card me-2"></i>企業資料</a></li>
-                        <li><a class="dropdown-item py-2" href="#settings" data-section="settings"><i
-                                    class="fas fa-user-cog me-2"></i>帳號設定</a></li>
+                                    class="fas fa-user-cog me-2"></i>主辦方帳號設定</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item py-2" th:href="@{/index}" target="_blank"><i
+                        <li><a class="dropdown-item py-2" th:href="@{/}" target="_blank"><i
                                     class="fas fa-external-link-alt me-2"></i>查看前台首頁</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -153,11 +153,11 @@
                 </div>
 
                 <!-- Orders Panel -->
-                <div class="content-panel" id="panel-orders" th:insert="pages/organizer/partials/panel-orders"></div>
+                <div class="content-panel" id="panel-orders" data-partial="/organizer/dashboard/tickets"></div>
 
                 <!-- Ticket Scanner Panel -->
                 <div class="content-panel" id="panel-ticket-scanner"
-                    th:insert="pages/organizer/partials/panel-ticket-scanner"></div>
+                    data-partial="/organizer/dashboard/ticketScanner"></div>
 
                 <!-- Product List Panel -->
                 <div class="content-panel" id="panel-product-list"

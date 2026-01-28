@@ -43,6 +43,8 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         List<EventVO> findByStatusAndReviewStatus(
                         Byte status,
                         Byte reviewStatus);
+        
+        List<EventVO> findByOrganizer_OrganizerId(Integer organizerId);
 
         // ========== 篩選查詢 ==========
 

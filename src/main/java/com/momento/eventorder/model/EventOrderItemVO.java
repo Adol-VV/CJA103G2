@@ -40,20 +40,26 @@ public class EventOrderItemVO implements Serializable {
 
 	@Column(name = "price")
 	private Integer price;
+	
+	@Column(name = "status")
+	private Integer status;
 
 	public EventOrderItemVO() {
 
 	}
 
 	public EventOrderItemVO(Integer eventOrderItemId, EventOrderVO eventOrder, TicketVO ticket, String qrcode,
-			Integer price) {
+			Integer price, Integer status) {
 		super();
 		this.eventOrderItemId = eventOrderItemId;
 		this.eventOrder = eventOrder;
 		this.ticket = ticket;
 		this.qrcode = qrcode;
 		this.price = price;
+		this.status = status;
 	}
+
+
 
 	public Integer getEventOrderItemId() {
 		return eventOrderItemId;
@@ -93,5 +99,13 @@ public class EventOrderItemVO implements Serializable {
 
 	public void setPrice(Integer price) {
 		this.price = price;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }

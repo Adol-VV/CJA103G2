@@ -59,16 +59,52 @@
             color: var(--momento-green) !important;
         }
 
-        .ticket-sidebar {
-            position: sticky;
-            top: 100px;
-            /* Offset for sticky navbar */
-            max-height: calc(100vh - 120px);
-            overflow-y: auto;
+        @media (min-width: 992px) {
+            .container>.row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: flex-start !important;
+            }
+
+            .col-lg-8 {
+                flex: 0 0 66.666667% !important;
+                max-width: 66.666667% !important;
+            }
+
+            .col-lg-4 {
+                flex: 0 0 33.333333% !important;
+                max-width: 33.333333% !important;
+                position: relative !important;
+                height: auto !important;
+            }
+
+            .ticket-sidebar {
+                position: -webkit-sticky !important;
+                position: sticky !important;
+                top: 90px !important;
+                max-height: calc(100vh - 110px) !important;
+                overflow-y: auto !important;
+                z-index: 100 !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+
+            .col-lg-8,
+            .col-lg-4 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+
+            .ticket-sidebar {
+                position: relative;
+                top: auto;
+                max-height: none;
+            }
         }
 
         /* 確保在大螢幕上右側區塊不會太窄 */
-        @media (min-width : 992px) {
+        @media (min-width: 992px) {
             .ticket-sidebar {
                 min-width: 350px;
             }
@@ -140,23 +176,10 @@
 
         }
 
-        /* ========================================
-   強制修正並排問題
-   ======================================== */
-        @media (min-width : 768px) {
-            .container>.row {
-                display: flex !important;
-                flex-wrap: wrap !important;
-            }
-
-            .col-md-8.event-main {
-                flex: 0 0 auto !important;
-                width: 66.666667% !important;
-            }
-
-            .col-md-4 {
-                flex: 0 0 auto !important;
-                width: 33.333333% !important;
+        /* 確保在大螢幕上右側區塊不會太窄 */
+        @media (min-width: 992px) {
+            .ticket-sidebar {
+                min-width: 350px;
             }
         }
     </style>
@@ -211,7 +234,7 @@
 
         <div class="row g-4 g-lg-5">
             <!-- Left: Event Info -->
-            <div class="col-md-8 event-main">
+            <div class="col-lg-8 event-main">
                 <!-- Image Gallery -->
                 <div class="gallery mb-4">
                     <!-- Main Image -->
@@ -424,13 +447,14 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Ticket Selection (Sticky) -->
-            <div class="col-md-4">
-                <aside class="ticket-sidebar sticky-top">
+            <div class="col-lg-4">
+                <aside class="ticket-sidebar">
                     <form th:action="@{/member/event/checkout}" th:object="${selectionForm}" method="post">
                         <div class="card">
                             <div class="card-header border-secondary bg-transparent">

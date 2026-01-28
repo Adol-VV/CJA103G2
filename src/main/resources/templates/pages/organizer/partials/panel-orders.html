@@ -6,12 +6,20 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label">選擇活動</label>
-                    <select class="form-select" id="filterEvent">
+                    <label class="form-label">進行中活動</label>
+                    <select class="form-select" name="activeEvent" id="activeEvent">
                         <option value="">全部活動</option>
+                        <option th:each="events: ${activeEvents}" th:text="${events.title}" th:value="${events.eventId}">活動名稱</option>
                     </select>
                 </div>
                 <div class="col-md-3">
+                    <label class="form-label">已結束活動</label>
+                    <select class="form-select" id="finishedEvent" name="finishedEvent">
+                        <option value="">全部活動</option>
+                        <option th:each="events: ${finishedEvents}" th:text="${events.title}" th:value="${events.eventId}">活動名稱</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <label class="form-label">訂單狀態</label>
                     <select class="form-select" id="filterStatus">
                         <option value="">全部</option>
@@ -21,24 +29,24 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">搜尋</label>
-                    <input type="text" class="form-control" id="searchOrder" placeholder="訂單編號 / 購票人">
+                    <input type="text" class="form-control" name="buyer" id="searchOrder" placeholder="訂單編號 / 購票人">
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
+                <div class="col-md-1 d-flex align-items-end">
                     <button class="btn btn-primary w-100" id="btnApplyFilter">查詢</button>
                 </div>
             </div>
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-success ms-auto" id="btnOpenScanner">
-                    <i class="fas fa-qrcode"></i> 掃描核銷
-                </button>
-            </div>
+<!--             <div class="d-flex gap-2 mt-3"> -->
+<!--                 <button class="btn btn-success ms-auto" id="btnOpenScanner"> -->
+<!--                     <i class="fas fa-qrcode"></i> 掃描核銷 -->
+<!--                 </button> -->
+<!--             </div> -->
         </div>
     </div>
-
     <!-- Orders Table -->
     <div class="card border-secondary bg-dark">
         <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0" id="ordersTable">
+        <div id="orderListContainer">
+            <table class="table table-dark table-hover mb-0" id="ordersTable" th:fragment="orderTableBody">
                 <thead>
                     <tr>
                         <th>訂單編號</th>
@@ -46,21 +54,22 @@
                         <th>購票人</th>
                         <th>金額</th>
                         <th>狀態</th>
-                        <th>操作</th>
+<!--                         <th>操作</th> -->
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Mock Data -->
-                    <tr>
-                        <td>#MOM2024122801</td>
-                        <td>五月天演唱會</td>
-                        <td>陳小明</td>
-                        <td>NT$ 2,400</td>
+                    <tr th:each="events: ${eventOrderList}">
+                        <td th:text="${events.eventOrderId}">#MOM2024122801</td>
+                        <td th:text="${events.event.title}">五月天演唱會</td>
+                        <td th:text="${events.member.name}">陳小明</td>
+                        <td th:text="${events.payable}">NT$ 2,400</td>
                         <td><span class="badge bg-success">已付款</span></td>
-                        <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+<!--                         <td><button class="btn btn-sm btn-outline-primary">查看</button></td> -->
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

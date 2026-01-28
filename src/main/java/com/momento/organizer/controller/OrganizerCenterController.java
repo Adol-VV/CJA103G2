@@ -3,6 +3,7 @@ package com.momento.organizer.controller;
 import com.momento.emp.model.EmpVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import com.momento.prod.model.ProdVO;
@@ -98,7 +99,7 @@ public class OrganizerCenterController {
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
 
-        model.addAttribute("prodVO", new ProdVO());
+        model.addAttribute("prod", new ProdVO());
         return "pages/organizer/dashboard";
     }
 
@@ -299,20 +300,19 @@ public class OrganizerCenterController {
         }
         ra.addFlashAttribute("prodList", prodSvc.orgSearchProds(organizer.getOrganizerId(), s));
 
-        return "redirect:/organizer/dashboard#product-list";
-    }
-
-    // 變更商品上下架狀態
-    @PostMapping("/changeProdStatus")
-    public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
-            @RequestParam("prodStatus") Byte prodStatus) {
-        prodSvc.updateProdStatus(prodId, prodStatus);
-        return "redirect:/organizer/dashboard#product-list";
-    }
-
-    // 新增商品
-    @PostMapping("/addProd")
-    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//變更商品上下架狀態
+	@PostMapping("/changeProdStatus")
+	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
+		prodSvc.updateProdStatus(prodId, prodStatus);
+		return "redirect:/organizer/dashboard#product-list";
+	}
+	
+	//新增商品
+	@PostMapping("/addProd")
+	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -323,8 +323,9 @@ public class OrganizerCenterController {
         prodVO.setUpdatedAt(LocalDateTime.now());
         prodVO.setProdStatus((byte) 0);
         prodVO.setReviewStatus((byte) 0);
-
+        
+        
         prodSvc.addProd(prodVO);
         return "redirect:/organizer/dashboard#product-list";
-    }
+	}
 }
