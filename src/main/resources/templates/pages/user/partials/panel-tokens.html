@@ -10,7 +10,8 @@
                     style="right: -20px; bottom: -20px; opacity: 0.2; transform: rotate(-15deg);"></i>
                 <h5 class="text-white-50">目前餘額</h5>
                 <div class="d-flex align-items-baseline mb-2">
-                    <h3 class="display-3 fw-bold mb-0" id="tokenBalanceDisplay" th:text="${session.loginMember.token}">--</h3>
+                    <h3 class="display-3 fw-bold mb-0" id="tokenBalanceDisplay" th:text="${session.loginMember.token}">
+                        --</h3>
                     <span class="fs-4 ms-2">Tokens</span>
                 </div>
                 <hr class="border-white opacity-25">
@@ -85,33 +86,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="text-muted">2024/12/25</td>
+                <tr th:each="order : ${tokenList}">
+                    <td class="text-muted" th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}">
+                        2024/12/25</td>
                     <td><span class="badge bg-success">獲得</span></td>
-                    <td>購買「五月天演唱會」票券回饋</td>
-                    <td class="text-success fw-bold">+25</td>
-                    <td>150</td>
-                </tr>
-                <tr>
-                    <td class="text-muted">2024/12/20</td>
-                    <td><span class="badge bg-danger">使用</span></td>
-                    <td>折抵「官方週邊 T-shirt」訂單</td>
-                    <td class="text-danger fw-bold">-50</td>
-                    <td>125</td>
-                </tr>
-                <tr>
-                    <td class="text-muted">2024/11/30</td>
-                    <td><span class="badge bg-secondary">過期</span></td>
-                    <td>2023 Q4 活動代幣到期</td>
-                    <td class="text-muted fw-bold">-10</td>
-                    <td>175</td>
-                </tr>
-                <tr>
-                    <td class="text-muted">2024/11/15</td>
-                    <td><span class="badge bg-success">獲得</span></td>
-                    <td>好友推薦獎勵</td>
-                    <td class="text-success fw-bold">+50</td>
-                    <td>185</td>
+                    <td th:text="|購買「${order.event.title}」票券回饋|">購買「五月天演唱會」票券回饋</td>
+                    <td class="text-success fw-bold" th:text="|+${(order.payable / 300) * 5}|">+25</td>
+                    <td>--</td>
                 </tr>
             </tbody>
         </table>

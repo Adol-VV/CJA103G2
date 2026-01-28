@@ -29,6 +29,9 @@ public class EventFilterDTO {
     /** 搜尋關鍵字 */
     private String keyword;
 
+    /** 是否僅顯示開賣中 */
+    private Boolean onSaleOnly = false;
+
     // ========== 分頁參數 ==========
 
     /** 頁碼（從 0 開始） */
@@ -38,7 +41,7 @@ public class EventFilterDTO {
     private Integer size = 12;
 
     /** 排序欄位 */
-    private String sort = "eventAt";
+    private String sort = "eventStartAt";
 
     /** 排序方向（ASC/DESC） */
     private String direction = "ASC";
@@ -131,5 +134,13 @@ public class EventFilterDTO {
 
     public void setDirection(String direction) {
         this.direction = direction;
+    }
+
+    public Boolean getOnSaleOnly() {
+        return onSaleOnly;
+    }
+
+    public void setOnSaleOnly(Boolean onSaleOnly) {
+        this.onSaleOnly = onSaleOnly;
     }
 }

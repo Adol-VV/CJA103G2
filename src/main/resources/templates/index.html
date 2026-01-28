@@ -294,7 +294,7 @@
 							<div class="text-white-50 small mb-0" style="font-size: 0.8rem;">
 								<i class="fas fa-calendar-alt me-1"></i>
 								<span
-									th:text="${#temporals.format(mainEvent.eventAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
+									th:text="${#temporals.format(mainEvent.eventStartAt, 'yyyy/MM/dd (E) HH:mm')}">2024/12/31
 									(二) 19:30</span>
 							</div>
 							<div class="text-white-50 small mb-0" style="font-size: 0.8rem;">
@@ -317,7 +317,7 @@
 										style="height: 140px; object-fit: cover;" th:alt="${event.title}">
 								</a>
 								<span class="badge bg-light text-dark position-absolute top-0 end-0 m-2 shadow-sm small"
-									th:text="${#temporals.format(event.eventAt, 'MM/dd')}">10/01</span>
+									th:text="${#temporals.format(event.eventStartAt, 'MM/dd')}">10/01</span>
 								<span class="badge bg-info position-absolute bottom-0 start-0 m-2 small"
 									th:text="${event.typeName}">藝術展覽</span>
 							</div>

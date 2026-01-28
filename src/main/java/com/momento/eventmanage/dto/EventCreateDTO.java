@@ -5,43 +5,36 @@ import java.util.List;
 
 /**
  * Event Create DTO - 建立活動資料傳輸物件
- * 
- * 用於接收前端傳來的活動建立資料
  */
 public class EventCreateDTO {
 
-    // 主辦方 ID (從 session 取得)
     private Integer organizerId;
 
     // 基本資訊
-    private String title; // 活動名稱
-    private Integer typeId; // 活動類型 ID
-    private String place; // 活動地點 (對應 PLACE 欄位)
-    private LocalDateTime eventAt; // 活動舉辦時間
+    private String title;
+    private Integer typeId;
+    private String place;
 
-    // 售票時間
-    private LocalDateTime startedAt; // 售票開始時間
-    private LocalDateTime endedAt; // 售票結束時間
+    // 時間欄位 (在建立階段可能為空)
+    private LocalDateTime saleStartAt;
+    private LocalDateTime saleEndAt;
+    private LocalDateTime eventStartAt;
+    private LocalDateTime eventEndAt;
+    private LocalDateTime publishedAt;
 
-    // 活動內容
-    private String content; // 活動詳細內容 (HTML)
+    private String content;
 
     // 圖片
-    private String bannerUrl; // 主圖 URL
-    private List<String> imageUrls; // 活動相簿 URLs
+    private String bannerUrl;
+    private List<String> imageUrls;
 
-    // 票種列表
     private List<TicketDTO> tickets;
 
-    // ========== 內部類別: 票種 DTO ==========
-
     public static class TicketDTO {
-        private String name; // 票種名稱
-        private Integer price; // 票價
-        private Integer total; // 總票數
-        // private Integer limitPerPerson; // 每人限購 (待確認)
+        private String name;
+        private Integer price;
+        private Integer total;
 
-        // Constructors
         public TicketDTO() {
         }
 
@@ -51,7 +44,6 @@ public class EventCreateDTO {
             this.total = total;
         }
 
-        // Getters and Setters
         public String getName() {
             return name;
         }
@@ -75,22 +67,10 @@ public class EventCreateDTO {
         public void setTotal(Integer total) {
             this.total = total;
         }
-
-        // public Integer getLimitPerPerson() {
-        // return limitPerPerson;
-        // }
-
-        // public void setLimitPerPerson(Integer limitPerPerson) {
-        // this.limitPerPerson = limitPerPerson;
-        // }
     }
-
-    // ========== Constructors ==========
 
     public EventCreateDTO() {
     }
-
-    // ========== Getters and Setters ==========
 
     public Integer getOrganizerId() {
         return organizerId;
@@ -124,28 +104,44 @@ public class EventCreateDTO {
         this.place = place;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
     }
 
-    public LocalDateTime getStartedAt() {
-        return startedAt;
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
     }
 
-    public LocalDateTime getEndedAt() {
-        return endedAt;
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
     }
 
-    public void setEndedAt(LocalDateTime endedAt) {
-        this.endedAt = endedAt;
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
+    }
+
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
+    }
+
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
+    }
+
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
     public String getContent() {

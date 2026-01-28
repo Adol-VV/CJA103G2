@@ -48,6 +48,7 @@ public class EventFavoriteController {
 
         // 切換收藏狀態
         boolean isFavorited = eventService.toggleFavorite(id, memberId);
+        System.out.println(isFavorited);
 
         // 查詢收藏數量
         Long favoriteCount = eventService.getFavoriteCount(id);

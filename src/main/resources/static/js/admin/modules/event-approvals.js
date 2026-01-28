@@ -1,13 +1,13 @@
 export function initEventApprovals() {
-    let currentTab = 'pending';
+    let currentTab = 'all';
     let currentEventId = null;
 
     // 初始載入
-    loadEventApprovals('pending');
+    loadEventApprovals('all');
 
     // Reload when tab is clicked
     $(document).on('click', '.nav-link[data-section="event-approval"]', function () {
-        setTimeout(() => loadEventApprovals('pending'), 100);
+        setTimeout(() => loadEventApprovals('all'), 100);
     });
 
     // Tab Switching
@@ -16,7 +16,7 @@ export function initEventApprovals() {
         $('#eventReviewTabs .nav-link').removeClass('active text-white').addClass('text-muted');
         $(this).addClass('active text-white').removeClass('text-muted');
 
-        currentTab = $(this).data('status'); // all, pending, rejected, approved, ended
+        currentTab = $(this).data('status'); // all, 1, 4, 2, 3, 5
         loadEventApprovals(currentTab, $('#adminEventSearch').val());
     });
 
@@ -33,7 +33,7 @@ export function initEventApprovals() {
     // Approve Button Click
     $(document).on('click', '.btn-approve-event', function () {
         const id = $(this).data('id');
-        if (confirm('確定審核通過此活動？')) {
+        if (confirm('確定審核通過此活動？通過後主辦方將需要設定上架時間。')) {
             approveEvent(id);
         }
     });
@@ -88,7 +88,7 @@ export function initEventApprovals() {
     // Confirm Approve in Modal
     $('#btnConfirmApprove').click(function () {
         if (!currentEventId) return;
-        if (!confirm('確定要批准此活動上架嗎？')) return;
+        if (!confirm('確定要批准此活動通過嗎？')) return;
 
         const btn = $(this);
         const originalText = btn.html();
@@ -101,11 +101,11 @@ export function initEventApprovals() {
             data: JSON.stringify({ eventId: currentEventId }),
             success: function (response) {
                 if (response.success) {
-                    alert('活動已批准上架');
+                    alert('活動已核准通過');
                     $('#eventReviewModal').modal('hide');
                     loadEventApprovals(currentTab);
                 } else {
-                    alert('操作失敗: ' + response.message);
+                    alert('操作失敗: ' + (response.message || '未知錯誤'));
                 }
                 btn.html(originalText).prop('disabled', false);
             },
@@ -122,11 +122,12 @@ export function initEventApprovals() {
             const response = await fetch('/admin/event/review/api/stats');
             if (response.ok) {
                 const stats = await response.json();
-                updateBadge('all', stats.all);
-                updateBadge('pending', stats.pending);
-                updateBadge('rejected', stats.rejected);
-                updateBadge('approved', stats.approved);
-                updateBadge('ended', stats.ended);
+                updateBadge('all', stats.all || 0);
+                updateBadge('1', stats.pending || 0); // Pending
+                updateBadge('4', stats.rejected || 0); // Rejected
+                updateBadge('2', stats.approved || 0); // Approved
+                updateBadge('3', stats.published || 0); // Published
+                updateBadge('5', stats.ended || 0); // Closed
             }
         } catch (e) {
             console.error('Failed to load stats', e);
@@ -138,9 +139,10 @@ export function initEventApprovals() {
         $link.find('.badge').remove();
 
         let badgeClass = 'bg-secondary';
-        if (status === 'pending') badgeClass = 'bg-warning text-dark';
-        if (status === 'rejected') badgeClass = 'bg-danger';
-        if (status === 'approved') badgeClass = 'bg-success';
+        if (status === '1' || status === 'pending') badgeClass = 'bg-warning text-dark';
+        if (status === '4' || status === 'rejected') badgeClass = 'bg-danger';
+        if (status === '2' || status === 'approved') badgeClass = 'bg-info';
+        if (status === '3') badgeClass = 'bg-success';
         if (status === 'all') badgeClass = 'bg-info';
 
         $link.append(` <span class="badge ${badgeClass} ms-1">${count}</span>`);
@@ -153,7 +155,8 @@ export function initEventApprovals() {
         if ($tbody.length === 0) return;
 
         try {
-            const response = await fetch(`/admin/event/review/api/list?tab=${tab}&keyword=${encodeURIComponent(keyword)}`);
+            const url = `/admin/event/review/api/list?tab=${tab}&keyword=${encodeURIComponent(keyword)}`;
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Query failed');
             const events = await response.json();
 
@@ -166,24 +169,21 @@ export function initEventApprovals() {
 
             events.forEach(evt => {
                 const publishedDate = evt.publishedAt ? formatDate(evt.publishedAt) : '-';
-                const eventDate = evt.eventAt ? formatDate(evt.eventAt) : '-';
-                const organizerName = evt.organizer ? (evt.organizer.name || evt.organizer.accountName || '未知主辦方') : '系統管理';
+                const eventDate = evt.eventStartAt ? formatDate(evt.eventStartAt) : '-';
+                const organizerName = evt.organizer ? (evt.organizer.name || '未知主辦方') : '系統管理';
 
                 let statusBadge = '';
-                // 根據活動真實狀態顯示標籤
-                if (evt.status === 0 && evt.reviewStatus === 0 && evt.publishedAt) {
-                    statusBadge = '<span class="badge bg-warning text-dark">待審核</span>';
-                } else if (evt.status === 0 && evt.reviewStatus === 2) {
-                    statusBadge = '<span class="badge bg-danger">已駁回</span>';
-                } else if (evt.status === 1) {
-                    statusBadge = '<span class="badge bg-success">上架中</span>';
-                } else if (evt.status === 2 || evt.status === 3) {
-                    statusBadge = '<span class="badge bg-secondary">已結束/取消</span>';
+                switch (evt.status) {
+                    case 1: statusBadge = '<span class="badge bg-warning text-dark">待審核</span>'; break;
+                    case 2: statusBadge = '<span class="badge bg-info">審核成功 (待設定)</span>'; break;
+                    case 3: statusBadge = '<span class="badge bg-success">上架中</span>'; break;
+                    case 4: statusBadge = '<span class="badge bg-danger">已駁回</span>'; break;
+                    case 5: statusBadge = '<span class="badge bg-secondary">已結束/下架</span>'; break;
+                    default: statusBadge = '<span class="badge bg-dark">草稿</span>';
                 }
 
                 let actionsHtml = '';
-                // 只有「待審核」狀態需要審核按鈕
-                if (evt.status === 0 && evt.reviewStatus === 0 && evt.publishedAt) {
+                if (evt.status === 1) { // 待審核
                     actionsHtml = `
                         <button class="btn btn-sm btn-info btn-review-event-detail me-1" data-id="${evt.eventId}">
                             <i class="fas fa-eye"></i> 審核
@@ -205,7 +205,7 @@ export function initEventApprovals() {
                         <td>${publishedDate}</td>
                         <td>
                             <div class="fw-bold">${evt.title}</div>
-                            <small class="text-muted">${evt.place || ''}</small>
+                            <small class="text-muted">${evt.place || '-'}</small>
                         </td>
                         <td>${organizerName}</td>
                         <td>${eventDate}</td>
@@ -237,22 +237,32 @@ export function initEventApprovals() {
                             <p><strong>活動名稱：</strong>${event.title}</p>
                             <p><strong>活動類型：</strong>${event.type?.typeName || '-'}</p>
                             <p><strong>活動地點：</strong>${event.place}</p>
-                            <p><strong>活動時間：</strong>${formatDateTime(event.eventAt)}</p>
+                            <p><strong>活動時間：</strong>${event.eventStartAt ? formatDateTime(event.eventStartAt) : '主辦方尚未設定'}</p>
                             <p><strong>主辦單位：</strong>${event.organizer?.name || '-'}</p>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-muted mb-2">售票資訊</h6>
-                            <p><strong>售票開始：</strong>${formatDateTime(event.startedAt)}</p>
-                            <p><strong>售票結束：</strong>${formatDateTime(event.endedAt)}</p>
+                            <h6 class="text-muted mb-2">售票資訊 (上架後設定)</h6>
+                            <p><strong>售票開始：</strong>${event.saleStartAt ? formatDateTime(event.saleStartAt) : '-'}</p>
+                            <p><strong>售票結束：</strong>${event.saleEndAt ? formatDateTime(event.saleEndAt) : '-'}</p>
                             <p><strong>票種數量：</strong>${event.tickets?.length || 0} 種</p>
                         </div>
                         <div class="col-12 mt-3">
                             <h6 class="text-muted mb-2">活動說明</h6>
-                            <p class="border border-secondary p-3 rounded">${event.content || '無'}</p>
+                            <div class="border border-secondary p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                                ${event.content || '無說明'}
+                            </div>
                         </div>
                     </div>
                 `;
                 $('#eventReviewDetails').html(detailsHtml);
+
+                // 控制按鈕顯示
+                if (event.status === 1) {
+                    $('#btnConfirmReject, #btnConfirmApprove').show();
+                } else {
+                    $('#btnConfirmReject, #btnConfirmApprove').hide();
+                }
+
                 $('#eventReviewModal').modal('show');
             },
             error: function () {
@@ -262,23 +272,23 @@ export function initEventApprovals() {
     }
 
     async function approveEvent(id) {
-        try {
-            const response = await fetch('/admin/event/review/api/approve', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventId: id })
-            });
-
-            if (response.ok) {
-                alert('活動已核准上架');
-                loadEventApprovals(currentTab);
-            } else {
-                const data = await response.json();
-                alert('操作失敗: ' + (data.error || 'Unknown error'));
+        $.ajax({
+            url: '/admin/event/review/api/approve',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ eventId: id }),
+            success: function (res) {
+                if (res.success) {
+                    alert('活動已批准通過');
+                    loadEventApprovals(currentTab);
+                } else {
+                    alert('操作失敗: ' + res.message);
+                }
+            },
+            error: function () {
+                alert('系統錯誤');
             }
-        } catch (error) {
-            alert('系統錯誤');
-        }
+        });
     }
 
     function formatDate(dateStr) {

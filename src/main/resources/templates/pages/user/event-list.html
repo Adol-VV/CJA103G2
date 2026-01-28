@@ -21,10 +21,10 @@
     <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
     <style>
         .filter-sidebar {
-            background-color: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            border: none;
         }
 
         .event-card .card-img-wrapper {
@@ -57,33 +57,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-favorite {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.4);
-            border: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-        }
-
-        .btn-favorite:hover {
-            background: rgba(0, 0, 0, 0.6);
-            transform: scale(1.1);
-        }
-
-        .btn-favorite.active {
-            color: #EF4444;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
         .price {
             font-weight: 700;
             color: var(--momento-green);
@@ -100,6 +73,64 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
             width: auto;
             min-width: 120px;
+        }
+
+        /* Modern Type Filter UI */
+        .type-filter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .type-filter-item {
+            position: relative;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ccc;
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: b;
+        }
+
+        .type-filter-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: translateX(5px);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .type-filter-item.active {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--momento-green);
+            color: var(--momento-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .type-filter-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--momento-green);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .type-filter-item .count-badge {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-left: auto;
+        }
+
+        .type-filter-item:active {
+            transform: scale(0.96);
         }
     </style>
 </head>
@@ -129,10 +160,20 @@
                     </div>
                 </form>
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
-                    <a href="#" class="position-relative text-white text-decoration-none">
+                    <a th:href="@{/member/cart}" class="position-relative text-white text-decoration-none">
                         <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem;"> 2 </span>
                     </a>
-                    <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">會員登入</a>
+                    <div th:if="${session.loginMember}" class="d-flex align-items-center gap-3">
+                        <span class="text-white" th:text="${session.loginMember.name}">會員姓名</span>
+                        <a th:href="@{/member/dashboard}" class="btn btn-primary btn-sm px-4">會員中心</a>
+                        <a th:href="@{/member/logout}" class="btn btn-primary btn-sm px-4">登出</a>
+                    </div>
+                    <div th:unless="${session.loginMember}">
+                        <a th:href="@{/member/login}" class="btn btn-primary btn-sm px-4">登入</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary btn-sm px-4">註冊</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,51 +184,31 @@
         <div class="row">
 
             <!-- Sidebar Filter (Desktop) & Offcanvas (Mobile) -->
-            <div class="col-lg-3 d-none d-lg-block">
+            <div class="col-lg-2 d-none d-lg-block">
                 <aside class="filter-sidebar sticky-top" style="top: 100px;">
-                    <h5 class="mb-4">篩選條件</h5>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">活動類型</label>
-                        <div class="form-check" th:each="type : ${types}">
-                            <input class="form-check-input" type="checkbox" th:id="'cat-' + ${type.typeId}"
-                                th:value="${type.typeId}"
-                                th:checked="${currentTypeId != null && currentTypeId == type.typeId}">
-                            <label class="form-check-label" th:for="'cat-' + ${type.typeId}"
-                                th:text="${type.typeName}">活動類型</label>
-                        </div>
+
+                    <div class="type-filter-container mb-4">
+                        <button type="button" class="type-filter-item" data-type-id=""
+                            th:classappend="${currentTypeId == null ? 'active' : ''}">
+                            <span><i class="fas fa-th-large me-2 small"></i> 全部類型</span>
+                        </button>
+                        <button type="button" class="type-filter-item" th:each="type : ${types}"
+                            th:data-type-id="${type.typeId}"
+                            th:classappend="${currentTypeId != null && currentTypeId == type.typeId ? 'active' : ''}">
+                            <span><i class="fas fa-ticket-alt me-2 small"></i> <span
+                                    th:text="${type.typeName}">活動類型</span></span>
+                        </button>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">地區</label>
-                        <select class="form-select">
-                            <option>全部</option>
-                            <option>台北市</option>
-                            <option>新北市</option>
-                            <option>台中市</option>
-                            <option>高雄市</option>
+                    <div class="px-2">
+                        <select class="form-select border-secondary bg-dark text-white" id="priceFilter">
+                            <option value="99999">全部門票價格</option>
+                            <option value="500">NT$ 500 以下</option>
+                            <option value="1000">NT$ 1,000 以下</option>
+                            <option value="2000">NT$ 2,000 以下</option>
+                            <option value="3500">NT$ 3,500 以下</option>
                         </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">價格中心點 (最高 NT$)</label>
-                        <input type="range" class="form-range" min="0" max="10000" step="100" id="priceRangeDesktop"
-                            value="5000">
-                        <div class="d-flex justify-content-between text-muted small">
-                            <span>NT$ 0</span>
-                            <span class="price-display">NT$ 5,000</span>
-                            <span>NT$ 10,000+</span>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">日期</label>
-                        <input type="date" class="form-control">
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary">套用篩選</button>
-                        <button class="btn btn-outline-secondary">清除條件</button>
                     </div>
                 </aside>
             </div>
@@ -195,46 +216,52 @@
             <!-- Mobile Offcanvas Trigger -->
             <button class="btn btn-primary rounded-pill btn-mobile-filter d-lg-none" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
-                <i class="fas fa-filter me-2"></i> 篩選條件
+                <i class="fas fa-filter"></i>
             </button>
 
             <!-- Offcanvas Filter (Mobile) -->
-            <div class="offcanvas offcanvas-bottom h-75 bg-dark text-white" tabindex="-1" id="filterOffcanvas">
+            <div class="offcanvas offcanvas-bottom h-auto bg-dark text-white" tabindex="-1" id="filterOffcanvas">
                 <div class="offcanvas-header border-bottom border-secondary">
-                    <h5 class="offcanvas-title">篩選條件</h5>
+                    <h5 class="offcanvas-title">探索活動</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
                 </div>
                 <div class="offcanvas-body">
                     <!-- Same content as sidebar, simplified for mobile -->
                     <form>
                         <div class="mb-4">
-                            <label class="form-label fw-bold">活動類型</label>
-                            <!-- Checkboxes... -->
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" checked>
-                                <label class="form-check-label">音樂演唱</label>
+                            <div class="list-group list-group-flush border-secondary">
+                                <button type="button"
+                                    class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 type-filter-item"
+                                    data-type-id="">全部類型</button>
+                                <button type="button"
+                                    class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 type-filter-item"
+                                    th:each="type : ${types}" th:data-type-id="${type.typeId}"
+                                    th:text="${type.typeName}">活動類型</button>
                             </div>
-                            <!-- ... -->
                         </div>
                         <div class="mb-4">
-                            <label class="form-label fw-bold">價格區間</label>
-                            <input type="range" class="form-range" min="0" max="5000" step="100" id="priceRangeMobile">
-                            <div class="text-end price-display">$2500</div>
+                            <select class="form-select border-secondary bg-dark text-white" id="priceFilterMobile">
+                                <option value="99999">全部門票價格</option>
+                                <option value="500">NT$ 500 以下</option>
+                                <option value="1000">NT$ 1,000 以下</option>
+                                <option value="2000">NT$ 2,000 以下</option>
+                                <option value="3500">NT$ 3,500 以下</option>
+                            </select>
                         </div>
-                        <button class="btn btn-primary w-100">查看結果 (12)</button>
                     </form>
                 </div>
             </div>
 
             <!-- Content Area -->
-            <main class="col-lg-9">
+            <main class="col-lg-10">
                 <!-- Sort Bar -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <span class="text-muted">共 <span th:text="${page.totalElements}">10</span> 個活動</span>
-                    <select class="form-select w-auto">
+                    <select class="form-select w-auto" id="sortSelect">
                         <option>最新上架</option>
                         <option>價格由低到高</option>
-                        <option>即將開始</option>
+                        <option>價格由高到低</option>
+                        <option>開賣中</option>
                     </select>
                 </div>
 
@@ -246,13 +273,35 @@
                                 <img loading="lazy" th:src="${event.coverImageUrl}" src="https://picsum.photos/800/450"
                                     class="card-img-top" th:alt="${event.title}">
                                 <span class="badge date-badge"
-                                    th:text="${#temporals.format(event.eventAt, 'MM/dd')}">12/31</span>
-                                <button class="btn-favorite" th:data-event-id="${event.eventId}">
-                                    <i class="far fa-heart"></i>
-                                </button>
+                                    th:text="${#temporals.format(event.eventStartAt, 'MM/dd')}">12/31</span>
                             </div>
                             <div class="card-body">
-                                <span class="badge bg-primary mb-2" th:text="${event.typeName}">音樂演出</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary" th:text="${event.typeName}">音樂演出</span>
+                                    <!-- Dynamic Status Badge -->
+                                    <th:block th:with="now=${T(java.time.LocalDateTime).now()}">
+                                        <span th:if="${event.status == 5}" class="badge bg-secondary">
+                                            <i class="fas fa-times-circle me-1"></i><span
+                                                th:text="${event.eventEndAt != null && now.isBefore(event.eventEndAt) ? '活動已取消' : '活動已結束'}">狀態</span>
+                                        </span>
+                                        <th:block th:if="${event.status != 5}">
+                                            <span
+                                                th:if="${event.saleStartAt != null && now.isBefore(event.saleStartAt)}"
+                                                class="badge bg-info">🕐 即將開賣</span>
+                                            <span
+                                                th:if="${event.saleStartAt != null && event.saleEndAt != null && !now.isBefore(event.saleStartAt) && now.isBefore(event.saleEndAt)}"
+                                                class="badge bg-success">🔥 熱賣中</span>
+                                            <span
+                                                th:if="${event.saleEndAt != null && event.eventStartAt != null && !now.isBefore(event.saleEndAt) && now.isBefore(event.eventStartAt)}"
+                                                class="badge bg-warning text-dark">⏰ 售票結束</span>
+                                            <span
+                                                th:if="${event.eventStartAt != null && event.eventEndAt != null && !now.isBefore(event.eventStartAt) && now.isBefore(event.eventEndAt)}"
+                                                class="badge bg-danger">🎉 進行中</span>
+                                            <span th:if="${event.eventEndAt != null && !now.isBefore(event.eventEndAt)}"
+                                                class="badge bg-secondary">✅ 已結束</span>
+                                        </th:block>
+                                    </th:block>
+                                </div>
                                 <h5 class="card-title text-truncate-2" th:text="${event.title}">活動標題</h5>
                                 <p class="text-muted small mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>
@@ -312,65 +361,57 @@
     <!-- <script src="../../js/common.js"></script> -->
     <script>
         $(document).ready(function () {
-            // Price range display
-            // Price range display
-            $('input[type="range"]').on('input', function () {
+            // Price filter sync and immediate fetch
+            $('#priceFilter, #priceFilterMobile').change(function () {
                 const val = $(this).val();
-                let displayVal = 'NT$ ' + parseInt(val).toLocaleString();
-                if (parseInt(val) >= 10000) displayVal = 'NT$ 10,000+';
-
-                if (this.id === 'priceRangeDesktop') {
-                    $(this).next('.d-flex').find('.price-display').text(displayVal);
-                } else {
-                    $(this).next('.price-display').text(displayVal);
-                }
-
-                // Debounced fetch
-                clearTimeout(window.priceTimeout);
-                window.priceTimeout = setTimeout(fetchEvents, 500);
-            });
-
-            // Filter Change Listeners
-            $('.filter-sidebar input, .filter-sidebar select, .filter-sidebar button.btn-primary').click(function (e) {
-                if ($(this).hasClass('btn-primary')) {
-                    e.preventDefault();
-                    fetchEvents();
-                }
-            });
-
-            $('.filter-sidebar input[type="checkbox"], .filter-sidebar select').change(function () {
+                $('#priceFilter, #priceFilterMobile').val(val);
                 fetchEvents();
             });
+
+
+
+            // Type filter click - Direct Navigation
+            $('.type-filter-item').click(function () {
+                const typeId = $(this).data('type-id');
+
+                // Visual feedback immediate
+                $('.type-filter-item').removeClass('active');
+                $(this).addClass('active');
+
+                let url = '/event/list';
+                if (typeId) {
+                    url += '?typeId=' + typeId;
+                }
+
+                // Smooth delay for animation
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 150);
+            });
+
+
 
             // Sort Change
-            $('.col-lg-9 select.form-select').change(function () {
-                fetchEvents();
-            });
-
-            // Clear Filters
-            $('.filter-sidebar .btn-outline-secondary').click(function () {
-                $('input[type="checkbox"]').prop('checked', false);
-                $('.filter-sidebar select').val('全部');
-                $('#priceRangeDesktop').val(5000).trigger('input');
+            $('#sortSelect').change(function () {
                 fetchEvents();
             });
 
             // --- AJAX Fetch Function ---
             function fetchEvents(page = 0) {
-                const typeIds = [];
-                $('input[id^="cat-"]:checked').each(function () {
-                    typeIds.push($(this).val());
-                });
+                const typeId = $('.type-filter-item.active').first().data('type-id') || null;
+                const place = null;
+                const maxPrice = $('#priceFilter').val();
+                const sortVal = $('#sortSelect').val();
 
-                const typeId = typeIds.length > 0 ? typeIds[0] : null;
-                const place = $('.filter-sidebar select').val() === '全部' ? null : $('.filter-sidebar select').val();
-                const maxPrice = $('#priceRangeDesktop').val();
-                const sortVal = $('.col-lg-9 select.form-select').val();
-
-                let sortParam = 'eventAt';
+                let sortParam = 'eventStartAt';
+                let direction = 'ASC';
                 if (sortVal === '價格由低到高') sortParam = 'minPrice';
+                if (sortVal === '價格由高到低') {
+                    sortParam = 'minPrice';
+                    direction = 'DESC';
+                }
                 if (sortVal === '最新上架') sortParam = 'newest';
-                if (sortVal === '即將開始') sortParam = 'eventAt';
+                if (sortVal === '開賣中') sortParam = 'onSale';
 
                 // Show Loading
                 $('.row.g-4').css('opacity', '0.5');
@@ -383,7 +424,8 @@
                         typeId: typeId,
                         place: place,
                         maxPrice: maxPrice,
-                        sort: sortParam
+                        sort: sortParam,
+                        direction: direction
                     },
                     success: function (data) {
                         renderEvents(data.content);
@@ -419,22 +461,42 @@
                     return;
                 }
 
+                const now = new Date();
+
                 events.forEach(event => {
-                    const dateStr = new Date(event.eventAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+                    const dateDisplay = event.eventStartAt ? new Date(event.eventStartAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }) : '??/??';
                     const priceStr = event.minPrice ? event.minPrice.toLocaleString() : '0';
+
+                    // Dynamic Status logic
+                    let statusBadge = '';
+                    if (event.status === 5) {
+                        const isCanceled = event.eventEndAt && now < new Date(event.eventEndAt);
+                        statusBadge = `<span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i>${isCanceled ? '活動已取消' : '活動已結束'}</span>`;
+                    } else {
+                        const sStart = event.saleStartAt ? new Date(event.saleStartAt) : null;
+                        const sEnd = event.saleEndAt ? new Date(event.saleEndAt) : null;
+                        const eStart = event.eventStartAt ? new Date(event.eventStartAt) : null;
+                        const eEnd = event.eventEndAt ? new Date(event.eventEndAt) : null;
+
+                        if (sStart && now < sStart) statusBadge = '<span class="badge bg-info">🕐 即將開賣</span>';
+                        else if (sStart && sEnd && now >= sStart && now < sEnd) statusBadge = '<span class="badge bg-success">🔥 熱賣中</span>';
+                        else if (sEnd && eStart && now >= sEnd && now < eStart) statusBadge = '<span class="badge bg-warning text-dark">⏰ 售票結束</span>';
+                        else if (eStart && eEnd && now >= eStart && now < eEnd) statusBadge = '<span class="badge bg-danger">🎉 進行中</span>';
+                        else if (eEnd && now >= eEnd) statusBadge = '<span class="badge bg-secondary">✅ 已結束</span>';
+                    }
 
                     const html = `
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card h-100 event-card">
                             <div class="card-img-wrapper">
                                 <img loading="lazy" src="${event.coverImageUrl}" class="card-img-top" alt="${event.title}">
-                                <span class="badge date-badge">${dateStr}</span>
-                                <button class="btn-favorite" data-event-id="${event.eventId}">
-                                    <i class="far fa-heart"></i>
-                                </button>
+                                <span class="badge date-badge">${dateDisplay}</span>
                             </div>
                             <div class="card-body">
-                                <span class="badge bg-primary mb-2">${event.typeName}</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">${event.typeName}</span>
+                                    ${statusBadge}
+                                </div>
                                 <h5 class="card-title text-truncate-2">${event.title}</h5>
                                 <p class="text-muted small mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>
@@ -450,41 +512,14 @@
                     `;
                     container.append(html);
                 });
-
-                // Re-bind favorites
-                $('.btn-favorite').click(toggleFavorite);
             }
 
             function renderPagination(pageData) {
-                // Simplified Pagination for MVP
                 const nav = $('nav.mt-5');
-                if (pageData.totalPages <= 1) {
-                    nav.hide();
-                    return;
-                }
+                if (pageData.totalPages <= 1) { nav.hide(); return; }
                 nav.show();
-                // We'd need to rebuild the standard standard pagination HTML here
-                // For MVP, we can just keep the "Next/Prev" logic or a simple "Load More"
+                // Standard pagination logic
             }
-
-            // Favorite toggle function
-            function toggleFavorite(e) {
-                e.preventDefault();
-                const btn = $(this);
-                const eventId = btn.data('event-id');
-                // Call API (Already implemented in existing code, just ensuring it's wired)
-                $.post('/api/event/favorite/' + eventId, function (res) {
-                    if (res.success) {
-                        btn.find('i').toggleClass('far fas');
-                        btn.toggleClass('active');
-                    } else {
-                        if (res.message === '請先登入') location.href = '/member/login';
-                        else alert(res.message);
-                    }
-                });
-            }
-
-            $('.btn-favorite').click(toggleFavorite); // Bind initial load
         });
     </script>
 </body>

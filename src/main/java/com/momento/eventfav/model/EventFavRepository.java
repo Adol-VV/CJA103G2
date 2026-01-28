@@ -62,11 +62,7 @@ public interface EventFavRepository extends JpaRepository<EventFavVO, Integer> {
          * @param memberId 會員 ID
          * @param eventId  活動 ID
          */
-        @org.springframework.transaction.annotation.Transactional
-        @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true, flushAutomatically = true)
-        void deleteByMember_MemberIdAndEvent_EventId(
-                        Integer memberId,
-                        Integer eventId);
+        void deleteByMember_MemberIdAndEvent_EventId(Integer memberId, Integer eventId);
 
         /**
          * 查詢特定活動的所有收藏記錄

@@ -50,29 +50,28 @@ public class CreateOrderService {
 
 		// 連結活動跟會員
 		EventOrderVO newOrder = new EventOrderVO();
-		
+
 		Integer firstTicketId = dto.getItems().get(0).getTicketId();
-		
 
 		MemberVO member = memberRepo.findById(memberId).orElseThrow((() -> new RuntimeException("查無此會員")));
-		
+
 		TicketVO firstTicket = ticketRepo.getById(firstTicketId);
 
-		EventVO event = eventRepo.findById(firstTicket.getEvent().getEventId()).orElseThrow((() -> new RuntimeException("查無此活動")));
-		
-		OrganizerVO organizer = event.getOrganizer();
+		EventVO event = eventRepo.findById(firstTicket.getEvent().getEventId())
+				.orElseThrow((() -> new RuntimeException("查無此活動")));
 
+		OrganizerVO organizer = event.getOrganizer();
 
 		// 檢查活動是否可以購票
 		LocalDateTime now = LocalDateTime.now();
 
-		if (now.isBefore(event.getStartedAt())) {
+		if (event.getSaleStartAt() != null && now.isBefore(event.getSaleStartAt())) {
 			throw new RuntimeException("購票時間尚未開始");
 		}
-//		if (now.isAfter(event.getEndedAt())) {
-//			System.out.println(event.getEndedAt());
-//			throw new RuntimeException("購票時間已經結束");
-//		}
+		// if (now.isAfter(event.getEndedAt())) {
+		// System.out.println(event.getEndedAt());
+		// throw new RuntimeException("購票時間已經結束");
+		// }
 
 		// 處理票券
 		int totalAmount = 0;
@@ -105,13 +104,12 @@ public class CreateOrderService {
 			}
 
 			// 減會員剩餘代幣
-			
-			
+
 			// 減庫存
 			ticket.setRemain(ticket.getRemain() - itemDto.getQuantity());
 
 		}
-		if(dto.isUseToken()) {
+		if (dto.isUseToken()) {
 			tokenUsed = Math.min(totalAmount, token);
 			payable = totalAmount - tokenUsed;
 			tokenUsed = Math.min(totalAmount, token);
@@ -137,75 +135,76 @@ public class CreateOrderService {
 			orderItem.setQrcode(qrcode);
 			orderItem.setStatus(0);
 		}
-		
+
 		eventOrderItemRepo.saveAll(orderItemList);
 		eventOrder.setEventOrderItems(new HashSet<>(orderItemList));
-		
+
 		return eventOrder;
 	}
-	
+
 	// 把event-detail的資訊帶到event-checkout頁面
 	public List<TicketItemsDTO> processSelectedTickets(SelectionFormDTO selectionForm) {
-		
+
 		List<TicketItemsDTO> selectedItems = new ArrayList();
-		
-		if(selectionForm.getItems() != null) {
-			
-			for( TicketItemsDTO item: selectionForm.getItems() ) {
-				
-				if( item.getQuantity() != null && item.getQuantity() > 0 ) {
-					
+
+		if (selectionForm.getItems() != null) {
+
+			for (TicketItemsDTO item : selectionForm.getItems()) {
+
+				if (item.getQuantity() != null && item.getQuantity() > 0) {
+
 					Optional<TicketVO> ticketInformation = ticketRepo.findById(item.getTicketId());
-					
-					if( ticketInformation != null) {
-						item.setEventId(ticketInformation.get().getEvent().getEventId());;
+
+					if (ticketInformation != null) {
+						item.setEventId(ticketInformation.get().getEvent().getEventId());
+						;
 						item.setTicketId(ticketInformation.get().getTicketId());
 						item.setTicketName(ticketInformation.get().getTicketName());
 						item.setEventName(ticketInformation.get().getEvent().getTitle());
 						item.setPrice(ticketInformation.get().getPrice());
-						item.setEventTime(ticketInformation.get().getEvent().getEventAt());
-						
+						item.setEventTime(ticketInformation.get().getEvent().getEventStartAt());
+
 					}
-					
+
 					selectedItems.add(item);
 				}
-						
+
 			}
 		}
 		return selectedItems;
 	}
-	
+
 	public CheckoutDTO calculateCheckout(SelectionFormDTO selectionForm, boolean useToken, Integer memberId) {
-		
+
 		List<TicketItemsDTO> selectedItems = processSelectedTickets(selectionForm);
-		
+
 		int total = 0;
-		
-		for(TicketItemsDTO items: selectedItems) {
-			
+
+		for (TicketItemsDTO items : selectedItems) {
+
 			total += items.getPrice() * items.getQuantity();
-			
+
 		}
-		
+
 		int tokenUsed = 0;
 		int payable = total;
-		if(useToken) {
-			
+		if (useToken) {
+
 			MemberVO member = memberRepo.getById(memberId);
 			int balance = member.getToken();
-			
+
 			tokenUsed = Math.min(total, balance);
 			payable = payable - tokenUsed;
 		}
-		
+
 		CheckoutDTO checkoutData = new CheckoutDTO();
-		
+
 		checkoutData.setTotal(total);
 		checkoutData.setTokenUsed(tokenUsed);
 		checkoutData.setPayable(payable);
-		
+
 		return checkoutData;
-		
+
 	}
-	
+
 }

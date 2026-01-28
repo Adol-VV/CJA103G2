@@ -5,42 +5,39 @@ import java.util.List;
 
 /**
  * Event Update DTO - 更新活動資料傳輸物件
- * 
- * 用於接收前端傳來的活動更新資料
  */
 public class EventUpdateDTO {
 
-    private Integer eventId; // 活動 ID
+    private Integer eventId;
 
-    // 基本資訊 (永遠可以修改)
-    private String title; // 活動名稱
-    private Integer typeId; // 活動類型 ID
-    private String place; // 活動地點
-    private LocalDateTime eventAt; // 活動舉辦時間
-    private String summary; // 活動簡介
-    private LocalDateTime startedAt; // 售票開始時間
-    private LocalDateTime endedAt; // 售票結束時間
-    private String content; // 活動詳細內容
-    private String bannerUrl; // 主圖 URL
-    private List<String> imageUrls; // 活動相簿 URLs
+    // 基本資訊
+    private String title;
+    private Integer typeId;
+    private String place;
 
-    // 票種列表 (有訂單時不可修改價格和數量)
+    // 時間欄位
+    private LocalDateTime saleStartAt;
+    private LocalDateTime saleEndAt;
+    private LocalDateTime eventStartAt;
+    private LocalDateTime eventEndAt;
+    private LocalDateTime publishedAt;
+
+    private String content;
+    private String bannerUrl;
+    private List<String> imageUrls;
+
+    // 票種列表
     private List<TicketUpdateDTO> tickets;
 
-    // ========== 內部類別: 票種更新 DTO ==========
-
     public static class TicketUpdateDTO {
-        private Integer ticketId; // 票種 ID (null 表示新增)
-        private String name; // 票種名稱
-        private Integer price; // 票價
-        private Integer total; // 總票數
-        // private Integer limitPerPerson; // 每人限購 (待確認)
+        private Integer ticketId;
+        private String name;
+        private Integer price;
+        private Integer total;
 
-        // Constructors
         public TicketUpdateDTO() {
         }
 
-        // Getters and Setters
         public Integer getTicketId() {
             return ticketId;
         }
@@ -74,12 +71,8 @@ public class EventUpdateDTO {
         }
     }
 
-    // ========== Constructors ==========
-
     public EventUpdateDTO() {
     }
-
-    // ========== Getters and Setters ==========
 
     public Integer getEventId() {
         return eventId;
@@ -113,36 +106,44 @@ public class EventUpdateDTO {
         this.place = place;
     }
 
-    public LocalDateTime getEventAt() {
-        return eventAt;
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
     }
 
-    public void setEventAt(LocalDateTime eventAt) {
-        this.eventAt = eventAt;
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
     }
 
-    public String getSummary() {
-        return summary;
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
     }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
     }
 
-    public LocalDateTime getStartedAt() {
-        return startedAt;
+    public LocalDateTime getEventStartAt() {
+        return eventStartAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
+    public void setEventStartAt(LocalDateTime eventStartAt) {
+        this.eventStartAt = eventStartAt;
     }
 
-    public LocalDateTime getEndedAt() {
-        return endedAt;
+    public LocalDateTime getEventEndAt() {
+        return eventEndAt;
     }
 
-    public void setEndedAt(LocalDateTime endedAt) {
-        this.endedAt = endedAt;
+    public void setEventEndAt(LocalDateTime eventEndAt) {
+        this.eventEndAt = eventEndAt;
+    }
+
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
     public String getContent() {

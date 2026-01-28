@@ -75,31 +75,7 @@
             </div>
         </div>
 
-        <!-- 時間設定 -->
-        <div class="card border-secondary bg-dark mb-4">
-            <div class="card-body">
-                <h5 class="mb-4">時間設定</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label required">活動舉辦時間</label>
-                        <input type="datetime-local" id="editEventDateTime" class="form-control" required>
-                        <div class="invalid-feedback" id="editEventDateTimeError">活動時間必須在售票結束之後</div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label required">售票開始時間</label>
-                        <input type="datetime-local" id="editSaleStart" class="form-control" required>
-                        <div class="invalid-feedback" id="editSaleStartError">開始時間必須早於結束時間</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label required">售票結束時間</label>
-                        <input type="datetime-local" id="editSaleEnd" class="form-control" required>
-                        <div class="invalid-feedback" id="editSaleEndError">結束時間必須在開始之後且早於活動時間</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Note: Time setting removed to follow the specification where it happens in the event list after approval -->
 
         <!-- 票種設定 -->
         <div class="card border-secondary bg-dark mb-4">

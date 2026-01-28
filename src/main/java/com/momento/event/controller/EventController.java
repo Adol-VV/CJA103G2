@@ -46,31 +46,40 @@ public class EventController {
     public Page<EventListItemDTO> getEventListJson(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam(defaultValue = "eventAt") String sort,
+            @RequestParam(defaultValue = "eventStartAt") String sort,
             @RequestParam(required = false) Integer typeId,
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,
-            @RequestParam(required = false) Integer maxPrice) {
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) String direction) {
 
-        System.out.println("=== API Request: /event/api/list ===");
+        System.out.println("=== API Request: /event/api/list [Sort=" + sort + ", Dir=" + direction + "] ===");
 
         EventFilterDTO filterDTO = new EventFilterDTO();
         filterDTO.setPage(page);
         filterDTO.setSize(size);
-        filterDTO.setSort(sort);
         filterDTO.setTypeId(typeId);
         filterDTO.setPlace(place);
         filterDTO.setMinPrice(minPrice);
         filterDTO.setMaxPrice(maxPrice);
 
-        // 確保排序方向正確 (價格通常由低到高, 日期可以是 DESC 或 ASC)
-        // 這裡簡單處理: 如果是 'price'，預設 ASC; 如果是 'eventAt' 且前端傳 'newest'，則 DESC
+        // 預設方向處理
+        String finalDir = (direction != null && !direction.isEmpty()) ? direction : "ASC";
+
+        // 核心排序與過濾邏輯
         if ("newest".equals(sort)) {
-            filterDTO.setSort("publishedAt"); // Use publishedAt for newest
+            filterDTO.setSort("publishedAt");
             filterDTO.setDirection("DESC");
-        } else if ("minPrice".equals(sort) || "priceAsc".equals(sort)) {
+        } else if ("minPrice".equals(sort)) {
             filterDTO.setSort("minPrice");
+            filterDTO.setDirection(finalDir);
+        } else if ("onSale".equals(sort)) {
+            filterDTO.setSort("eventStartAt");
             filterDTO.setDirection("ASC");
+            filterDTO.setOnSaleOnly(true);
+        } else {
+            filterDTO.setSort(sort);
+            filterDTO.setDirection(finalDir);
         }
 
         return eventService.filterEvents(filterDTO);
@@ -105,7 +114,7 @@ public class EventController {
      * 
      * @param page     頁碼（預設 0）
      * @param size     每頁筆數（預設 12）
-     * @param sort     排序欄位（預設 eventAt）
+     * @param sort     排序欄位（預設 eventStartAt）
      * @param typeId   活動類型 ID（可選）
      * @param place    地區關鍵字（可選）
      * @param minPrice 最低票價（可選）
@@ -117,7 +126,7 @@ public class EventController {
     public String eventList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam(defaultValue = "eventAt") String sort,
+            @RequestParam(defaultValue = "eventStartAt") String sort,
             @RequestParam(required = false) Integer typeId,
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,
@@ -182,7 +191,9 @@ public class EventController {
             HttpSession session,
             Model model) {
         // 取得當前登入會員 ID（從 session）
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        com.momento.member.model.MemberVO loginMember = (com.momento.member.model.MemberVO) session
+                .getAttribute("loginMember");
+        Integer memberId = (loginMember != null) ? loginMember.getMemberId() : null;
 
         // 查詢活動詳情
         EventDetailDTO eventDetail = eventService.getEventDetail(id, memberId);
@@ -197,7 +208,7 @@ public class EventController {
         model.addAttribute("favoriteCount", eventDetail.getFavoriteCount());
         model.addAttribute("isFavorited", eventDetail.getIsFavorited());
         model.addAttribute("relatedEvents", eventDetail.getRelatedEvents());
-        
+
         // 傳到結帳頁面
         model.addAttribute("selectionForm", new SelectionFormDTO());
 
