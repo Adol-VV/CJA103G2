@@ -42,7 +42,7 @@
         </a>
         <a href="#notifications" class="list-group-item list-group-item-action" data-section="notifications">
             <i class="fas fa-bell me-2"></i> 通知中心
-            <span class="badge bg-danger rounded-pill float-end">3</span>
+            <span class="badge bg-danger rounded-pill float-end" th:if="${unreadNotifyCount > 0}" th:text="${unreadNotifyCount}">3</span>
         </a>
 <!--         <a href="#comments" class="list-group-item list-group-item-action" data-section="comments"> -->
 <!--             <i class="fas fa-comments me-2"></i> 我的留言 -->

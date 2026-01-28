@@ -16,27 +16,27 @@
                     <div class="mb-3">
                         <label class="form-label">通知類型</label>
                         <select name="type" class="form-select bg-dark text-white border-secondary">
-                            <option>系統公告</option>
-                            <option>活動提醒</option>
-                            <option>促銷優惠</option>
+                            <option>活動上架</option>
+                            <option>商品上架</option>
                             <option>服務更新</option>
+                            <option>系統公告</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label  class="form-label">通知標題</label>
-                        <input name="title" type="text" class="form-control bg-dark text-white border-secondary"
+                        <input id="notificationTitle" name="title" type="text" class="form-control bg-dark text-white border-secondary"
                             placeholder="輸入通知標題...">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">通知內容</label>
-                        <textarea name="rawContent" class="form-control bg-dark text-white border-secondary" rows="5"
+                        <textarea id="notificationContent" name="rawContent" class="form-control bg-dark text-white border-secondary" rows="5"
                             placeholder="輸入通知內容..."></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">連結 (選填)</label>
-                        <input name="url" type="text" class="form-control bg-dark text-white border-secondary"
-                            placeholder="https://...">
-                    </div>
+<!--                    <div class="mb-3">-->
+<!--                        <label class="form-label">連結 (選填)</label>-->
+<!--                        <input name="url" type="text" class="form-control bg-dark text-white border-secondary"-->
+<!--                            placeholder="https://...">-->
+<!--                    </div>-->
 
                     <div class="row">
                         <div class="col-md-6">
@@ -45,22 +45,23 @@
                                 <input class="form-check-input" type="radio" name="sendTime" id="sendNow" checked>
                                 <label class="form-check-label" for="sendNow">立即發送</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="sendTime" id="sendLater">
-                                <label class="form-check-label" for="sendLater">排程發送</label>
-                            </div>
-                            <input type="datetime-local" class="form-control bg-dark text-white border-secondary mt-2"
-                                disabled id="scheduleTime">
+<!--                            <div class="form-check">-->
+<!--                                <input class="form-check-input" type="radio" name="sendTime" id="sendLater">-->
+<!--                                <label class="form-check-label" for="sendLater">排程發送</label>-->
+<!--                            </div>-->
+<!--                            <input type="datetime-local" class="form-control bg-dark text-white border-secondary mt-2"-->
+<!--                                disabled id="scheduleTime">-->
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">推送通道</label>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="web" checked><label
-                                    class="form-check-label">站內通知</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="email"><label
-                                    class="form-check-label">Email</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="app"><label
-                                    class="form-check-label">推播 (App)</label>
+                            <div class="form-check"><input class="form-check-input" type="radio" name="channel" value="web" checked>
+                                <label class="form-check-label">站內通知</label>
                             </div>
+<!--                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="email"><label-->
+<!--                                    class="form-check-label">Email</label></div>-->
+<!--                            <div class="form-check"><input class="form-check-input" type="checkbox" name="channel" value="app"><label-->
+<!--                                    class="form-check-label">推播 (App)</label>-->
+<!--                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -93,19 +94,19 @@
                             <i class="fas fa-user me-1"></i>前台會員
                         </small>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recAllMembers">
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="front_all" id="recAllMembers">
                             <label class="form-check-label" for="recAllMembers">
                                 全部會員 <span class="text-muted">(12,450)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recActive">
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="front_active" id="recActive">
                             <label class="form-check-label" for="recActive">
                                 活躍會員 <span class="text-muted">(8,320)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recNewMembers">
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="front_new" id="recNewMembers">
                             <label class="form-check-label" for="recNewMembers">
                                 新會員（30天內註冊）<span class="text-muted">(523)</span>
                             </label>
@@ -120,13 +121,13 @@
                             <i class="fas fa-store me-1"></i>主辦方
                         </small>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recAllOrganizers">
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="org_all" id="recAllOrganizers">
                             <label class="form-check-label" for="recAllOrganizers">
                                 全部主辦方 <span class="text-muted">(156)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="recipients" id="recActiveOrganizers">
+                            <input class="form-check-input" type="radio" name="recipientGroup" value="org_active" id="recActiveOrganizers">
                             <label class="form-check-label" for="recActiveOrganizers">
                                 活躍主辦方 <span class="text-muted">(89)</span>
                             </label>
@@ -136,17 +137,17 @@
                     <hr class="border-secondary">
 
                     <!-- 自訂 -->
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="recipients" id="recCustom">
-                        <label class="form-check-label" for="recCustom">
-                            <i class="fas fa-filter me-1"></i>自訂條件
-                        </label>
-                    </div>
-                    <div class="mt-3 d-none" id="customRecipients">
-                        <input type="text" class="form-control bg-dark text-white border-secondary mb-2"
-                            placeholder="搜尋會員或主辦方...">
-                        <small class="text-muted">可輸入 Email 或 ID，用逗號分隔</small>
-                    </div>
+<!--                    <div class="form-check mb-2">-->
+<!--                        <input class="form-check-input" type="radio" name="recipientGroup" value="custom" id="recCustom">-->
+<!--                        <label class="form-check-label" for="recCustom">-->
+<!--                            <i class="fas fa-filter me-1"></i>自訂條件-->
+<!--                        </label>-->
+<!--                    </div>-->
+<!--                    <div class="mt-3 d-none" id="customRecipients">-->
+<!--                        <input type="text"  id="customRecipientsInput" class="form-control bg-dark text-white border-secondary mb-2"-->
+<!--                            placeholder="搜尋會員或主辦方...">-->
+<!--                        <small class="text-muted">可輸入 Email 或 ID，用逗號分隔</small>-->
+<!--                    </div>-->
                 </div>
             </div>
 
@@ -155,20 +156,21 @@
                     <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>範本</h5>
                 </div>
                 <div class="card-body">
-                    <select class="form-select bg-dark text-white border-secondary mb-2">
-                        <option>選擇範本...</option>
-                        <option>新活動上架通知</option>
-                        <option>限時優惠提醒</option>
-                        <option>系統維護公告</option>
+                    <select id="templateSelect" class="form-select bg-dark text-white border-secondary mb-2">
+                        <option value="" selected disabled>選擇範本...</option>
+                        <option value="1" data-title="【新活動上架】Momento 精選推薦" data-content="親愛的會員您好，最新的藝文活動已經上架，快來看看新活動吧！">新活動上架通知</option>
+                        <option value="2" data-title="【新商品上架】Momento 精選推薦" data-content="親愛的會員您好，最新的商品已經上架，快來查看吧！">新商品上架通知</option>
+                        <option value="3" data-title="【重要】Momento 會員服務條款更新公告" data-content="我們近期更新了隱私權政策與服務條款，請點擊連結查看詳細修訂內容，以維護您的權益。">服務條款更新</option>
+                        <option value="4" data-title="【公告】Momento 系統維護通知" data-content="我們將於本週凌晨進行系統升級，屆時將暫停服務。">系統維護公告</option>
                     </select>
-                    <button class="btn btn-sm btn-outline-secondary w-100">載入範本</button>
+<!--                    <button id="btnLoadTemplate" class="btn btn-sm btn-outline-secondary w-100">載入範本</button>-->
                 </div>
             </div>
 
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary btn-lg" >
                     <i class="fas fa-paper-plane me-2"></i>發送通知</button>
-                <button class="btn btn-outline-secondary">預覽</button>
+<!--                <button class="btn btn-outline-secondary">預覽</button>-->
             </div>
         </div>
     </div>
@@ -245,8 +247,20 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:inline="javascript">
-        $(document).ready(function() {
-            // 表單發送
+        $(document).ready(function (){
+            // 範本
+            $('#templateSelect').on('change', function() {
+                const selected = $(this).find(':selected');
+                const title = selected.data('title');
+                const content = selected.data('content');
+
+                if (title && content) {
+                    $('#notificationTitle').val(title);
+                    $('#notificationContent').val(content);
+                }
+            });
+
+            // 發送同步紀錄
             $('#notifyForm').on('submit', function(e) {
                 e.preventDefault(); // 阻止表單跳轉
 

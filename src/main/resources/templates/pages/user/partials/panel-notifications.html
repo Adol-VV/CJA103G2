@@ -1,9 +1,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-0">通知中心</h3>
     <div>
-        <button class="btn btn-outline-light btn-sm me-2"><i class="fas fa-check-double"></i>
-            全部已讀</button>
-        <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> 刪除已讀</button>
+        <button id="btnReadAll" class="btn btn-outline-light btn-sm me-2">
+            <i class="fas fa-check-double"></i>全部已讀</button>
+        <button class="btn btn-outline-danger btn-sm">
+            <i class="fas fa-trash-alt"></i> 刪除已讀</button>
     </div>
 </div>
 
@@ -12,8 +13,8 @@
         <ul class="nav nav-tabs card-header-tabs flex-nowrap overflow-auto" role="tablist">
             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#notif-all">全部</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-system">平台公告</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">主辦方通知 <span
-                        class="badge bg-danger ms-1">2</span></a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">主辦方通知
+                <span class="badge bg-danger ms-1" th:if="${unreadNotifyCount > 0}" th:text="${unreadNotifyCount}">0</span></a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-orders">訂單更新</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-promo">代幣回饋</a></li>
         </ul>
@@ -23,8 +24,26 @@
             <div class="tab-pane fade show active" id="notif-all">
                 <div class="list-group list-group-flush">
                     <!-- Unread: Platform System -->
-                    <a href="#"
-                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+                    <a th:each="notify : ${notifyListData}" href="javascript:void(0)" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative"
+                          th:data-id="${notify.systemNotifyId}">
+                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span th:text="${#strings.contains(notify.content, '|') ? #strings.replace(#strings.arraySplit(notify.content, '\|')[0], '[', '').replace(']', '') : '系統'}">平台</span>
+                                </span>
+                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">標題</h6>
+                            </div>
+                            <small class="text-primary" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">剛剛</small>
+                        </div>
+                        <p class="mb-1 text-muted" th:text="${#strings.contains(notify.content, '|') && #strings.arraySplit(notify.content, '\|').length > 3 ? #strings.arraySplit(notify.content, '\|')[3] : notify.content}">內容</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
+                            <button th:if="${notify.isRead == 0}" class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read" >標記已讀</button>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
                         <div class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
