@@ -21,7 +21,6 @@ const Navigation = {
             }
         });
     },
-
     showSection(section) {
         if (!section) return;
         $('.panel, .section, .content-panel').removeClass('active');
@@ -35,6 +34,10 @@ const Navigation = {
         window.scrollTo(0, 0);
         $('html, body, main').scrollTop(0);
 
+        if(section === 'product-orders'){
+            organizerOrders();
+        }
+
         history.replaceState(null, '', '#' + section);
     },
 
@@ -44,4 +47,17 @@ const Navigation = {
     }
 };
 
+function organizerOrders(){
+    $.ajax({
+        url: '/organizer/prod_order/getAllOrderByOrganizerId',
+        method: 'GET',
+        success: function(responseHtml) {
+            $('#panel-product-orders').html(responseHtml);
+            $('.panel, .section, .content-panel').removeClass('active');
+            $('#panel-product-orders').addClass('active');
+            console.log("訂單資料載入成功");
+        }
+    });
+    
+}
 export default Navigation;

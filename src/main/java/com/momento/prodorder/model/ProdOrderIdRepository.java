@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProdOrderIdRepository extends JpaRepository<ProdOrderIdVO,Integer>{
 	List<ProdOrderIdVO> findByMemberId_MemberId(Integer memberId);
+	List<ProdOrderIdVO> findByOrganizerId_OrganizerId(Integer organizerId);
 }

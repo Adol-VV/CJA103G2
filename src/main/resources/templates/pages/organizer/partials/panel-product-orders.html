@@ -81,41 +81,51 @@
         <table class="table table-dark table-hover mb-0">
             <thead>
                 <tr>
-                    <th><input type="checkbox" class="form-check-input" id="selectAllOrders"></th>
+                    <!-- <th><input type="checkbox" class="form-check-input" id="selectAllOrders"></th> -->
                     <th>訂單編號</th>
                     <th>購買人</th>
                     <th>商品明細</th>
                     <th>總額</th>
                     <th>下單時間</th>
-                    <th>狀態</th>
-                    <th>操作</th>
+                    <!-- <th>狀態</th> -->
+                    <!-- <th>操作</th> -->
                 </tr>
             </thead>
             <tbody id="productOrdersTable">
-                <tr>
-                    <td><input type="checkbox" class="form-check-input order-checkbox"></td>
-                    <td><code>#MOP20241226001</code></td>
+                <tr th:each="organizerOrder:${allOrganizerProdOrder}">
+                    <!-- <td><input type="checkbox" class="form-check-input order-checkbox"></td> -->
+                    <td><code th:text="${organizerOrder.orderId}">#MOP20241226001</code></td>
                     <td>
                         <div class="d-flex align-items-center">
                             <img src="https://ui-avatars.com/api/?name=林書涵&background=2D5F4F&color=fff&size=32"
                                 class="rounded-circle me-2" style="width: 32px;">
                             <div>
-                                <div>林書涵</div>
-                                <small class="text-muted">0912***678</small>
+                                <div class="text-success" th:text="${organizerOrder.memberId.name}">林書涵</div>
+                                <small class="text-muted" th:text="${organizerOrder.memberId.phone}">0912***678</small>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <span class="badge bg-secondary">2 項商品</span>
-                        <small class="d-block text-muted">紀念T恤 x1, 帆布袋 x1</small>
+                        <span class="badge bg-secondary">
+                            <span th:text="${organizerOrder.orderItems.size()}">2</span> 
+                            項商品</span>
+                        <small class="d-block text-light-50 text-success">
+                            <th:block th:each="item, iterStat : ${organizerOrder.orderItems}">
+                                <span th:text="${item.prodId.prodName} + ' x' + ${item.quantity}">商品名稱 x1</span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </th:block>
+                        </small>
                     </td>
-                    <td class="text-success fw-bold">NT$ 1,330</td>
-                    <td>
-                        <div>2024/12/26</div>
-                        <small class="text-muted">14:30</small>
+                    <td class="fw-bold">
+                        <span class="text-success">NT$ </span>
+                        <span class="text-success" th:text="${#numbers.formatInteger(organizerOrder.total, 1, 'COMMA')}">1,330</span>
                     </td>
-                    <td><span class="badge bg-warning text-dark">待備貨</span></td>
                     <td>
+                        <div class="text-success" th:text="${#dates.format(organizerOrder.createdDate, 'yyyy/MM/dd')}">2024/12/26</div>
+                        <small class="text-muted" th:text="${#dates.format(organizerOrder.createdDate,'HH:mm')}">14:30</small>
+                    </td>
+                    <!-- <td><span class="badge bg-warning text-dark">待備貨</span></td> -->
+                    <!-- <td>
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-info" title="查看詳情"
                                 onclick="showOrderDetail('MOP20241226001')">
@@ -126,7 +136,7 @@
                                 <i class="fas fa-box-open"></i>
                             </button>
                         </div>
-                    </td>
+                    </td> -->
                  </tr>
                 <!--<tr>
                     <td><input type="checkbox" class="form-check-input order-checkbox"></td>
@@ -203,15 +213,15 @@
             </tbody>
         </table>
     </div>
-    <div class="card-footer border-secondary d-flex justify-content-between align-items-center">
-        <!-- <div>
+    <!-- <div class="card-footer border-secondary d-flex justify-content-between align-items-center">
+        <div>
             <button class="btn btn-sm btn-outline-primary me-2" id="btnBatchPrepare">
                 <i class="fas fa-box-open me-1"></i>批次備貨
             </button>
             <button class="btn btn-sm btn-outline-info" id="btnBatchShip">
                 <i class="fas fa-shipping-fast me-1"></i>批次出貨
             </button>
-        </div> -->
+        </div>
         <nav>
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item disabled"><a class="page-link" href="#">上一頁</a></li>
@@ -220,5 +230,5 @@
                 <li class="page-item"><a class="page-link" href="#">下一頁</a></li>
             </ul>
         </nav>
-    </div>
+    </div> -->
 </div>
