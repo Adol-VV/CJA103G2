@@ -14,6 +14,7 @@ public class EventReviewDTO {
     private LocalDateTime eventEndAt;
     private LocalDateTime publishedAt;
     private String bannerUrl;
+    private List<String> imageUrls;
 
     // Nested DTOs
     private OrganizerDTO organizer;
@@ -174,6 +175,14 @@ public class EventReviewDTO {
 
     public void setBannerUrl(String bannerUrl) {
         this.bannerUrl = bannerUrl;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public List<TicketDTO> getTickets() {

@@ -20,8 +20,21 @@ public class EventImageVO {
     @Column(name = "IMAGE_URL", nullable = false, length = 500)
     private String imageUrl;
 
+    @Column(name = "IMAGE_ORDER")
+    private Integer imageOrder;
+
     @Column(name = "UPLOADED_AT", updatable = false)
     private LocalDateTime uploadedAt;
+
+    // ... updated constructors, getters/setters ...
+
+    public Integer getImageOrder() {
+        return imageOrder;
+    }
+
+    public void setImageOrder(Integer imageOrder) {
+        this.imageOrder = imageOrder;
+    }
 
     // ========== Lifecycle ==========
 
