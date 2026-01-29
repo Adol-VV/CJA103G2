@@ -90,8 +90,20 @@
                         <small class="text-muted" th:text="${#dates.format(order.createdDate,'HH:mm')}">14:30</small>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-info"
-                            onclick="$('#productOrderModal').modal('show')"><i class="fas fa-eye"></i></button>
+                        <div class="btn-group btn-group-sm">
+                            <form th:action="@{/admin/prod_order/orderDetail}" method="post" style="display:inline;">
+                                <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                                <button class="btn btn-sm btn-outline-info"
+                            o   nclick="$('#productOrderModal').modal('show')"><i class="fas fa-eye"></i></button>
+                                <!-- <button type="submit" class="btn btn-outline-primary btn-sm btn-view-order-detail"
+                                    title="查看訂單">
+                                </button> -->
+                            </form>
+                            <button class="btn btn-outline-success" title="審核退款"
+                                    th:disabled="${order.status != 3 and order.status != 4}">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>

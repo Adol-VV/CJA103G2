@@ -25,7 +25,7 @@ export function initProductApprovals() {
 	async function loadOrderStats() {
 		
     try {
-        const response = await $.get('/Admin/prod_order/orderStats');
+        const response = await $.get('/admin/prod_order/orderStats');
         
         animateNumber('#count-pending', response.pending);
         animateNumber('#count-processing', response.processing);
