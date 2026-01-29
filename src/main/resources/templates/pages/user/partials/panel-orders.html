@@ -105,6 +105,7 @@
                         <input type="hidden" name="orderId" th:value="${order.orderId}" />
                         
                         <button type="submit" class="btn btn-outline-danger btn-sm"
+                                th:disabled="${order.status == 3 or order.status == 4}"
                                 onclick="return confirm('確定要取消這筆訂單嗎？');">
                             取消訂單
                         </button>

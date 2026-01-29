@@ -140,11 +140,12 @@
             <div class="text-end">
                 <td>
                     <div th:switch="${orderDetail.status}">
-                        <span th:case="0" class="badge bg-secondary">未付款</span>
-                        <span th:case="1" class="badge bg-primary">已付款</span>
-                        <span th:case="2" class="badge bg-success">已到貨</span>
-                        <span th:case="3" class="badge bg-danger">退貨</span>
-                        <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
+                            <span th:case="0" class="badge bg-secondary">未付款</span>
+                            <span th:case="1" class="badge bg-primary">已付款</span>
+                            <span th:case="2" class="badge bg-success">已到貨</span>
+                            <span th:case="3" class="badge bg-danger">退貨中</span>
+                            <span th:case="4" class="badge bg-danger">已退貨</span>
+                            <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
                     </div>
                 </td>
                 <p class="text-muted small mb-0">下單時間：<span th:text="${#dates.format(orderDetail.createdDate, 'yyyy/MM/dd HH:mm')}">2024/12/26 14:30</span></p>
@@ -217,7 +218,11 @@
 
                         <!-- Product Item -->
                         <div class="order-item" th:each="item : ${orderDetail.orderItems}">
-                            <img loading="lazy" th:src="${item.prodId.prodImages[0].imageUrl}" class="order-item-img" alt="Product">
+                            <img loading="lazy" 
+                                th:src="${(item.prodId.prodImages != null and !item.prodId.prodImages.isEmpty()) 
+                                        ? item.prodId.prodImages[0].imageUrl 
+                                        : '/images/default.png'}" 
+                                class="order-item-img" alt="Product">
                             <div class="flex-grow-1">
                                 <span class="badge bg-warning text-dark mb-2">商品</span>
                                 <h6 class="mb-1" th:text="${item.prodId.prodName}">經典Logo帆布袋</h6>

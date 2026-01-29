@@ -1,7 +1,6 @@
 package com.momento.prodorder.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,13 +74,13 @@ public class ProdOrderIdController {
 	
 	@GetMapping("/orderStats")
 	@ResponseBody
-	public Map<String, Integer> getStats(HttpSession session) {
+	public int getStats(HttpSession session) {
 	    MemberVO member = (MemberVO) session.getAttribute("loginMember");
 	    List<ProdOrderIdVO> orders = poIdSev.getByMemberId(member.getMemberId());
 	    
 	    int pending = (int) orders.stream().filter(o -> o.getStatus() == 1).count();
 	    
-	    return Map.of("pending", pending);
+	    return pending;
 	}
 	
 	@PostMapping("/deleteOrder")
