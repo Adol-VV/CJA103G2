@@ -1,6 +1,5 @@
 export function initMemberList() {
 	$(document).on('click', '.btn-view-member', function() {
-		const id = $(this).data('id');
 		$('#memberDetailModal').modal('show');
 	});
 
@@ -49,7 +48,6 @@ export function initMemberList() {
 				}
 				throw new Error("網路回應不正常");
 			}).then(data => {
-				alert("更新成功！");
 				location.reload();
 			}).catch(error => {
 				alert("發生錯誤：" + error);

@@ -37,4 +37,8 @@ public class EventOrderItemService {
 	public List<EventOrderItemVO> getEventOrderItemBystatus(Integer status){
 		return repository.findByStatus(status);
 	}
+	
+	public List<Object[]> getTicketCount(Integer eventOrderId){
+		return repository.countByTicketAndOrderId(eventOrderId);
+	}
 }

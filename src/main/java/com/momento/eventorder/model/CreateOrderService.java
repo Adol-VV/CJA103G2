@@ -137,7 +137,7 @@ public class CreateOrderService {
 		}
 
 		eventOrderItemRepo.saveAll(orderItemList);
-		eventOrder.setEventOrderItems(new HashSet<>(orderItemList));
+		eventOrder.setEventOrderItems(new ArrayList<>(orderItemList));
 
 		return eventOrder;
 	}
