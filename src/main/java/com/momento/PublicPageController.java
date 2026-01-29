@@ -17,6 +17,11 @@ public class PublicPageController {
         return "pages/public/terms";
     }
 
+    @GetMapping("/orginformation")
+    public String organizer() {
+    	return "pages/public/organizer-profile";
+    }
+    
     @GetMapping("/privacy")
     public String privacy() {
         return "pages/public/privacy";

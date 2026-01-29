@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.momento.articleimage.model.ArticleImageVO;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.message.model.MessageVO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,6 +34,7 @@ public class ArticleVO implements java.io.Serializable {
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	private List<ArticleImageVO> articleImages = new ArrayList<>();
+	private List<MessageVO> messages = new ArrayList<>();
 
 	public ArticleVO() {
 	}
@@ -59,8 +61,8 @@ public class ArticleVO implements java.io.Serializable {
 	}
 
 	@Column(name = "TITLE")
-	@NotEmpty(message="標題: 請勿空白")
-	@Size(max=100, message="標題: 長度不能超過{max}")
+	@NotEmpty(message = "標題: 請勿空白")
+	@Size(max = 100, message = "標題: 長度不能超過{max}")
 	public String getTitle() {
 		return this.title;
 	}
@@ -70,7 +72,7 @@ public class ArticleVO implements java.io.Serializable {
 	}
 
 	@Column(name = "CONTENT", columnDefinition = "LONGTEXT")
-	@NotEmpty(message="內容: 請勿空白")
+	@NotEmpty(message = "內容: 請勿空白")
 	public String getContent() {
 		return this.content;
 	}
@@ -96,14 +98,23 @@ public class ArticleVO implements java.io.Serializable {
 	public void setUpdatedAt(Timestamp updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
-	@OneToMany(mappedBy = "articleVO", cascade = CascadeType.ALL)
-    @OrderBy("articleImageId ASC") // 讓取出的圖片順序固定
-    public List<ArticleImageVO> getArticleImages() {
-        return this.articleImages;
-    }
 
-    public void setArticleImages(List<ArticleImageVO> articleImages) {
-        this.articleImages = articleImages;
-    }
+	@OneToMany(mappedBy = "articleVO", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("articleImageId ASC") // 讓取出的圖片順序固定
+	public List<ArticleImageVO> getArticleImages() {
+		return this.articleImages;
+	}
+
+	public void setArticleImages(List<ArticleImageVO> articleImages) {
+		this.articleImages = articleImages;
+	}
+
+	@OneToMany(mappedBy = "articleVO", cascade = CascadeType.ALL)
+	public List<MessageVO> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<MessageVO> messages) {
+		this.messages = messages;
+	}
 }
