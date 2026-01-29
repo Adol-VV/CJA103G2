@@ -97,13 +97,13 @@
         // 因為這是 partial，我們可以限縮範圍
 
         // 綁定發布按鈕
+        // 綁定發布按鈕
         $('#panel-article-editor .btn-primary').not('#btnCreateArticle').click(function () {
-            // 確保不是 article-list 的按鈕 (雖然那在另一個 panel)
-            // 這裡的 context 是 document，所以 #panel-article-editor .btn-primary 應該是安全的
 
             const title = $('#articleTitle').val().trim();
             const content = $('#articleContent').val().trim();
             const imageUrl = $('#articleImageHidden').val();
+            const editId = $('#editArticleId').val(); // 取得編輯 ID
 
             if (!title) {
                 Swal.fire('提示', '請輸入標題', 'warning');
@@ -113,24 +113,36 @@
                 Swal.fire('提示', '請輸入內容', 'warning');
                 return;
             }
+            // 編輯模式下，若沒更換圖片，imageUrl 會有值 (載入時填入的)
+            // 新增模式下，必須要有 imageUrl
             if (!imageUrl) {
                 Swal.fire('提示', '請上傳封面圖片', 'warning');
                 return;
             }
 
+            // 判斷是新增還是更新
+            let url = '/organizer/article/create';
+            let data = {
+                title: title,
+                content: content,
+                imageUrl: imageUrl
+            };
+
+            // 若有 ID 則為更新模式
+            if (editId) {
+                url = '/organizer/article/update';
+                data.articleId = editId;
+            }
+
             $.ajax({
-                url: '/organizer/article/create',
+                url: url,
                 type: 'POST',
-                data: {
-                    title: title,
-                    content: content,
-                    imageUrl: imageUrl
-                },
+                data: data,
                 success: function (response) {
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: '發布成功',
+                            title: editId ? '更新成功' : '發布成功',
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
@@ -140,17 +152,18 @@
                             $('#articleImageHidden').val('');
                             $('#articleImagePreview').hide().attr('src', '');
                             $('#uploadPrompt').show();
+                            $('#editArticleId').remove(); // 清除 ID
 
                             // 重新整理頁面或跳轉
                             window.location.href = '/organizer/dashboard#article-list';
-                            window.location.reload(); // 簡單起見，重新載入以更新列表
+                            window.location.reload();
                         });
                     } else {
-                        Swal.fire('發布失敗', response.message, 'error');
+                        Swal.fire('失敗', response.message, 'error');
                     }
                 },
                 error: function () {
-                    Swal.fire('錯誤', '發布請求失敗', 'error');
+                    Swal.fire('錯誤', '請求失敗', 'error');
                 }
             });
         });

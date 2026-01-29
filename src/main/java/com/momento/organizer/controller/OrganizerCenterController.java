@@ -25,6 +25,7 @@ import com.momento.articleimage.model.ArticleImageVO;
 
 import java.sql.Timestamp;
 import java.util.Map;
+import java.util.HashMap;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -369,6 +370,109 @@ public class OrganizerCenterController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "新增失敗: " + e.getMessage()));
+        }
+    }
+
+    // 取得單筆文章資料 (JSON)
+    @GetMapping("/article/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getArticleData(@PathVariable Integer id, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        ArticleVO article = articleSvc.getOneArticle(id);
+        if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+        }
+
+        // 手動構建 JSON Map 以避免循環參照 VO -> Organizer -> List<Article>
+        Map<String, Object> data = new HashMap<>();
+        data.put("articleId", article.getArticleId());
+        data.put("title", article.getTitle());
+        data.put("content", article.getContent());
+
+        // 圖片
+        if (!article.getArticleImages().isEmpty()) {
+            data.put("imageUrl", article.getArticleImages().get(0).getImageUrl());
+        } else {
+            data.put("imageUrl", "");
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
+    // 更新文章
+    @PostMapping("/article/update")
+    @ResponseBody
+    public ResponseEntity<?> updateArticle(@RequestParam Integer articleId,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String imageUrl,
+            HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = articleSvc.getOneArticle(articleId);
+            if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+            }
+
+            article.setTitle(title);
+            article.setContent(content);
+            article.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+            // 更新圖片邏輯
+            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                if (!article.getArticleImages().isEmpty()) {
+                    // 如果原本有圖，更新第一張圖的 URL
+                    ArticleImageVO image = article.getArticleImages().get(0);
+                    image.setImageUrl(imageUrl);
+                } else {
+                    // 如果原本沒有圖，新增一張
+                    ArticleImageVO image = new ArticleImageVO();
+                    image.setImageUrl(imageUrl);
+                    image.setArticleVO(article);
+                    image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                    article.getArticleImages().add(image);
+                }
+            } else {
+                // 如果傳入空值，視為要刪除圖片？目前 UI 是必填，但為了健壯性，若空則清除所有圖片
+                article.getArticleImages().clear();
+            }
+
+            articleSvc.updateArticle(article);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "更新失敗: " + e.getMessage()));
+        }
+    }
+
+    // 刪除文章
+    @PostMapping("/article/delete")
+    @ResponseBody
+    public ResponseEntity<?> deleteArticle(@RequestParam Integer articleId, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = articleSvc.getOneArticle(articleId);
+            if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+            }
+
+            articleSvc.deleteArticle(articleId);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "刪除失敗: " + e.getMessage()));
         }
     }
 }
