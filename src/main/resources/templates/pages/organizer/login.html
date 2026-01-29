@@ -76,7 +76,7 @@
 
                 <!-- Home Link -->
                 <div class="text-center mb-4">
-                    <a href="/" class="text-decoration-none text-muted small">
+                    <a th:href="@{/}" class="text-decoration-none text-muted small">
                         <i class="fas fa-arrow-left me-1"></i> 回到 Momento 首頁
                     </a>
                 </div>
@@ -85,7 +85,7 @@
                     <div class="card-body p-5">
                         <!-- Logo & Role Badge -->
                         <div class="text-center mb-4">
-                            <a href="/" class="text-decoration-none">
+                            <a th:href="@{/}" class="text-decoration-none">
                                 <h2 class="fw-bold mb-3 text-white">Momento</h2>
                             </a>
                             <span class="role-badge">
@@ -124,8 +124,8 @@
                                     <input type="checkbox" class="form-check-input" id="rememberOrg">
                                     <label class="form-check-label" for="rememberOrg">記住我</label>
                                 </div> -->
-                                <a href="/organizer/forgot-password" 
-                                    class="text-primary text-decoration-none" style="margin-left:auto">忘記密碼？</a>
+                                <a href="/organizer/forgot-password" class="text-primary text-decoration-none"
+                                    style="margin-left:auto">忘記密碼？</a>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
                                 <i class="fas fa-sign-in-alt me-2"></i>登入主辦方後台

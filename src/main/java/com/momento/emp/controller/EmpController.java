@@ -3,6 +3,7 @@ package com.momento.emp.controller;
 import com.momento.emp.model.EmpAuthorityVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
+import com.momento.message.model.MessageService;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
@@ -31,6 +32,9 @@ public class EmpController {
 
     @Autowired
     private SystemNotifyService systemNotifyService;
+
+    @Autowired
+    private MessageService messageService;
 
     /**
      * 顯示登入頁面
@@ -121,6 +125,9 @@ public class EmpController {
 
         // pei的
         model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
+
+        // 留言管理：新增的留言 (Status = 1)
+        model.addAttribute("newComments", messageService.getMessagesByStatus(1));
 
         return "pages/admin/dashboard";
     }

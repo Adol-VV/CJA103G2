@@ -38,4 +38,8 @@ public class MessageService {
 	public List<MessageVO> getMessagesByArticleId(Integer articleId) {
 		return repository.findByArticleVO_ArticleId(articleId);
 	}
+
+	public List<MessageVO> getMessagesByStatus(Integer status) {
+		return repository.findByStatus(status);
+	}
 }

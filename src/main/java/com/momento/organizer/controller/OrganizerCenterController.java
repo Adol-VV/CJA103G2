@@ -15,9 +15,16 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
+import com.momento.article.model.ArticleVO;
+import com.momento.articleimage.model.ArticleImageVO;
+
+import java.sql.Timestamp;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -300,19 +307,20 @@ public class OrganizerCenterController {
         }
         ra.addFlashAttribute("prodList", prodSvc.orgSearchProds(organizer.getOrganizerId(), s));
 
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//變更商品上下架狀態
-	@PostMapping("/changeProdStatus")
-	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
-		prodSvc.updateProdStatus(prodId, prodStatus);
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//新增商品
-	@PostMapping("/addProd")
-	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 變更商品上下架狀態
+    @PostMapping("/changeProdStatus")
+    public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
+            @RequestParam("prodStatus") Byte prodStatus) {
+        prodSvc.updateProdStatus(prodId, prodStatus);
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 新增商品
+    @PostMapping("/addProd")
+    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -323,9 +331,44 @@ public class OrganizerCenterController {
         prodVO.setUpdatedAt(LocalDateTime.now());
         prodVO.setProdStatus((byte) 0);
         prodVO.setReviewStatus((byte) 0);
-        
-        
+
         prodSvc.addProd(prodVO);
         return "redirect:/organizer/dashboard#product-list";
-	}
+    }
+
+    // 新增文章
+    @PostMapping("/article/create")
+    @ResponseBody
+    public ResponseEntity<?> createArticle(@RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String imageUrl,
+            HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = new ArticleVO();
+            article.setTitle(title);
+            article.setContent(content);
+            article.setOrganizerVO(organizer);
+            article.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            article.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                ArticleImageVO image = new ArticleImageVO();
+                image.setImageUrl(imageUrl);
+                image.setArticleVO(article);
+                image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                article.getArticleImages().add(image);
+            }
+
+            articleSvc.addArticle(article);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "新增失敗: " + e.getMessage()));
+        }
+    }
 }
