@@ -18,7 +18,36 @@ export function initProductApprovals() {
 				};
 			})
 		}
+		
 	});
+
+	//商品統計
+	async function loadOrderStats() {
+		
+    try {
+        const response = await $.get('/Admin/prod_order/orderStats');
+        
+        animateNumber('#count-pending', response.pending);
+        animateNumber('#count-processing', response.processing);
+        animateNumber('#count-completed', response.completed);
+        animateNumber('#count-refund', response.refund);
+
+    } catch (err) {
+        console.error('抓取統計失敗', err);
+    }
+	}
+	function animateNumber(elementId, targetValue) {
+    $({ Counter: 0 }).animate({ Counter: targetValue }, {
+        duration: 1000,
+        easing: 'swing',
+        step: function () {
+            $(elementId).text(Math.ceil(this.Counter));
+        },
+        complete: function() {
+            $(elementId).text(targetValue);
+        }
+    });
+	}
 
 
 	//商品詳細頁面
@@ -121,6 +150,7 @@ export function initProductApprovals() {
 		$tabs.find('.nav-link[data-status="未通過"] .ms-1').text(count_rejected);
 		$tabs.find('.nav-link[data-status="通過"] .ms-1').text(count_approved);
 		$("span#prodApprovalCount").text(count_pending);
+		
 	})
 	
 
@@ -141,4 +171,5 @@ export function initProductApprovals() {
 			$(reviewStatus).addClass("bg-warning");				
 		}
 	})
+	loadOrderStats();
 }
