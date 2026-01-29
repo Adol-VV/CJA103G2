@@ -181,7 +181,14 @@
 
                 <!-- Orders -->
                 <div th:insert="pages/admin/partials/panel-event-orders"></div>
-                <div th:insert="pages/admin/partials/panel-product-orders"></div>
+                <div id="panel-product-orders" class="section">
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">正在載入訂單資料...</p>
+                    </div>
+                </div>
                 <div th:insert="pages/admin/partials/panel-refund-management"></div>
                 <div th:insert="pages/admin/partials/panel-disputes"></div>
 
