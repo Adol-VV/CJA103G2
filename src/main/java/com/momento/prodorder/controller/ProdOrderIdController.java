@@ -55,9 +55,9 @@ public class ProdOrderIdController {
 			
 			
 			poIdSev.addProdOrder(prodOrderIdVO);
-			return "新增成功";
+			return prodOrderIdVO.getOrderId().toString();
 		}else {
-			return "資料驗證失敗";
+			return "-1";
 		}
 	}
 	

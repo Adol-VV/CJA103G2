@@ -94,7 +94,9 @@ $(function(){
             let quantity = parseInt($(this).find("input").val());
             total += price * quantity;
         });
-        $(".fw-bold.text-success.fs-4").text("NT$ " + total);
+        console.log(total);
+
+        $(".fw-bold.text-success.fs-3").text("NT$ " + total);
         $(".prod_price").text("NT$ " + total);
         
     }
