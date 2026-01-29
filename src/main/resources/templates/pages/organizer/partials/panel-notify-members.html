@@ -51,9 +51,9 @@
 
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="notifyEmail">
-                    <label class="form-check-label" for="notifyEmail">
-                        同時發送 Email 通知
-                    </label>
+<!--                    <label class="form-check-label" for="notifyEmail">-->
+<!--                        同時發送 Email 通知-->
+<!--                    </label>-->
                 </div>
             </div>
         </div>
@@ -144,7 +144,7 @@
                     <th>狀態</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="notifyListDataTbody">
                 <tr th:each="notify : ${notifyListData}">
                     <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
                     <td><span class="badge bg-info" th:text="${notify.notifyStatus == 1 ? '活動提醒' : '一般通知'}">活動提醒</span>

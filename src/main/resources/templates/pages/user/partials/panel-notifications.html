@@ -24,6 +24,36 @@
             <div class="tab-pane fade show active" id="notif-all">
                 <div class="list-group list-group-flush">
                     <!-- Unread: Platform System -->
+<!--                    -->
+                    <a th:each="notify : ${notifyList}" href="javascript:void(0)"
+                       th:data-id="${notify.memberNotifyId}"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+
+                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
+
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                    <span class="badge bg-warning text-dark me-2">
+                        <i class="fas fa-store"></i> 主辦方
+                    </span>
+                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">動態標題</h6>
+                            </div>
+                            <small class="text-warning" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+                        </div>
+
+                        <p class="mb-1 text-muted" th:text="${notify.content}">通知內容</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-user-tie me-1"></i>來自：
+                                <span th:text="${notify.organizerNotifyVO?.organizerVO?.organizerId ?: 'Momento 官方'}">主辦單位</span>
+                            </small>
+                            <button th:if="${notify.isRead == 0}"
+                                    class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
+                                    th:onclick="'markAsRead(' + ${notify.memberNotifyId} + ')'">標記已讀</button>
+                        </div>
+                    </a>
+<!--                    -->
                     <a th:each="notify : ${notifyListData}" href="javascript:void(0)" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative"
                           th:data-id="${notify.systemNotifyId}">
                         <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
@@ -123,6 +153,19 @@
             <!-- Platform System Notifications -->
             <div class="tab-pane fade" id="notif-system">
                 <div class="list-group list-group-flush">
+<!--                    -->
+                    <a th:each="notify : ${notifyListData}" href="javascript:void(0)"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i> 系統</span>
+                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">系統標題</h6>
+                            </div>
+                            <small class="text-primary" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+                        </div>
+                        <p class="mb-1 text-muted" th:text="${notify.content}">內容</p>
+                    </a>
+<!--                    -->
                     <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
@@ -149,6 +192,21 @@
             <!-- Organizer Notifications -->
             <div class="tab-pane fade" id="notif-organizer">
                 <div class="list-group list-group-flush">
+<!--                    -->
+                    <a th:each="notify : ${notifyList}" href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-calendar-check"></i></span>
+                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">標題</h6>
+                            </div>
+                            <small class="text-warning" th:text="${#temporals.format(notify.createdAt, 'MM/dd HH:mm')}">時間</small>
+                        </div>
+                        <p class="mb-1 text-muted" th:text="${notify.content}">內容</p>
+                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>
+                            <span th:text="${notify.organizerNotifyVO.organizerVO.organizerId}">主辦名稱</span>
+                        </small>
+                    </a>
+<!--                    -->
                     <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">

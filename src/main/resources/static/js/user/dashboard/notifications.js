@@ -10,7 +10,8 @@ export function initNotifications() {
         const notifyId = $item.data('id');
 
         //  發送請求更新資料庫
-        $.post('/member/dashboard/notifications/mark-read', {
+        // $.post('/member/dashboard/notifications/mark-read', {
+        $.post('/member/notifications/read', {
             notifyId: notifyId
         }, function (res) {
             if (res.success) {
@@ -20,6 +21,7 @@ export function initNotifications() {
                 $btn.fadeOut(function() { $(this).remove(); });
                 // 移除左側的藍色未讀提示條
                 updateAllBadges();
+
                 console.log("資料庫狀態更新成功，已讀率將會同步更新");
             }
         });
@@ -56,5 +58,5 @@ export function initNotifications() {
             $('#notificationContent').val(content);
             console.log("範本套入成功");
         }
-    });
+    })
 }

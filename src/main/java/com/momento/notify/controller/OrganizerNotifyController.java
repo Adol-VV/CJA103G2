@@ -8,17 +8,14 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @Validated
@@ -58,6 +55,7 @@ public class OrganizerNotifyController {
                     .filter(n -> n != null && n.getIsRead() != null && n.getIsRead() == 0)
                     .count();
 
+            session.setAttribute("unreadCount", (int) unreadCount);
             result.put("success", true);
             result.put("notifications", notifications);
             result.put("unreadCount", unreadCount);
@@ -115,6 +113,8 @@ public class OrganizerNotifyController {
                 }
             }
 
+            session.setAttribute("unreadCount", 0);
+
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);
@@ -128,38 +128,41 @@ public class OrganizerNotifyController {
      * 發送通知給會員
      */
     @PostMapping("/addNotify")
-    public String addNotify(
-            @ModelAttribute("organizerNotifyVO") OrganizerNotifyVO vo,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
+    @ResponseBody
+    public ResponseEntity<?> addNotify(
+            @ModelAttribute("organizerNotifyVO") OrganizerNotifyVO vo, HttpSession session) {
         try {
-            // 從 Session 取得登入的主辦方
+            // 從Session取得登入的主辦方
             OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+            EmpVO currentEmp = (EmpVO) session.getAttribute("loginEmp");
             if (organizer == null) {
-                return "redirect:/organizer/login";
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("請重新登入");
+            }
+
+            // 注意!可能要改掉
+            if (currentEmp == null) {
+                // 在專案開發階段，若尚未實作員工登入 Session，先手動建立一個 ID 為 1 的員工物件
+                currentEmp = new EmpVO();
+                currentEmp.setEmpId(1);
             }
 
             // 設定主辦方 ID
             vo.setOrganizerVO(organizer);
             vo.setCreatedAt(java.time.LocalDateTime.now());
             vo.setIsRead(0);
+            vo.setEmpVO(currentEmp);
 
-            // 設定員工 ID（暫時使用固定值）
-            EmpVO tempEmp = new EmpVO();
-            tempEmp.setEmpId(1);
-            vo.setEmpVO(tempEmp);
 
             // 執行儲存
             orgNotifySvc.addNotify(vo);
 
-            redirectAttributes.addFlashAttribute("successMessage", "通知已成功發送！");
+            // 抓主辦方最新通知列表給前端
+            List<OrganizerNotifyVO> updatedList = orgNotifySvc.getNotifiesByOrganizer(organizer.getOrganizerId());
+            return ResponseEntity.ok(updatedList);
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "發送失敗：" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("發送失敗：" + e.getMessage());
         }
-
-        return "redirect:/organizer/dashboard#notify-members";
     }
 
     /**

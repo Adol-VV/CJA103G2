@@ -27,7 +27,7 @@ import java.util.Set;
 @RequestMapping("/notify")
 public class SystemNotifyController {
     @Autowired
-    SystemNotifyService sysNotifySvc;
+    private SystemNotifyService sysNotifySvc;
 
     @PostMapping("sendMessageNotify")
     @ResponseBody
@@ -67,6 +67,42 @@ public class SystemNotifyController {
         }
 
         }
+
+    @PostMapping("sendToOrganizerNotify")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> sendToOrganizerNotify(
+            @RequestParam("organizerId") Integer organizerId,
+            @NotEmpty(message = "通知類型: 請勿空白") @RequestParam("type") String type,
+            @NotEmpty(message = "通知標題: 請勿空白") @RequestParam("title") String title,
+            @NotEmpty(message = "通知內容: 請勿空白") @RequestParam("rawContent") String rawContent,
+            @RequestParam(value = "url", required = false, defaultValue = "/organizer/dashboard") String url,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        // 從session取得目前登入的管理員
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            response.put("success", false);
+            response.put("message", "連線逾時，請重新登入");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            //發送 傳入loginEmp作為 sender
+            sysNotifySvc.sendToOrganizer(organizerId, type, title, rawContent, url, loginEmp);
+
+            // 回傳成功資訊
+            response.put("success", true);
+            response.put("message", "通知已成功發送給主辦方！");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "發送失敗：" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 
     // 取得該會員的所有系統通知

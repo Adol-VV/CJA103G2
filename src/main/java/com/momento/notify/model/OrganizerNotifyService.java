@@ -1,5 +1,7 @@
 package com.momento.notify.model;
 
+import com.momento.member.model.MemberRepository;
+import com.momento.member.model.MemberVO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,33 @@ public class OrganizerNotifyService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private MemberNotifyRepository memNotifyRepo;
+    @Autowired
+    private MemberRepository memberRepository;
+
+
     @Transactional
     public void addNotify(OrganizerNotifyVO organizerNotifyVO){
         repository.save(organizerNotifyVO);
+        List<MemberVO> allMembers = memberRepository.findAll(); // 從MemberRepository動態獲取所有會員
+
+        for (MemberVO member : allMembers){
+            MemberNotifyVO memberNotify = new MemberNotifyVO();
+            memberNotify.setMemberVO(member);
+            memberNotify.setOrganizerNotifyVO(organizerNotifyVO);
+            memberNotify.setTitle(organizerNotifyVO.getTitle());
+            memberNotify.setContent(organizerNotifyVO.getContent());
+            memberNotify.setIsRead(0);
+            memberNotify.setCreatedAt(java.time.LocalDateTime.now());
+
+            memNotifyRepo.save(memberNotify);
+        }
     }
+    public List<OrganizerNotifyVO> getNotifiesByOrganizer(Integer organizerId) {
+        return repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+    }
+
     @Transactional
     public void updateNotify(OrganizerNotifyVO organizerNotifyVO){
         repository.save(organizerNotifyVO);

@@ -62,6 +62,18 @@ public class SystemNotifyService {
         }
     }
 
+    @Transactional
+    public void markAsRead(Integer sysNotifyId) {
+        repository.findById(sysNotifyId).ifPresent(vo -> {
+            vo.setIsRead(1);
+            repository.save(vo);
+        });
+    }
+    @Transactional
+    public void markAllAsReadForOrg(Integer orgId) {
+        repository.markAllAsReadByOrgId(orgId);
+    }
+
     private String getTargetLabel(String group) {
         if (group == null) return "未知對象";
         return switch (group) {
@@ -141,6 +153,10 @@ public class SystemNotifyService {
         return repository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
     }
 
+    public List<SystemNotifyVO> getByOrgId(Integer organizerId) {
+        return repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+    }
+
     public List<SystemNotifyVO> getAll() {
 
         return repository.findAll();
@@ -149,5 +165,27 @@ public class SystemNotifyService {
     // 取得群發通知的統計紀錄
     public List<Object[]> getMessageNotifyRecords() {
         return repository.findGroupedNotifyRecords();
+    }
+
+    public void sendToOrganizer(Integer organizerId, String category, String title, String content, String url, EmpVO sender) {
+        SystemNotifyVO notify = new SystemNotifyVO();
+        // 設定對象為主辦方
+        OrganizerVO org = new OrganizerVO();
+        org.setOrganizerId(organizerId);
+        notify.setOrganizerVO(org);
+        // 格式:類型,|主辦方|URL|內容
+        notify.setTitle(title);
+        notify.setContent(category + "|主辦方|" + url + "|" + content);
+        notify.setIsRead(0); // 預設未讀
+        notify.setCreatedAt(java.time.LocalDateTime.now());
+
+        if (sender != null && sender.getEmpId() != null) {
+            notify.setEmpVO(sender);
+        } else {
+            EmpVO systemEmp = new EmpVO();
+            systemEmp.setEmpId(1);
+            notify.setEmpVO(systemEmp);
+        }
+        repository.save(notify);
     }
 }

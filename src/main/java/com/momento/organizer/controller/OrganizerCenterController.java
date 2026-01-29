@@ -1,33 +1,32 @@
 package com.momento.organizer.controller;
 
-import com.momento.emp.model.EmpVO;
+import com.momento.article.model.ArticleService;
+import com.momento.article.model.ArticleVO;
+import com.momento.articleimage.model.ArticleImageVO;
+import com.momento.notify.model.OrganizerNotifyService;
+import com.momento.notify.model.OrganizerNotifyVO;
+import com.momento.notify.model.SystemNotifyService;
+import com.momento.notify.model.SystemNotifyVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
-import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import com.momento.prod.model.ProdVO;
-
-import com.momento.article.model.ArticleService;
-
-import java.time.LocalDateTime;
-
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-
-import com.momento.article.model.ArticleVO;
-import com.momento.articleimage.model.ArticleImageVO;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/organizer")
@@ -45,6 +44,11 @@ public class OrganizerCenterController {
     @Autowired
     private ArticleService articleSvc;
 
+    @Autowired
+    private SystemNotifyService sysNotifySvc;
+    @Autowired
+    private OrganizerNotifyService orgNotifySvc;
+
     @GetMapping("/login")
     public String showLoginPage() {
         return "pages/organizer/login";
@@ -52,9 +56,9 @@ public class OrganizerCenterController {
 
     @PostMapping("/login")
     public String login(@RequestParam String account,
-            @RequestParam String password,
-            HttpSession session,
-            Model model) {
+                        @RequestParam String password,
+                        HttpSession session,
+                        Model model) {
 
         // 查詢主辦方
         OrganizerVO organizer = organizerService.findByAccount(account);
@@ -102,6 +106,27 @@ public class OrganizerCenterController {
         if (!model.containsAttribute("prodList")) {
             model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
         }
+
+        // 抓主辦方通知
+        List<OrganizerNotifyVO> list = orgNotifySvc.getAll();
+        List<SystemNotifyVO> notifyList = sysNotifySvc.getByOrgId(organizer.getOrganizerId());
+        if (notifyList == null) {
+            notifyList = new java.util.ArrayList<>();
+        }
+
+        long totalCount = notifyList.size();
+        long platformCount = notifyList.stream()
+                .filter(n -> !n.getContent().contains("訂單") && !n.getContent().contains("退款"))
+                .count();
+        long memberCount = totalCount - platformCount;
+        // 計算未讀數量
+        long unreadNotifyCount = notifyList.stream().filter(n -> n.getIsRead() == 0).count();
+        model.addAttribute("notifyListData", notifyList);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("platformCount", platformCount);
+        model.addAttribute("memberCount", memberCount);
+        model.addAttribute("unreadNotifyCount", unreadNotifyCount);
+        model.addAttribute("organizerNotifyVO", new OrganizerNotifyVO());
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
@@ -370,5 +395,50 @@ public class OrganizerCenterController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "新增失敗: " + e.getMessage()));
         }
+    }
+
+    @PostMapping("/dashboard/notifications/mark-read")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId, HttpSession session) {
+        Map<String, Object> response = new java.util.HashMap<>();
+        try {
+            if (session.getAttribute("loginOrganizer") == null) {
+                response.put("success", false);
+                response.put("message", "請先登入");
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+            }
+            sysNotifySvc.updateReadStatus(notifyId, 1);
+            response.put("success", true);
+            response.put("message", "單則通知已讀成功");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "操作失敗: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/dashboard/notifications/mark-all-read")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.Map<String, Object>> markAllAsRead(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            OrganizerVO loginOrganizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+            if (loginOrganizer == null) {
+                response.put("success", false);
+                response.put("message", "連線逾時，請重新登入");
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+            }
+            sysNotifySvc.markAllAsReadForOrg(loginOrganizer.getOrganizerId());
+
+            response.put("success", true);
+            response.put("message", "所有通知已標記為已讀");
+            return org.springframework.http.ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "批次更新失敗: " + e.getMessage());
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
     }
 }
