@@ -1,5 +1,6 @@
 package com.momento.emp.controller;
 
+import com.momento.emp.model.BackendFunctionVO;
 import com.momento.emp.model.EmpAuthorityVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
@@ -15,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -116,8 +118,11 @@ public class EmpController {
         model.addAttribute("activeFunctionIds", activeFunctionIds);
 
         // 員工管理所需的列表
-        model.addAttribute("empListData", empSvc.getAllEmployees());
-        model.addAttribute("allFunctions", empSvc.getAllFunctions());
+        List<EmpVO> employeeList = empSvc.getAllEmployees();
+        List<BackendFunctionVO> functionList = empSvc.getAllFunctions();
+
+        model.addAttribute("employees", employeeList != null ? employeeList : new ArrayList<>());
+        model.addAttribute("allFunctions", functionList != null ? functionList : new ArrayList<>());
 
         if (!model.containsAttribute("prodList")) {
             model.addAttribute("prodList", prodSvc.getAllProds());

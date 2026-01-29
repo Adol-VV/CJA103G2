@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.momento.event.dto.EventDetailDTO;
 import com.momento.event.dto.EventFilterDTO;
 import com.momento.event.dto.EventListItemDTO;
+import com.momento.event.dto.TypeMenuDTO;
 import com.momento.event.model.EventService;
 import com.momento.event.model.TypeRepository;
 import com.momento.event.model.TypeVO;
@@ -162,7 +163,8 @@ public class EventController {
         }
 
         // 查詢所有活動類型（用於篩選選單）
-        List<TypeVO> types = typeRepository.findAll();
+        List<TypeVO> typeVOs = typeRepository.findAll();
+        List<TypeMenuDTO> types = typeVOs.stream().map(TypeMenuDTO::new).collect(java.util.stream.Collectors.toList());
         System.out.println("活動類型數：" + types.size());
         System.out.println("=== Debug End ===");
 
@@ -236,7 +238,8 @@ public class EventController {
         Page<EventListItemDTO> eventPage = eventService.searchEvents(keyword, page, size);
 
         // 查詢所有活動類型（用於篩選選單）
-        List<TypeVO> types = typeRepository.findAll();
+        List<TypeVO> typeVOs = typeRepository.findAll();
+        List<TypeMenuDTO> types = typeVOs.stream().map(TypeMenuDTO::new).collect(java.util.stream.Collectors.toList());
 
         // 傳遞資料到頁面
         model.addAttribute("events", eventPage.getContent());
@@ -273,7 +276,8 @@ public class EventController {
         Page<EventListItemDTO> eventPage = eventService.filterEvents(filterDTO);
 
         // 查詢所有活動類型
-        List<TypeVO> types = typeRepository.findAll();
+        List<TypeVO> typeVOs = typeRepository.findAll();
+        List<TypeMenuDTO> types = typeVOs.stream().map(TypeMenuDTO::new).collect(java.util.stream.Collectors.toList());
 
         // 傳遞資料到頁面
         model.addAttribute("events", eventPage.getContent());

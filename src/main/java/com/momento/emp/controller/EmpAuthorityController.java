@@ -29,7 +29,7 @@ public class EmpAuthorityController {
     private EmpService empService;
 
     /**
-     * 只有擁有「權限管理 (ID=9)」的人才能進入此頁面
+     * 只有超級管理員才能進入此頁面
      */
     @GetMapping
     public String showPermissionPage(HttpSession session, Model model) {
@@ -40,32 +40,16 @@ public class EmpAuthorityController {
             return "redirect:/admin/login";
         }
 
-        // 2. 檢查權限 (Plan A: 檢查是否有 functionId = 9)
-        // 為了方便，我們假設 session 裡的 empVO 已經是最新的。
-        // 如果 session 裡的不是最新的，建議重新從 DB 撈一次權限檢查，這裡暫時簡化。
-        boolean isAdmin = false;
-
-        // 【注意】這裡需要確認 EmpVO 裡面有沒有 authorities 這個 Set/List
-        // 如果沒有，我們需要透過 service 查一下
-        List<EmpAuthorityVO> myAuths = authorityService.getAuthorities(currentEmp.getEmpId());
-        for (EmpAuthorityVO auth : myAuths) {
-            if (auth.getFunctionId() == 9) {
-                isAdmin = true;
-                break;
-            }
+        // 2. 檢查是否為超級管理員
+        if (!empService.isSuperAdmin(currentEmp.getEmpId())) {
+            return "redirect:/admin/dashboard"; // 無權限，踢回首頁
         }
 
-        if (!isAdmin) {
-            // 沒有權限，踢回首頁或顯示錯誤
-            return "redirect:/admin/dashboard"; // 或是 return "error/403";
-        }
-
-        // 3. 準備頁面資料：列出所有員工 (除了已離職的?)
+        // 3. 準備頁面資料：列出所有員工
         List<EmpVO> allEmployees = empService.getAllEmployees();
         model.addAttribute("employees", allEmployees);
 
-        return "pages/admin/partials/panel-staff-management"; // 對應
-                                                              // templates/pages/admin/partials/panel-staff-management.html
+        return "pages/admin/partials/panel-staff-management";
     }
 
     /**
@@ -89,15 +73,13 @@ public class EmpAuthorityController {
     @PostMapping("/update")
     @ResponseBody
     public ResponseEntity<?> updatePermissions(@RequestBody Map<String, Object> payload, HttpSession session) {
-        // 安全檢查 (再次確認發送請求的人有權限)
+        // 安全檢查：只有超級管理員可以執行
         EmpVO currentEmp = (EmpVO) session.getAttribute("empVO");
         if (currentEmp == null)
             return ResponseEntity.status(401).body("請先登入");
 
-        // 再次檢查是否擁有管理權限 (ID=9)
-        List<EmpAuthorityVO> myAuths = authorityService.getAuthorities(currentEmp.getEmpId());
-        boolean isAdmin = myAuths.stream().anyMatch(a -> a.getFunctionId() == 9);
-        if (!isAdmin) {
+        // 檢查是否為超級管理員
+        if (!empService.isSuperAdmin(currentEmp.getEmpId())) {
             return ResponseEntity.status(403).body("無權限執行此操作");
         }
 

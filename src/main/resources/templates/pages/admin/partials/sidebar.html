@@ -67,7 +67,7 @@
             </th:block>
 
             <!-- 用戶管理 -->
-            <li th:if="${isSuperAdmin or activeFunctionIds.contains(1) or activeFunctionIds.contains(9)}">
+            <li th:if="${isSuperAdmin or activeFunctionIds.contains(1)}">
                 <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">用戶管理</h6>
             </li>
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(1)}">
@@ -75,7 +75,7 @@
                     <i class="fas fa-users me-2"></i> 會員管理
                 </a>
             </li>
-            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(9)}">
+            <li class="nav-item" th:if="${isSuperAdmin}">
                 <a class="nav-link" href="#" data-section="staff-management">
                     <i class="fas fa-user-shield me-2"></i> 員工管理
                 </a>

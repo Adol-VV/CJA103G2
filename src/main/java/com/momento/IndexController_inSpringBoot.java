@@ -45,7 +45,7 @@ public class IndexController_inSpringBoot {
 
     @Autowired
     private EventRepository eventRepository;
-    
+
     @Autowired
     private ProdService prodSvc;
 
@@ -91,10 +91,10 @@ public class IndexController_inSpringBoot {
             return new TypeCountDTO(type, count);
         }).collect(java.util.stream.Collectors.toList());
         model.addAttribute("eventTypes", typeCounts);
-        
-        //撈取最新活動(6筆)
+
+        // 撈取最新活動(6筆)
         List<ProdDTO> latestProds = prodSvc.findLatestProds();
-        model.addAttribute("latestProds", latestProds);       
+        model.addAttribute("latestProds", latestProds);
         return "index"; // view
     }
 
@@ -103,44 +103,110 @@ public class IndexController_inSpringBoot {
         private TypeVO type;
         private long count;
         private String iconClass;
+        private String lucideIcon;
+        private String colorClass;
 
         public TypeCountDTO(TypeVO type, long count) {
             this.type = type;
             this.count = count;
             this.iconClass = determineIcon(type.getTypeName());
+            this.lucideIcon = determineLucideIcon(type.getTypeName());
+            this.colorClass = determineColor(type.getTypeName());
+        }
+
+        private String determineLucideIcon(String name) {
+            if (name == null)
+                return "tag";
+
+            if (name.contains("音樂") || name.contains("演唱"))
+                return "music";
+            if (name.contains("展覽") || name.contains("藝術"))
+                return "palette";
+            if (name.contains("表演") || name.contains("戲劇"))
+                return "masks-theater";
+            if (name.contains("講座") || name.contains("研討"))
+                return "mic";
+            if (name.contains("工坊") || name.contains("手作"))
+                return "hand";
+            if (name.contains("影像") || name.contains("多媒體") || name.contains("電影"))
+                return "video";
+            if (name.contains("文化") || name.contains("節慶") || name.contains("民俗"))
+                return "landmark";
+            if (name.contains("運動") || name.contains("休閒") || name.contains("賽事"))
+                return "trophy";
+            if (name.contains("生活") || name.contains("風格"))
+                return "leaf";
+            if (name.contains("市集") || name.contains("購物"))
+                return "store";
+            if (name.contains("旅遊") || name.contains("觀光"))
+                return "map";
+            if (name.contains("設計") || name.contains("創意"))
+                return "lightbulb";
+
+            return "tag";
+        }
+
+        private String determineColor(String name) {
+            if (name == null)
+                return "text-secondary";
+            if (name.contains("音樂") || name.contains("演唱"))
+                return "text-success";
+            if (name.contains("展覽") || name.contains("藝術"))
+                return "text-info";
+            if (name.contains("表演") || name.contains("戲劇"))
+                return "text-warning";
+            if (name.contains("講座") || name.contains("研討"))
+                return "text-info";
+            if (name.contains("工坊") || name.contains("手作"))
+                return "text-danger";
+            if (name.contains("影像") || name.contains("多媒體") || name.contains("電影"))
+                return "text-secondary";
+            if (name.contains("文化") || name.contains("節慶") || name.contains("民俗"))
+                return "text-danger";
+            if (name.contains("運動") || name.contains("休閒") || name.contains("賽事"))
+                return "text-primary";
+            if (name.contains("生活") || name.contains("風格"))
+                return "text-success";
+            if (name.contains("市集") || name.contains("購物"))
+                return "text-warning";
+            if (name.contains("旅遊") || name.contains("觀光"))
+                return "text-success";
+            if (name.contains("設計") || name.contains("創意"))
+                return "text-warning";
+            return "text-secondary";
         }
 
         private String determineIcon(String name) {
             if (name == null)
-                return "fas fa-tag text-secondary";
+                return "fas fa-tag";
 
-            // 根據關鍵字分配不同的 Icon 與顏色
+            // 根據關鍵字分配不同的 Icon
             if (name.contains("音樂") || name.contains("演唱"))
-                return "fas fa-music text-success";
+                return "fas fa-music";
             if (name.contains("展覽") || name.contains("藝術"))
-                return "fas fa-palette text-info";
+                return "fas fa-palette";
             if (name.contains("表演") || name.contains("戲劇"))
-                return "fas fa-theater-masks text-warning";
+                return "fas fa-theater-masks";
             if (name.contains("講座") || name.contains("研討"))
-                return "fas fa-microphone text-info";
+                return "fas fa-microphone";
             if (name.contains("工坊") || name.contains("手作"))
-                return "fas fa-hands text-danger";
+                return "fas fa-hands";
             if (name.contains("影像") || name.contains("多媒體") || name.contains("電影"))
-                return "fas fa-video text-secondary";
+                return "fas fa-video";
             if (name.contains("文化") || name.contains("節慶") || name.contains("民俗"))
-                return "fas fa-landmark text-danger";
+                return "fas fa-landmark";
             if (name.contains("運動") || name.contains("休閒") || name.contains("賽事"))
-                return "fas fa-trophy text-primary";
+                return "fas fa-trophy";
             if (name.contains("生活") || name.contains("風格"))
-                return "fas fa-leaf text-success";
+                return "fas fa-leaf";
             if (name.contains("市集") || name.contains("購物"))
-                return "fas fa-store text-warning";
+                return "fas fa-store";
             if (name.contains("旅遊") || name.contains("觀光"))
-                return "fas fa-map-marked-alt text-success";
+                return "fas fa-map-marked-alt";
             if (name.contains("設計") || name.contains("創意"))
-                return "fas fa-lightbulb text-warning";
+                return "fas fa-lightbulb";
 
-            return "fas fa-tag text-secondary"; // 預設值
+            return "fas fa-tag"; // 預設值
         }
 
         public TypeVO getType() {
@@ -153,6 +219,14 @@ public class IndexController_inSpringBoot {
 
         public String getIconClass() {
             return iconClass;
+        }
+
+        public String getLucideIcon() {
+            return lucideIcon;
+        }
+
+        public String getColorClass() {
+            return colorClass;
         }
     }
 

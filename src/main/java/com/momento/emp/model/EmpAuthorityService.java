@@ -31,7 +31,6 @@ public class EmpAuthorityService {
         // 【重要】超級管理員防護機制 (God Mode Protection)
         // 絕對禁止任何人修改 ID=1 (admin) 的權限，避免系統鎖死
         if (targetEmpId == 1) {
-            // 這邊可以選擇拋出異常，讓 Controller 捕捉並顯示錯誤訊息
             throw new RuntimeException("操作被拒絕：超級管理員 (ID=1) 的權限不可變更！");
         }
 
