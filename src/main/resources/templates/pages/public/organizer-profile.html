@@ -185,31 +185,36 @@
             <div class="tab-pane fade show active" id="tab-events">
                 <div class="row g-4" th:if="${events != null and !events.isEmpty()}">
                     <!-- Dynamic Event Loop -->
-                    <div class="col-md-6 col-lg-4" th:each="event : ${events}">
+                    <div class="col-6 col-md-3 col-lg-2" th:each="event : ${events}">
                         <a th:href="@{/event/{id}(id=${event.eventId})}" class="text-decoration-none">
                             <div class="card bg-dark border-secondary event-card h-100" style="cursor: pointer;">
                                 <div class="position-relative">
                                     <img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
-                                        style="height: 180px; object-fit: cover;">
+                                        style="height: 90px; object-fit: cover;">
 
                                     <!-- Status Badge -->
-                                    <span class="badge bg-success position-absolute top-0 end-0 m-2"
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
                                         th:if="${event.frontendStatus == 'ON_SALE'}">熱賣中</span>
-                                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2"
+                                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
                                         th:if="${event.frontendStatus == 'COMING_SOON'}">即將開賣</span>
-                                    <span class="badge bg-secondary position-absolute top-0 end-0 m-2"
+                                    <span class="badge bg-secondary position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
                                         th:if="${event.frontendStatus == 'FINISHED'}">已結束</span>
                                 </div>
-                                <div class="card-body p-3">
-                                    <span class="badge bg-primary mb-2" th:text="${event.typeName}">音樂演出</span>
-                                    <h5 class="card-title text-truncate text-white" th:text="${event.title}">活動標題</h5>
-                                    <p class="text-muted small mb-1">
-                                        <i class="far fa-calendar me-2"></i>
+                                <div class="card-body p-2" style="line-height: 1.2;">
+                                    <span class="badge bg-primary mb-1" style="font-size: 0.6rem;"
+                                        th:text="${event.typeName}">音樂演出</span>
+                                    <h6 class="card-title text-truncate text-white mb-1" style="font-size: 0.85rem;"
+                                        th:text="${event.title}">活動標題</h6>
+                                    <p class="text-muted mb-1" style="font-size: 0.7rem;">
+                                        <i class="far fa-calendar me-1"></i>
                                         <span
                                             th:text="${#temporals.format(event.eventStartAt, 'yyyy/MM/dd')}">2025/02/14</span>
                                     </p>
-                                    <p class="text-muted small text-truncate mb-0">
-                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                    <p class="text-muted text-truncate mb-0" style="font-size: 0.7rem;">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
                                         <span th:text="${event.place}">地點</span>
                                     </p>
                                 </div>
