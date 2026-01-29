@@ -149,8 +149,8 @@ public class EventServiceImpl implements EventService {
 
         @Override
         public List<EventListItemDTO> getOrganizerEvents(Integer organizerId, int limit) {
-                List<EventVO> events = eventRepository.findByOrganizer_OrganizerIdAndStatus(organizerId,
-                                EventVO.STATUS_PUBLISHED);
+                List<EventVO> events = eventRepository.findOrganizerProfileEvents(organizerId,
+                                java.time.LocalDateTime.now());
                 return events.stream().limit(limit).map(this::convertToListItemDTO).collect(Collectors.toList());
         }
 
@@ -206,6 +206,7 @@ public class EventServiceImpl implements EventService {
                 dto.setTypeName(event.getType() != null ? event.getType().getTypeName() : null);
                 dto.setOrganizerName(event.getOrganizer().getName());
                 dto.setOrganizerId(event.getOrganizer().getOrganizerId());
+                dto.setFrontendStatus(event.getFrontendStatus().name());
 
                 Optional<EventImageVO> coverImage = eventImageRepository
                                 .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());

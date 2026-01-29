@@ -153,30 +153,53 @@ function initSearch() {
         }
 
         try {
-            const [eventRes, prodRes] = await Promise.all([
+            const [eventRes, prodRes, orgRes] = await Promise.all([
                 fetch(`/event/api/search?keyword=${encodeURIComponent(query)}&size=5`),
-                fetch(`/prod/api/search?keyword=${encodeURIComponent(query)}`)
+                fetch(`/prod/api/search?keyword=${encodeURIComponent(query)}`),
+                fetch(`/orginformation/api/search?keyword=${encodeURIComponent(query)}`)
             ]);
 
-            const eventData = await eventRes.json();
-            const prodData = await prodRes.json();
+            const eventData = eventRes.ok ? await eventRes.json() : null;
+            const prodData = prodRes.ok ? await prodRes.json() : null;
+            const orgData = orgRes.ok ? await orgRes.json() : null;
 
-            const events = eventData.content || [];
-            const prods = prodData.slice(0, 5) || [];
+            const events = (eventData && eventData.content && Array.isArray(eventData.content)) ? eventData.content : [];
+            const prods = Array.isArray(prodData) ? prodData.slice(0, 5) : [];
+            const organizers = Array.isArray(orgData) ? orgData.slice(0, 3) : [];
 
-            if (events.length === 0 && prods.length === 0) {
+            if (events.length === 0 && prods.length === 0 && organizers.length === 0) {
                 searchResults.innerHTML = `
                     <div class="p-5 text-center text-muted">
                         <i class="fas fa-search-minus mb-3 fa-2x"></i>
-                        <p>找不到與「${query}」相關的活動或商品</p>
+                        <p>找不到與「${query}」相關的內容</p>
                     </div>
                 `;
                 return;
             }
 
             let html = '<div class="list-group list-group-flush">';
+
+            // --- 主辦方 Section ---
+            if (organizers.length > 0) {
+                html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold">主辦方</div>';
+                organizers.forEach(o => {
+                    html += `
+                        <a href="/orginformation/${o.organizerId}" class="list-group-item list-group-item-action bg-transparent border-0 text-white d-flex align-items-center gap-3 py-2 search-result-item">
+                            <div class="rounded-circle bg-success bg-opacity-20 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-building text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">${o.name}</div>
+                                <div class="small text-muted text-truncate" style="max-width: 250px;">${o.introduction || '主辦方介紹'}</div>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            // --- 活動 Section ---
             if (events.length > 0) {
-                html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold">活動</div>';
+                html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold mt-2">活動</div>';
                 events.forEach(e => {
                     html += `
                         <a href="/event/${e.eventId}" class="list-group-item list-group-item-action bg-transparent border-0 text-white d-flex align-items-center gap-3 py-2 search-result-item">
@@ -190,6 +213,7 @@ function initSearch() {
                 });
             }
 
+            // --- 商品 Section ---
             if (prods.length > 0) {
                 html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold mt-2">商品</div>';
                 prods.forEach(p => {

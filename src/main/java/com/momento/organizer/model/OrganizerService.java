@@ -177,4 +177,17 @@ public class OrganizerService {
 
         return organizerRepository.save(organizer);
     }
+
+    /**
+     * 搜尋已認證的主辦方 (用於前台全站搜尋)
+     */
+    public List<com.momento.organizer.dto.OrganizerSearchDTO> searchActiveOrganizers(String keyword) {
+        List<OrganizerVO> list = organizerRepository.findByNameContainingIgnoreCaseAndStatus(keyword, (byte) 1);
+        return list.stream()
+                .map(o -> new com.momento.organizer.dto.OrganizerSearchDTO(
+                        o.getOrganizerId(),
+                        o.getName(),
+                        o.getIntroduction()))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

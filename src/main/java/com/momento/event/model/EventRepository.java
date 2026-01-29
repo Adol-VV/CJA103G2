@@ -85,6 +85,8 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
 
         List<EventVO> findByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status);
 
+        List<EventVO> findByOrganizer_OrganizerIdAndStatusIn(Integer organizerId, java.util.Collection<Byte> statuses);
+
         Page<EventVO> findByOrganizer_OrganizerIdAndTitleContaining(Integer organizerId, String keyword,
                         Pageable pageable);
 
@@ -109,6 +111,13 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         long countByOrganizer_OrganizerIdAndStatus(Integer organizerId, Byte status);
 
         long countByOrganizer_OrganizerIdAndStatusIn(Integer organizerId, java.util.Collection<Byte> statuses);
+
+        @Query("SELECT e FROM EventVO e WHERE e.organizer.organizerId = :organizerId " +
+                        "AND ((e.status = 3 AND (e.publishedAt IS NULL OR e.publishedAt <= :now)) " +
+                        "     OR e.status = 5) " +
+                        "ORDER BY CASE WHEN e.status = 3 THEN 0 ELSE 1 END, e.eventStartAt DESC")
+        List<EventVO> findOrganizerProfileEvents(@Param("organizerId") Integer organizerId,
+                        @Param("now") LocalDateTime now);
 
         // ========== 複合搜尋 (主辦方) ==========
 
