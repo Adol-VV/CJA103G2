@@ -1,5 +1,6 @@
 package com.momento.prodorder.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +56,9 @@ public class ProdOrderIdController {
 			
 			
 			poIdSev.addProdOrder(prodOrderIdVO);
-			return "新增成功";
+			return prodOrderIdVO.getOrderId().toString();
 		}else {
-			return "資料驗證失敗";
+			return "-1";
 		}
 	}
 	
@@ -71,9 +72,23 @@ public class ProdOrderIdController {
 		return "pages/user/partials/panel-orders";
 	}
 	
+	@GetMapping("/orderStats")
+	@ResponseBody
+	public int getStats(HttpSession session) {
+	    MemberVO member = (MemberVO) session.getAttribute("loginMember");
+	    List<ProdOrderIdVO> orders = poIdSev.getByMemberId(member.getMemberId());
+	    
+	    int pending = (int) orders.stream().filter(o -> o.getStatus() == 1).count();
+	    
+	    return pending;
+	}
+	
 	@PostMapping("/deleteOrder")
 	public String deleteOrder(Integer orderId) {
-		poIdSev.deleteProdOrder(orderId);
+		Optional op = poIdSev.getOne(orderId);
+		ProdOrderIdVO poId = poIdSev.getOne(orderId).orElseThrow();
+		poId.setStatus((byte) 3);
+		poIdSev.updateProdOrder(poId);
 		return "redirect:/member/dashboard#orders";
 	}
 	

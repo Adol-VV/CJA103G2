@@ -27,9 +27,6 @@ public class OrganizerProdOrderController {
 		if (organizer != null) {
 			List<ProdOrderIdVO> orders = poIdSev.getByOrganizerId(organizer.getOrganizerId());
 			model.addAttribute("allOrganizerProdOrder", orders);
-			System.out.println("===========================================");
-			System.out.println("主辦方ID: " + organizer.getOrganizerId());
-			System.out.println("訂單數量: " + orders.size());
 		}
 		return "pages/organizer/partials/panel-product-orders";
 	}

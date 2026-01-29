@@ -67,76 +67,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table-danger">
-                        <td><input type="checkbox"></td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img loading="lazy"
-                                    src="https://ui-avatars.com/api/?name=User1&background=random&size=32"
-                                    class="rounded-circle me-2" style="width: 32px;">
-                                <div>
-                                    <strong>張XX</strong><br>
-                                    <small class="text-muted">user001@email.com</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="max-width: 300px;">
-                            <span class="text-truncate d-block">這個主辦方是詐騙！大家不要買！（內容含不實指控）</span>
-                            <small class="text-danger"><i class="fas fa-flag"></i> 3 人檢舉</small>
-                        </td>
-                        <td><span class="badge bg-primary">活動</span><br><small>2025新年音樂會</small></td>
-                        <td><small>2024/12/26<br>10:30</small></td>
-                        <td><span class="badge bg-danger">檢舉中</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-warning me-1" title="審核檢舉" data-bs-toggle="modal"
-                                data-bs-target="#reviewReportModal"><i class="fas fa-gavel"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" title="下架"><i class="fas fa-ban"></i></button>
+                    <tr th:if="${#lists.isEmpty(newComments)}">
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>目前沒有待審核的留言</p>
                         </td>
                     </tr>
-                    <tr class="table-warning">
-                        <td><input type="checkbox"></td>
+                    <tr th:each="comment : ${newComments}">
+                        <td><input type="checkbox" th:value="${comment.messageId}"></td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <img loading="lazy"
-                                    src="https://ui-avatars.com/api/?name=User2&background=random&size=32"
+                                    th:src="'https://ui-avatars.com/api/?name=' + ${comment.memberVO.name} + '&background=random&size=32'"
                                     class="rounded-circle me-2" style="width: 32px;">
                                 <div>
-                                    <strong>李XX</strong><br>
-                                    <small class="text-muted">user002@email.com</small>
+                                    <strong th:text="${comment.memberVO.name}">會員名稱</strong><br>
+                                    <small class="text-muted"
+                                        th:text="${comment.memberVO.account}">email@example.com</small>
                                 </div>
                             </div>
                         </td>
                         <td style="max-width: 300px;">
-                            <span class="text-truncate d-block">有人要一起組團買票嗎？私訊我（疑似廣告）</span>
-                            <small class="text-danger"><i class="fas fa-flag"></i> 2 人檢舉</small>
+                            <span class="text-truncate d-block" th:text="${comment.content}">留言內容</span>
                         </td>
-                        <td><span class="badge bg-info">文章</span><br><small>購票教學指南</small></td>
-                        <td><small>2024/12/26<br>09:15</small></td>
-                        <td><span class="badge bg-warning text-dark">待審核</span></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-warning me-1" title="審核檢舉" data-bs-toggle="modal"
-                                data-bs-target="#reviewReportModal"><i class="fas fa-gavel"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" title="下架"><i class="fas fa-ban"></i></button>
+                            <span class="badge bg-info">文章</span><br>
+                            <small th:text="${comment.articleVO.title}">文章標題</small>
                         </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox"></td>
                         <td>
-                            <div class="d-flex align-items-center">
-                                <img loading="lazy"
-                                    src="https://ui-avatars.com/api/?name=User3&background=random&size=32"
-                                    class="rounded-circle me-2" style="width: 32px;">
-                                <div>
-                                    <strong>王XX</strong><br>
-                                    <small class="text-muted">user003@email.com</small>
-                                </div>
-                            </div>
+                            <small th:text="${#dates.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
                         </td>
-                        <td style="max-width: 300px;">
-                            <span class="text-truncate d-block">期待這場演唱會！已經買好票了～</span>
-                        </td>
-                        <td><span class="badge bg-primary">活動</span><br><small>五月天演唱會</small></td>
-                        <td><small>2024/12/25<br>20:45</small></td>
                         <td><span class="badge bg-success">正常</span></td>
                         <td>
                             <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"><i

@@ -17,7 +17,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
+import com.momento.article.model.ArticleVO;
+import com.momento.articleimage.model.ArticleImageVO;
+
+import java.sql.Timestamp;
+import java.util.Map;
+import java.util.HashMap;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -101,17 +111,17 @@ public class OrganizerCenterController {
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
-
-        // 載入統計數據
+        // 載入統計數據 (您的統計功能)
         com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
                 .getOrganizerStats(organizer.getOrganizerId());
         model.addAttribute("organizerStats", stats);
 
-        // 隨機產生本月增長數字 (供展示用)
+        // 隨機產生本月增長數字 (您的展示功能)
         int randomTrend = (int) (Math.random() * 5) + 1;
         model.addAttribute("randomTrendMonth", "+" + randomTrend);
 
-        model.addAttribute("prod", new ProdVO());
+        // 使用新版 ProdDTO 對應前端表單
+        model.addAttribute("prod", new ProdDTO());
         return "pages/organizer/dashboard";
     }
 
@@ -323,21 +333,175 @@ public class OrganizerCenterController {
         return "redirect:/organizer/dashboard#product-list";
     }
 
-    // 新增商品
+    // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
-    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+    public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
+            @RequestParam("imagefiles") MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
-        prodVO.getEmpVO().setEmpId(8);
-        prodVO.setCreatedAt(LocalDateTime.now());
-        prodVO.setUpdatedAt(LocalDateTime.now());
-        prodVO.setProdStatus((byte) 0);
-        prodVO.setReviewStatus((byte) 0);
 
-        prodSvc.addProd(prodVO);
+        // 綁定主辦方ID以確保安全，並呼叫支援多圖上傳的 Service 方法
+        prodDTO.setOrganizerId(organizer.getOrganizerId());
+        prodSvc.addProd(prodDTO, files);
+
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 新增文章
+    @PostMapping("/article/create")
+    @ResponseBody
+    public ResponseEntity<?> createArticle(@RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String imageUrl,
+            HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = new ArticleVO();
+            article.setTitle(title);
+            article.setContent(content);
+            article.setOrganizerVO(organizer);
+            article.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            article.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                ArticleImageVO image = new ArticleImageVO();
+                image.setImageUrl(imageUrl);
+                image.setArticleVO(article);
+                image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                article.getArticleImages().add(image);
+            }
+
+            articleSvc.addArticle(article);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "新增失敗: " + e.getMessage()));
+        }
+    }
+
+    // 取得單筆文章資料 (JSON)
+    @GetMapping("/article/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getArticleData(@PathVariable Integer id, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        ArticleVO article = articleSvc.getOneArticle(id);
+        if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+        }
+
+        // 手動構建 JSON Map 以避免循環參照 VO -> Organizer -> List<Article>
+        Map<String, Object> data = new HashMap<>();
+        data.put("articleId", article.getArticleId());
+        data.put("title", article.getTitle());
+        data.put("content", article.getContent());
+
+        // 圖片
+        if (!article.getArticleImages().isEmpty()) {
+            data.put("imageUrl", article.getArticleImages().get(0).getImageUrl());
+        } else {
+            data.put("imageUrl", "");
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
+    // 更新文章
+    @PostMapping("/article/update")
+    @ResponseBody
+    public ResponseEntity<?> updateArticle(@RequestParam Integer articleId,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String imageUrl,
+            HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = articleSvc.getOneArticle(articleId);
+            if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+            }
+
+            article.setTitle(title);
+            article.setContent(content);
+            article.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+            // 更新圖片邏輯
+            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                if (!article.getArticleImages().isEmpty()) {
+                    // 如果原本有圖，更新第一張圖的 URL
+                    ArticleImageVO image = article.getArticleImages().get(0);
+                    image.setImageUrl(imageUrl);
+                } else {
+                    // 如果原本沒有圖，新增一張
+                    ArticleImageVO image = new ArticleImageVO();
+                    image.setImageUrl(imageUrl);
+                    image.setArticleVO(article);
+                    image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                    article.getArticleImages().add(image);
+                }
+            } else {
+                // 如果傳入空值，視為要刪除圖片？目前 UI 是必填，但為了健壯性，若空則清除所有圖片
+                article.getArticleImages().clear();
+            }
+
+            articleSvc.updateArticle(article);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "更新失敗: " + e.getMessage()));
+        }
+    }
+
+    // 刪除文章
+    @PostMapping("/article/delete")
+    @ResponseBody
+    public ResponseEntity<?> deleteArticle(@RequestParam Integer articleId, HttpSession session) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            ArticleVO article = articleSvc.getOneArticle(articleId);
+            if (article == null || !article.getOrganizerVO().getOrganizerId().equals(organizer.getOrganizerId())) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "找不到文章或無權限"));
+            }
+
+            articleSvc.deleteArticle(articleId);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "刪除失敗: " + e.getMessage()));
+        }
+    }
+
+    // 進入商品編輯頁面
+    @PostMapping("/prodEdit")
+    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+        model.addAttribute("prod", prodSvc.getOneProd(prodId));
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        return "pages/organizer/product-edit";
+    }
+
+    // 進入商品列表頁面
+    @GetMapping("/goToProdList")
+    public String goToProdList() {
         return "redirect:/organizer/dashboard#product-list";
     }
 }

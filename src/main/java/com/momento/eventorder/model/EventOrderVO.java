@@ -1,8 +1,8 @@
 package com.momento.eventorder.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import com.momento.event.model.EventVO;
@@ -59,7 +59,7 @@ public class EventOrderVO implements Serializable {
 
 	@OneToMany(mappedBy = "eventOrder", cascade = CascadeType.ALL)
 	@OrderBy("event_order_item_id asc")
-	private Set<EventOrderItemVO> eventOrderItems;
+	private List<EventOrderItemVO> eventOrderItems;
 
 	public EventOrderVO() {
 		super();
@@ -67,7 +67,7 @@ public class EventOrderVO implements Serializable {
 
 	public EventOrderVO(Integer eventOrderId, MemberVO member, OrganizerVO organizer, EventVO event, Integer total,
 			Integer tokenUsed, Integer payable, Integer payStatus, LocalDateTime createdAt,
-			Set<EventOrderItemVO> eventOrderItems) {
+			List<EventOrderItemVO> eventOrderItems) {
 		super();
 		this.eventOrderId = eventOrderId;
 		this.member = member;
@@ -153,11 +153,11 @@ public class EventOrderVO implements Serializable {
 		this.createdAt = createdAt;
 	}
 
-	public Set<EventOrderItemVO> getEventOrderItems() {
+	public List<EventOrderItemVO> getEventOrderItems() {
 		return eventOrderItems;
 	}
 
-	public void setEventOrderItems(Set<EventOrderItemVO> eventOrderItems) {
+	public void setEventOrderItems(List<EventOrderItemVO> eventOrderItems) {
 		this.eventOrderItems = eventOrderItems;
 	}
 

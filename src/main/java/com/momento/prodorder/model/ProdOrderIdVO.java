@@ -42,7 +42,6 @@ public class ProdOrderIdVO {
 	@Column(name="CREATED_AT",updatable = false)
 	private Date createdDate;
 	
-	@NotNull(message = "總額請勿空白")
 	@Column(name="TOTAL")
 	private Integer total;
 	

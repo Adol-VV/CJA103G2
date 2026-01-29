@@ -27,7 +27,14 @@
                         <td><span class="badge bg-success">已發布</span></td>
                         <!-- <td>-</td> -->
                         <td>
-                            <button class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-light me-1 btn-edit-article"
+                                th:data-id="${article.articleId}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger btn-delete-article"
+                                th:data-id="${article.articleId}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(articleList)}">
@@ -40,3 +47,108 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // 新增文章按鈕 - 清除表單並切換
+        $('#btnCreateArticle').click(function () {
+            // 清空編輯器表單
+            $('#articleTitle').val('');
+            $('#articleContent').val('');
+            $('#articleImageHidden').val('');
+            $('#articleImagePreview').hide().attr('src', '');
+            $('#uploadPrompt').show();
+            // 清除 Hidden ID 代表是新增模式
+            $('#editArticleId').remove(); // 確保沒有舊的 ID input
+
+            // 切換 Panel
+            window.location.hash = 'article-editor';
+        });
+
+        // 編輯文章按鈕
+        $('.btn-edit-article').click(function () {
+            const articleId = $(this).data('id');
+
+            // 顯示讀取中...
+            Swal.fire({
+                title: '載入中',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // AJAX 取得文章資料
+            $.ajax({
+                url: '/organizer/article/api/' + articleId,
+                type: 'GET',
+                success: function (data) {
+                    Swal.close();
+
+                    // 填入資料到編輯器
+                    $('#articleTitle').val(data.title);
+                    $('#articleContent').val(data.content);
+
+                    if (data.imageUrl) {
+                        $('#articleImageHidden').val(data.imageUrl);
+                        $('#articleImagePreview').attr('src', data.imageUrl).show();
+                        $('#uploadPrompt').hide();
+                    } else {
+                        $('#articleImageHidden').val('');
+                        $('#articleImagePreview').hide();
+                        $('#uploadPrompt').show();
+                    }
+
+                    // 加入 Hidden ID 以標示編輯模式 (先移除舊的再加)
+                    $('#editArticleId').remove();
+                    $('#panel-article-editor .card-body').append('<input type="hidden" id="editArticleId" value="' + articleId + '">');
+
+                    // 切換 Panel
+                    window.location.hash = 'article-editor';
+                },
+                error: function () {
+                    Swal.fire('錯誤', '無法載入文章資料', 'error');
+                }
+            });
+        });
+
+        // 刪除文章按鈕
+        $('.btn-delete-article').click(function () {
+            const articleId = $(this).data('id');
+
+            Swal.fire({
+                title: '確定要刪除這篇文章嗎？',
+                text: "此動作無法復原！",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '是的，刪除它！',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/organizer/article/delete',
+                        type: 'POST',
+                        data: { articleId: articleId },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    '已刪除！',
+                                    '文章已成功刪除。',
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('刪除失敗', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('錯誤', '刪除請求失敗', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

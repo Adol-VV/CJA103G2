@@ -13,8 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.momento.article.model.ArticleRepository;
 import com.momento.article.model.ArticleService;
 import com.momento.article.model.ArticleVO;
+import com.momento.member.model.MemberVO;
 import com.momento.message.model.MessageService;
 import com.momento.message.model.MessageVO;
+
+import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/article")
@@ -57,6 +63,33 @@ public class ArticleController {
 
         // 4. 回傳 article-detail.html 模板
         return "pages/public/article-detail";
+    }
+
+    @PostMapping("/comment")
+    public String addComment(@RequestParam Integer articleId,
+            @RequestParam String content,
+            HttpSession session) {
+
+        MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+
+        if (loginMember != null) {
+            MessageVO message = new MessageVO();
+            ArticleVO article = articleService.getOneArticle(articleId);
+
+            message.setArticleVO(article);
+            message.setMemberVO(loginMember);
+            message.setContent(content);
+            message.setStatus(1); // Default status: Active/Showing
+
+            // Current time
+            long now = new Date().getTime();
+            message.setCreatedAt(new Timestamp(now));
+            message.setUpdatedAt(new Timestamp(now));
+
+            messageService.addMessage(message);
+        }
+
+        return "redirect:/article/detail?id=" + articleId;
     }
 
 }

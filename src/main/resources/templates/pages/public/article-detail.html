@@ -125,13 +125,30 @@
                     <h4 class="mb-4">留言 (<span th:text="${#lists.size(messages)}">0</span>)</h4>
 
                     <!-- Comment Form -->
-                    <div class="d-flex mb-5">
-                        <img loading="lazy" src="https://via.placeholder.com/50" class="rounded-circle me-3" width="50"
-                            height="50">
+                    <!-- Comment Form (Visible only to logged-in members) -->
+                    <div class="d-flex mb-5" th:if="${session.loginMember != null}">
+                        <img loading="lazy"
+                            th:src="'https://ui-avatars.com/api/?name=' + ${session.loginMember.name} + '&background=random'"
+                            class="rounded-circle me-3" width="50" height="50">
                         <div class="flex-grow-1">
-                            <textarea class="form-control bg-dark text-white border-secondary mb-2" rows="3"
-                                placeholder="加入討論..."></textarea>
-                            <button class="btn btn-primary float-end">發佈留言</button>
+                            <form th:action="@{/article/comment}" method="post">
+                                <input type="hidden" name="articleId" th:value="${article.articleId}">
+                                <textarea name="content" class="form-control bg-dark text-white border-secondary mb-2"
+                                    rows="3" placeholder="加入討論..." required></textarea>
+                                <button type="submit" class="btn btn-primary float-end">發佈留言</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Login Prompt (Visible to guests) -->
+                    <div class="card bg-dark border-secondary mb-5" th:if="${session.loginMember == null}">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-lock fa-2x mb-3 text-muted"></i>
+                            <h5 class="card-title text-white">登入以參與討論</h5>
+                            <p class="card-text text-muted mb-3">想要分享您的看法嗎？請先登入會員即可留言。</p>
+                            <a th:href="@{/member/login}" class="btn btn-outline-light">
+                                <i class="fas fa-sign-in-alt me-2"></i>立即登入
+                            </a>
                         </div>
                     </div>
 
@@ -242,7 +259,7 @@
                                     id="authorAvatar">
                             </a>
                             <h5 class="text-white">
-                                <a href="#" class="text-white text-decoration-none" id="authorName"
+                                <a th:href="@{/orginformation}" class="text-white text-decoration-none" id="authorName"
                                     th:text="${article.organizerVO.name}">Momento 編輯部</a>
                             </h5>
                             <p class="text-muted small mb-3" id="authorDesc"

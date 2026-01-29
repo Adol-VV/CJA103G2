@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.momento.prodorder.model.ProdOrderIdVO;
+
 @Service("ProdSettleService")
 public class ProdSettleService {
 
@@ -24,6 +26,10 @@ public class ProdSettleService {
 	}
 	public Optional<ProdSettleVO> getOne(Integer settleID) {
 		return repository.findById(settleID);
+	}
+	
+	public List<ProdSettleVO> getByOrganizerId(Integer organizerId) {
+		return repository.findByOrganizerId_OrganizerId(organizerId);
 	}
 	
 }

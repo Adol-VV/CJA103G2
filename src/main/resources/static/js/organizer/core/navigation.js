@@ -33,9 +33,12 @@ const Navigation = {
         // Scroll Top Logic
         window.scrollTo(0, 0);
         $('html, body, main').scrollTop(0);
-
+        
+        
         if(section === 'product-orders'){
             organizerOrders();
+        }else if(section === 'settlement'){
+            organizerSettlement();
         }
 
         history.replaceState(null, '', '#' + section);
@@ -55,9 +58,19 @@ function organizerOrders(){
             $('#panel-product-orders').html(responseHtml);
             $('.panel, .section, .content-panel').removeClass('active');
             $('#panel-product-orders').addClass('active');
-            console.log("訂單資料載入成功");
         }
     });
     
+}
+function organizerSettlement(){
+    $.ajax({
+        url: '/organizer/prod_settle/getAllSettlementByOrganizerId',
+        method: 'GET',
+        success: function(responseHtml) {
+            $('#panel-settlement').html(responseHtml);
+            $('.panel, .section, .content-panel').removeClass('active');
+            $('#panel-settlement').addClass('active');
+        }
+    });
 }
 export default Navigation;

@@ -17,13 +17,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.momento.member.model.MemberVO;
 import com.momento.prod.dto.ProdDTO;
+import com.momento.prod.model.ProdFavService;
+import com.momento.prod.model.ProdFavVO;
 import com.momento.prod.model.ProdImageVO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import com.momento.prod.model.ProdSortVO;
 import com.momento.prod.model.ProdVO;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/prod")
@@ -34,6 +40,9 @@ public class ProdController {
 
 	@Autowired
 	ProdSortService prodSortSvc;
+
+	@Autowired
+	ProdFavService prodFavSvc;
 
 	@GetMapping("/addProd")
 	public String addProd(ModelMap model) {
@@ -67,18 +76,22 @@ public class ProdController {
 	// 單一查詢
 	@GetMapping("getOne_For_Display")
 	public String getOne_For_Display(
-			/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 *************************/
 			@RequestParam("prodId") String prodId,
-			ModelMap model) {
-		/***************************
-		 * 2.開始查詢資料
-		 *********************************************/
-		ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
+			ModelMap model,
+			HttpSession session) {
 
-		/***************************
-		 * 3.查詢完成,準備轉交(Send the Success view)
-		 *****************/
+		// 1. 查詢商品詳情
+		ProdDTO prod = prodSvc.getOneProd(Integer.valueOf(prodId));
 		model.addAttribute("prod", prod);
+
+		// 2. 融合邏輯：檢查該會員是否有收藏這個商品
+		MemberVO member = (MemberVO) session.getAttribute("loginMember");
+		if (member != null) {
+			boolean isFav = prodFavSvc.favProdsByMember(member.getMemberId())
+					.stream()
+					.anyMatch(favProd -> favProd.getProdId().equals(prod.getProdId()));
+			model.addAttribute("isFav", isFav);
+		}
 
 		return "pages/user/prod-detail";
 	}
@@ -105,4 +118,31 @@ public class ProdController {
 		return prodSvc.searchProds(keyword);
 	}
 
+	@PostMapping("/addFav")
+	public String addFav(HttpSession session, @RequestParam("prodId") Integer prodId) {
+		MemberVO member = (MemberVO) session.getAttribute("loginMember");
+		if (member == null) {
+			return "pages/user/login";
+		}
+		ProdFavVO prodFav = new ProdFavVO();
+		ProdVO prod = new ProdVO();
+		prod.setProdId(prodId);
+
+		prodFav.setMemberVO(member);
+		prodFav.setProdVO(prod);
+		prodFavSvc.addFavProd(prodFav);
+
+		return "redirect:/prod/getOne_For_Display?prodId=" + prodId;
+	}
+
+	@PostMapping("/removeFav")
+	public String removeFav(HttpSession session, @RequestParam("prodId") Integer prodId) {
+		MemberVO member = (MemberVO) session.getAttribute("loginMember");
+		if (member == null) {
+			return "pages/user/login";
+		}
+
+		prodFavSvc.removeFavProd(member.getMemberId(), prodId);
+		return "redirect:/prod/getOne_For_Display?prodId=" + prodId;
+	}
 }

@@ -223,7 +223,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label required">確認密碼</label>
-                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                        <input type="password" th:field="*{confirmPassword}" id="confirmPassword"
                                             class="form-control bg-dark text-white border-secondary" required
                                             placeholder="請再次輸入密碼">
                                         <small class="text-danger d-none" id="passwordMismatch">
@@ -446,9 +446,9 @@
                                             style="cursor: pointer; background-color: transparent;">
                                         <label class="form-check-label text-muted small" for="agreeTerms"
                                             style="cursor: pointer;">
-                                            我已閱讀並同意 <a href="/templates/pages/public/privacy.html" target="_blank"
+                                            我已閱讀並同意 <a th:href="@{/privacy}" target="_blank"
                                                 class="text-success">主辦單位服務條款</a> 與 <a
-                                                href="/templates/pages/public/terms.html" target="_blank"
+                                                th:href="@{/terms}" target="_blank"
                                                 class="text-success">隱私權政策</a>
                                         </label>
                                     </div>

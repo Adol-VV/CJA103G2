@@ -13,22 +13,11 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label required">文章標題</label>
-                    <input type="text" class="form-control" placeholder="輸入標題">
+                    <input type="text" class="form-control" id="articleTitle" placeholder="輸入標題">
                 </div>
                 <div class="mb-3">
                     <label class="form-label required">內容</label>
-                    <div class="bg-white text-dark rounded" style="min-height: 400px; padding: 1rem;">
-                        <!-- Mock Rich Text Editor Toolbar -->
-                        <div class="border-bottom pb-2 mb-2">
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-bold"></i></button>
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-italic"></i></button>
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-heading"></i></button>
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-list-ul"></i></button>
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-sm btn-light border"><i class="fas fa-image"></i></button>
-                        </div>
-                        <p>請在此輸入文章內容...</p>
-                    </div>
+                    <textarea class="form-control" id="articleContent" rows="15" placeholder="請在此輸入文章內容..."></textarea>
                 </div>
             </div>
         </div>
@@ -38,26 +27,153 @@
             <div class="card-header border-secondary">設定</div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label class="form-label required">分類</label>
-                    <select class="form-select">
-                        <option>官方公告</option>
-                        <option>人物專訪</option>
-                        <option>幕後花絮</option>
-                        <option>活動報導</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">標籤</label>
-                    <input type="text" class="form-control" placeholder="以逗號分隔">
-                </div>
-                <div class="mb-3">
                     <label class="form-label required">封面圖片</label>
-                    <div class="upload-zone p-3">
-                        <small class="text-muted d-block mb-2">點擊上傳</small>
-                        <i class="fas fa-image fa-2x text-muted"></i>
+                    <div class="upload-zone p-3" id="articleImageZone"
+                        style="cursor: pointer; position: relative; overflow: hidden;">
+                        <div id="uploadPrompt">
+                            <small class="text-muted d-block mb-2">點擊上傳</small>
+                            <i class="fas fa-image fa-2x text-muted"></i>
+                        </div>
+                        <img id="articleImagePreview" src="" alt="Cover"
+                            style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;">
                     </div>
+                    <input type="file" id="articleImageInput" accept="image/*" style="display: none;">
+                    <input type="hidden" id="articleImageHidden">
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // 1. 圖片上傳處理
+        $('#articleImageZone').click(function () {
+            $('#articleImageInput').click();
+        });
+
+        $('#articleImageInput').change(function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // 顯示讀取中
+                const originalContent = $('#uploadPrompt').html();
+                $('#uploadPrompt').html('<i class="fas fa-spinner fa-spin"></i> 上傳中...');
+
+                $.ajax({
+                    url: '/api/upload/article',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            // 上傳成功
+                            const imageUrl = response.url;
+                            $('#articleImageHidden').val(imageUrl);
+                            $('#articleImagePreview').attr('src', imageUrl).show();
+                            $('#uploadPrompt').hide();
+                        } else {
+                            Swal.fire('上傳失敗', response.message, 'error');
+                            $('#uploadPrompt').html(originalContent);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('錯誤', '圖片上傳發生錯誤', 'error');
+                        $('#uploadPrompt').html(originalContent);
+                    }
+                });
+            }
+        });
+
+        // 2. 文章發布
+        // 需要給發布按鈕一個 ID
+        // 由於發布按鈕在上方，我們可以透過 Class 或 Traversing 找到，或者直接在這裡綁定事件(如果上方按鈕有唯一性)
+        // 為了保險，我們應該在上方的按鈕加 ID。
+        // 但這裡我只能替換這一段。沒關係，我可以用 jQuery 選擇器找到上面的按鈕。
+        // 上方的按鈕結構: <button class="btn btn-primary">立即發布</button> (在 panel-article-editor 裡面)
+        // 因為這是 partial，我們可以限縮範圍
+
+        // 綁定發布按鈕
+        // 綁定發布按鈕
+        $('#panel-article-editor .btn-primary').not('#btnCreateArticle').click(function () {
+
+            const title = $('#articleTitle').val().trim();
+            const content = $('#articleContent').val().trim();
+            const imageUrl = $('#articleImageHidden').val();
+            const editId = $('#editArticleId').val(); // 取得編輯 ID
+
+            if (!title) {
+                Swal.fire('提示', '請輸入標題', 'warning');
+                return;
+            }
+            if (!content) {
+                Swal.fire('提示', '請輸入內容', 'warning');
+                return;
+            }
+            // 編輯模式下，若沒更換圖片，imageUrl 會有值 (載入時填入的)
+            // 新增模式下，必須要有 imageUrl
+            if (!imageUrl) {
+                Swal.fire('提示', '請上傳封面圖片', 'warning');
+                return;
+            }
+
+            // 判斷是新增還是更新
+            let url = '/organizer/article/create';
+            let data = {
+                title: title,
+                content: content,
+                imageUrl: imageUrl
+            };
+
+            // 若有 ID 則為更新模式
+            if (editId) {
+                url = '/organizer/article/update';
+                data.articleId = editId;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: editId ? '更新成功' : '發布成功',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            // 清空表單
+                            $('#articleTitle').val('');
+                            $('#articleContent').val('');
+                            $('#articleImageHidden').val('');
+                            $('#articleImagePreview').hide().attr('src', '');
+                            $('#uploadPrompt').show();
+                            $('#editArticleId').remove(); // 清除 ID
+
+                            // 重新整理頁面或跳轉
+                            window.location.href = '/organizer/dashboard#article-list';
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire('失敗', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('錯誤', '請求失敗', 'error');
+                }
+            });
+        });
+
+        // 取消按鈕
+        $('.btn-back-article-list').click(function () {
+            window.location.href = '#article-list';
+            // 手動切換 panel (因為這是 hash change 驅動的，如果已經在 hash 但要切換顯示需要 update UI)
+            // 視 index.js 實作而定。通常 hash change 會觸發。
+            // 如果在 dashboard 點擊 "取消"，hash 變更會觸發 index.js 的邏輯切換 panel。
+        });
+    });
+</script>
