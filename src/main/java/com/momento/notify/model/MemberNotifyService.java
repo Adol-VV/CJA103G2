@@ -25,4 +25,9 @@ public class MemberNotifyService {
             memberNotifyRepository.save(notify);
         });
     }
+
+    @Transactional
+    public void  addMemberNotify(MemberNotifyVO memberNotifyVO){
+        memberNotifyRepository.save(memberNotifyVO);
+    }
 }
