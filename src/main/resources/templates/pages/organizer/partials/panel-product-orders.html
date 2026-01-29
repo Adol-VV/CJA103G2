@@ -87,7 +87,7 @@
                     <th>商品明細</th>
                     <th>總額</th>
                     <th>下單時間</th>
-                    <!-- <th>狀態</th> -->
+                    <th>狀態</th>
                     <!-- <th>操作</th> -->
                 </tr>
             </thead>
@@ -122,7 +122,15 @@
                         <div class="text-success" th:text="${#dates.format(organizerOrder.createdDate, 'yyyy/MM/dd')}">2024/12/26</div>
                         <small class="text-muted" th:text="${#dates.format(organizerOrder.createdDate,'HH:mm')}">14:30</small>
                     </td>
-                    <!-- <td><span class="badge bg-warning text-dark">待備貨</span></td> -->
+                    <td>
+                        <div th:switch="${organizerOrder.status}">
+                            <span th:case="0" class="badge bg-secondary">未付款</span>
+                            <span th:case="1" class="badge bg-primary">已付款</span>
+                            <span th:case="2" class="badge bg-success">已到貨</span>
+                            <span th:case="3" class="badge bg-danger">退貨</span>
+                            <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
+                        </div>
+                    </td>
                     <!-- <td>
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-info" title="查看詳情"
