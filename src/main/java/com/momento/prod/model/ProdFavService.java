@@ -41,4 +41,12 @@ public class ProdFavService {
             return dto;
         }).collect(Collectors.toList());
 	}
+	
+	public void addFavProd(ProdFavVO prodfavVO) {
+		prodFavRepository.save(prodfavVO);
+	}
+	
+	public void removeFavProd(Integer memberId, Integer prodId) {
+		prodFavRepository.deleteByMemberAndProdId(memberId,prodId);
+	}
 }

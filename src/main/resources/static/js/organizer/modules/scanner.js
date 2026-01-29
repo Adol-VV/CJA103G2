@@ -27,7 +27,7 @@ export function initScanner() {
 		// 取得選中的 eventId
 		const selectedId = selector.value;
 
-		const url = `/organizer/dashboard/ticketScanner?eventId="${selectedId}"`;
+		const url = `/organizer/dashboard/ticketScanner?eventId=${selectedId}`;
 
 		fetch(url, {
 			method: 'GET',
@@ -86,6 +86,7 @@ function verifyTicketManually() {
 	const eventId = document.getElementById('scannerEventSelect').value;
 	const url = `/organizer/dashboard/ticketScanner?randomUUID=${uuid}&eventId=${eventId}`;
 	
+	console.log(uuid);
 	if(uuid.trim() == ""){
 		alert("請輸入票券代碼");
 		return;
@@ -256,10 +257,16 @@ function addVerificationRecord(code, success, reason) {
 }
 function updateRecordTableManually() {
 	// 從畫面上獲取剛剛核銷成功的資訊 (對應圖2的欄位)
-	const orderId = document.querySelector("#info-order-id").innerText; // 假設你給票券編號一個 ID
+	const now = new Date(); // 假設你給票券編號一個 ID
 	const ticketId = document.querySelector("#info-ticket-id").innerText;
 	const ticketName = document.querySelector("#info-ticket-name").innerText;
 	const userName = document.querySelector("#info-user-name").innerText;
+	
+	const formattedTime = now.getFullYear() + '-' + 
+	    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+	    String(now.getDate()).padStart(2, '0') + ' ' + 
+	    String(now.getHours()).padStart(2, '0') + ':' + 
+	    String(now.getMinutes()).padStart(2, '0');
 
 	// 找到紀錄表格的 tbody
 	const tbody = document.querySelector("#recentVerifications");
@@ -267,7 +274,7 @@ function updateRecordTableManually() {
 	// 建立新的 HTML Row
 	const newRow = `
         <tr>
-            <td><code>${orderId}</code></td>
+            <td><code>${formattedTime}</code></td>
 			<td><code>${ticketId}</code></td>
             <td>${ticketName}</td>
             <td>${userName}</td>

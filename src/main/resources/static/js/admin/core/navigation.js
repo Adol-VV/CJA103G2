@@ -48,18 +48,15 @@ const Navigation = {
 };
 function getAllOrder() {
     $.ajax({
-        url: '/Admin/prod_order/getAllOrder',
+        url: '/admin/prod_order/getAllOrder',
         method: 'GET',
         success: function(responseHtml) {
             $('#panel-product-orders').html(responseHtml);
             $('.panel, .section, .content-panel').removeClass('active');
             $('#panel-product-orders').addClass('active');
-            
-            console.log("訂單資料已渲染完成");
 	        initProductApprovals();
         },
         error: function(xhr) {
-            console.error("Ajax 出錯，狀態碼：" + xhr.status);
             alert("載入失敗，請確認 Java 後端是否有報錯");
         }
     });

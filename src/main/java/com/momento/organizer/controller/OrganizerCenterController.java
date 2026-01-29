@@ -9,9 +9,9 @@ import com.momento.notify.model.SystemNotifyService;
 import com.momento.notify.model.SystemNotifyVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
-import com.momento.prod.model.ProdVO;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +132,7 @@ public class OrganizerCenterController {
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
 
-        model.addAttribute("prod", new ProdVO());
+        model.addAttribute("prod", new ProdDTO());
         return "pages/organizer/dashboard";
     }
 
@@ -345,19 +346,14 @@ public class OrganizerCenterController {
 
     // 新增商品
     @PostMapping("/addProd")
-    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+    public String addProd(@Valid ProdDTO prodDTO, HttpSession session, @RequestParam("imagefiles") MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
-        prodVO.getEmpVO().setEmpId(8);
-        prodVO.setCreatedAt(LocalDateTime.now());
-        prodVO.setUpdatedAt(LocalDateTime.now());
-        prodVO.setProdStatus((byte) 0);
-        prodVO.setReviewStatus((byte) 0);
-
-        prodSvc.addProd(prodVO);
+        prodDTO.setOrganizerId(organizer.getOrganizerId());
+        
+        prodSvc.addProd(prodDTO, files);
         return "redirect:/organizer/dashboard#product-list";
     }
 
@@ -499,6 +495,24 @@ public class OrganizerCenterController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "刪除失敗: " + e.getMessage()));
         }
     }
+    
+	//進入商品編輯頁面
+	@PostMapping("/prodEdit")
+	public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
+		if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+		model.addAttribute("prod", prodSvc.getOneProd(prodId));
+		model.addAttribute("prodSortList", prodSortSvc.getAll());
+		return "pages/organizer/product-edit";
+	}
+	
+	//進入商品列表頁面
+	@GetMapping("/goToProdList")
+	public String goToProdList(){
+		return "redirect:/organizer/dashboard#product-list";
+	}
+
 
     @PostMapping("/dashboard/notifications/mark-read")
     @ResponseBody

@@ -1,5 +1,9 @@
 package com.momento.prod.model;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.momento.prod.dto.ProdDTO;
 
@@ -21,7 +26,34 @@ public class ProdService {
 	@Autowired
 	ProdRepository repository;
 	
-	public void addProd(ProdVO prodVO) {
+	private final String uploadDir = "C:/momento-uploads/product/";
+	private final String baseUrl = "/product";
+	
+	public void addProd(ProdDTO prodDTO, MultipartFile[] files) {
+		ProdVO prodVO = new ProdVO();
+		prodVO.getOrganizerVO().setOrganizerId(prodDTO.getOrganizerId());
+		prodVO.getProdSortVO().setSortId(prodDTO.getSortId());
+        prodVO.getEmpVO().setEmpId(8);
+        prodVO.setProdName(prodDTO.getProdName());
+        prodVO.setProdContent(prodDTO.getProdContent());
+        prodVO.setProdPrice(prodDTO.getProdPrice());
+        prodVO.setProdStock(prodDTO.getProdStock());
+        prodVO.setCreatedAt(LocalDateTime.now());
+        prodVO.setUpdatedAt(LocalDateTime.now());
+        prodVO.setProdStatus((byte) 0);
+        prodVO.setReviewStatus((byte) 0);
+        
+        //圖片
+        Path uploadPath = Path.of("uploadDir");
+        try {
+            Files.createDirectories(uploadPath); 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		
+		
+		
+		
 		repository.save(prodVO);
 	}
 	

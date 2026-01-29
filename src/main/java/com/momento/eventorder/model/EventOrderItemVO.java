@@ -1,10 +1,10 @@
 package com.momento.eventorder.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import com.momento.ticket.model.TicketVO;
 
-import groovy.transform.ToString;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "event_order_item")
@@ -43,13 +39,16 @@ public class EventOrderItemVO implements Serializable {
 	
 	@Column(name = "status")
 	private Integer status;
+	
+	@Column(name = "verified_at")
+	private LocalDateTime verifiedAt;
 
 	public EventOrderItemVO() {
 
 	}
 
 	public EventOrderItemVO(Integer eventOrderItemId, EventOrderVO eventOrder, TicketVO ticket, String qrcode,
-			Integer price, Integer status) {
+			Integer price, Integer status, LocalDateTime verifiedAt) {
 		super();
 		this.eventOrderItemId = eventOrderItemId;
 		this.eventOrder = eventOrder;
@@ -57,7 +56,10 @@ public class EventOrderItemVO implements Serializable {
 		this.qrcode = qrcode;
 		this.price = price;
 		this.status = status;
+		this.verifiedAt = verifiedAt;
 	}
+
+
 
 
 
@@ -107,5 +109,21 @@ public class EventOrderItemVO implements Serializable {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+
+
+
+
+	public LocalDateTime getVerifiedAt() {
+		return verifiedAt;
+	}
+
+
+
+
+
+	public void setVerifiedAt(LocalDateTime verifiedAt) {
+		this.verifiedAt = verifiedAt;
 	}
 }

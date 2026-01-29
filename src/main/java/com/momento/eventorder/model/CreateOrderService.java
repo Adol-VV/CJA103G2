@@ -1,28 +1,22 @@
 package com.momento.eventorder.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.momento.event.model.EventRepository;
 import com.momento.event.model.EventVO;
-import com.momento.eventorder.dto.CheckoutDTO;
-import com.momento.eventorder.dto.OrderCreateDTO;
-import com.momento.eventorder.dto.OrderItemDTO;
-import com.momento.eventorder.dto.SelectionFormDTO;
-import com.momento.eventorder.dto.TicketItemsDTO;
+import com.momento.eventorder.dto.*;
 import com.momento.member.model.MemberRepository;
 import com.momento.member.model.MemberVO;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.ticket.model.TicketRepository;
 import com.momento.ticket.model.TicketVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CreateOrderService {
@@ -137,7 +131,7 @@ public class CreateOrderService {
 		}
 
 		eventOrderItemRepo.saveAll(orderItemList);
-		eventOrder.setEventOrderItems(new HashSet<>(orderItemList));
+		eventOrder.setEventOrderItems(new ArrayList<>(orderItemList));
 
 		return eventOrder;
 	}

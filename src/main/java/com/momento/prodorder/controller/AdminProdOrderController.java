@@ -3,11 +3,13 @@ package com.momento.prodorder.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -16,7 +18,7 @@ import com.momento.prodorder.model.ProdOrderIdVO;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/Admin/prod_order")
+@RequestMapping("/admin/prod_order")
 public class AdminProdOrderController {
 
 	@Autowired
@@ -53,5 +55,16 @@ public class AdminProdOrderController {
 	    stats.put("cancelled", (int) orders.stream().filter(o -> o.getStatus() == 4).count());
 	    
 	    return stats;
+	}
+	
+	
+	@PostMapping("/orderDetail")
+	public String getOrder(Integer orderId,Model model) {
+		Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+		if(optional.isPresent()) {
+			ProdOrderIdVO order = optional.get();
+			model.addAttribute("orderDetail",order);
+		}
+		return "pages/user/order-detail";
 	}
 }

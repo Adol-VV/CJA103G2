@@ -59,7 +59,7 @@ public class OrganizerCenterOrderController {
 			}
 		}
 
-		List<EventOrderVO> eventOrderList = eventOrderSvc.getEventOrderByCompositeQuery(organizerId, activeEvent,
+		List<EventOrderVO> eventOrderList = eventOrderSvc.getEventOrderByOrganizer(organizerId, activeEvent,
 				finishedEvent, buyer);
 
 		model.addAttribute("activeEvents", activeEvents);
@@ -97,8 +97,8 @@ public class OrganizerCenterOrderController {
 			if (item != null && item.getEventOrder().getEvent().getEventId() == eventId && item.getStatus() != 1) {
 				model.addAttribute("msg", "核銷成功");
 				item.setStatus(1);
+				item.setVerifiedAt(LocalDateTime.now());
 				eventOrderItemSvc.updateItems(item);
-				System.out.println(item.getEventOrderItemId());
 				model.addAttribute("information", item);
 
 			} else if (item.getEventOrder().getEvent().getEventId() != eventId) {

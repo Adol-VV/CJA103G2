@@ -133,9 +133,18 @@
                             <button class="btn btn-primary btn-lg flex-grow-1" id="btnAddCart">
                                 <i class="fas fa-cart-plus me-2"></i>加入購物車
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg" id="btnFavorite">
-                                <i class="far fa-heart"></i>
-                            </button>
+                            <form method="post" th:action="@{addFav}" th:unless="${isFav}">
+                            	<input type="hidden" name="prodId" th:value="${prod.prodId}">
+                            	<button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
+                                	<i class="far fa-heart"></i>
+                            	</button>
+                            </form>
+                            <form method="post" th:action="@{removeFav}" th:if="${isFav}">
+                            	<input type="hidden" name="prodId" th:value="${prod.prodId}">
+                            	<button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
+                                	<i class="fas fa-heart text-danger"></i>
+                            	</button>
+                            </form>
                         </div>
                     </div>
                 </div>
