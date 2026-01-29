@@ -1,47 +1,18 @@
-<div class="content-panel" id="panel-homepage-editor">
-    <h2 class="mb-4">首頁內容編輯</h2>
-    <ul class="nav nav-tabs mb-4 border-secondary">
-        <li class="nav-item"><button class="nav-link active text-white" data-bs-toggle="tab"
-                data-bs-target="#tab-announcement">公告輪播</button></li>
-        <li class="nav-item"><button class="nav-link text-white" data-bs-toggle="tab"
-                data-bs-target="#tab-featured">主打活動</button></li>
-    </ul>
+<div class="content-panel" id="panel-featured-events">
+    <h2 class="mb-4">主打活動管理</h2>
 
-    <div class="tab-content">
-        <!-- Announcements -->
-        <div class="tab-pane fade show active" id="tab-announcement">
-            <div class="d-flex justify-content-between mb-3"><button class="btn btn-primary" id="btnAddAnnouncement"><i
-                        class="fas fa-plus"></i> 新增公告</button></div>
-            <div id="announcementList" class="sortable-list">
-                <!-- Mock Item 1 -->
-                <div class="card mb-3 announcement-item" data-id="1">
-                    <div class="card-body py-3">
-                        <div class="row align-items-center">
-                            <div class="col-auto"><i class="fas fa-grip-vertical drag-handle text-muted"
-                                    style="cursor: move;"></i></div>
-                            <div class="col-md-2"><img
-                                    src="https://images.unsplash.com/photo-1531058020387-3be344556be6"
-                                    class="img-fluid rounded"></div>
-                            <div class="col-md-6">
-                                <h6 class="mb-1 text-white">2024 新年優惠活動</h6>
-                                <div class="d-flex gap-2"><span class="badge bg-success">啟用中</span>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-end"><button class="btn btn-sm btn-outline-light"><i
-                                        class="fas fa-edit"></i></button></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-primary" id="btnSelectFeatured">
+            <i class="fas fa-star"></i> 選擇活動
+        </button>
+    </div>
 
-        <!-- Featured -->
-        <div class="tab-pane fade" id="tab-featured">
-            <div class="d-flex justify-content-between mb-3"><button class="btn btn-primary" id="btnSelectFeatured"><i
-                        class="fas fa-star"></i> 選擇活動</button></div>
-            <div class="row g-4" id="featuredList">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
+    <div class="row g-4" id="featuredList">
+        <!-- Dynamic Content -->
+    </div>
+
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>提示：</strong>主打活動將顯示在首頁最顯眼的位置，建議選擇熱門或即將開始的活動。
     </div>
 </div>

@@ -21,7 +21,7 @@ import { initSettlement } from './modules/settlement.js';
 import { initMemberList } from './modules/member-list.js';
 
 // Content
-import { initHomepageEditor } from './modules/homepage-editor.js';
+import { initHomepageEditor, initFeaturedEvents, initAnnouncementCarousel } from './modules/homepage-editor.js';
 import { initFaqManagement } from './modules/faq-management.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     initEventOrders();
     initSettlement();
     initMemberList();
-    initHomepageEditor();
+    initHomepageEditor(); // For backward compatibility
+    initFeaturedEvents(); // New featured events module
+    initAnnouncementCarousel(); // New announcement carousel module
     initFaqManagement();
 
     console.log('Admin Dashboard Fully Modularized');
