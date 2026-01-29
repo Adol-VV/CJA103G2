@@ -11,24 +11,40 @@ public class OrganizerService {
     @Autowired
     private OrganizerRepository organizerRepository;
 
-    public OrganizerVO apply(OrganizerVO organizer) {
-        System.out.println("Service 接收到申請資料: " + organizer.getAccount() + ", " + organizer.getEmail());
+    public OrganizerVO apply(com.momento.organizer.dto.OrganizerApplyDTO dto) {
+        System.out.println("Service 接收到申請資料: " + dto.getAccount() + ", " + dto.getEmail());
 
-        if (organizerRepository.existsByAccount(organizer.getAccount())) {
-            System.out.println("帳號已存在: " + organizer.getAccount());
+        // 1. 檢查密碼與確認密碼是否一致
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("兩次輸入的密碼不一致");
+        }
+
+        // 2. 檢查帳號與 Email 是否重複
+        if (organizerRepository.existsByAccount(dto.getAccount())) {
+            System.out.println("帳號已存在: " + dto.getAccount());
             throw new IllegalArgumentException("帳號已存在");
         }
 
-        if (organizerRepository.existsByEmail(organizer.getEmail())) {
-            System.out.println("Email 已被使用: " + organizer.getEmail());
+        if (organizerRepository.existsByEmail(dto.getEmail())) {
+            System.out.println("Email 已被使用: " + dto.getEmail());
             throw new IllegalArgumentException("Email 已被使用");
         }
 
-        // 設定預設狀態為待審核
-        organizer.setStatus((byte) 0);
+        // 3. 將 DTO 轉換為 VO (實體)
+        OrganizerVO organizer = new OrganizerVO();
+        organizer.setAccount(dto.getAccount());
+        organizer.setPassword(dto.getPassword()); // TODO: 密碼加密
+        organizer.setName(dto.getName());
+        organizer.setOwnerName(dto.getOwnerName());
+        organizer.setPhone(dto.getPhone());
+        organizer.setEmail(dto.getEmail());
+        organizer.setIntroduction(dto.getIntroduction());
+        organizer.setBankCode(dto.getBankCode());
+        organizer.setBankAccount(dto.getBankAccount());
+        organizer.setAccountName(dto.getAccountName());
 
-        // TODO: 密碼加密
-        // organizer.setPassword(passwordEncoder.encode(organizer.getPassword()));
+        // 4. 設定預設狀態為待審核 (0)
+        organizer.setStatus((byte) 0);
 
         try {
             OrganizerVO saved = organizerRepository.save(organizer);

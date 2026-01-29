@@ -223,7 +223,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label required">確認密碼</label>
-                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                        <input type="password" th:field="*{confirmPassword}" id="confirmPassword"
                                             class="form-control bg-dark text-white border-secondary" required
                                             placeholder="請再次輸入密碼">
                                         <small class="text-danger d-none" id="passwordMismatch">
