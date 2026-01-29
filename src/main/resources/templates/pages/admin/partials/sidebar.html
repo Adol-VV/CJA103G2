@@ -85,10 +85,10 @@
             <li>
                 <h6 class="sidebar-heading px-3 mt-4 mb-2 text-white fw-bold fs-6">內容運營</h6>
             </li>
-            <!-- 無ID功能 - 開放 -->
+            <!-- 無ID功能 - 所有員工可用 -->
             <li class="nav-item">
-                <a class="nav-link" href="#" data-section="homepage-editor">
-                    <i class="fas fa-desktop me-2"></i> 首頁管理
+                <a class="nav-link" href="#" data-section="featured-events">
+                    <i class="fas fa-star me-2"></i> 主打活動
                 </a>
             </li>
             <li class="nav-item">
@@ -112,6 +112,11 @@
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(7)}">
                 <a class="nav-link" href="#" data-section="notification-composer">
                     <i class="fas fa-bullhorn me-2"></i> 公告管理
+                </a>
+            </li>
+            <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(7)}">
+                <a class="nav-link" href="#" data-section="announcement-carousel">
+                    <i class="fas fa-images me-2"></i> 公告輪播
                 </a>
             </li>
 

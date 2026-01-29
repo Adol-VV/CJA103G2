@@ -117,7 +117,7 @@ $(document).ready(function () {
 
             // 3. 發送打包 Ajax 
             try {
-                await $.ajax({
+                const response = await $.ajax({
                     url: '/member/prod_order/insertOrder',
                     method: 'POST',
                     contentType: 'application/json',
@@ -131,6 +131,7 @@ $(document).ready(function () {
                         orderItems: subOrderItems 
                     })
                 });
+                $("#orderNumber").text(response);
             } catch (err) {
                 showToast('訂單送出失敗，請檢查資料', 'error');
                 return; 

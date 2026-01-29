@@ -24,7 +24,7 @@ public class OrganizerApplyController {
     @GetMapping("/apply")
     public String showApplyPage(Model model,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String success) {
-        model.addAttribute("organizer", new OrganizerVO());
+        model.addAttribute("organizer", new com.momento.organizer.dto.OrganizerApplyDTO());
 
         // 如果有 success 參數，顯示成功訊息
         if ("true".equals(success)) {
@@ -36,7 +36,8 @@ public class OrganizerApplyController {
     }
 
     @PostMapping("/apply")
-    public String apply(@ModelAttribute("organizer") OrganizerVO organizer,
+    public String apply(
+            @jakarta.validation.Valid @ModelAttribute("organizer") com.momento.organizer.dto.OrganizerApplyDTO organizer,
             BindingResult result,
             Model model) {
 
