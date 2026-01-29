@@ -1,11 +1,26 @@
-// Initialize generic homepage editor components
-export function initHomepageEditor() {
+// Initialize announcement carousel editor
+export function initAnnouncementCarousel() {
     if (document.getElementById('announcementList')) {
-        new Sortable(document.getElementById('announcementList'), { handle: '.drag-handle', animation: 150 });
+        new Sortable(document.getElementById('announcementList'), {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function () {
+                // TODO: Save new order to backend
+                console.log('Announcement order changed');
+            }
+        });
     }
 
-    $(document).on('click', '#btnAddAnnouncement', () => $('#announcementModal').modal('show'));
-    $(document).on('click', '#btnSelectFeatured', () => $('#featuredSelectorModal').modal('show'));
+    $(document).on('click', '#btnAddAnnouncement', () => {
+        $('#announcementModal').modal('show');
+    });
+}
+
+// Initialize featured events editor (renamed from homepage editor)
+export function initFeaturedEvents() {
+    $(document).on('click', '#btnSelectFeatured', () => {
+        $('#featuredSelectorModal').modal('show');
+    });
 
     // Load events when the selector modal is shown
     const featuredModal = document.getElementById('featuredSelectorModal');
@@ -15,17 +30,10 @@ export function initHomepageEditor() {
         });
     }
 
-    // Load featured events when the tab is shown
-    const featuredTabBtn = document.querySelector('button[data-bs-target="#tab-featured"]');
-    if (featuredTabBtn) {
-        featuredTabBtn.addEventListener('shown.bs.tab', function () {
-            loadFeaturedEvents();
-        });
-
-        // Initial load if tab is active
-        if (featuredTabBtn.classList.contains('active')) {
-            loadFeaturedEvents();
-        }
+    // Load featured events when panel is shown
+    const panel = document.getElementById('panel-featured-events');
+    if (panel && !panel.classList.contains('d-none')) {
+        loadFeaturedEvents();
     }
 }
 
@@ -205,8 +213,6 @@ window.deleteFeatured = function (id) {
         url: '/featured/' + id,
         method: 'DELETE',
         success: function () {
-            // Show toast or alert? for now just reload
-            // alert('已移除');
             loadFeaturedEvents();
         },
         error: function (err) {
@@ -215,3 +221,8 @@ window.deleteFeatured = function (id) {
         }
     });
 };
+
+// Keep the old function name for backward compatibility
+export function initHomepageEditor() {
+    initFeaturedEvents();
+}
