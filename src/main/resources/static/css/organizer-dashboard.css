@@ -1,7 +1,16 @@
 /* === Layout Fix: Sidebar & Main Content === */
+.navbar {
+    z-index: 1060 !important;
+    /* Force stay above fixed sidebar */
+}
+
+body {
+    padding-top: 56px;
+    /* Offset for fixed navbar */
+}
+
 #organizerSidebar {
     position: fixed;
-    /* 改用 fixed,完全脫離文檔流 */
     top: 56px;
     /* 緊貼 Navbar 底部 */
     left: 0;
@@ -11,7 +20,7 @@
     height: calc(100vh - 56px);
     overflow-y: auto;
     z-index: 1040;
-    /* 低於 Navbar (1050) */
+    /* 低於 Navbar (1060) */
     background-color: #1a1a1a;
     /* 確保背景色 */
     border-right: 1px solid #2a2a2a;
@@ -22,6 +31,8 @@
     margin-left: 16.666667% !important;
     /* 對應 Sidebar 寬度 */
     width: 83.333333% !important;
+    padding-top: 1.5rem;
+    /* Better alignment with Admin panel */
 }
 
 /* RWD 斷點 - 小於 992px 時調整 (對應 col-lg-2 失效) */
@@ -325,7 +336,7 @@
     justify-content: center;
     color: white;
     z-index: 20;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.2s;
 }
 

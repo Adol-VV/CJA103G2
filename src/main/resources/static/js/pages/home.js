@@ -58,49 +58,192 @@ function initSearch() {
     const searchInput = document.getElementById('search_input');
     const searchResults = document.getElementById('search_results');
     const searchInit = document.getElementById('search_init');
+    const searchIcon = document.querySelector('#search_modal .fa-search');
 
     if (searchModal) {
         searchModal.addEventListener('shown.bs.modal', () => {
             if (searchInput) searchInput.focus();
+            loadPopularSuggestions();
+            loadRecentSearches();
         });
+    }
+
+    let searchTimeout = null;
+
+    // --- Popular Suggestions ---
+    async function loadPopularSuggestions() {
+        const container = document.getElementById('popular_tags');
+        if (!container) return;
+
+        try {
+            const res = await fetch('/api/search-suggestion/popular');
+            const data = await res.json();
+
+            if (data.length > 0) {
+                container.innerHTML = data.map(tag => {
+                    const displayTag = tag.length > 12 ? tag.substring(0, 12) + '...' : tag;
+                    return `<span class="badge bg-secondary bg-opacity-10 text-white border border-secondary p-2 cursor-pointer search_tag" title="${tag}">${displayTag}</span>`;
+                }).join('');
+
+                // Re-bind clicks
+                container.querySelectorAll('.search_tag').forEach(tagSpan => {
+                    tagSpan.addEventListener('click', () => {
+                        searchInput.value = tagSpan.getAttribute('title') || tagSpan.textContent.trim();
+                        performSearch();
+                    });
+                });
+            } else {
+                container.innerHTML = '<span class="text-muted small">暫無建議</span>';
+            }
+        } catch (err) {
+            console.error('Failed to load popular suggestions:', err);
+            container.innerHTML = '';
+        }
+    }
+
+    // --- Recent Searches (LocalStorage) ---
+    function saveRecentSearch(keyword) {
+        if (!keyword) return;
+        const trimmed = keyword.trim();
+        if (!trimmed) return;
+
+        let history = JSON.parse(localStorage.getItem('momento_search_history') || '[]');
+        history = history.filter(h => h !== trimmed);
+        history.unshift(trimmed);
+        history = history.slice(0, 3); // Keep only 3
+        localStorage.setItem('momento_search_history', JSON.stringify(history));
+    }
+
+    function loadRecentSearches() {
+        const historyContainer = document.getElementById('recent_searches');
+        if (!historyContainer) return;
+
+        const history = JSON.parse(localStorage.getItem('momento_search_history') || '[]');
+        if (history.length === 0) {
+            historyContainer.innerHTML = '<div class="text-muted small px-2">暫無搜尋紀錄</div>';
+            return;
+        }
+
+        historyContainer.innerHTML = history.map(h => `
+            <a href="javascript:void(0)" class="list-group-item list-group-item-action bg-transparent text-white border-0 px-0 recent-search-item">
+                <i class="far fa-clock text-muted me-2"></i> ${h}
+            </a>
+        `).join('');
+
+        historyContainer.querySelectorAll('.recent-search-item').forEach(item => {
+            item.addEventListener('click', () => {
+                searchInput.value = item.textContent.trim();
+                performSearch();
+            });
+        });
+    }
+
+    async function performSearch() {
+        const query = searchInput.value.trim();
+        if (!query) {
+            if (searchInit) searchInit.classList.remove('d-none');
+            if (searchResults) searchResults.classList.add('d-none');
+            return;
+        }
+
+        if (searchInit) searchInit.classList.add('d-none');
+        if (searchResults) {
+            searchResults.classList.remove('d-none');
+            searchResults.innerHTML = '<div class="p-4 text-center"><div class="spinner-border spinner-border-sm text-success"></div> <span class="ms-2 text-muted">搜尋中...</span></div>';
+        }
+
+        try {
+            const [eventRes, prodRes] = await Promise.all([
+                fetch(`/event/api/search?keyword=${encodeURIComponent(query)}&size=5`),
+                fetch(`/prod/api/search?keyword=${encodeURIComponent(query)}`)
+            ]);
+
+            const eventData = await eventRes.json();
+            const prodData = await prodRes.json();
+
+            const events = eventData.content || [];
+            const prods = prodData.slice(0, 5) || [];
+
+            if (events.length === 0 && prods.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="p-5 text-center text-muted">
+                        <i class="fas fa-search-minus mb-3 fa-2x"></i>
+                        <p>找不到與「${query}」相關的活動或商品</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="list-group list-group-flush">';
+            if (events.length > 0) {
+                html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold">活動</div>';
+                events.forEach(e => {
+                    html += `
+                        <a href="/event/${e.eventId}" class="list-group-item list-group-item-action bg-transparent border-0 text-white d-flex align-items-center gap-3 py-2 search-result-item">
+                            <img src="${e.coverImageUrl || 'https://picsum.photos/50/50'}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div>
+                                <div class="fw-bold">${e.title}</div>
+                                <div class="small text-muted">${e.place} · ${e.typeName}</div>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            if (prods.length > 0) {
+                html += '<div class="px-3 py-2 bg-secondary bg-opacity-10 small text-muted text-uppercase fw-bold mt-2">商品</div>';
+                prods.forEach(p => {
+                    html += `
+                        <a href="/prod/getOne_For_Display?prodId=${p.prodId}" class="list-group-item list-group-item-action bg-transparent border-0 text-white d-flex align-items-center gap-3 py-2 search-result-item">
+                            <img src="${p.mainImageUrl || 'https://picsum.photos/50/50'}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div>
+                                <div class="fw-bold">${p.prodName}</div>
+                                <div class="small text-muted">NT$ ${p.prodPrice} · ${p.sortName}</div>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+            html += '</div>';
+            searchResults.innerHTML = html;
+
+            // Bind click to save history
+            searchResults.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', () => saveRecentSearch(query));
+            });
+
+        } catch (err) {
+            console.error('Search failed:', err);
+            searchResults.innerHTML = '<div class="p-4 text-center text-danger">搜尋出錯，請稍後再試</div>';
+        }
+    }
+
+    function navigateToFirst() {
+        const query = searchInput.value.trim();
+        const first = searchResults.querySelector('.search-result-item');
+        if (first) {
+            saveRecentSearch(query);
+            window.location.href = first.href;
+        }
     }
 
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            if (query.length > 0) {
-                if (searchInit) searchInit.classList.add('d-none');
-                if (searchResults) {
-                    searchResults.classList.remove('d-none');
-                    // Mock search results for UI demo
-                    searchResults.innerHTML = `
-                        <div class="p-3 text-center text-muted">
-                            <p>搜尋功能將由後端處理</p>
-                            <p>搜尋關鍵字: ${query}</p>
-                        </div>
-                    `;
-                }
-            } else {
-                if (searchInit) searchInit.classList.remove('d-none');
-                if (searchResults) searchResults.classList.add('d-none');
-            }
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
         });
 
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                // Navigation only
-                const val = searchInput.value.trim();
-                if (val) window.location.href = 'pages/public/search.html?q=' + encodeURIComponent(val);
+                navigateToFirst();
             }
         });
     }
 
-    document.querySelectorAll('.search_tag').forEach(tag => {
-        tag.addEventListener('click', () => {
-            const val = tag.textContent.trim();
-            if (val) window.location.href = 'pages/public/search.html?q=' + encodeURIComponent(val);
-        });
-    });
+    if (searchIcon) {
+        searchIcon.parentElement.style.cursor = 'pointer';
+        searchIcon.parentElement.addEventListener('click', navigateToFirst);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

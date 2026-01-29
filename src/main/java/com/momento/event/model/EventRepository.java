@@ -18,17 +18,22 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<EventVO, Integer> {
 
-        // ========== 前台公開查詢 (僅 STATUS = 3 或 5) ==========
+        // ========== 前台公開查詢 (僅 STATUS = 3 且 已過上架時間) ==========
 
-        /**
-         * 查詢已上架的活動（分頁）
-         */
-        Page<EventVO> findByStatus(Byte status, Pageable pageable);
+        @Query("SELECT e FROM EventVO e WHERE e.status = :status AND (e.publishedAt IS NULL OR e.publishedAt <= :now)")
+        Page<EventVO> findAvailableEvents(@Param("status") Byte status, @Param("now") LocalDateTime now,
+                        Pageable pageable);
 
-        /**
-         * 查詢已上架的活動（列表）
-         */
-        List<EventVO> findByStatus(Byte status);
+        @Query("SELECT e FROM EventVO e WHERE e.status = :status AND (e.publishedAt IS NULL OR e.publishedAt <= :now)")
+        List<EventVO> findAvailableEvents(@Param("status") Byte status, @Param("now") LocalDateTime now);
+
+        @Query("SELECT e FROM EventVO e WHERE e.status = :status AND e.type.typeId = :typeId AND (e.publishedAt IS NULL OR e.publishedAt <= :now)")
+        Page<EventVO> findAvailableEventsByType(@Param("status") Byte status, @Param("typeId") Integer typeId,
+                        @Param("now") LocalDateTime now, Pageable pageable);
+
+        @Query("SELECT e FROM EventVO e WHERE e.status = :status AND (e.title LIKE %:keyword% OR e.content LIKE %:keyword%) AND (e.publishedAt IS NULL OR e.publishedAt <= :now)")
+        Page<EventVO> searchAvailableEvents(@Param("status") Byte status, @Param("keyword") String keyword,
+                        @Param("now") LocalDateTime now, Pageable pageable);
 
         List<EventVO> findByStatusAndEventEndAtBefore(Byte status, LocalDateTime dateTime);
 
@@ -51,14 +56,15 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         // ========== 複合篩選查詢 (使用 @Query) ==========
 
         @Query("SELECT e FROM EventVO e " +
-                        "WHERE e.status IN :statuses " +
+                        "WHERE e.status = 3 " +
+                        "AND (e.publishedAt IS NULL OR e.publishedAt <= :now) " +
                         "AND (:typeId IS NULL OR e.type.typeId = :typeId) " +
                         "AND (:place IS NULL OR e.place LIKE %:place%) " +
                         "AND (:startDate IS NULL OR e.eventStartAt >= :startDate) " +
                         "AND (:endDate IS NULL OR e.eventStartAt <= :endDate) " +
                         "AND (:minPrice IS NULL OR e.minPrice >= :minPrice) " +
                         "AND (:maxPrice IS NULL OR e.minPrice <= :maxPrice) " +
-                        "AND (:onSaleOnly = false OR (e.saleStartAt IS NOT NULL AND e.saleEndAt IS NOT NULL AND e.saleStartAt <= :now AND e.saleEndAt >= :now))")
+                        "AND (:onSaleOnly = false OR (e.saleStartAt IS NOT NULL AND e.saleEndAt IS NOT NULL AND e.saleStartAt <= :now AND e.saleEndAt > :now))")
         Page<EventVO> filterEvents(
                         @Param("statuses") java.util.List<Byte> statuses,
                         @Param("typeId") Integer typeId,
@@ -126,4 +132,7 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         List<EventVO> searchAdminEvents(
                         @Param("statuses") java.util.Collection<Byte> statuses,
                         @Param("keyword") String keyword);
+
+        @Query(value = "SELECT TITLE FROM EVENT WHERE STATUS = 3 AND (PUBLISHED_AT IS NULL OR PUBLISHED_AT <= NOW()) ORDER BY RAND() LIMIT 5", nativeQuery = true)
+        List<String> findRandomTitles();
 }

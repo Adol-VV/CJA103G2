@@ -38,6 +38,9 @@ public class OrganizerCenterController {
     @Autowired
     private ArticleService articleSvc;
 
+    @Autowired
+    private com.momento.eventmanage.model.EventManageService eventManageService;
+
     @GetMapping("/login")
     public String showLoginPage() {
         return "pages/organizer/login";
@@ -98,6 +101,15 @@ public class OrganizerCenterController {
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
+
+        // 載入統計數據
+        com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
+                .getOrganizerStats(organizer.getOrganizerId());
+        model.addAttribute("organizerStats", stats);
+
+        // 隨機產生本月增長數字 (供展示用)
+        int randomTrend = (int) (Math.random() * 5) + 1;
+        model.addAttribute("randomTrendMonth", "+" + randomTrend);
 
         model.addAttribute("prod", new ProdVO());
         return "pages/organizer/dashboard";
@@ -300,19 +312,20 @@ public class OrganizerCenterController {
         }
         ra.addFlashAttribute("prodList", prodSvc.orgSearchProds(organizer.getOrganizerId(), s));
 
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//變更商品上下架狀態
-	@PostMapping("/changeProdStatus")
-	public String changeReviewStatus(@RequestParam("prodId") Integer prodId, @RequestParam("prodStatus") Byte prodStatus) {
-		prodSvc.updateProdStatus(prodId, prodStatus);
-		return "redirect:/organizer/dashboard#product-list";
-	}
-	
-	//新增商品
-	@PostMapping("/addProd")
-	public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 變更商品上下架狀態
+    @PostMapping("/changeProdStatus")
+    public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
+            @RequestParam("prodStatus") Byte prodStatus) {
+        prodSvc.updateProdStatus(prodId, prodStatus);
+        return "redirect:/organizer/dashboard#product-list";
+    }
+
+    // 新增商品
+    @PostMapping("/addProd")
+    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -323,9 +336,8 @@ public class OrganizerCenterController {
         prodVO.setUpdatedAt(LocalDateTime.now());
         prodVO.setProdStatus((byte) 0);
         prodVO.setReviewStatus((byte) 0);
-        
-        
+
         prodSvc.addProd(prodVO);
         return "redirect:/organizer/dashboard#product-list";
-	}
+    }
 }

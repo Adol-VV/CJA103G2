@@ -52,38 +52,42 @@ public class EventController {
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(required = false) String direction) {
+            @RequestParam(required = false) String direction,
+            @RequestParam(defaultValue = "false") Boolean onSaleOnly) {
 
-        System.out.println("=== API Request: /event/api/list [Sort=" + sort + ", Dir=" + direction + "] ===");
+        EventFilterDTO filterDTO = buildFilterDTO(page, size, sort, typeId, place, minPrice, maxPrice, direction,
+                onSaleOnly);
+        return eventService.filterEvents(filterDTO);
+    }
 
-        EventFilterDTO filterDTO = new EventFilterDTO();
-        filterDTO.setPage(page);
-        filterDTO.setSize(size);
-        filterDTO.setTypeId(typeId);
-        filterDTO.setPlace(place);
-        filterDTO.setMinPrice(minPrice);
-        filterDTO.setMaxPrice(maxPrice);
+    private EventFilterDTO buildFilterDTO(int page, int size, String sort, Integer typeId, String place,
+            Integer minPrice, Integer maxPrice, String direction, Boolean onSaleOnly) {
+        EventFilterDTO dto = new EventFilterDTO();
+        dto.setPage(page);
+        dto.setSize(size);
+        dto.setTypeId(typeId);
+        dto.setPlace(place);
+        dto.setMinPrice(minPrice);
+        dto.setMaxPrice(maxPrice);
+        dto.setOnSaleOnly(onSaleOnly);
 
-        // 預設方向處理
         String finalDir = (direction != null && !direction.isEmpty()) ? direction : "ASC";
 
-        // 核心排序與過濾邏輯
         if ("newest".equals(sort)) {
-            filterDTO.setSort("publishedAt");
-            filterDTO.setDirection("DESC");
+            dto.setSort("publishedAt");
+            dto.setDirection("DESC");
         } else if ("minPrice".equals(sort)) {
-            filterDTO.setSort("minPrice");
-            filterDTO.setDirection(finalDir);
+            dto.setSort("minPrice");
+            dto.setDirection(finalDir);
         } else if ("onSale".equals(sort)) {
-            filterDTO.setSort("eventStartAt");
-            filterDTO.setDirection("ASC");
-            filterDTO.setOnSaleOnly(true);
+            dto.setSort("eventStartAt");
+            dto.setDirection("ASC");
+            dto.setOnSaleOnly(true);
         } else {
-            filterDTO.setSort(sort);
-            filterDTO.setDirection(finalDir);
+            dto.setSort(sort);
+            dto.setDirection(finalDir);
         }
-
-        return eventService.filterEvents(filterDTO);
+        return dto;
     }
 
     @GetMapping("/test-data")
@@ -132,20 +136,13 @@ public class EventController {
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) String direction,
+            @RequestParam(defaultValue = "false") Boolean onSaleOnly,
             Model model) {
 
-        System.out.println("=== EventController.eventList() Executed ===");
-        System.out.println("Page: " + page + ", Size: " + size);
-
         // 建立篩選條件
-        EventFilterDTO filterDTO = new EventFilterDTO();
-        filterDTO.setPage(page);
-        filterDTO.setSize(size);
-        filterDTO.setSort(sort);
-        filterDTO.setTypeId(typeId);
-        filterDTO.setPlace(place);
-        filterDTO.setMinPrice(minPrice);
-        filterDTO.setMaxPrice(maxPrice);
+        EventFilterDTO filterDTO = buildFilterDTO(page, size, sort, typeId, place, minPrice, maxPrice, direction,
+                onSaleOnly);
 
         // 查詢活動列表
         Page<EventListItemDTO> eventPage = eventService.filterEvents(filterDTO);
@@ -174,6 +171,7 @@ public class EventController {
         model.addAttribute("types", types);
         model.addAttribute("currentTypeId", typeId);
         model.addAttribute("currentPlace", place);
+        model.addAttribute("currentOnSaleOnly", filterDTO.getOnSaleOnly());
 
         return "pages/user/event-list";
     }
@@ -251,14 +249,20 @@ public class EventController {
     }
 
     /**
+     * AJAX 搜尋活動 API
+     * GET /event/api/search
+     */
+    @GetMapping("/api/search")
+    @ResponseBody
+    public Page<EventListItemDTO> searchEventsJson(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return eventService.searchEvents(keyword, page, size);
+    }
+
+    /**
      * 依類型查看活動列表
-     * GET /events/type/{typeId}
-     * 
-     * @param typeId 活動類型 ID
-     * @param page   頁碼（預設 0）
-     * @param size   每頁筆數（預設 12）
-     * @param model  Spring MVC Model
-     * @return 活動列表頁面
      */
     @GetMapping("/type/{typeId}")
     public String eventsByType(
