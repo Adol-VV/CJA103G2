@@ -22,7 +22,7 @@
 <div class="tab-content">
     <!-- All Orders -->
     <div class="tab-pane fade show active" id="ordersAll">
-        <div class="row g-3 mb-3">
+        <!-- <div class="row g-3 mb-3">
             <div class="col-md-6"><input type="text" class="form-control bg-dark text-white border-secondary"
                     id="searchProductOrder" placeholder="搜尋訂單編號或商品名稱"></div>
             <div class="col-md-3">
@@ -31,14 +31,14 @@
                     <option value="30d">近 30 天</option>
                 </select>
             </div>
-            <!--<div class="col-md-3">
+            <div class="col-md-3">
                 <select class="form-select bg-dark text-white border-secondary" id="filterOrderStatus">
                     <option value="">全部狀態</option>
                     <option value="pending">待付款</option>
                     <option value="shipped">已出貨</option>
                 </select>
-            </div>-->
-        </div>
+            </div>
+        </div> -->
 
         <div id="productOrdersList">
             <!-- Mock Order Card 1 -->
@@ -50,7 +50,15 @@
                         <span class="ms-3 text-muted small">下單時間：</span><span class="text-white small" th:text="${#dates.format(order.createdDate, 'yyyy/MM/dd HH:mm')}">2024/11/20
                             14:30</span>
                     </div>
-                    <span class="badge bg-success text-white" th:text="${order.status==1?'已付款':'未付款'}">已完成</span>
+                    <td>
+                        <div th:switch="${order.status}">
+                            <span th:case="0" class="badge bg-secondary">未付款</span>
+                            <span th:case="1" class="badge bg-primary">已付款</span>
+                            <span th:case="2" class="badge bg-success">已到貨</span>
+                            <span th:case="3" class="badge bg-danger">退貨</span>
+                            <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
+                        </div>
+                    </td>
                 </div>
                 <div class="card-body">
                     <div class="order-item mb-3" th:each="item:${order.orderItems}">

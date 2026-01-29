@@ -138,7 +138,15 @@
                 </p>
             </div>
             <div class="text-end">
-                <span class="badge bg-success fs-6 mb-2" th:text="${orderDetail.status==1?'已付款':'未付款'}">已完成</span>
+                <td>
+                    <div th:switch="${orderDetail.status}">
+                        <span th:case="0" class="badge bg-secondary">未付款</span>
+                        <span th:case="1" class="badge bg-primary">已付款</span>
+                        <span th:case="2" class="badge bg-success">已到貨</span>
+                        <span th:case="3" class="badge bg-danger">退貨</span>
+                        <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
+                    </div>
+                </td>
                 <p class="text-muted small mb-0">下單時間：<span th:text="${#dates.format(orderDetail.createdDate, 'yyyy/MM/dd HH:mm')}">2024/12/26 14:30</span></p>
             </div>
         </div>
