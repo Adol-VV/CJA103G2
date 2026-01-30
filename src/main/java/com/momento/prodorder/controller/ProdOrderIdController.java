@@ -21,7 +21,7 @@ import com.momento.prodorder.model.ProdOrderIdVO;
 
 
 import com.momento.member.model.MemberVO;
-
+import com.momento.prod.model.ProdService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -34,6 +34,9 @@ public class ProdOrderIdController {
 	
 	@Autowired
 	MemberService memberSvc;
+	
+	@Autowired
+	ProdService poSvc;
 	
 	
 	@PostMapping("/insertOrder")
@@ -53,8 +56,6 @@ public class ProdOrderIdController {
 			token += (prodOrderIdVO.getPayable()/300)*5;
 			member.setToken(token);
 			memberSvc.updateMember(member);
-			
-			
 			poIdSev.addProdOrder(prodOrderIdVO);
 			return prodOrderIdVO.getOrderId().toString();
 		}else {
@@ -85,7 +86,6 @@ public class ProdOrderIdController {
 	
 	@PostMapping("/deleteOrder")
 	public String deleteOrder(Integer orderId) {
-		Optional op = poIdSev.getOne(orderId);
 		ProdOrderIdVO poId = poIdSev.getOne(orderId).orElseThrow();
 		poId.setStatus((byte) 3);
 		poIdSev.updateProdOrder(poId);
