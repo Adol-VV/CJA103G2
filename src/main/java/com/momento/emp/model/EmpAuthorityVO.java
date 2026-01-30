@@ -1,6 +1,7 @@
 package com.momento.emp.model;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "EMP_AUTHORITY")
@@ -11,27 +12,20 @@ public class EmpAuthorityVO {
     @Column(name = "AUTHORITY_ID")
     private Integer authorityId;
 
-    @Column(name = "EMP_ID",nullable = false)
-    private Integer empId;
-
-    @Column(name = "FUNCTION_ID", nullable = false)
-    private Integer functionId;
-
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EMP_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "EMP_ID", nullable = false)
     private EmpVO emp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FUNCTION_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "FUNCTION_ID", nullable = false)
     private BackendFunctionVO function;
 
     public EmpAuthorityVO() {
     }
 
-    public EmpAuthorityVO(Integer empId, Integer functionId) {
-        this.empId = empId;
-        this.functionId = functionId;
+    public EmpAuthorityVO(EmpVO emp, BackendFunctionVO function) {
+        this.emp = emp;
+        this.function = function;
     }
 
     public Integer getAuthorityId() {
@@ -42,31 +36,12 @@ public class EmpAuthorityVO {
         this.authorityId = authorityId;
     }
 
-    public Integer getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(Integer empId) {
-        this.empId = empId;
-    }
-
-    public Integer getFunctionId() {
-        return functionId;
-    }
-
-    public void setFunctionId(Integer functionId) {
-        this.functionId = functionId;
-    }
-
     public EmpVO getEmp() {
         return emp;
     }
 
     public void setEmp(EmpVO emp) {
         this.emp = emp;
-        if (emp != null) {
-            this.empId = emp.getEmpId();
-        }
     }
 
     public BackendFunctionVO getFunction() {
@@ -75,17 +50,39 @@ public class EmpAuthorityVO {
 
     public void setFunction(BackendFunctionVO function) {
         this.function = function;
-        if (function != null) {
-            this.functionId = function.getFunctionId();
-        }
+    }
+
+    // 用於方便取得 ID 的 Helper 方法
+    public Integer getEmpId() {
+        return emp != null ? emp.getEmpId() : null;
+    }
+
+    public Integer getFunctionId() {
+        return function != null ? function.getFunctionId() : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof EmpAuthorityVO))
+            return false;
+        EmpAuthorityVO that = (EmpAuthorityVO) o;
+        return Objects.equals(getEmpId(), that.getEmpId()) &&
+                Objects.equals(getFunctionId(), that.getFunctionId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEmpId(), getFunctionId());
     }
 
     @Override
     public String toString() {
         return "EmpAuthorityVO{" +
                 "authorityId=" + authorityId +
-                ", empId=" + empId +
-                ", functionId=" + functionId +
+                ", empId=" + getEmpId() +
+                ", functionId=" + getFunctionId() +
                 '}';
     }
 }

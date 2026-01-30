@@ -107,6 +107,10 @@ public class EmpController {
             return "redirect:/admin/login";
         }
 
+        // 【修正】從資料庫重新讀取最新資料，確保權限更新能即時反應在側邊欄
+        loginEmp = empSvc.getOneEmp(loginEmp.getEmpId());
+        session.setAttribute("loginEmp", loginEmp); // 同步更新 Session
+
         model.addAttribute("loginEmp", loginEmp);
         model.addAttribute("isSuperAdmin", empSvc.isSuperAdmin(loginEmp.getEmpId()));
         model.addAttribute("prodSortList", prodSortSvc.getAll());

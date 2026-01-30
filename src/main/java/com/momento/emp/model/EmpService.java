@@ -109,12 +109,15 @@ public class EmpService {
             throw new IllegalArgumentException("超級管理員自動擁有所有權限，無需分配");
         }
 
-        if (empAuthorityRepository.existsByEmpIdAndFunctionId(targetEmpId, functionId)) {
+        if (empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId)) {
             throw new IllegalArgumentException("該員工已有此權限");
         }
 
-        EmpAuthorityVO auth = new EmpAuthorityVO(targetEmpId, functionId);
-        empAuthorityRepository.save(auth);
+        BackendFunctionVO func = backendFunctionRepository.findById(functionId).orElse(null);
+        if (func != null) {
+            EmpAuthorityVO auth = new EmpAuthorityVO(targetEmp, func);
+            empAuthorityRepository.save(auth);
+        }
     }
 
     public void revokePermission(Integer currentEmpId, Integer targetEmpId, Integer functionId) {
@@ -127,11 +130,11 @@ public class EmpService {
             throw new IllegalArgumentException("超級管理員權限無法移除");
         }
 
-        if (!empAuthorityRepository.existsByEmpIdAndFunctionId(targetEmpId, functionId)) {
+        if (!empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId)) {
             throw new IllegalArgumentException("該員工沒有此權限");
         }
 
-        empAuthorityRepository.deleteByEmpIdAndFunctionId(targetEmpId, functionId);
+        empAuthorityRepository.deleteByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId);
     }
 
     public List<EmpAuthorityVO> getEmployeePermissions(Integer empId) {
@@ -141,7 +144,7 @@ public class EmpService {
             // 前端透過 isSuperAdmin 判斷來顯示所有選單
             return new ArrayList<>();
         }
-        return empAuthorityRepository.findByEmpId(empId);
+        return empAuthorityRepository.findByEmp_EmpId(empId);
     }
 
     public boolean hasPermission(Integer empId, Integer functionId) {
@@ -150,7 +153,7 @@ public class EmpService {
             return true;
         }
 
-        return empAuthorityRepository.existsByEmpIdAndFunctionId(empId, functionId);
+        return empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(empId, functionId);
     }
 
     public List<BackendFunctionVO> getAllFunctions() {

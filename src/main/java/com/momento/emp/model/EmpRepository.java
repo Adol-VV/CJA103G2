@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface EmpRepository extends JpaRepository<EmpVO, Integer> {
 
     @Modifying
-    @Query("DELETE FROM EmpAuthorityVO ea WHERE ea.empId = ?1")
+    @Query("DELETE FROM EmpAuthorityVO ea WHERE ea.emp.empId = ?1")
     void deleteByEmpId(Integer empId);
 
     Optional<EmpVO> findByAccount(String account);

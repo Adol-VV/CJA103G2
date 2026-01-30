@@ -33,7 +33,7 @@ public class EmpAuthorityController {
      */
     @GetMapping
     public String showPermissionPage(HttpSession session, Model model) {
-        EmpVO currentEmp = (EmpVO) session.getAttribute("empVO");
+        EmpVO currentEmp = (EmpVO) session.getAttribute("loginEmp");
 
         // 1. 檢查是否有登入
         if (currentEmp == null) {
@@ -49,7 +49,7 @@ public class EmpAuthorityController {
         List<EmpVO> allEmployees = empService.getAllEmployees();
         model.addAttribute("employees", allEmployees);
 
-        return "pages/admin/partials/panel-staff-management";
+        return "pages/admin/partials/panel-permission-matrix";
     }
 
     /**
@@ -70,17 +70,26 @@ public class EmpAuthorityController {
     /**
      * AJAX API: 更新權限
      */
-    @PostMapping("/update")
+    @PostMapping(value = "/update", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<?> updatePermissions(@RequestBody Map<String, Object> payload, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> updatePermissions(@RequestBody Map<String, Object> payload,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
         // 安全檢查：只有超級管理員可以執行
-        EmpVO currentEmp = (EmpVO) session.getAttribute("empVO");
-        if (currentEmp == null)
-            return ResponseEntity.status(401).body("請先登入");
+        EmpVO currentEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (currentEmp == null) {
+            response.put("success", false);
+            response.put("message", "請先登入");
+            return ResponseEntity.status(401).body(response);
+        }
 
         // 檢查是否為超級管理員
         if (!empService.isSuperAdmin(currentEmp.getEmpId())) {
-            return ResponseEntity.status(403).body("無權限執行此操作");
+            response.put("success", false);
+            response.put("message", "無權限執行此操作");
+            return ResponseEntity.status(403).body(response);
         }
 
         try {
@@ -89,9 +98,19 @@ public class EmpAuthorityController {
 
             authorityService.updatePermissions(targetEmpId, functionIds);
 
-            return ResponseEntity.ok(Map.of("success", true, "message", "權限更新成功！"));
+            // 【最新補強】如果修改的是「自己」的權限，必須同步更新 Session 裡的物件
+            if (currentEmp.getEmpId().equals(targetEmpId)) {
+                EmpVO updatedEmp = empService.getOneEmp(targetEmpId);
+                session.setAttribute("loginEmp", updatedEmp);
+            }
+
+            response.put("success", true);
+            response.put("message", "權限更新成功！");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+            response.put("success", false);
+            response.put("message", "系統錯誤：" + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 }
