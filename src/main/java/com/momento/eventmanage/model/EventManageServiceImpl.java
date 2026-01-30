@@ -183,7 +183,8 @@ public class EventManageServiceImpl implements EventManageService {
                 || (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty())) {
             // 先清除該活動所有圖
             eventImageRepository
-                    .deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(event.getEventId()));
+                    .deleteAll(eventImageRepository
+                            .findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(event.getEventId()));
 
             java.util.LinkedHashSet<String> uniqueUrls = new java.util.LinkedHashSet<>();
 
@@ -364,7 +365,8 @@ public class EventManageServiceImpl implements EventManageService {
         eventOrderRepository.deleteAll(eventOrderRepository.findByEvent_EventId(eventId));
 
         ticketRepository.deleteAll(ticketRepository.findByEvent_EventId(eventId));
-        eventImageRepository.deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId));
+        eventImageRepository
+                .deleteAll(eventImageRepository.findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(eventId));
         eventRepository.delete(event);
     }
 
@@ -426,7 +428,8 @@ public class EventManageServiceImpl implements EventManageService {
                 .orElseThrow(() -> new RuntimeException("活動不存在"));
 
         List<TicketVO> tickets = ticketRepository.findByEvent_EventId(eventId);
-        List<EventImageVO> images = eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId);
+        List<EventImageVO> images = eventImageRepository
+                .findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(eventId);
 
         com.momento.event.dto.EventDetailDTO dto = new com.momento.event.dto.EventDetailDTO();
         dto.setEvent(event);

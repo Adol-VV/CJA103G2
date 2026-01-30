@@ -56,7 +56,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void reduceStock(Integer ticketId, Integer quantity) {
-        TicketVO ticket = ticketRepository.findById(ticketId)
+        TicketVO ticket = ticketRepository.findByIdForUpdate(ticketId)
                 .orElseThrow(() -> new RuntimeException("票種不存在：ID = " + ticketId));
 
         if (ticket.getRemain() < quantity) {
@@ -70,7 +70,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void restoreStock(Integer ticketId, Integer quantity) {
-        TicketVO ticket = ticketRepository.findById(ticketId)
+        TicketVO ticket = ticketRepository.findByIdForUpdate(ticketId)
                 .orElseThrow(() -> new RuntimeException("票種不存在：ID = " + ticketId));
 
         ticket.setRemain(ticket.getRemain() + quantity);

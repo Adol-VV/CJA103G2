@@ -62,7 +62,7 @@ public class FeaturedService {
 
             // 查詢該活動的第一張圖片 (封面圖)
             Optional<EventImageVO> imgOpt = eventImageRepository
-                    .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
+                    .findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(event.getEventId());
 
             // 如果有圖就用資料庫的圖，沒圖就用預設圖 (可自行換成專案內的預設圖路徑)
             String imgUrl = imgOpt.map(EventImageVO::getImageUrl)

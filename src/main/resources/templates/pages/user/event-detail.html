@@ -250,7 +250,8 @@
                     <!-- Main Image -->
                     <img th:if="${images != null and !images.isEmpty()}" th:src="${images[0].imageUrl}"
                         class="main-image img-fluid w-100 mb-2" loading="lazy" th:alt="${event.title}"> <img
-                        th:if="${images == null or images.isEmpty()}" src="https://picsum.photos/800/450"
+                        th:if="${images == null or images.isEmpty()}"
+                        th:src="'https://picsum.photos/seed/evento' + ${event.eventId} + '/800/450'"
                         class="main-image img-fluid w-100 mb-2" loading="lazy" alt="活動主視覺">
 
                     <!-- Thumbnail Row -->
