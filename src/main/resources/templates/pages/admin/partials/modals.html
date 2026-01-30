@@ -867,3 +867,96 @@
         </div>
     </div>
 </div>
+
+<!-- 13. Order Refund Detail Modal (from Refund Management) -->
+<div class="modal fade" id="orderRefundDetailModal" tabindex="-1" >
+    <div class="modal-dialog modal-lg modal-dialog-centered" th:fragment="refundModalContent">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fas fa-undo me-2"></i>退款申請詳情 #<span th:text="${orderRefund?.orderId}">R20250107001</span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">訂單資訊</h6>
+                        <table class="table table-dark table-sm">
+                            <tr>
+                                <td class="text-muted">原訂單編號</td>
+                                <td th:text="|#${orderRefund?.orderId}|">#MOM2025010301</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">商品名稱</td>
+                                <td>
+                                    <th:block th:each="item, iterStat : ${orderRefund?.orderItems}">
+                                        <span th:text="|${item.prodId.prodName} x${item.quantity}|"></span>
+                                        <span th:if="${!iterStat.last}">, </span>
+                                    </th:block>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">購買日期</td>
+                                <td th:text="${#dates.format(orderRefund?.createdDate, 'yyyy/MM/dd HH:mm')}">2025/01/03 14:20</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">訂單金額</td>
+                                <td th:text="|NT$ ${#numbers.formatInteger(orderRefund?.total, 1, 'COMMA')}|">NT$ 5,600</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">申請退款金額</td>
+                                <td class="text-warning" th:text="|NT$ ${#numbers.formatInteger(orderRefund?.payable, 1, 'COMMA')}|">NT$ 3,600</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">申請人資訊</h6>
+                        <table class="table table-dark table-sm">
+                            <tr>
+                                <td class="text-muted">會員</td>
+                                <td th:text="${orderRefund?.memberId?.name}">王小明</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Email</td>
+                                <td th:text="${orderRefund?.memberId?.account}">wang@example.com</td>
+                            </tr>
+                            <!-- <tr>
+                                <td class="text-muted">申請時間</td>
+                                <td>2025/01/07 09:30</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">退款原因</td>
+                                <td><span class="badge bg-secondary">無法出席</span></td>
+                            </tr> -->
+                        </table>
+                    </div>
+                </div>
+                <!-- <div class="mt-3">
+                    <h6 class="text-muted mb-2">申請說明</h6>
+                    <div class="p-3 bg-secondary bg-opacity-25 rounded">
+                        臨時有事無法參加，希望能退票。我購買了 2 張 VIP 票，只能退 1 張，另 1 張要給朋友。
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6 class="text-muted mb-2">退票政策檢查</h6>
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        此活動採用「標準」退票政策（活動前 7 天可退票），目前距活動還有 <strong>24 天</strong>，符合退款條件。
+                    </div>
+                </div> -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <!-- <div class="me-auto">
+                    <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                        placeholder="駁回原因（選填）" style="width: 250px;">
+                </div> -->
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-danger prod_refund_disagree">
+                    <i class="fas fa-times me-1"></i>駁回申請
+                </button>
+                <button type="button" class="btn btn-success prod_refund_agree">
+                    <i class="fas fa-check me-1"></i>同意退款
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
