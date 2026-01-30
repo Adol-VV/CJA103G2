@@ -42,15 +42,26 @@
 			border-bottom: 1px solid rgba(45, 95, 79, 0.3);
 		}
 
+		.announce_bar .d-flex {
+			flex-wrap: nowrap;
+		}
+
+		.announce_bar .btn {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+
 		.announce_marquee {
 			height: 24px;
 			mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
 			-webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+			overflow: hidden;
 		}
 
 		.announce_track {
-			animation: marquee 30s linear infinite;
+			animation: marquee 60s linear infinite;
 			white-space: nowrap;
+			display: inline-block;
 		}
 
 		.announce_track:hover {
@@ -81,8 +92,7 @@
 			}
 
 			100% {
-				transform:
-					translateX(-50%);
+				transform: translateX(-50%);
 			}
 		}
 
@@ -403,8 +413,8 @@
 				<span class="badge bg-warning text-dark me-3 d-none d-sm-inline-block">
 					<i class="fas fa-bullhorn me-1"></i>公告
 				</span>
-				<div class="announce_marquee flex-grow-1 overflow-hidden position-relative">
-					<div class="announce_track d-flex" id="announce_track">
+				<div class="announce_marquee flex-grow-1 position-relative">
+					<div class="announce_track" id="announce_track">
 						<!-- 公告項目由 JS 動態載入 -->
 					</div>
 				</div>

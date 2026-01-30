@@ -4,9 +4,11 @@ import com.momento.emp.model.BackendFunctionVO;
 import com.momento.emp.model.EmpAuthorityVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
+import com.momento.member.model.MemberService;
 import com.momento.message.model.MessageService;
 import com.momento.notify.model.NotificationBridgeService;
 import com.momento.notify.model.SystemNotifyService;
+import com.momento.organizer.model.OrganizerService;
 import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
@@ -44,6 +46,12 @@ public class EmpController {
 
     @Autowired //pei
     private NotificationBridgeService bridgeService;
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private OrganizerService organizerService;
 
     /**
      * 顯示登入頁面
@@ -144,6 +152,13 @@ public class EmpController {
 
         // 留言管理：新增的留言 (Status = 1)
         model.addAttribute("newComments", messageService.getMessagesByStatus(1));
+
+        // 通知發送用的會員和主辦方數量
+        model.addAttribute("memberCount", memberService.getMemberCount());
+        model.addAttribute("activeMemberCount", memberService.getActiveMemberCount());
+        model.addAttribute("newMemberCount", memberService.getNewMemberCount());
+        model.addAttribute("organizerCount", organizerService.getOrganizerCount());
+        model.addAttribute("activeOrganizerCount", organizerService.getActiveOrganizerCount());
 
         return "pages/admin/dashboard";
     }

@@ -85,7 +85,7 @@
                             <input class="form-check-input" type="radio" name="recipientGroup" value="all" id="recEveryone" checked>
                             <label class="form-check-label" for="recEveryone">
                                 <i class="fas fa-globe me-1 text-primary"></i>所有人（會員+主辦方）
-                                <span class="text-muted">(12,606)</span>
+                                <span class="text-muted" th:text="'(' + (${memberCount} + ${organizerCount}) + ')'">(0)</span>
                             </label>
                         </div>
                     </div>
@@ -100,19 +100,19 @@
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="recipientGroup" value="front_all" id="recAllMembers">
                             <label class="form-check-label" for="recAllMembers">
-                                全部會員 <span class="text-muted">(12,450)</span>
+                                全部會員 <span class="text-muted" th:text="'(' + ${memberCount} + ')'">(0)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="recipientGroup" value="front_active" id="recActive">
                             <label class="form-check-label" for="recActive">
-                                活躍會員 <span class="text-muted">(8,320)</span>
+                                活躍會員 <span class="text-muted" th:text="'(' + ${activeMemberCount} + ')'">(0)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="recipientGroup" value="front_new" id="recNewMembers">
                             <label class="form-check-label" for="recNewMembers">
-                                新會員（30天內註冊）<span class="text-muted">(523)</span>
+                                新會員（30天內註冊）<span class="text-muted" th:text="'(' + ${newMemberCount} + ')'">(0)</span>
                             </label>
                         </div>
                     </div>
@@ -127,13 +127,13 @@
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="recipientGroup" value="org_all" id="recAllOrganizers">
                             <label class="form-check-label" for="recAllOrganizers">
-                                全部主辦方 <span class="text-muted">(156)</span>
+                                全部主辦方 <span class="text-muted" th:text="'(' + ${organizerCount} + ')'">(0)</span>
                             </label>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="recipientGroup" value="org_active" id="recActiveOrganizers">
                             <label class="form-check-label" for="recActiveOrganizers">
-                                活躍主辦方 <span class="text-muted">(89)</span>
+                                活躍主辦方 <span class="text-muted" th:text="'(' + ${activeOrganizerCount} + ')'">(0)</span>
                             </label>
                         </div>
                     </div>

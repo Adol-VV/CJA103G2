@@ -2,73 +2,337 @@
     <h2 class="mb-4">公告輪播管理</h2>
 
     <div class="d-flex justify-content-between mb-3">
-        <button class="btn btn-primary" id="btnAddAnnouncement">
+        <button class="btn btn-primary" id="btnAddAnnouncement" data-bs-toggle="modal" data-bs-target="#announcementModal">
             <i class="fas fa-plus"></i> 新增公告
         </button>
     </div>
 
-    <div id="announcementList" class="sortable-list">
-        <!-- Mock Item 1 -->
-        <div class="card mb-3 announcement-item" data-id="1">
-            <div class="card-body py-3">
-                <div class="row align-items-center">
-                    <div class="col-auto">
-                        <i class="fas fa-grip-vertical drag-handle text-muted" style="cursor: move;"></i>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="https://images.unsplash.com/photo-1531058020387-3be344556be6"
-                            class="img-fluid rounded">
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="mb-1 text-white">2024 新年優惠活動</h6>
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-success">啟用中</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <button class="btn btn-sm btn-outline-light">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger ms-1">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mock Item 2 -->
-        <div class="card mb-3 announcement-item" data-id="2">
-            <div class="card-body py-3">
-                <div class="row align-items-center">
-                    <div class="col-auto">
-                        <i class="fas fa-grip-vertical drag-handle text-muted" style="cursor: move;"></i>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30"
-                            class="img-fluid rounded">
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="mb-1 text-white">春季音樂祭開跑</h6>
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-success">啟用中</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <button class="btn btn-sm btn-outline-light">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger ms-1">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- 公告列表 -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0">
+            <thead class="border-secondary">
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th>標題</th>
+                    <th style="width: 120px;">發布者</th>
+                    <th style="width: 160px;">建立時間</th>
+                    <th style="width: 160px;">更新時間</th>
+                    <th style="width: 120px;">操作</th>
+                </tr>
+            </thead>
+            <tbody id="announcementTableBody">
+                <!-- 由 JS 動態載入 -->
+            </tbody>
+        </table>
     </div>
 
     <div class="alert alert-info mt-4">
         <i class="fas fa-info-circle me-2"></i>
-        <strong>提示：</strong>拖曳左側圖示可調整公告輪播順序，變更將即時生效。
+        <strong>提示：</strong>新增或編輯的公告會即時顯示在前台首頁的公告跑馬燈中。
+    </div>
+
+    <!-- 新增/編輯公告 Modal -->
+    <div class="modal fade" id="announcementModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="announcementModalTitle">
+                        <i class="fas fa-bullhorn me-2"></i>新增公告
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="announcementForm">
+                        <input type="hidden" id="editAnnouncementId" name="announcementId">
+                        <!-- 快速範本 -->
+                        <div class="mb-3">
+                            <label class="form-label">範本</label>
+                            <select id="announcementTemplate" class="form-select bg-dark text-white border-secondary">
+                                <option value="" selected disabled>選擇範本...</option>
+                                <option value="1"
+                                    data-title="系統維護公告"
+                                    data-content="系統將於 YYYY/MM/DD HH:00-HH:00 進行維護升級，屆時將暫停所有服務，造成不便敬請見諒。">系統維護公告</option>
+                                <option value="2"
+                                    data-title="新功能上線"
+                                    data-content="全新功能正式上線！歡迎各位會員體驗，如有任何問題歡迎透過客服中心反映。">新功能上線</option>
+                                <option value="3"
+                                    data-title="節日營運公告"
+                                    data-content="節日期間客服服務時間調整，活動購票與商品訂購功能正常運作，造成不便敬請見諒。">節日營運公告</option>
+                                <option value="4"
+                                    data-title="平台服務條款更新"
+                                    data-content="我們近期更新了隱私權政策與服務條款，請詳閱最新內容以維護您的權益。">服務條款更新</option>
+                                <option value="5"
+                                    data-title="精選活動推薦"
+                                    data-content="本週精選藝文活動已上架！快來探索最新的展覽、音樂會與表演，把握限時購票優惠。">精選活動推薦</option>
+                                <option value="6"
+                                    data-title="限時優惠活動"
+                                    data-content="限時優惠活動開跑！即日起至 MM/DD，購買指定活動票券或商品享有專屬折扣，數量有限售完為止。">限時優惠活動</option>
+                                <option value="7"
+                                    data-title="會員專屬福利"
+                                    data-content="感謝您的支持！會員專屬福利已發放，請至會員中心查看您的優惠券與代幣獎勵。">會員專屬福利</option>
+                            </select>
+                            <small class="text-muted">選擇範本後可自行修改內容</small>
+                        </div>
+                        <hr class="border-secondary">
+                        <div class="mb-3">
+                            <label class="form-label">公告標題 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                   id="announcementTitle" name="title" required placeholder="請輸入公告標題">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">公告內容 <span class="text-danger">*</span></label>
+                            <textarea class="form-control bg-dark text-white border-secondary" rows="6"
+                                      id="announcementContent" name="content" required placeholder="請輸入公告內容"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveAnnouncement">
+                        <i class="fas fa-save me-1"></i>儲存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刪除確認 Modal -->
+    <div class="modal fade" id="deleteAnnouncementModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>確認刪除
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>確定要刪除公告「<span id="deleteAnnouncementTitle" class="fw-bold"></span>」嗎？</p>
+                    <p class="text-muted small mb-0">此操作無法復原。</p>
+                    <input type="hidden" id="deleteAnnouncementId">
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmDelete">
+                        <i class="fas fa-trash me-1"></i>確認刪除
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    // 載入公告列表
+    loadAnnouncementList();
+
+    // 新增按鈕 - 重置表單
+    $('#btnAddAnnouncement').on('click', function() {
+        $('#announcementModalTitle').html('<i class="fas fa-bullhorn me-2"></i>新增公告');
+        $('#announcementForm')[0].reset();
+        $('#editAnnouncementId').val('');
+        $('#announcementTemplate').val(''); // 重置範本選擇
+    });
+
+    // 範本選擇
+    $('#announcementTemplate').on('change', function() {
+        const selected = $(this).find(':selected');
+        const title = selected.data('title');
+        const content = selected.data('content');
+
+        if (title && content) {
+            $('#announcementTitle').val(title);
+            $('#announcementContent').val(content);
+        }
+    });
+
+    // 儲存公告
+    $('#btnSaveAnnouncement').on('click', function() {
+        const id = $('#editAnnouncementId').val();
+        const title = $('#announcementTitle').val().trim();
+        const content = $('#announcementContent').val().trim();
+
+        if (!title || !content) {
+            Swal.fire({
+                icon: 'warning',
+                title: '請填寫完整',
+                text: '標題和內容為必填欄位',
+                background: '#1a1d20',
+                color: '#fff'
+            });
+            return;
+        }
+
+        const url = id ? '/announcement/admin/api/update' : '/announcement/admin/api/create';
+        const data = { title, content };
+        if (id) data.announcementId = id;
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            success: function(res) {
+                if (res.success) {
+                    $('#announcementModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: id ? '更新成功' : '新增成功',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#1a1d20',
+                        color: '#fff'
+                    });
+                    loadAnnouncementList();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '操作失敗',
+                        text: res.message,
+                        background: '#1a1d20',
+                        color: '#fff'
+                    });
+                }
+            },
+            error: function(err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '操作失敗',
+                    text: err.responseJSON?.message || '系統錯誤',
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
+            }
+        });
+    });
+
+    // 確認刪除
+    $('#btnConfirmDelete').on('click', function() {
+        const id = $('#deleteAnnouncementId').val();
+        $.ajax({
+            url: '/announcement/admin/api/delete',
+            type: 'POST',
+            data: { announcementId: id },
+            success: function(res) {
+                if (res.success) {
+                    $('#deleteAnnouncementModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '刪除成功',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#1a1d20',
+                        color: '#fff'
+                    });
+                    loadAnnouncementList();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '刪除失敗',
+                        text: res.message,
+                        background: '#1a1d20',
+                        color: '#fff'
+                    });
+                }
+            },
+            error: function(err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '刪除失敗',
+                    text: err.responseJSON?.message || '系統錯誤',
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
+            }
+        });
+    });
+});
+
+function loadAnnouncementList() {
+    $.ajax({
+        url: '/announcement/admin/api/list',
+        type: 'GET',
+        success: function(list) {
+            let html = '';
+            if (list.length === 0) {
+                html = '<tr><td colspan="6" class="text-center text-muted py-4">尚無公告</td></tr>';
+            } else {
+                list.forEach((item, index) => {
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>
+                                <div class="fw-bold">${escapeHtml(item.title)}</div>
+                                <div class="text-muted small text-truncate" style="max-width: 300px;">${escapeHtml(item.content)}</div>
+                            </td>
+                            <td>${escapeHtml(item.empName)}</td>
+                            <td><small>${item.createdAt}</small></td>
+                            <td><small>${item.updatedAt}</small></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-light btn-edit" data-id="${item.announcementId}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger ms-1 btn-delete"
+                                        data-id="${item.announcementId}" data-title="${escapeHtml(item.title)}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            $('#announcementTableBody').html(html);
+
+            // 綁定編輯按鈕
+            $('.btn-edit').on('click', function() {
+                const id = $(this).data('id');
+                loadAnnouncementForEdit(id);
+            });
+
+            // 綁定刪除按鈕
+            $('.btn-delete').on('click', function() {
+                const id = $(this).data('id');
+                const title = $(this).data('title');
+                $('#deleteAnnouncementId').val(id);
+                $('#deleteAnnouncementTitle').text(title);
+                $('#deleteAnnouncementModal').modal('show');
+            });
+        },
+        error: function() {
+            $('#announcementTableBody').html('<tr><td colspan="6" class="text-center text-danger py-4">載入失敗</td></tr>');
+        }
+    });
+}
+
+function loadAnnouncementForEdit(id) {
+    $.ajax({
+        url: '/announcement/admin/api/' + id,
+        type: 'GET',
+        success: function(data) {
+            $('#announcementModalTitle').html('<i class="fas fa-edit me-2"></i>編輯公告');
+            $('#editAnnouncementId').val(data.announcementId);
+            $('#announcementTitle').val(data.title);
+            $('#announcementContent').val(data.content);
+            $('#announcementModal').modal('show');
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: '載入失敗',
+                text: '無法取得公告資料',
+                background: '#1a1d20',
+                color: '#fff'
+            });
+        }
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>

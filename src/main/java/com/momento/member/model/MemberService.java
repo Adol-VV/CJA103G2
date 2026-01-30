@@ -48,10 +48,28 @@ public class MemberService {
 	public List<MemberVO> searchMembers(Integer status, String keyword) {
         // 處理關鍵字：如果是空字串或全是空格，轉為 null
         String searchKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
-        
+
         // 處理狀態：假設前端「所有狀態」傳來的是 -1 或 null
         Integer searchStatus = (status != null && status != -1) ? status : null;
 
         return repository.findByFilters(searchStatus, searchKeyword);
     }
+
+	// 取得會員總數
+	public long getMemberCount() {
+		return repository.count();
+	}
+
+	// 取得活躍會員數 (status = 1)
+	public long getActiveMemberCount() {
+		return repository.findByFilters(1, null).size();
+	}
+
+	// 取得新會員數 (30天內註冊)
+	public long getNewMemberCount() {
+		LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+		return repository.findAll().stream()
+				.filter(m -> m.getCreatedAt() != null && m.getCreatedAt().isAfter(thirtyDaysAgo))
+				.count();
+	}
 }
