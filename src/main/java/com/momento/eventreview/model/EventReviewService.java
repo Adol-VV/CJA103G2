@@ -1,5 +1,6 @@
 package com.momento.eventreview.model;
 
+import com.momento.notify.model.NotificationBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,9 @@ public class EventReviewService {
 
     @Autowired
     private OrganizerNotifyRepository organizerNotifyRepository;
+
+    @Autowired //pei
+    private NotificationBridgeService bridgeService;
 
     public List<EventVO> getEventsByTab(String tabType, String keyword) {
         if (tabType == null)
@@ -71,6 +75,9 @@ public class EventReviewService {
                 throw new RuntimeException("活動非待審核狀態");
             event.setStatus(EventVO.STATUS_APPROVED); // 審核通過，等待主辦設定時間
             eventRepository.save(event);
+
+            // pei
+            bridgeService.processEventReviewNotify(event, true, null);
         } else {
             throw new RuntimeException("活動不存在: " + eventId);
         }
@@ -96,6 +103,8 @@ public class EventReviewService {
             notify.setTargetId(String.valueOf(eventId));
             organizerNotifyRepository.save(notify);
 
+//            // pei
+//            bridgeService.processEventReviewNotify(event, false, reason);
         } else {
             throw new RuntimeException("活動不存在: " + eventId);
         }

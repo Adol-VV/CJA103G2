@@ -48,6 +48,12 @@ public class OrganizerCenterController {
     @Autowired
     private com.momento.eventmanage.model.EventManageService eventManageService;
 
+    @Autowired
+    private SystemNotifyService sysNotifySvc;
+
+    @Autowired
+    private OrganizerNotifyService orgNotifySvc;
+
     @GetMapping("/login")
     public String showLoginPage() {
         return "pages/organizer/login";
@@ -521,5 +527,49 @@ public class OrganizerCenterController {
     @GetMapping("/goToProdList")
     public String goToProdList() {
         return "redirect:/organizer/dashboard#product-list";
+    }
+
+    @PostMapping("/dashboard/notifications/mark-read")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId, HttpSession session) {
+        Map<String, Object> response = new java.util.HashMap<>();
+        try {
+            if (session.getAttribute("loginOrganizer") == null) {
+                response.put("success", false);
+                response.put("message", "請先登入");
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+            }
+            sysNotifySvc.updateReadStatus(notifyId, 1);
+            response.put("success", true);
+            response.put("message", "單則通知已讀成功");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "操作失敗: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/dashboard/notifications/mark-all-read")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.Map<String, Object>> markAllAsRead(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            OrganizerVO loginOrganizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+            if (loginOrganizer == null) {
+                response.put("success", false);
+                response.put("message", "連線逾時，請重新登入");
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+            }
+            sysNotifySvc.markAllAsReadForOrg(loginOrganizer.getOrganizerId());
+
+            response.put("success", true);
+            response.put("message", "所有通知已標記為已讀");
+            return org.springframework.http.ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "批次更新失敗: " + e.getMessage());
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

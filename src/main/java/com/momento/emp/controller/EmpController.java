@@ -5,6 +5,7 @@ import com.momento.emp.model.EmpAuthorityVO;
 import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
 import com.momento.message.model.MessageService;
+import com.momento.notify.model.NotificationBridgeService;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdService;
@@ -37,6 +38,9 @@ public class EmpController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired //pei
+    private NotificationBridgeService bridgeService;
 
     /**
      * 顯示登入頁面
@@ -259,6 +263,9 @@ public class EmpController {
             @RequestParam("reviewStatus") Byte reviewStatus) {
         System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
         prodSvc.updateProdReviewStatus(prodId, reviewStatus);
+
+        // pei
+        bridgeService.processProdReviewNotify(prodId, reviewStatus);
         return "redirect:/admin/dashboard#product-approval";
     }
 

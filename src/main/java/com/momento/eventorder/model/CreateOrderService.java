@@ -39,6 +39,9 @@ public class CreateOrderService {
 	@Autowired
 	EventOrderItemRepository eventOrderItemRepo;
 
+	@Autowired // pei
+	private NotificationBridgeService bridgeService;
+
 	@Transactional
 	public EventOrderVO createOrder(OrderCreateDTO dto, Integer memberId) {
 
@@ -132,6 +135,9 @@ public class CreateOrderService {
 
 		eventOrderItemRepo.saveAll(orderItemList);
 		eventOrder.setEventOrderItems(new ArrayList<>(orderItemList));
+
+		// pei
+		bridgeService.processEventOrderNotify(eventOrder);
 
 		return eventOrder;
 	}

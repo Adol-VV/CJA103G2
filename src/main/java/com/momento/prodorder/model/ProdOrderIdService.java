@@ -1,11 +1,12 @@
 package com.momento.prodorder.model;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.momento.notify.model.NotificationBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service("prodOrderIdService")
 @Transactional
@@ -13,12 +14,18 @@ public class ProdOrderIdService {
 	
 	@Autowired
 	private ProdOrderIdRepository repository;
+
+	@Autowired //pei
+	private NotificationBridgeService bridgeService;
 	
 	public void addProdOrder(ProdOrderIdVO prodOrderIdVO) {
 		if(prodOrderIdVO.getOrderItems() !=null) {
 			prodOrderIdVO.getOrderItems().forEach(item->item.setProdOrderId(prodOrderIdVO));
 		}
 		repository.save(prodOrderIdVO);
+
+		// pei
+		bridgeService.processProdOrderNotify(prodOrderIdVO);
 	}
 	
 	public void updateProdOrder(ProdOrderIdVO prodOrderIdVO) {
