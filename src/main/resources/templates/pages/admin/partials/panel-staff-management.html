@@ -1,4 +1,35 @@
 <div class="content-panel" id="panel-staff-management">
+    <style>
+        /* 1. 加強超級管理員視覺：加入紅色邊框線與斜紋背景 */
+        .super-admin-row {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            /* 稍微提升亮度 */
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px) !important;
+            /* 質感的微斜紋，代表鎖定區域 */
+            border-left: 4px solid #dc3545 !important;
+            /* 左側紅色狀態條，對應標籤顏色 */
+            pointer-events: none;
+            /* 徹底禁用滑鼠互動 */
+            position: relative;
+        }
+
+        /* 解決表頭對齊問題：讓表頭也預留 4px 空間 */
+        #panel-staff-management thead tr {
+            border-left: 4px solid transparent !important;
+        }
+
+        .super-admin-row td {
+            color: #888;
+            /* 提升一點對比度，讓鎖定的文字依然清晰可讀 */
+            border-bottom: 1px solid rgba(220, 53, 69, 0.1) !important;
+            /* 底線帶一點點紅 */
+        }
+    </style>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>員工管理</h2>
     </div>
@@ -19,7 +50,7 @@
                 </thead>
                 <tbody>
                     <!-- Thymeleaf Loop -->
-                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'table-dark' : ''}">
+                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'super-admin-row' : ''}">
                         <td style="text-align: center !important; vertical-align: middle;" th:text="${emp.empId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">

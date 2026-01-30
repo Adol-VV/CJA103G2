@@ -1,4 +1,78 @@
 <div class="content-panel" id="panel-permission-matrix">
+
+    <style>
+        /* 1. 強化凍結視覺：加入紅色邊框線與斜紋背景 */
+        .super-admin-row {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            /* 稍微提升亮度 */
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px) !important;
+            /* 質感的微斜紋，代表鎖定區域 */
+            border-left: 4px solid #dc3545 !important;
+            /* 左側紅色狀態條，對應標籤顏色 */
+            pointer-events: none;
+            /* 徹底禁用滑鼠互動 */
+            position: relative;
+        }
+
+        /* 解決表頭對齊問題：讓表頭也預留 4px 空間 */
+        #panel-permission-matrix thead tr {
+            border-left: 4px solid transparent !important;
+        }
+
+        .super-admin-row td {
+            color: #888;
+            /* 提升一點對比度，讓鎖定的文字依然清晰可讀 */
+            border-bottom: 1px solid rgba(220, 53, 69, 0.1) !important;
+            /* 底線帶一點點紅 */
+        }
+
+        /* 2. 藝文風格質感開關 (Switch) */
+        .permission-switch {
+            cursor: pointer;
+            background-color: #222 !important;
+            /* 黑色背景 */
+            border: 1px solid #444 !important;
+            /* 帶一點金屬質感的邊框 */
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important;
+            /* 彈性動畫 */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255,255,255,0.4)'/%3e%3c/svg%3e") !important;
+        }
+
+        /* 選取狀態：品牌翡翠綠 + 微發光 */
+        .permission-switch:checked {
+            background-color: #2D5F4F !important;
+            /* Momento 品牌綠 */
+            border-color: #3e7a67 !important;
+            box-shadow: 0 0 10px rgba(45, 95, 79, 0.4) !important;
+            /* 綠色微光 */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+        }
+
+        /* 重設超級管理員行的開關外觀 (雖然被 disabled 但要好看) */
+        .super-admin-row .permission-switch {
+            opacity: 0.8 !important;
+            filter: brightness(0.7);
+        }
+
+        /* 移除藍色框框 */
+        .permission-switch:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* 搜尋框質感調整 */
+        #permissionSearchInput {
+            border-radius: 20px;
+            padding-left: 20px;
+            background: #1a1a1a !important;
+        }
+    </style>
+
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>權限管理</h2>
         <div class="d-flex gap-2">
@@ -10,23 +84,24 @@
     <div class="card bg-dark border-secondary">
         <div class="table-responsive">
             <table class="table table-dark table-hover table-bordered align-middle mb-0">
-                <thead class="bg-dark sticky-top">
+                <thead class="bg-dark">
                     <tr class="border-secondary">
                         <th class="text-center" style="width: 80px;">編號</th>
                         <th>姓名</th>
                         <th>職稱</th>
-                        <th class="text-center">會員</th>
-                        <th class="text-center">主辦</th>
-                        <th class="text-center">商品</th>
-                        <th class="text-center">活動</th>
-                        <th class="text-center">訂單</th>
-                        <th class="text-center">結算</th>
-                        <th class="text-center">公告</th>
-                        <th class="text-center">留言</th>
+                        <th class="text-center">會員管理</th>
+                        <th class="text-center">主辦審核</th>
+                        <th class="text-center">商品審核</th>
+                        <th class="text-center">活動審核</th>
+                        <th class="text-center">訂單管理</th>
+                        <th class="text-center">結算管理</th>
+                        <th class="text-center">公告通知</th>
+                        <th class="text-center">留言檢舉</th>
                     </tr>
                 </thead>
                 <tbody id="permissionMatrixBody">
-                    <tr th:each="emp : ${employees}" th:data-emp-id="${emp.empId}">
+                    <tr th:each="emp : ${employees}" th:data-emp-id="${emp.empId}"
+                        th:classappend="${emp.empId == 1} ? 'super-admin-row'">
                         <td class="text-center" th:text="${emp.empId}"></td>
                         <td th:text="${emp.empName}"></td>
                         <td>
@@ -123,15 +198,4 @@
         })(jQuery);
     </script>
 
-    <style>
-        #panel-permission-matrix .table-responsive {
-            max-height: 75vh;
-            overflow-y: auto;
-        }
-
-        .permission-switch:checked {
-            background-color: #198754 !important;
-            border-color: #198754 !important;
-        }
-    </style>
 </div>
