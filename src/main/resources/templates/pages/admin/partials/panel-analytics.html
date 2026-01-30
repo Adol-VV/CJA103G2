@@ -25,16 +25,19 @@
         </div>
     </div>
 
-    <!-- 核心指標 -->
+    <!-- 核心指標 (Interactive & Animated) -->
     <div class="row g-4 mb-4">
+        <!-- 總營收: Barrel Roll -->
         <div class="col-md-3">
-            <div class="card bg-dark border-secondary h-100">
+            <div class="card bg-dark border-secondary h-100" id="card-ana-rev" onclick="animateAnaRev()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="text-muted mb-1">總營收</p>
-                            <h3 class="mb-0">NT$ 12,540,800</h3>
-                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+15.3% 較上期</small>
+                            <h3 class="mb-0" id="ana-rev-val">NT$ 12.5M</h3>
+                            <small class="text-success" id="ana-rev-trend"><i
+                                    class="fas fa-arrow-up me-1"></i>+15.3%</small>
                         </div>
                         <div class="bg-success bg-opacity-10 rounded p-2">
                             <i class="fas fa-dollar-sign fa-lg text-success"></i>
@@ -43,14 +46,17 @@
                 </div>
             </div>
         </div>
+        <!-- 訂單數: Jelly -->
         <div class="col-md-3">
-            <div class="card bg-dark border-secondary h-100">
+            <div class="card bg-dark border-secondary h-100" id="card-ana-orders" onclick="animateAnaOrders()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="text-muted mb-1">訂單數</p>
-                            <h3 class="mb-0">3,842</h3>
-                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8.7% 較上期</small>
+                            <h3 class="mb-0" id="ana-orders-val">3,842</h3>
+                            <small class="text-success" id="ana-orders-trend"><i
+                                    class="fas fa-arrow-up me-1"></i>+8.7%</small>
                         </div>
                         <div class="bg-primary bg-opacity-10 rounded p-2">
                             <i class="fas fa-receipt fa-lg text-primary"></i>
@@ -59,14 +65,17 @@
                 </div>
             </div>
         </div>
+        <!-- 新會員: Rubber Band -->
         <div class="col-md-3">
-            <div class="card bg-dark border-secondary h-100">
+            <div class="card bg-dark border-secondary h-100" id="card-ana-users" onclick="animateAnaUsers()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="text-muted mb-1">新會員</p>
-                            <h3 class="mb-0">1,256</h3>
-                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+22.1% 較上期</small>
+                            <h3 class="mb-0" id="ana-users-val">1,256</h3>
+                            <small class="text-success" id="ana-users-trend"><i
+                                    class="fas fa-arrow-up me-1"></i>+22.1%</small>
                         </div>
                         <div class="bg-info bg-opacity-10 rounded p-2">
                             <i class="fas fa-users fa-lg text-info"></i>
@@ -75,14 +84,17 @@
                 </div>
             </div>
         </div>
+        <!-- 退款率: Extreme Shake -->
         <div class="col-md-3">
-            <div class="card bg-dark border-secondary h-100">
+            <div class="card bg-dark border-secondary h-100" id="card-ana-refund" onclick="animateAnaRefund()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="text-muted mb-1">退款率</p>
-                            <h3 class="mb-0">2.3%</h3>
-                            <small class="text-danger"><i class="fas fa-arrow-up me-1"></i>+0.5% 較上期</small>
+                            <h3 class="mb-0" id="ana-refund-val">2.3%</h3>
+                            <small class="text-danger" id="ana-refund-trend"><i
+                                    class="fas fa-arrow-up me-1"></i>+0.5%</small>
                         </div>
                         <div class="bg-warning bg-opacity-10 rounded p-2">
                             <i class="fas fa-undo fa-lg text-warning"></i>
@@ -93,8 +105,9 @@
         </div>
     </div>
 
+    <!-- Charts Section -->
     <div class="row g-4 mb-4">
-        <!-- 營收趨勢圖 -->
+        <!-- 營收趨勢 -->
         <div class="col-lg-8">
             <div class="card bg-dark border-secondary h-100">
                 <div class="card-header border-secondary d-flex justify-content-between align-items-center">
@@ -106,7 +119,9 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <canvas id="revenueChart" height="250"></canvas>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,19 +133,21 @@
                     <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>收入分布</h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="revenueDistChart" height="200"></canvas>
-                    <div class="mt-3">
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="revenueDistChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-white">
                         <div class="d-flex justify-content-between mb-2">
                             <span><i class="fas fa-circle text-primary me-2"></i>票券收入</span>
-                            <span>68%</span>
+                            <span id="dist-ticket-val">68%</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><i class="fas fa-circle text-success me-2"></i>商品收入</span>
-                            <span>25%</span>
+                            <span id="dist-prod-val">25%</span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span><i class="fas fa-circle text-info me-2"></i>平台抽成</span>
-                            <span>7%</span>
+                            <span id="dist-fee-val">7%</span>
                         </div>
                     </div>
                 </div>
@@ -141,50 +158,85 @@
     <div class="row g-4 mb-4">
         <!-- 熱門活動排行 -->
         <div class="col-lg-6">
-            <div class="card bg-dark border-secondary">
+            <div class="card bg-dark border-secondary h-100">
                 <div class="card-header border-secondary">
                     <h5 class="mb-0"><i class="fas fa-fire me-2"></i>熱門活動 TOP 5</h5>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover mb-0">
+                    <table class="table table-dark table-hover mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>活動名稱</th>
                                 <th>售票數</th>
-                                <th>收入</th>
+                                <th class="text-end">收入</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><span class="badge bg-warning text-dark">1</span></td>
-                                <td>2025新年音樂會｜維也納之夜</td>
-                                <td>1,250</td>
-                                <td>NT$ 2,875,000</td>
+                                <td class="fw-bold">2026 新年交響音樂會</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">1,250</span>
+                                        <div class="progress flex-grow-1" style="height: 4px; width: 50px;">
+                                            <div class="progress-bar bg-warning" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end text-success fw-bold">NT$ 2.8M</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">2</span></td>
-                                <td>島嶼・詩意｜台灣當代水墨特展</td>
-                                <td>890</td>
-                                <td>NT$ 311,500</td>
+                                <td class="fw-bold">光影之間 - 現代藝術展</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">890</span>
+                                        <div class="progress flex-grow-1" style="height: 4px; width: 50px;">
+                                            <div class="progress-bar bg-success" style="width: 70%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end text-success fw-bold">NT$ 1.5M</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">3</span></td>
-                                <td>實驗劇場｜記憶的形狀</td>
-                                <td>650</td>
-                                <td>NT$ 585,000</td>
+                                <td class="fw-bold">獨立樂團聯合公演</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">650</span>
+                                        <div class="progress flex-grow-1" style="height: 4px; width: 50px;">
+                                            <div class="progress-bar bg-info" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end text-success fw-bold">NT$ 585k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">4</span></td>
-                                <td>手捏陶藝｜初學者工作坊</td>
-                                <td>45</td>
-                                <td>NT$ 126,000</td>
+                                <td class="fw-bold">手捏陶藝工作坊</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">150</span>
+                                        <div class="progress flex-grow-1" style="height: 4px; width: 50px;">
+                                            <div class="progress-bar bg-secondary" style="width: 12%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end text-success fw-bold">NT$ 126k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">5</span></td>
-                                <td>春季室內樂系列</td>
-                                <td>280</td>
-                                <td>NT$ 336,000</td>
+                                <td class="fw-bold">春季室內樂系列</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">280</span>
+                                        <div class="progress flex-grow-1" style="height: 4px; width: 50px;">
+                                            <div class="progress-bar bg-secondary" style="width: 22%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end text-success fw-bold">NT$ 336k</td>
                             </tr>
                         </tbody>
                     </table>
@@ -194,50 +246,50 @@
 
         <!-- 熱門商品排行 -->
         <div class="col-lg-6">
-            <div class="card bg-dark border-secondary">
+            <div class="card bg-dark border-secondary h-100">
                 <div class="card-header border-secondary">
                     <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>熱銷商品 TOP 5</h5>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover mb-0">
+                    <table class="table table-dark table-hover mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>商品名稱</th>
                                 <th>銷量</th>
-                                <th>收入</th>
+                                <th class="text-end">收入</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><span class="badge bg-warning text-dark">1</span></td>
-                                <td>2024年度音樂會紀念T恤</td>
+                                <td>2026年度紀念T恤</td>
                                 <td>356</td>
-                                <td>NT$ 313,280</td>
+                                <td class="text-end">NT$ 313k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">2</span></td>
-                                <td>室內樂精選輯｜弦外之音</td>
+                                <td>弦外之音 - 精選輯</td>
                                 <td>245</td>
-                                <td>NT$ 313,600</td>
+                                <td class="text-end">NT$ 313k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">3</span></td>
                                 <td>經典Logo帆布袋</td>
                                 <td>189</td>
-                                <td>NT$ 85,050</td>
+                                <td class="text-end">NT$ 85k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">4</span></td>
                                 <td>藝術家簽名版畫</td>
                                 <td>35</td>
-                                <td>NT$ 133,000</td>
+                                <td class="text-end">NT$ 133k</td>
                             </tr>
                             <tr>
                                 <td><span class="badge bg-secondary">5</span></td>
-                                <td>手捏陶器DIY材料包</td>
+                                <td>DIY材料包</td>
                                 <td>48</td>
-                                <td>NT$ 37,440</td>
+                                <td class="text-end">NT$ 37k</td>
                             </tr>
                         </tbody>
                     </table>
@@ -245,7 +297,6 @@
             </div>
         </div>
     </div>
-
     <!-- 主辦方業績排行 -->
     <div class="card bg-dark border-secondary">
         <div class="card-header border-secondary d-flex justify-content-between align-items-center">
@@ -253,7 +304,7 @@
             <a href="#" class="text-primary small">查看全部</a>
         </div>
         <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0">
+            <table class="table table-dark table-hover mb-0 align-middle">
                 <thead>
                     <tr>
                         <th>排名</th>
@@ -277,8 +328,8 @@
                         </td>
                         <td>5</td>
                         <td>8</td>
-                        <td class="text-success fw-bold">NT$ 5,620,000</td>
-                        <td>NT$ 562,000</td>
+                        <td class="text-success fw-bold">NT$ 5.6M</td>
+                        <td>NT$ 562k</td>
                         <td><span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span></td>
                     </tr>
                     <tr>
@@ -292,8 +343,8 @@
                         </td>
                         <td>3</td>
                         <td>5</td>
-                        <td class="text-success fw-bold">NT$ 3,240,000</td>
-                        <td>NT$ 324,000</td>
+                        <td class="text-success fw-bold">NT$ 3.2M</td>
+                        <td>NT$ 324k</td>
                         <td><span class="text-success"><i class="fas fa-arrow-up"></i> 8%</span></td>
                     </tr>
                     <tr>
@@ -307,8 +358,8 @@
                         </td>
                         <td>2</td>
                         <td>6</td>
-                        <td class="text-success fw-bold">NT$ 2,180,000</td>
-                        <td>NT$ 218,000</td>
+                        <td class="text-success fw-bold">NT$ 2.1M</td>
+                        <td>NT$ 218k</td>
                         <td><span class="text-danger"><i class="fas fa-arrow-down"></i> 3%</span></td>
                     </tr>
                 </tbody>
@@ -316,3 +367,215 @@
         </div>
     </div>
 </div>
+
+<script>
+    // 1. Revenue Animation (Barrel Roll + Random Value)
+    function animateAnaRev() {
+        const card = document.getElementById('card-ana-rev');
+        const valEl = document.getElementById('ana-rev-val');
+        const trendEl = document.getElementById('ana-rev-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'barrelRoll 0.8s ease-in-out';
+
+        // Random Revenue: -20M to +50M
+        const randomRev = (Math.random() * 70 - 20).toFixed(1);
+        valEl.innerText = `NT$ ${randomRev}M`;
+
+        if (parseFloat(randomRev) > 0) {
+            valEl.className = 'mb-0 text-success';
+            trendEl.innerHTML = '<i class="fas fa-rocket"></i> 營收暴漲';
+            trendEl.className = 'text-success small fw-bold';
+            card.className = 'card bg-dark border-success h-100';
+        } else {
+            valEl.className = 'mb-0 text-danger';
+            trendEl.innerHTML = '<i class="fas fa-skull"></i> 嚴重虧損';
+            trendEl.className = 'text-danger small fw-bold';
+            card.className = 'card bg-dark border-danger h-100 bg-danger bg-opacity-10';
+        }
+    }
+
+    // 2. Orders Animation (Jelly + Random Value)
+    function animateAnaOrders() {
+        const card = document.getElementById('card-ana-orders');
+        const valEl = document.getElementById('ana-orders-val');
+        const trendEl = document.getElementById('ana-orders-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'jelly 0.6s both';
+
+        const randomOrders = Math.floor(Math.random() * 20000);
+        valEl.innerText = randomOrders.toLocaleString();
+
+        trendEl.innerText = `+${Math.floor(Math.random() * 100)}%`;
+        card.className = 'card bg-dark border-primary h-100';
+    }
+
+    // 3. New Members Animation (Rubber Band)
+    function animateAnaUsers() {
+        const card = document.getElementById('card-ana-users');
+        const valEl = document.getElementById('ana-users-val');
+        const trendEl = document.getElementById('ana-users-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'rubberBand 0.8s both';
+
+        const randomUsers = Math.floor(Math.random() * 5000);
+        valEl.innerText = randomUsers.toLocaleString();
+
+        const trend = Math.floor(Math.random() * 20);
+        trendEl.innerText = `+${trend}% 成長中`;
+        card.className = 'card bg-dark border-info h-100';
+    }
+
+    // 4. Refund Rate Animation (Extreme Shake)
+    function animateAnaRefund() {
+        const card = document.getElementById('card-ana-refund');
+        const valEl = document.getElementById('ana-refund-val');
+        const trendEl = document.getElementById('ana-refund-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'extremeShake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+
+        // 0% to 100%
+        const rate = (Math.random() * 100).toFixed(1);
+        valEl.innerText = `${rate}%`;
+
+        if (rate > 50) {
+            card.className = 'card h-100 bg-danger text-white border-0';
+            valEl.className = 'mb-0 text-white';
+            trendEl.className = 'text-white small fw-bold';
+            trendEl.innerText = '⚠️ 退款災難';
+            card.style.backgroundColor = '#dc3545';
+        } else {
+            card.className = 'card bg-dark border-warning h-100';
+            valEl.className = 'mb-0';
+            trendEl.className = 'text-warning small fw-bold';
+            trendEl.innerText = '穩定控制';
+            card.style.backgroundColor = '';
+        }
+    }
+</script>
+
+<style>
+    /* Reuse animations from dashboard if globally available, but redefining here for safety in partial loading */
+    @keyframes jelly {
+        0% {
+            transform: scale(1, 1);
+        }
+
+        30% {
+            transform: scale(1.25, 0.75);
+        }
+
+        40% {
+            transform: scale(0.75, 1.25);
+        }
+
+        50% {
+            transform: scale(1.15, 0.85);
+        }
+
+        65% {
+            transform: scale(0.95, 1.05);
+        }
+
+        75% {
+            transform: scale(1.05, 0.95);
+        }
+
+        100% {
+            transform: scale(1, 1);
+        }
+    }
+
+    @keyframes barrelRoll {
+        0% {
+            transform: rotateY(0deg);
+        }
+
+        100% {
+            transform: rotateY(360deg);
+        }
+    }
+
+    @keyframes extremeShake {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        20% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        30% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        40% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        50% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        60% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        70% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        80% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        90% {
+            transform: translate(-5px, -5px) rotate(-5deg);
+        }
+
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+    }
+
+    @keyframes rubberBand {
+        0% {
+            transform: scale3d(1, 1, 1);
+        }
+
+        30% {
+            transform: scale3d(1.25, 0.75, 1);
+        }
+
+        40% {
+            transform: scale3d(0.75, 1.25, 1);
+        }
+
+        50% {
+            transform: scale3d(1.15, 0.85, 1);
+        }
+
+        65% {
+            transform: scale3d(0.95, 1.05, 1);
+        }
+
+        75% {
+            transform: scale3d(1.05, 0.95, 1);
+        }
+
+        100% {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+</style>

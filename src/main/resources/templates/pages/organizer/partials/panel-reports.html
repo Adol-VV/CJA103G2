@@ -1,141 +1,638 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3">銷售報表</h2>
-    <div class="d-flex align-items-center">
-        <input type="date" class="form-control bg-dark text-white border-secondary me-2" value="2024-12-01">
-        <span class="text-white me-2">-</span>
-        <input type="date" class="form-control bg-dark text-white border-secondary me-2" value="2024-12-31">
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in-up">
+    <div>
+        <h2 class="h3 fw-bold mb-1"><i class="fas fa-chart-line me-2 text-primary"></i>銷售報表中心</h2>
+        <p class="text-muted mb-0">即時監控活動營收與銷售數據</p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <div class="input-group bg-dark border-secondary">
+            <span class="input-group-text bg-dark border-secondary text-muted"><i
+                    class="far fa-calendar-alt"></i></span>
+            <input type="date" class="form-control bg-dark text-white border-secondary" value="2025-01-01">
+            <span class="input-group-text bg-dark border-secondary text-white">-</span>
+            <input type="date" class="form-control bg-dark text-white border-secondary" value="2025-01-31">
+        </div>
+
         <div class="dropdown">
-            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="fas fa-download me-1"></i>匯出報表
+            <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" id="exportBtn">
+                <i class="fas fa-download me-1"></i> 匯出數據
             </button>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('csv')"><i
-                            class="fas fa-file-csv me-2"></i>CSV 格式</a></li>
-                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('excel')"><i
-                            class="fas fa-file-excel me-2"></i>Excel 格式</a></li>
-                <li><a class="dropdown-item" href="#" onclick="exportOrganizerReport('pdf')"><i
-                            class="fas fa-file-pdf me-2"></i>PDF 格式</a></li>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="#" onclick="mockExport('CSV')"><i
+                            class="fas fa-file-csv me-2 text-success"></i>CSV 報表</a></li>
+                <li><a class="dropdown-item" href="#" onclick="mockExport('Excel')"><i
+                            class="fas fa-file-excel me-2 text-success"></i>Excel 報表</a></li>
+                <li>
+                    <hr class="dropdown-divider border-secondary">
+                </li>
+                <li><a class="dropdown-item" href="#" onclick="mockExport('PDF')"><i
+                            class="fas fa-file-pdf me-2 text-danger"></i>PDF 完整報告</a></li>
             </ul>
         </div>
     </div>
 </div>
 
+<!-- Animated KPI Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card bg-dark border-secondary">
+        <div class="card bg-dark border-secondary h-100 hover-elevate" id="card-report-rev" onclick="animateReportRev()"
+            style="cursor: pointer;">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">總營收</h6>
-                <h3 class="mb-0">NT$ 12,540,800</h3>
-                <small class="text-success"><i class="fas fa-arrow-up"></i> 12.5% 較上月</small>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="text-muted text-uppercase small ls-1">總營收 (Revenue)</h6>
+                    <div class="p-2 bg-success bg-opacity-10 rounded">
+                        <i class="fas fa-dollar-sign text-success"></i>
+                    </div>
+                </div>
+                <h3 class="mb-0 fw-bold counter-anim" id="report-rev-val" data-target="12540800" data-prefix="NT$ ">0
+                </h3>
+                <small class="text-success" id="report-rev-trend"><i class="fas fa-arrow-up"></i> +12.5% <span
+                        class="text-muted ms-1">較上月</span></small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-dark border-secondary">
+        <div class="card bg-dark border-secondary h-100 hover-elevate" id="card-report-ticket"
+            onclick="animateReportTicket()" style="cursor: pointer;">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">售出票券</h6>
-                <h3 class="mb-0">8,542</h3>
-                <small class="text-success"><i class="fas fa-arrow-up"></i> 5.2% 較上月</small>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="text-muted text-uppercase small ls-1">售出票券 (Tickets)</h6>
+                    <div class="p-2 bg-primary bg-opacity-10 rounded">
+                        <i class="fas fa-ticket-alt text-primary"></i>
+                    </div>
+                </div>
+                <h3 class="mb-0 fw-bold counter-anim" id="report-ticket-val" data-target="8542">0</h3>
+                <small class="text-success" id="report-ticket-trend"><i class="fas fa-arrow-up"></i> +5.2% <span
+                        class="text-muted ms-1">較上月</span></small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-dark border-secondary">
+        <div class="card bg-dark border-secondary h-100 hover-elevate" id="card-report-merch"
+            onclick="animateReportMerch()" style="cursor: pointer;">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">周邊商品營收</h6>
-                <h3 class="mb-0">NT$ 3,240,000</h3>
-                <small class="text-danger"><i class="fas fa-arrow-down"></i> 2.1% 較上月</small>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="text-muted text-uppercase small ls-1">周邊營收 (Merch)</h6>
+                    <div class="p-2 bg-warning bg-opacity-10 rounded">
+                        <i class="fas fa-tshirt text-warning"></i>
+                    </div>
+                </div>
+                <h3 class="mb-0 fw-bold counter-anim" id="report-merch-val" data-target="3240000" data-prefix="NT$ ">0
+                </h3>
+                <small class="text-danger" id="report-merch-trend"><i class="fas fa-arrow-down"></i> -2.1% <span
+                        class="text-muted ms-1">較上月</span></small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-dark border-secondary">
+        <div class="card bg-dark border-secondary h-100 hover-elevate" id="card-report-aov" onclick="animateReportAov()"
+            style="cursor: pointer;">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">訂單平均單價</h6>
-                <h3 class="mb-0">NT$ 2,450</h3>
-                <small class="text-muted">- 持平</small>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="text-muted text-uppercase small ls-1">平均客單價 (AOV)</h6>
+                    <div class="p-2 bg-info bg-opacity-10 rounded">
+                        <i class="fas fa-users text-info"></i>
+                    </div>
+                </div>
+                <h3 class="mb-0 fw-bold counter-anim" id="report-aov-val" data-target="2450" data-prefix="NT$ ">0</h3>
+                <small class="text-muted" id="report-aov-trend"><i class="fas fa-minus"></i> 0.0% <span
+                        class="text-muted ms-1">持平</span></small>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Charts Section -->
+<div class="row g-4 mb-4">
+    <!-- Main Revenue Chart -->
+    <div class="col-lg-8">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-chart-area me-2 text-primary"></i>營收成長趨勢</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active">日</button>
+                    <button class="btn btn-outline-secondary">週</button>
+                    <button class="btn btn-outline-secondary">月</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="height: 350px; position: relative;">
+                    <canvas id="detailedRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side Stats -->
+    <div class="col-lg-4">
+        <div class="card bg-dark border-secondary h-100">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-info"></i>票種銷售分佈</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 250px; position: relative; margin-bottom: 20px;">
+                    <canvas id="ticketTypeChart"></canvas>
+                </div>
+                <!-- Custom Legend -->
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><i class="fas fa-circle text-primary me-2"></i>VIP 區</span>
+                        <span class="fw-bold">45%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><i class="fas fa-circle text-success me-2"></i>一般區 A</span>
+                        <span class="fw-bold">35%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-circle text-warning me-2"></i>一般區 B</span>
+                        <span class="fw-bold">20%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Section: Top Events -->
 <div class="card bg-dark border-secondary mb-4">
-    <div class="card-header border-secondary">
-        <h5 class="mb-0">營收趨勢</h5>
+    <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-trophy me-2 text-warning"></i>熱銷活動排行</h5>
+        <a href="#" class="btn btn-sm btn-link text-muted text-decoration-none">查看全部 ></a>
     </div>
-    <div class="card-body">
-        <!-- Helper for Chart implementation -->
-        <div
-            style="height: 300px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 4px;">
-            <div class="text-center text-muted">
-                <i class="fas fa-chart-area fa-3x mb-2"></i>
-                <p>Detailed Revenue Chart Placeholder</p>
-            </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-4">排名</th>
+                    <th>活動名稱</th>
+                    <th>日期</th>
+                    <th>售出率</th>
+                    <th>總營收</th>
+                    <th class="text-end pe-4">趨勢</th>
+                </tr>
+            </thead>
+            <tbody id="topEventsBody">
+                <!-- Rows will be populated by JS -->
+            </tbody>
+        </table>
+        <div id="noEventsMsg" class="text-center text-muted p-4 d-none">
+            尚無活動資料
         </div>
-        <!-- In real app, canvas id="revenueChart" would be initialized here -->
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card bg-dark border-secondary h-100">
-            <div class="card-header border-secondary">熱銷票種排行</div>
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span>1. 搖滾區 A (NT$ 3,800)</span>
-                    <div class="progress w-50" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 95%">
+<style>
+    .hover-elevate {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-elevate:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .btn-group-sm .btn {
+        font-size: 0.75rem;
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Interactive Animations */
+    @keyframes jelly {
+        0% {
+            transform: scale(1, 1);
+        }
+
+        30% {
+            transform: scale(1.25, 0.75);
+        }
+
+        40% {
+            transform: scale(0.75, 1.25);
+        }
+
+        50% {
+            transform: scale(1.15, 0.85);
+        }
+
+        65% {
+            transform: scale(0.95, 1.05);
+        }
+
+        75% {
+            transform: scale(1.05, 0.95);
+        }
+
+        100% {
+            transform: scale(1, 1);
+        }
+    }
+
+    @keyframes barrelRoll {
+        0% {
+            transform: rotateY(0deg);
+        }
+
+        100% {
+            transform: rotateY(360deg);
+        }
+    }
+
+    @keyframes extremeShake {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        20% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        30% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        40% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        50% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        60% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        70% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        80% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        90% {
+            transform: translate(-5px, -5px) rotate(-5deg);
+        }
+
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+    }
+
+    @keyframes rubberBand {
+        0% {
+            transform: scale3d(1, 1, 1);
+        }
+
+        30% {
+            transform: scale3d(1.25, 0.75, 1);
+        }
+
+        40% {
+            transform: scale3d(0.75, 1.25, 1);
+        }
+
+        50% {
+            transform: scale3d(1.15, 0.85, 1);
+        }
+
+        65% {
+            transform: scale3d(0.95, 1.05, 1);
+        }
+
+        75% {
+            transform: scale3d(1.05, 0.95, 1);
+        }
+
+        100% {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+</style>
+
+<script th:inline="javascript">
+    // 0. Fetch Real Events from Backend via Thymeleaf
+    const rawEvents = [];
+    /*[# th:each="e : ${eventList}"]*/
+    rawEvents.push({
+        title: /*[[${e.title}]]*/ '活動範例',
+        date: /*[[${e.eventStartAt}]]*/ '2025-01-01'
+    });
+    /*[/]*/
+
+    // 1. Counter Animation
+    document.querySelectorAll('.counter-anim').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target'));
+        const prefix = el.getAttribute('data-prefix') || '';
+        const duration = 2000; // 2 seconds
+        const start = 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // EaseOutQuart function
+            const ease = 1 - Math.pow(1 - progress, 4);
+
+            const currentVal = Math.floor(start + (target - start) * ease);
+            el.innerText = prefix + currentVal.toLocaleString();
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        requestAnimationFrame(update);
+    });
+
+    // 2. Interactive Animations (On Click)
+
+    // Revenue: Barrel Roll
+    function animateReportRev() {
+        const card = document.getElementById('card-report-rev');
+        const valEl = document.getElementById('report-rev-val');
+        const trendEl = document.getElementById('report-rev-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'barrelRoll 0.8s ease-in-out';
+
+        // Random Rev: -5M to +25M
+        const randomRev = Math.floor(Math.random() * 30000000) - 5000000;
+        valEl.innerText = "NT$ " + randomRev.toLocaleString();
+
+        if (randomRev > 0) {
+            valEl.className = "mb-0 fw-bold counter-anim text-white";
+            trendEl.className = "text-success";
+            trendEl.innerHTML = '<i class="fas fa-arrow-up"></i> +' + (Math.random() * 20).toFixed(1) + '% <span class="text-muted ms-1">營收起飛</span>';
+            card.className = "card bg-dark border-success h-100 hover-elevate";
+        } else {
+            valEl.className = "mb-0 fw-bold counter-anim text-danger";
+            trendEl.className = "text-danger";
+            trendEl.innerHTML = '<i class="fas fa-arrow-down"></i> -' + (Math.random() * 20).toFixed(1) + '% <span class="text-muted ms-1">嚴重虧損</span>';
+            card.className = "card bg-dark border-danger h-100 bg-danger bg-opacity-10 hover-elevate";
+        }
+    }
+
+    // Tickets: Jelly
+    function animateReportTicket() {
+        const card = document.getElementById('card-report-ticket');
+        const valEl = document.getElementById('report-ticket-val');
+        const trendEl = document.getElementById('report-ticket-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'jelly 0.6s both';
+
+        const rand = Math.floor(Math.random() * 20000);
+        valEl.innerText = rand.toLocaleString();
+        trendEl.innerHTML = '<i class="fas fa-ticket-alt"></i> 熱銷中';
+    }
+
+    // Merch: Extreme Shake
+    function animateReportMerch() {
+        const card = document.getElementById('card-report-merch');
+        const valEl = document.getElementById('report-merch-val');
+        const trendEl = document.getElementById('report-merch-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'extremeShake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+
+        const rand = Math.floor(Math.random() * 5000000);
+        valEl.innerText = "NT$ " + rand.toLocaleString();
+
+        if (rand < 100000) {
+            card.className = 'card h-100 bg-danger text-white border-0 hover-elevate';
+            trendEl.className = 'text-white';
+            trendEl.innerText = '滯銷警報';
+            card.style.backgroundColor = '#dc3545';
+        } else {
+            card.className = 'card bg-dark border-secondary h-100 hover-elevate';
+            trendEl.className = 'text-warning';
+            trendEl.innerText = '穩定銷售';
+            card.style.backgroundColor = '';
+        }
+    }
+
+    // AOV: Rubber Band
+    function animateReportAov() {
+        const card = document.getElementById('card-report-aov');
+        const valEl = document.getElementById('report-aov-val');
+        const trendEl = document.getElementById('report-aov-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'rubberBand 0.8s both';
+
+        const rand = Math.floor(Math.random() * 5000);
+        valEl.innerText = "NT$ " + rand.toLocaleString();
+        trendEl.innerHTML = '<i class="fas fa-check"></i> ' + (rand > 2000 ? '高客單' : '一般客單');
+    }
+
+    // 2. Mock Export Function
+    window.mockExport = function (type) {
+        const btn = document.getElementById('exportBtn');
+        const originalHtml = btn.innerHTML;
+
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>處理中...`;
+        btn.disabled = true;
+
+        // Use global Toast if available, else alert
+        if (window.showToast) window.showToast(`正在產生 ${type} 報表...`, 'info');
+
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+            if (window.showToast) window.showToast(`${type} 報表下載完成!`, 'success');
+            else alert(`${type} 報表下載完成!`);
+        }, 1500);
+    };
+
+    // 3. Render Top Events with Random Stats
+    function renderTopEvents() {
+        const tbody = document.getElementById('topEventsBody');
+        const noEventsMsg = document.getElementById('noEventsMsg');
+
+        if (!rawEvents || rawEvents.length === 0) {
+            tbody.innerHTML = '';
+            noEventsMsg.classList.remove('d-none');
+            return;
+        }
+
+        // Generate random stats for each event
+        const enrichedEvents = rawEvents.map(evt => {
+            const revenue = Math.floor(Math.random() * 5000000) + 100000; // 100k - 5.1M
+            const salesRate = Math.floor(Math.random() * 60) + 40; // 40% - 100%
+            const trend = Math.random() > 0.5 ? 'up' : (Math.random() > 0.5 ? 'down' : 'flat');
+
+            // Format Date
+            let dateStr = evt.date;
+            if (dateStr && dateStr.length > 10) dateStr = dateStr.substring(0, 10);
+
+            return {
+                title: evt.title,
+                date: dateStr,
+                revenue: revenue,
+                salesRate: salesRate,
+                trend: trend
+            };
+        });
+
+        // Sort by Revenue DESC
+        enrichedEvents.sort((a, b) => b.revenue - a.revenue);
+
+        // Take Top 5
+        const topEvents = enrichedEvents.slice(0, 5);
+
+        // Build HTML
+        let html = '';
+        topEvents.forEach((evt, index) => {
+            const rank = index + 1;
+            let badgeClass = 'bg-secondary';
+            if (rank === 1) badgeClass = 'bg-warning text-dark';
+            if (rank === 2) badgeClass = 'bg-secondary bg-opacity-75';
+            if (rank === 3) badgeClass = 'bg-secondary bg-opacity-50';
+
+            // Progress bar color
+            let progressClass = 'bg-info';
+            if (evt.salesRate >= 90) progressClass = 'bg-success';
+            else if (evt.salesRate >= 70) progressClass = 'bg-primary';
+            else if (evt.salesRate < 50) progressClass = 'bg-warning';
+
+            // Trend Icon
+            let trendHtml = '<i class="fas fa-minus text-muted"></i>';
+            if (evt.trend === 'up') trendHtml = '<i class="fas fa-arrow-up text-success"></i>';
+            if (evt.trend === 'down') trendHtml = '<i class="fas fa-arrow-down text-danger"></i>';
+
+            html += `
+                <tr>
+                    <td class="ps-4"><span class="badge ${badgeClass} shadow-sm">#${rank}</span></td>
+                    <td class="fw-bold text-truncate" style="max-width: 200px;" title="${evt.title}">${evt.title}</td>
+                    <td class="text-muted small">${evt.date}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="me-2" style="width: 35px;">${evt.salesRate}%</span>
+                            <div class="progress flex-grow-1" style="height: 6px; width: 100px;">
+                                <div class="progress-bar ${progressClass}" style="width: ${evt.salesRate}%"></div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span>2. 看台區 B (NT$ 2,800)</span>
-                    <div class="progress w-50" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 82%">
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <span>3. 身障席 (NT$ 1,900)</span>
-                    <div class="progress w-50" style="height: 8px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card bg-dark border-secondary h-100">
-            <div class="card-header border-secondary">顧客分析</div>
-            <div class="card-body">
-                <table class="table table-dark table-sm mb-0">
-                    <thead>
-                        <tr>
-                            <th>年齡層</th>
-                            <th>佔比</th>
-                            <th>趨勢</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>18-24 歲</td>
-                            <td>45%</td>
-                            <td class="text-success"><i class="fas fa-arrow-up"></i></td>
-                        </tr>
-                        <tr>
-                            <td>25-34 歲</td>
-                            <td>35%</td>
-                            <td class="text-muted">-</td>
-                        </tr>
-                        <tr>
-                            <td>35-44 歲</td>
-                            <td>15%</td>
-                            <td class="text-danger"><i class="fas fa-arrow-down"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+                    </td>
+                    <td class="fw-bold text-success">NT$ ${evt.revenue.toLocaleString()}</td>
+                    <td class="text-end pe-4">${trendHtml}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+        noEventsMsg.classList.add('d-none'); // Hide "No events found" if events are rendered
+    }
+
+    // 4. Initialize Charts (Chart.js)
+    setTimeout(() => {
+        renderTopEvents();
+
+        // Detailed Revenue Chart
+        const revCtx = document.getElementById('detailedRevenueChart');
+        if (revCtx) {
+            new Chart(revCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1/1', '1/5', '1/10', '1/15', '1/20', '1/25', '1/30'],
+                    datasets: [{
+                        label: '2025 營收',
+                        data: [150, 230, 180, 320, 290, 450, 410],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2
+                    }, {
+                        label: '去年同期',
+                        data: [120, 150, 170, 210, 200, 250, 280],
+                        borderColor: '#6c757d',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#adb5bd' } },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false, drawBorder: false }, ticks: { color: '#adb5bd' } },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#adb5bd', callback: v => 'NT$ ' + v + 'k' }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Ticket Type Dist Chart
+        const typeCtx = document.getElementById('ticketTypeChart');
+        if (typeCtx) {
+            new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['VIP 區', '一般區 A', '一般區 B'],
+                    datasets: [{
+                        data: [45, 35, 20],
+                        backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+    }, 100); // Small delay to ensure DOM is ready
+</script>

@@ -133,6 +133,63 @@
             transform: scale(0.96);
         }
     </style>
+    <style>
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-subtle {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Element Classes */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            /* Default hidden for JS staggering */
+        }
+
+        .event-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3) !important;
+            z-index: 10;
+        }
+
+        /* Filter Button Interactions */
+        .type-filter-item:active {
+            transform: scale(0.95);
+        }
+
+        /* Search Input Focus */
+        .form-control:focus+.input-group-text,
+        .form-control:focus {
+            border-color: var(--momento-green);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+        }
+    </style>
 </head>
 
 <body>
@@ -286,9 +343,10 @@
 
                 <!-- Event Grid -->
                 <div class="row g-4">
-                    <div class="col-12 col-md-6 col-lg-4" th:each="event : ${events}">
+                    <div class="col-12 col-md-6 col-lg-4" th:each="event, iterStat : ${events}">
                         <a th:href="@{/event/{id}(id=${event.eventId})}"
-                            class="card h-100 event-card text-decoration-none border-0 shadow-sm">
+                            th:style="'animation-delay: ' + ${iterStat.index * 0.1} + 's'"
+                            class="card h-100 event-card text-decoration-none border-0 shadow-sm fade-in-up">
                             <div class="card-img-wrapper">
                                 <img loading="lazy" th:src="${event.coverImageUrl}" src="https://picsum.photos/800/450"
                                     class="card-img-top" th:alt="${event.title}">

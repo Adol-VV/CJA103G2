@@ -138,7 +138,7 @@
 			right: -5%;
 			width: 600px;
 			height: 600px;
-			background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+			background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
 		}
 
 		.ambient-light.secondary {
@@ -146,7 +146,7 @@
 			left: -10%;
 			width: 500px;
 			height: 500px;
-			background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+			background: radial-gradient(circle, rgba(200, 200, 200, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
 		}
 
 		/* 3. 卡片質感優化 (Glassmorphism Lite) */
@@ -164,9 +164,13 @@
 		.product-card:hover {
 			transform: translateY(-5px);
 			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-			border-color: rgba(16, 185, 129, 0.3);
-			/* Hover 時亮綠色邊框 */
+			border-color: rgba(255, 255, 255, 0.4);
+			/* Hover 時銀白色邊框 */
 		}
+
+		/* Monochrome Image Effect - REMOVED per user request */
+
+
 
 		.card .card-img-top {
 			border-radius: 12px 12px 0 0;
@@ -220,6 +224,74 @@
 				transform: scale(1) rotate(0);
 				filter: hue-rotate(360deg);
 			}
+		}
+
+		/* === New Premium Animations === */
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes glowPulse {
+			0% {
+				box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+			}
+
+			50% {
+				box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 0 10px rgba(16, 185, 129, 0.5);
+			}
+
+			100% {
+				box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+			}
+		}
+
+		.hero-animate {
+			opacity: 0;
+			animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+		}
+
+		.hero-delay-1 {
+			animation-delay: 0.2s;
+		}
+
+		.hero-delay-2 {
+			animation-delay: 0.4s;
+		}
+
+		.hero-delay-3 {
+			animation-delay: 0.6s;
+		}
+
+		.reveal-on-scroll {
+			opacity: 0;
+			transform: translateY(30px);
+			transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+		}
+
+		.reveal-on-scroll.visible {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.hover-float {
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.hover-float:hover {
+			transform: translateY(-8px) !important;
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important;
+		}
+
+		.btn-glow {
+			animation: glowPulse 3s infinite;
 		}
 	</style>
 </head>
@@ -299,13 +371,15 @@
 					style="height: 500px; object-fit: cover; filter: brightness(0.7);" th:alt="${item.title}">
 
 				<div class="carousel-caption d-none d-md-block text-start">
-					<span class="badge bg-success mb-2">主打活動</span>
+					<span class="badge bg-success mb-2 hero-animate">主打活動</span>
 
-					<h1 class="display-4 fw-bold" th:text="${item.title}">活動標題</h1>
+					<h1 class="display-4 fw-bold hero-animate hero-delay-1" th:text="${item.title}">活動標題</h1>
 
-					<p class="lead" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...</p>
+					<p class="lead hero-animate hero-delay-2" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...
+					</p>
 
-					<a th:href="@{/event/{id}(id=${item.eventId})}" class="btn btn-primary btn-lg mt-3">
+					<a th:href="@{/event/{id}(id=${item.eventId})}"
+						class="btn btn-primary btn-lg mt-3 hero-animate hero-delay-3 btn-glow">
 						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
 					</a>
 				</div>
@@ -363,7 +437,7 @@
 
 	<!-- Featured Events Section (最大版面) -->
 	<section class="container-fluid py-5" style="max-width: 1400px;">
-		<div class="d-flex justify-content-between align-items-center mb-4">
+		<div class="d-flex justify-content-between align-items-center mb-4 reveal-on-scroll">
 			<div>
 				<h2 class="mb-1">
 					<i data-lucide="calendar" class="text-success me-2"></i>最新活動
@@ -378,7 +452,8 @@
 		<div class="row g-4" th:if="${latestEvents != null and !#lists.isEmpty(latestEvents)}">
 			<!-- Featured Event (大卡片) - 使用最新的一筆 -->
 			<div class="col-12 col-lg-6" th:with="mainEvent=${latestEvents[0]}">
-				<div class="card h-100 border-0 overflow-hidden" style="background: #2a2a2a;">
+				<div class="card h-100 border-0 overflow-hidden reveal-on-scroll hover-float"
+					style="background: #2a2a2a;">
 					<div class="position-relative">
 						<a th:href="@{/event/{id}(id=${mainEvent.eventId})}">
 							<img loading="lazy" th:src="${mainEvent.coverImageUrl}" class="card-img-top"
@@ -414,7 +489,7 @@
 			<div class="col-12 col-lg-6">
 				<div class="row g-3 h-100">
 					<div class="col-6" th:each="event, iterStat : ${latestEvents}" th:if="${iterStat.index > 0}">
-						<div class="card h-100 border-secondary bg-dark article_hover">
+						<div class="card h-100 border-secondary bg-dark article_hover reveal-on-scroll hover-float">
 							<div class="position-relative">
 								<a th:href="@{/event/{id}(id=${event.eventId})}">
 									<img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
@@ -479,7 +554,8 @@
 			<!-- Product Card 1 -->
 			<div class="col-6 col-md-4 col-lg-2" th:each="prod:${latestProds}">
 				<a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
-					<div class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card">
+					<div
+						class="card h-100 border-secondary bg-dark overflow-hidden position-relative prod-hover-card reveal-on-scroll hover-float">
 						<img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img"
 							style="height: 145px; object-fit: cover;" alt="Product">
 						<span class="badge bg-warning position-absolute top-0 start-0 m-2 small latestProdIcon"
@@ -602,7 +678,8 @@
 			<div class="col-lg-4" th:if="${not #lists.isEmpty(hotArticles)}">
 				<div th:with="firstArticle=${hotArticles[0]}">
 					<a th:href="@{/article/detail(id=${firstArticle.articleId})}" class="text-decoration-none">
-						<div class="card bg-dark border-secondary h-100 overflow-hidden article_hover">
+						<div
+							class="card bg-dark border-secondary h-100 overflow-hidden article_hover reveal-on-scroll hover-float">
 							<div class="position-relative">
 								<img th:src="${firstArticle.articleImages != null and not #lists.isEmpty(firstArticle.articleImages)} ? ${firstArticle.articleImages[0].imageUrl} : 'https://via.placeholder.com/600x300/2D5F4F/FFFFFF?text=Featured'"
 									class="card-img-top" alt="Featured Article"
@@ -629,7 +706,7 @@
 				<div class="row g-2">
 					<div class="col-md-6" th:each="article, iterStat : ${hotArticles}" th:if="${iterStat.index > 0}">
 						<a th:href="@{/article/detail(id=${article.articleId})}" class="text-decoration-none">
-							<div class="card bg-dark border-secondary article_hover">
+							<div class="card bg-dark border-secondary article_hover reveal-on-scroll hover-float">
 								<div class="row g-0">
 									<div class="col-4">
 										<img th:src="${article.articleImages != null and not #lists.isEmpty(article.articleImages)} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/200x120/3B82F6/FFFFFF?text=Article'"
@@ -806,6 +883,27 @@
 						window.location.href = $logo.attr('href');
 					}
 				}, 800);
+			});
+
+			// Scroll Reveal Observer
+			const observerOptions = {
+				root: null,
+				rootMargin: '0px',
+				threshold: 0.15
+			};
+
+			const observer = new IntersectionObserver((entries, observer) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('visible');
+						// Optional: Stop observing once revealed
+						observer.unobserve(entry.target);
+					}
+				});
+			}, observerOptions);
+
+			document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+				observer.observe(el);
 			});
 		})
 

@@ -31,13 +31,14 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card h-100">
+        <div class="card stats-card h-100" id="revenueCard" onclick="randomizeRevenue()"
+            style="cursor: pointer; transition: all 0.1s;">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
                         <p class="text-muted mb-1 small text-uppercase">本月營收</p>
-                        <h3 class="mb-0">NT$ 2.4M</h3>
-                        <small class="text-success"><i class="fas fa-arrow-up"></i> +24%</small>
+                        <h3 class="mb-0" id="revenueValue">NT$ 2.4M</h3>
+                        <small id="revenueTrend" class="text-success"><i class="fas fa-arrow-up"></i> +24%</small>
                     </div>
                     <div class="stats-icon bg-success">
                         <i class="fas fa-dollar-sign"></i>
@@ -115,4 +116,73 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function randomizeRevenue() {
+            const card = document.getElementById('revenueCard');
+
+            // CSS Animation for click effect
+            card.style.transform = "scale(0.95)";
+            card.style.animation = "shake 0.5s cubic-bezier(.36,.07,.19,.97) both";
+
+            setTimeout(() => {
+                card.style.transform = "scale(1)";
+                card.style.animation = "";
+            }, 500);
+
+            // Random Revenue Generation
+            // Range: -10.0M to 10.0M
+            const randomVal = (Math.random() * 20 - 10).toFixed(1);
+            const revenueText = document.getElementById('revenueValue');
+            const trendText = document.getElementById('revenueTrend');
+
+            // Update Revenue Text
+            revenueText.innerText = `NT$ ${randomVal}M`;
+
+            // Determine Trend (Positive/Negative)
+            const isPositive = parseFloat(randomVal) >= 0;
+            const trendIcon = isPositive ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>';
+            const trendPercent = Math.floor(Math.random() * 100);
+
+            // Update Trend Display
+            trendText.className = isPositive ? 'text-success' : 'text-danger';
+            trendText.innerHTML = `${trendIcon} ${isPositive ? '+' : '-'}${trendPercent}%`;
+
+            // Card Border Color Flash
+            const originalBorder = card.style.borderColor;
+            card.style.borderColor = isPositive ? '#198754' : '#dc3545';
+            card.style.boxShadow = isPositive ? '0 0 15px rgba(25, 135, 84, 0.5)' : '0 0 15px rgba(220, 53, 69, 0.5)';
+
+            setTimeout(() => {
+                card.style.borderColor = originalBorder;
+                card.style.boxShadow = '';
+            }, 300);
+        }
+    </script>
+
+    <style>
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+    </style>
 </div>

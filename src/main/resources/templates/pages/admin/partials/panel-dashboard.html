@@ -1,32 +1,208 @@
 <div class="content-panel active" id="panel-dashboard">
     <h2 class="h3 mb-4">平台管理儀表板</h2>
     <div class="row g-4 mb-4">
+        <!-- 容器 1: 平台總用戶 -->
         <div class="col-lg-3 col-md-6">
-            <div class="card stats-card border-primary h-100">
+            <div class="card stats-card border-primary h-100" id="card-users" onclick="animateUsers()"
+                style="cursor: pointer; position: relative; overflow: hidden;">
                 <div class="card-body">
                     <p class="text-muted mb-1 small">平台總用戶</p>
-                    <h3 class="mb-0">12,450</h3>
-                    <small class="text-success small">+12%</small>
+                    <h3 class="mb-0" id="users-val">12,450</h3>
+                    <small class="text-success small" id="users-trend">+12%</small>
                 </div>
             </div>
         </div>
+        <!-- 容器 2: 本月營收 -->
         <div class="col-lg-3 col-md-6">
-            <div class="card stats-card border-success h-100">
+            <div class="card stats-card border-success h-100" id="card-revenue" onclick="animateRevenue()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <p class="text-muted mb-1 small">本月營收</p>
-                    <h3 class="mb-0">NT$ 8.2M</h3>
-                    <small class="text-success small">+8%</small>
+                    <h3 class="mb-0" id="revenue-val">NT$ 8.2M</h3>
+                    <small class="text-success small" id="revenue-trend">+8%</small>
                 </div>
             </div>
         </div>
+        <!-- 容器 3: 待處理爭議 -->
         <div class="col-lg-3 col-md-6">
-            <div class="card stats-card border-danger h-100">
+            <div class="card stats-card border-danger h-100" id="card-disputes" onclick="animateDisputes()"
+                style="cursor: pointer;">
                 <div class="card-body">
                     <p class="text-muted mb-1 small">待處理爭議</p>
-                    <h3 class="mb-0 text-danger">4</h3>
-                    <small class="text-danger small">需立即處理</small>
+                    <h3 class="mb-0 text-danger" id="disputes-val">4</h3>
+                    <small class="text-danger small" id="disputes-trend">需立即處理</small>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // 特效 1: 果凍跳動 (Jelly)
+    function animateUsers() {
+        const card = document.getElementById('card-users');
+        const valEl = document.getElementById('users-val');
+        const trendEl = document.getElementById('users-trend');
+
+        // Reset Animation
+        card.style.animation = 'none';
+        card.offsetHeight; /* trigger reflow */
+        card.style.animation = 'jelly 0.6s both';
+
+        // Random Value: 100 to 9,999,999
+        // 模擬伺服器爆炸的用戶數增長
+        const randomNum = Math.floor(Math.random() * 10000000);
+        valEl.innerText = randomNum.toLocaleString();
+
+        // Random Trend
+        const trend = Math.floor(Math.random() * 500);
+        trendEl.innerText = `+${trend}%`;
+        trendEl.className = 'text-primary small fw-bold';
+    }
+
+    // 特效 2: 360度翻轉 (Barrel Roll)
+    function animateRevenue() {
+        const card = document.getElementById('card-revenue');
+        const valEl = document.getElementById('revenue-val');
+        const trendEl = document.getElementById('revenue-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'barrelRoll 0.8s ease-in-out';
+
+        // Random Revenue: -500M to +900M (極端波動)
+        const randomRev = (Math.random() * 1400 - 500).toFixed(1);
+        valEl.innerText = `NT$ ${randomRev}M`;
+
+        // Color & Icon based on value
+        if (parseFloat(randomRev) > 0) {
+            card.className = 'card stats-card border-success h-100';
+            valEl.className = 'mb-0 text-success';
+            trendEl.innerHTML = '<i class="fas fa-rocket"></i> 營收起飛';
+            trendEl.className = 'text-success small fw-bold';
+        } else {
+            card.className = 'card stats-card border-danger h-100 bg-danger bg-opacity-10';
+            valEl.className = 'mb-0 text-danger';
+            trendEl.innerHTML = '<i class="fas fa-skull"></i> 破產邊緣';
+            trendEl.className = 'text-danger small fw-bold';
+        }
+    }
+
+    // 特效 3: 劇烈震動 + 故障色偏 (Extreme Shake)
+    function animateDisputes() {
+        const card = document.getElementById('card-disputes');
+        const valEl = document.getElementById('disputes-val');
+        const trendEl = document.getElementById('disputes-trend');
+
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'extremeShake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+
+        // Random Disputes: 0 to 9999
+        const randomCount = Math.floor(Math.random() * 10000);
+        valEl.innerText = randomCount;
+
+        if (randomCount > 50) {
+            card.style.backgroundColor = '#2c0b0e'; // Dark Red bg
+            card.style.boxShadow = '0 0 20px #dc3545';
+            trendEl.innerText = '系統全面崩潰中！！！';
+            trendEl.style.fontSize = '1.1em';
+        } else {
+            card.style.backgroundColor = '';
+            card.style.boxShadow = '';
+            trendEl.innerText = '天下太平';
+            trendEl.style.fontSize = '';
+        }
+    }
+</script>
+
+<style>
+    /* Jelly Effect */
+    @keyframes jelly {
+        0% {
+            transform: scale(1, 1);
+        }
+
+        30% {
+            transform: scale(1.25, 0.75);
+        }
+
+        40% {
+            transform: scale(0.75, 1.25);
+        }
+
+        50% {
+            transform: scale(1.15, 0.85);
+        }
+
+        65% {
+            transform: scale(0.95, 1.05);
+        }
+
+        75% {
+            transform: scale(1.05, 0.95);
+        }
+
+        100% {
+            transform: scale(1, 1);
+        }
+    }
+
+    /* 360 Rotation */
+    @keyframes barrelRoll {
+        0% {
+            transform: rotateY(0deg);
+        }
+
+        100% {
+            transform: rotateY(360deg);
+        }
+    }
+
+    /* Extreme Shake */
+    @keyframes extremeShake {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        20% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        30% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        40% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        50% {
+            transform: translate(-10px, -10px) rotate(-10deg);
+        }
+
+        60% {
+            transform: translate(10px, 10px) rotate(10deg);
+        }
+
+        70% {
+            transform: translate(-10px, 10px) rotate(-10deg);
+        }
+
+        80% {
+            transform: translate(10px, -10px) rotate(10deg);
+        }
+
+        90% {
+            transform: translate(-5px, -5px) rotate(-5deg);
+        }
+
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+    }
+</style>

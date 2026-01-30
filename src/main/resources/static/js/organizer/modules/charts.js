@@ -13,7 +13,7 @@ export function initDashboardCharts() {
         // Chart.js usually handles this if we destroy previous instance, 
         // but here we just create new one as assumed fresh load or idempotent enough for demo.
 
-        new Chart(ctxSales, {
+        const salesChart = new Chart(ctxSales, {
             type: 'line',
             data: {
                 labels: ['12/19', '12/20', '12/21', '12/22', '12/23', '12/24', '12/25'],
@@ -27,6 +27,32 @@ export function initDashboardCharts() {
                 }]
             },
             options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Hover Animation Effect
+        const canvas = document.getElementById('salesChart');
+        const originalData = [...salesChart.data.datasets[0].data];
+        let animationInterval;
+
+        canvas.addEventListener('mouseenter', () => {
+            // Start wild animation
+            animationInterval = setInterval(() => {
+                const newData = originalData.map(val => {
+                    // Exaggerated fluctuation: +/- 30%
+                    const variance = val * 0.3;
+                    const offset = (Math.random() * variance * 2) - variance;
+                    return Math.max(0, val + offset); // Prevent negative values
+                });
+                salesChart.data.datasets[0].data = newData;
+                salesChart.update(); // Enable animation for smooth/slower feel
+            }, 500); // 500ms - Slower pace
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            // Stop animation and reset
+            clearInterval(animationInterval);
+            salesChart.data.datasets[0].data = [...originalData];
+            salesChart.update();
         });
     }
     if (document.getElementById('distributionChart')) {
