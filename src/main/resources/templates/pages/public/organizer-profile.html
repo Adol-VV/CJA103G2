@@ -60,13 +60,14 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold text-success" href="../../index.html"><i
+            <a class="navbar-brand fw-bold text-success" th:href="@{/}"><i
                     class="fas fa-ticket-alt me-2"></i>Momento</a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../user/event-list.html">活動</a></li>
-                    <li class="nav-item"><a class="nav-link" href="article-list.html">最新消息</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/article}">找文章</a></li>
                 </ul>
             </div>
         </div>
