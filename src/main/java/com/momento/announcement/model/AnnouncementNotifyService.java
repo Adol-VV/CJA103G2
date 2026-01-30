@@ -10,12 +10,12 @@ public class AnnouncementNotifyService {
     @Autowired
     private AnnouncementNotifyRepository repository;
 
-    public void addAnnouncement(AnnouncementVO announcementVO){
-        repository.save(announcementVO);
+    public AnnouncementVO addAnnouncement(AnnouncementVO announcementVO){
+        return repository.save(announcementVO);
     }
 
-    public void updateAnnouncement(AnnouncementVO announcementVO){
-        repository.save(announcementVO);
+    public AnnouncementVO updateAnnouncement(AnnouncementVO announcementVO){
+        return repository.save(announcementVO);
     }
 
     public void deleteAnnouncement(Integer announcementId){
@@ -28,5 +28,15 @@ public class AnnouncementNotifyService {
 
     public List<AnnouncementVO> getAll(){
         return repository.findAll();
+    }
+
+    // 取得所有公告
+    public List<AnnouncementVO> getAllByCreatedAtDesc(){
+        return repository.findAllByOrderByCreatedAtDesc();
+    }
+
+    // 取得公告總數
+    public long getCount(){
+        return repository.count();
     }
 }

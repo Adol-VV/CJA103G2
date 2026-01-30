@@ -3,13 +3,6 @@
  * Handles Announcement UI and Search UI interactions.
  */
 
-// Basic static data for presentation only
-const mockAnnouncements = [
-    { id: 1, title: '平台上線公告', content: 'Momento 平台正式上線！', date: '2024-01-01', type: 'system' },
-    { id: 2, title: '春節營運公告', content: '春節期間客服暫停服務。', date: '2024-02-01', type: 'notice' },
-    { id: 3, title: '新功能上線', content: '代幣功能已啟用。', date: '2024-09-01', type: 'feature' }
-];
-
 function getTypeBadge(type) {
     const badges = {
         system: '<span class="badge bg-secondary me-2">系統</span>',
@@ -21,36 +14,66 @@ function getTypeBadge(type) {
     return badges[type] || badges.notice;
 }
 
-function loadAnnouncements() {
-    // 跑馬燈
+async function loadAnnouncements() {
     const track = document.getElementById('announce_track');
-    if (track) {
-        let html = '';
-        mockAnnouncements.forEach(a => {
-            html += `<span class="announce_item" data-id="${a.id}" data-bs-toggle="modal" data-bs-target="#announce_modal">
-                ${getTypeBadge(a.type)}${a.title}
-            </span>`;
-        });
-        track.innerHTML = html + html;
-    }
-
-    // Modal List
     const list = document.getElementById('announce_list');
-    if (list) {
-        let listHtml = '';
-        mockAnnouncements.forEach(a => {
-            listHtml += `
-                <div class="list-group-item bg-dark text-white border-secondary">
-                    <div class="d-flex w-100 justify-content-between align-items-start">
-                        <div>${getTypeBadge(a.type)} <strong>${a.title}</strong></div>
-                        <small class="text-muted">${a.date}</small>
-                    </div>
-                    <p class="mb-0 mt-2 text-muted small">${a.content}</p>
-                </div>
-            `;
-        });
-        list.innerHTML = listHtml;
+
+    try {
+        // 從後端 API 取得公告資料
+        const response = await fetch('/announcement/api/list');
+        const announcements = await response.json();
+
+        // 跑馬燈
+        if (track) {
+            if (announcements.length === 0) {
+                track.innerHTML = '<span class="announce_item text-muted">目前暫無公告</span>';
+            } else {
+                let html = '';
+                announcements.forEach(a => {
+                    html += '<span class="announce_item" data-id="' + a.id + '" data-bs-toggle="modal" data-bs-target="#announce_modal">' + getTypeBadge(a.type) + escapeHtml(a.title) + '</span>';
+                });
+                track.innerHTML = html + html; // 複製一份讓跑馬燈連續滾動
+            }
+        }
+
+        // Modal 公告列表
+        if (list) {
+            if (announcements.length === 0) {
+                list.innerHTML = '<div class="list-group-item bg-dark text-white border-secondary text-center text-muted py-4">目前暫無公告</div>';
+            } else {
+                let listHtml = '';
+                announcements.forEach(a => {
+                    listHtml += `
+                        <div class="list-group-item bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div>${getTypeBadge(a.type)} <strong>${escapeHtml(a.title)}</strong></div>
+                                <small class="text-muted">${a.date}</small>
+                            </div>
+                            <p class="mb-0 mt-2 text-muted small">${escapeHtml(a.content)}</p>
+                        </div>
+                    `;
+                });
+                list.innerHTML = listHtml;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load announcements:', err);
+        // 載入失敗時顯示提示
+        if (track) {
+            track.innerHTML = '<span class="announce_item text-muted">公告載入中...</span>';
+        }
+        if (list) {
+            list.innerHTML = '<div class="list-group-item bg-dark text-white border-secondary text-center text-danger py-4">公告載入失敗</div>';
+        }
     }
+}
+
+// HTML 跳脫函式，防止 XSS
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function initSearch() {
