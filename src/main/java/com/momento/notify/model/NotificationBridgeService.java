@@ -60,7 +60,7 @@ public class NotificationBridgeService {
         // 通知會員
         MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
         memberNotifyVO.setMemberVO(orderVO.getMember());
-        memberNotifyVO.setTitle("活動訂單成立通知");
+        memberNotifyVO.setTitle("活動訂單 #" + orderVO.getEventOrderId() + "成立通知");
         memberNotifyVO.setContent("您購買的活動『" + eventTitle + "』已於 " + timeStr + " 下單成功，共 " + ticketCount + " 張票券，請至會員中心查看電子票券。");
         memberNotifyVO.setIsRead(0);
         memberNotifyService.addMemberNotify(memberNotifyVO);
@@ -111,7 +111,7 @@ public class NotificationBridgeService {
         // 通知會員
         MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
         memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
-        memberNotifyVO.setTitle("商品訂單付款成功");
+        memberNotifyVO.setTitle("商品訂單 #" + orderId + "付款成功");
         memberNotifyVO.setContent("您購買的商品『" + prodNameStr + "』已於 " + dateStr + " 下單成功，金額：$" + payable + "，賣家將盡快為您安排出貨。");
         memberNotifyVO.setIsRead(0);
         memberNotifyService.addMemberNotify(memberNotifyVO);

@@ -1,25 +1,5 @@
 package com.momento.member.controller;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
-
 import com.momento.event.dto.EventListItemDTO;
 import com.momento.event.model.EventService;
 import com.momento.eventorder.model.EventOrderItemVO;
@@ -27,12 +7,26 @@ import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
+import com.momento.notify.model.MemberNotifyService;
+import com.momento.notify.model.MemberNotifyVO;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.notify.model.SystemNotifyVO;
 import com.momento.prod.model.ProdFavService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/member")
