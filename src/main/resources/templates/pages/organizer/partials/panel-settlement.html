@@ -2,9 +2,9 @@
     <h2 class="h3"><i class="fas fa-wallet me-2"></i>結算中心</h2>
     <div class="d-flex gap-2">
         <select class="form-select bg-dark text-white border-secondary" style="width: 150px;">
-            <option>2024 年 12 月</option>
-            <option>2024 年 11 月</option>
-            <option>2024 年 10 月</option>
+            <option>2025 年 12 月</option>
+            <option>2025 年 11 月</option>
+            <option>2025 年 10 月</option>
         </select>
         <button class="btn btn-outline-light">
             <i class="fas fa-download me-1"></i>匯出明細
@@ -63,7 +63,7 @@
             <thead>
                 <tr>
                     <th>活動名稱</th>
-                    <th>銷售張數</th>
+<!--                     <th>銷售張數</th> -->
                     <th>銷售金額</th>
                     <th>服務費 (5%)</th>
                     <th>應撥款</th>
@@ -76,23 +76,23 @@
                         <div class="fw-bold">2025新年音樂會｜維也納之夜</div>
                         <small class="text-muted">2025/01/01</small>
                     </td>
-                    <td>856 張</td>
+<!--                     <td>856 張</td> -->
                     <td>NT$ 1,284,000</td>
                     <td class="text-danger">-NT$ 64,200</td>
                     <td class="text-success fw-bold">NT$ 1,219,800</td>
                     <td><span class="badge bg-warning">待撥款</span></td>
                 </tr>
-                <tr>
-                    <td>
-                        <div class="fw-bold">春季室內樂系列</div>
-                        <small class="text-muted">2024/12/15</small>
-                    </td>
-                    <td>234 張</td>
-                    <td>NT$ 572,000</td>
-                    <td class="text-danger">-NT$ 28,600</td>
-                    <td class="text-success fw-bold">NT$ 543,400</td>
-                    <td><span class="badge bg-success">已撥款</span></td>
-                </tr>
+<!--                 <tr> -->
+<!--                     <td> -->
+<!--                         <div class="fw-bold">春季室內樂系列</div> -->
+<!--                         <small class="text-muted">2024/12/15</small> -->
+<!--                     </td> -->
+<!--                     <td>234 張</td> -->
+<!--                     <td>NT$ 572,000</td> -->
+<!--                     <td class="text-danger">-NT$ 28,600</td> -->
+<!--                     <td class="text-success fw-bold">NT$ 543,400</td> -->
+<!--                     <td><span class="badge bg-success">已撥款</span></td> -->
+<!--                 </tr> -->
             </tbody>
         </table>
     </div>
@@ -231,15 +231,15 @@
                         <i class="fas fa-check text-white"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0">玉山銀行 (808)</h6>
-                        <p class="text-muted mb-0">帳號：1234-567-****5678</p>
-                        <small class="text-muted">戶名：○○○文創有限公司</small>
+                        <h6 class="mb-0">銀行代碼：<span  th:text="${session.loginOrganizer.bankCode}"></span></h6>
+                        <p class="text-muted mb-0">帳號：<span  th:text="${session.loginOrganizer.bankAccount}"></span></p>
+                        <small class="text-muted">戶名：<span  th:text="${session.loginOrganizer.accountName}"></span></small>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 text-end">
                 <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#editBankModal">
-                    <i class="fas fa-edit me-1"></i>修改帳戶
+                    <a href="/organizer/dashboard#settings" class="text-muted"><i class="fas fa-edit me-1"></i>修改帳戶</a>
                 </button>
             </div>
         </div>

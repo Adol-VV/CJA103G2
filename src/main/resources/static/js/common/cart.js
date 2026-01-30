@@ -80,6 +80,12 @@ $(function(){
     $(document).on("click",".btn-outline-danger", function(){
         let r = confirm("確定要刪除該商品嗎？");
         if(r){
+            let item = $(this).closest(".cart-item");
+            let productId = item.data("id"); 
+            let cart = JSON.parse(localStorage.getItem("momento_cart")) || [];
+            cart = cart.filter(item => item.id != productId);
+            localStorage.setItem("momento_cart", JSON.stringify(cart));
+
             this.closest(".cart-item").remove();
             calculateTotal();
             checkCartCount();
@@ -94,7 +100,6 @@ $(function(){
             let quantity = parseInt($(this).find("input").val());
             total += price * quantity;
         });
-        console.log(total);
 
         $(".fw-bold.text-success.fs-3").text("NT$ " + total);
         $(".prod_price").text("NT$ " + total);

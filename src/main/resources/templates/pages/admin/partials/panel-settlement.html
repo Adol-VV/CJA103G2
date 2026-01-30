@@ -147,7 +147,7 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
-                                        <button class="btn btn-success" title="確認撥款"><i
+                                        <button class="btn btn-success" title="確認撥款" ><i
                                                 class="fas fa-check"></i></button>
                                     </div>
                                 </td>
@@ -440,6 +440,85 @@
                     <li>若退款金額超過當期應付款，差額將於下期結算中扣除</li>
                     <li>暫停撥款：因退款率過高或其他異常情況，需人工審核後方可撥款</li>
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="settlementDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content text-white" style="background: #1A1A1A;">
+            <div class="modal-header border-secondary">
+                <h5>結算詳情 #S202412-001</h5><button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card bg-dark mb-3 p-3">
+                            <h6>活動資訊</h6>
+                            <h4 class="mb-0">五月天 2024 巡迴演唱會</h4>
+                            <p class="text-muted">主辦：相信音樂 | 日期：2024/12/31</p>
+                        </div>
+                        <table class="table table-sm table-dark">
+                            <thead>
+                                <tr>
+                                    <th>票種</th>
+                                    <th>售出</th>
+                                    <th>金額</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>搖滾區</td>
+                                    <td>500</td>
+                                    <td>NT$ 1,900,000</td>
+                                </tr>
+                                <tr>
+                                    <td>看台區</td>
+                                    <td>1000</td>
+                                    <td>NT$ 2,800,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="settlement-calculation">
+                            <h6 class="border-bottom border-secondary pb-2 mb-3">結算計算</h6>
+                            <div class="calc-row"><span>總營收</span><strong>NT$ 5,000,000</strong></div>
+                            <div class="calc-row text-danger"><span>退款</span><strong>- NT$ 0</strong></div>
+                            <div class="calc-row text-warning"><span>平台抽成 (10%)</span><strong>- NT$ 500,000</strong>
+                            </div>
+                            <hr class="border-secondary">
+                            <div class="calc-row"><span>應付帳款</span>
+                                <h4 class="text-success">NT$ 4,500,000</h4>
+                            </div>
+
+                            <div class="timeline-compact mt-4">
+                                <div class="timeline-step completed">
+                                    <div class="step-marker"><i class="fas fa-check"></i></div>
+                                    <div class="step-content"><strong>活動結束</strong></div>
+                                </div>
+                                <div class="timeline-step completed">
+                                    <div class="step-marker">2</div>
+                                    <div class="step-content"><strong>系統計算</strong></div>
+                                </div>
+                                <div class="timeline-step active">
+                                    <div class="step-marker">3</div>
+                                    <div class="step-content"><strong>財務審核</strong>
+                                        <p class="small text-warning">待處理</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="step-marker">4</div>
+                                    <div class="step-content"><strong>撥款</strong></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success w-100 mt-3"
+                                onclick="alert('已核准並排程撥款');$('#settlementDetailModal').modal('hide')">核准撥款</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

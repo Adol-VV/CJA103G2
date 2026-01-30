@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.util.List;
 
@@ -59,4 +61,14 @@ public interface TicketRepository extends JpaRepository<TicketVO, Integer> {
     @Query("SELECT CASE WHEN t.remain >= :quantity THEN true ELSE false END " +
             "FROM TicketVO t WHERE t.ticketId = :ticketId")
     boolean checkAvailability(@Param("ticketId") Integer ticketId, @Param("quantity") Integer quantity);
+
+    /**
+     * 查詢並鎖定票種（悲觀鎖），防止超賣
+     * 
+     * @param ticketId 票種 ID
+     * @return 鎖定的票種
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT t FROM TicketVO t WHERE t.ticketId = :ticketId")
+    java.util.Optional<TicketVO> findByIdForUpdate(@Param("ticketId") Integer ticketId);
 }

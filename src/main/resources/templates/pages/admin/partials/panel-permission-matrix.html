@@ -70,6 +70,46 @@
             padding-left: 20px;
             background: #1a1a1a !important;
         }
+
+        /* Pagination Styles */
+        .pagination-custom {
+            display: inline-flex;
+            border: 1px solid #444;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .pagination-custom button {
+            background: #212529;
+            color: #ccc;
+            border: none;
+            padding: 6px 12px;
+            border-right: 1px solid #444;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pagination-custom button:last-child {
+            border-right: none;
+        }
+
+        .pagination-custom button:hover:not(:disabled) {
+            background: #343a40;
+            color: #fff;
+        }
+
+        .pagination-custom button.active {
+            background: #0d6efd;
+            color: white;
+            cursor: default;
+        }
+
+        .pagination-custom button:disabled {
+            color: #555;
+            cursor: not-allowed;
+        }
     </style>
 
 
@@ -122,6 +162,11 @@
         </div>
     </div>
 
+    <!-- 分頁控制項容器 (置中) -->
+    <div class="d-flex justify-content-center">
+        <div id="permissionPagination" class="pagination-custom"></div>
+    </div>
+
     <script th:inline="javascript">
         // 確保 jQuery 載入後再執行
         document.addEventListener("DOMContentLoaded", function () {
@@ -144,7 +189,55 @@
             if ($('#permissionMatrixBody').data('bound')) return;
             $('#permissionMatrixBody').data('bound', true);
 
-            // 1. 初始化狀態
+            // 分頁與搜尋邏輯設定 ====================================
+            const rowsPerPage = 10;
+            const $tbody = $('#permissionMatrixBody');
+            const $rows = $tbody.find('tr');
+            const totalRows = $rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            let currentPage = 1;
+
+            function showPage(page) {
+                if (page < 1) page = 1;
+                if (page > totalPages) page = totalPages;
+                currentPage = page;
+
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                $rows.hide();
+                $rows.slice(start, end).show();
+
+                renderButtons();
+                $('#permissionPagination').show();
+            }
+
+            function renderButtons() {
+                const $pagination = $('#permissionPagination');
+                $pagination.empty();
+
+                const $prevBtn = $('<button>上一頁</button>').prop('disabled', currentPage === 1).click(() => showPage(currentPage - 1));
+                $pagination.append($prevBtn);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const $btn = $('<button>' + i + '</button>').click(() => showPage(i));
+                    if (i === currentPage) $btn.addClass('active');
+                    $pagination.append($btn);
+                }
+
+                const $nextBtn = $('<button>下一頁</button>').prop('disabled', currentPage === totalPages).click(() => showPage(currentPage + 1));
+                $pagination.append($nextBtn);
+            }
+
+            if (totalRows > rowsPerPage) {
+                showPage(1);
+            } else {
+                $('#permissionPagination').hide();
+                $rows.show();
+            }
+            // ======================================================
+
+            // 2. 修改權限事件
             // (移除原本的 AJAX readAll，改用 Thymeleaf 渲染)
 
             // 2. 修改權限事件 (使用委派事件，對動態內容更友善)
@@ -174,13 +267,27 @@
                 });
             });
 
-            // 3. 關鍵字搜尋
+            // 3. 關鍵字搜尋 (與分頁整合)
             $('#permissionSearchInput').off('input').on('input', function () {
                 const val = $(this).val().toLowerCase();
-                $('#permissionMatrixBody tr').each(function () {
-                    const text = $(this).text().toLowerCase();
-                    $(this).toggle(text.includes(val));
-                });
+
+                if (val === '') {
+                    // 清空搜尋 -> 恢復分頁
+                    if (totalRows > rowsPerPage) {
+                        showPage(1);
+                        $('#permissionPagination').show();
+                    } else {
+                        $rows.show();
+                        $('#permissionPagination').hide();
+                    }
+                } else {
+                    // 有搜尋 -> 隱藏分頁，顯示匹配項目
+                    $('#permissionPagination').hide();
+                    $rows.each(function () {
+                        const text = $(this).text().toLowerCase();
+                        $(this).toggle(text.includes(val));
+                    });
+                }
             });
         }
 

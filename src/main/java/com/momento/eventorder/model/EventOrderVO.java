@@ -56,6 +56,9 @@ public class EventOrderVO implements Serializable {
 
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(name = "reason")
+	private String reason;
 
 	@OneToMany(mappedBy = "eventOrder", cascade = CascadeType.ALL)
 	@OrderBy("event_order_item_id asc")
@@ -66,7 +69,7 @@ public class EventOrderVO implements Serializable {
 	}
 
 	public EventOrderVO(Integer eventOrderId, MemberVO member, OrganizerVO organizer, EventVO event, Integer total,
-			Integer tokenUsed, Integer payable, Integer payStatus, LocalDateTime createdAt,
+			Integer tokenUsed, Integer payable, Integer payStatus, LocalDateTime createdAt, String reason,
 			List<EventOrderItemVO> eventOrderItems) {
 		super();
 		this.eventOrderId = eventOrderId;
@@ -78,6 +81,7 @@ public class EventOrderVO implements Serializable {
 		this.payable = payable;
 		this.payStatus = payStatus;
 		this.createdAt = createdAt;
+		this.reason = reason;
 		this.eventOrderItems = eventOrderItems;
 	}
 
@@ -151,6 +155,14 @@ public class EventOrderVO implements Serializable {
 
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
 	public List<EventOrderItemVO> getEventOrderItems() {

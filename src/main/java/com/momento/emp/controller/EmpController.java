@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/admin")
@@ -178,46 +181,6 @@ public class EmpController {
         return "backend/emp/listAllEmp";
     }
 
-    // 新增員工
-    @PostMapping("/add")
-    public String addEmp(EmpVO emp, HttpSession session, ModelMap model) {
-        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
-        if (loginEmp == null)
-            return "redirect:/admin/login";
-
-        try {
-            empSvc.addEmployee(loginEmp.getEmpId(), emp);
-        } catch (SecurityException e) {
-            model.addAttribute("errorMessage", "無權限新增員工: " + e.getMessage());
-            return listAllEmp(model, session);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "新增失敗: " + e.getMessage());
-            return listAllEmp(model, session);
-        }
-
-        return "redirect:/admin/listAllEmp";
-    }
-
-    // 修改員工
-    @PostMapping("/update")
-    public String updateEmp(EmpVO emp, HttpSession session, ModelMap model) {
-        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
-        if (loginEmp == null)
-            return "redirect:/admin/login";
-
-        try {
-            empSvc.updateEmployee(loginEmp.getEmpId(), emp);
-        } catch (SecurityException e) {
-            model.addAttribute("errorMessage", "無權限修改員工: " + e.getMessage());
-            return listAllEmp(model, session);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "修改失敗: " + e.getMessage());
-            return listAllEmp(model, session);
-        }
-
-        return "redirect:/admin/listAllEmp";
-    }
-
     // 刪除員工
     @PostMapping("/delete")
     public String deleteEmp(@RequestParam("empId") Integer empId, HttpSession session, ModelMap model) {
@@ -276,6 +239,71 @@ public class EmpController {
     // ========== 員工管理 API ==========
 
     /**
+     * 新增員工 (JSON API)
+     */
+    @PostMapping("/employees/create")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createEmployeeAPI(@RequestBody EmpVO emp, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        // 只有超級管理員可以新增
+        if (!empSvc.isSuperAdmin(loginEmp.getEmpId())) {
+            return ResponseEntity.status(403).body(Map.of("success", false, "message", "無權限新增員工"));
+        }
+
+        try {
+            if (emp.getAccount() == null || emp.getAccount().trim().isEmpty()) {
+                throw new IllegalArgumentException("帳號為必填");
+            }
+            // 驗證帳號格式 (後端雙重驗證)
+            if (!emp.getAccount().matches("^[a-zA-Z0-9._-]+$")) {
+                throw new IllegalArgumentException("帳號格式錯誤：只能包含英文、數字、底線、減號或點");
+            }
+            if (emp.getEmpName() == null || emp.getEmpName().trim().isEmpty()) {
+                throw new IllegalArgumentException("姓名為必填");
+            }
+
+            empSvc.addEmployee(emp);
+            response.put("success", true);
+            response.put("message", "新增成功，預設密碼為 12345678");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "新增失敗: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
+     * 更新員工 (JSON API)
+     */
+    @PostMapping("/employees/update")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateEmployeeAPI(@RequestBody EmpVO emp, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            empSvc.updateEmployee(emp);
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "更新失敗: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
      * 獲取單一員工資料
      */
     @GetMapping("/employees/{empId}")
@@ -304,27 +332,6 @@ public class EmpController {
                 "account", emp.getAccount() != null ? emp.getAccount() : "",
                 "status", emp.getStatus() != null ? emp.getStatus() : 1);
     }
-
-    /**
-     * 更新員工資料
-     */
-    @PostMapping("/employees/update")
-    @ResponseBody
-    public java.util.Map<String, Object> updateEmployee(@RequestBody java.util.Map<String, Object> payload) {
-        try {
-            Integer empId = (Integer) payload.get("empId");
-            String empName = (String) payload.get("empName");
-            String jobTitle = (String) payload.get("jobTitle");
-            Integer status = (Integer) payload.get("status");
-
-            empSvc.updateEmployeeInfo(empId, empName, jobTitle, status.byteValue());
-
-            return java.util.Map.of("success", true, "message", "更新成功");
-        } catch (Exception e) {
-            return java.util.Map.of("success", false, "message", "更新失敗: " + e.getMessage());
-        }
-    }
-
     /**
      * 員工自己修改密碼（已登入狀態，無需驗證舊密碼）
      */
@@ -351,6 +358,7 @@ public class EmpController {
     /**
      * 管理員重設員工密碼為預設值 12345678
      */
+
     @PostMapping("/employees/reset-password")
     @ResponseBody
     public java.util.Map<String, Object> resetPassword(@RequestBody java.util.Map<String, Object> payload) {

@@ -8,16 +8,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.momento.eventorder.model.EventOrderItemService;
+import com.momento.eventorder.model.EventOrderItemVO;
 import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
+import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 import com.momento.ticket.model.TicketVO;
 
@@ -32,6 +37,9 @@ public class MemberCenterOrderController {
 
 	@Autowired
 	EventOrderItemService eventOrderItemSvc;
+	
+	@Autowired
+	MemberService memberSvc;
 
 	@GetMapping("/panel-tickets")
 	public String MemberOrderEvent(HttpSession session, Model model) {
@@ -44,14 +52,35 @@ public class MemberCenterOrderController {
 		Iterator<EventOrderVO> iterator = eventOrderList.iterator();
 		while (iterator.hasNext()) {
 			EventOrderVO item = iterator.next();
-			if (item.getEvent().getEventStartAt() != null && now.isAfter(item.getEvent().getEventStartAt())) {
+			if (item.getEvent().getEventStartAt() != null && now.isAfter(item.getEvent().getEventEndAt())) {
 				eventOrderFinished.add(item);
 				iterator.remove();
 			}
 		}
+		
+		Map<Integer, Map<String, Integer>> allOrdersItemCounts = new HashMap<>();
+		
+		for (EventOrderVO eventOrders : eventOrderFinished) {
+			Integer eventOrderId = eventOrders.getEventOrderId();
+			List<Object[]> eventOrderItems = eventOrderItemSvc.getTicketCount(eventOrderId);
+			
+			Map<String, Integer> currentOrderCount = new HashMap<>();
+
+			for (Object[] count : eventOrderItems) {
+				Integer ticketId = (Integer) count[0];
+				Integer quantity = ((Number) count[1]).intValue();
+
+				TicketVO ticket = eventOrderItemSvc.getTicketById(ticketId);
+				String ticketName = ticket.getTicketName();
+
+				currentOrderCount.put(ticketName, quantity);
+			}
+			allOrdersItemCounts.put(eventOrderId, currentOrderCount);
+		}
 
 		model.addAttribute("eventOrderList", eventOrderList);
 		model.addAttribute("eventOrderFinished", eventOrderFinished);
+		model.addAttribute("allOrdersItemCounts", allOrdersItemCounts);
 
 		return "pages/user/partials/panel-tickets";
 	}
@@ -81,6 +110,25 @@ public class MemberCenterOrderController {
 		model.addAttribute("tokenList", eventOrderList);
 
 		return "pages/user/partials/panel-tokens";
+	}
+	
+	@PostMapping("/ticket-refund")
+	@ResponseBody
+	public ResponseEntity<String> refund(
+			@RequestParam Integer eventOrderId, 
+			@RequestParam String refundReason) {
+		
+		try {
+			EventOrderVO eventOrder = eventOrderSvc.getOneEventOrder(eventOrderId);
+			eventOrder.setReason(refundReason);
+			eventOrder.setPayStatus(2);
+			
+			eventOrderSvc.updateEventOrder(eventOrder);
+			return ResponseEntity.ok("退票申請已提交");
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("處理失敗");
+		}
 	}
 
 }

@@ -85,7 +85,8 @@ public class EventServiceImpl implements EventService {
         public EventDetailDTO getEventDetail(Integer eventId, Integer memberId) {
                 EventVO event = eventRepository.findById(java.util.Objects.requireNonNull(eventId))
                                 .orElseThrow(() -> new RuntimeException("活動不存在"));
-                List<EventImageVO> images = eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(eventId);
+                List<EventImageVO> images = eventImageRepository
+                                .findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(eventId);
                 Long favoriteCount = eventFavRepository.countByEvent_EventId(eventId);
                 Boolean isFavorited = memberId != null
                                 && eventFavRepository.existsByMember_MemberIdAndEvent_EventId(memberId, eventId);
@@ -209,7 +210,7 @@ public class EventServiceImpl implements EventService {
                 dto.setFrontendStatus(event.getFrontendStatus().name());
 
                 Optional<EventImageVO> coverImage = eventImageRepository
-                                .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());
+                                .findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(event.getEventId());
                 dto.setCoverImageUrl(coverImage.isPresent() && coverImage.get().getImageUrl() != null
                                 ? coverImage.get().getImageUrl()
                                 : "https://picsum.photos/seed/evento" + event.getEventId() + "/800/450");

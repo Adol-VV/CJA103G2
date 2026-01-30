@@ -51,7 +51,6 @@ export function initOrderManagement() {
 	    .then(html => {
 	        // 關鍵：將回傳的 HTML 直接替換掉原本的表格內容
 	        document.getElementById('orderListContainer').innerHTML = html;
-		console.log("回傳的內容：", html);
 	    })
 	    .catch(error => console.error('Error:', error));
 	})
