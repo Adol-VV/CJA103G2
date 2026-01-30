@@ -336,7 +336,7 @@ public class OrganizerCenterController {
     // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
     public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
-            @RequestParam("imagefiles") MultipartFile[] files) {
+            @RequestParam("imageFiles") MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -348,7 +348,22 @@ public class OrganizerCenterController {
 
         return "redirect:/organizer/dashboard#product-list";
     }
+    
+    //更新商品
+    @PostMapping("/updateProd")
+    public String updateProd(@Valid ProdDTO prodDTO, HttpSession session,
+            @RequestParam("imageFiles") MultipartFile[] files) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
 
+        prodDTO.setOrganizerId(organizer.getOrganizerId());
+        prodSvc.addProd(prodDTO, files);
+
+        return "redirect:/organizer/dashboard#product-list";
+    }
+    
     // 新增文章
     @PostMapping("/article/create")
     @ResponseBody

@@ -25,8 +25,8 @@
 		<div class="container">
 			<a class="navbar-brand fw-bold" href="/"> <i
 				class="fas fa-ticket-alt me-2 text-success"></i>Momento
-			</a> <a href="cart" class="btn btn-outline-secondary btn-sm"> <i
-				class="fas fa-arrow-left me-2"></i>返回活動頁面
+			</a> <a href="javascript:void(0);" onclick="history.back()" class="btn btn-outline-secondary btn-sm"> <i
+				class="fas fa-arrow-left me-2" ></i>返回活動頁面
 			</a>
 		</div>
 	</nav>
@@ -273,7 +273,7 @@
 								<label class="form-check-label" for="useTokensCheckout">
 									使用 Momento 代幣折抵 <span class="badge bg-success ms-2">可用餘額:
 										<span class="token" id="tokenAmount"
-										th:text="${session.loginMember.token}"></span>
+										th:text="${session.tokenRemain}"></span>
 								</span>
 								</label>
 							</div>
@@ -321,7 +321,8 @@
 						</button>
 						<button type="button" class="btn btn-primary btn-lg btn-next"
 							id="btnSubmitOrder">
-							<i class="fas fa-lock me-2"></i>確認付款
+							<i class="fas fa-lock me-2"></i>確認付款 NT$
+							<span id="finalPrice"></span>
 						</button>
 					</div>
 				</div>
@@ -406,7 +407,7 @@
 						<div class="d-flex justify-content-between mb-2">
 							<span class="text-muted">票券小計</span>
 							<div class="prod_price_T">
-								<span>NT$</span> <span th:text="${session.checkoutData.total}">450</span>
+								<span>NT$</span> <span id="orginalTotal" th:text="${session.checkoutData.total}">450</span>
 							</div>
 						</div>
 						<!--<div class="d-flex justify-content-between mb-2">
@@ -457,7 +458,9 @@
 	<script src="/js/common.js"></script>
 	<script src="/js/common/event-checkout.js"></script>
 	<script>
-
+		let orginalTotal = document.getElementById("orginalTotal");
+		let finalPrice = document.getElementById("finalPrice");
+		finalPrice.innerText = orginalTotal.innerText;
 		function calcTotal(ischecked){	
 			const isChecked = document.getElementById('useTokensCheckout').checked; 
 			fetch(`/member/event/checkout/refresh-summary?useToken=${isChecked}`, {
@@ -468,6 +471,7 @@
 		        // 拿到後端算好的值，直接更新畫面上的數字
 		        document.getElementById('tokenUsedDisp').innerText = data.tokenUsed;
 		        document.getElementById('payableDisp').innerText = data.payable;
+		        document.getElementById("finalPrice").innerText = data.payable;
 		    });
 		}
 		function sendOrder(orderData) {

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.momento.event.model.EventService;
 import com.momento.member.model.MemberVO;
 import com.momento.prod.dto.ProdDTO;
 import com.momento.prod.model.ProdFavService;
@@ -43,6 +44,9 @@ public class ProdController {
 
 	@Autowired
 	ProdFavService prodFavSvc;
+	
+	@Autowired
+	EventService eventSvc;
 
 	@GetMapping("/addProd")
 	public String addProd(ModelMap model) {
@@ -92,6 +96,8 @@ public class ProdController {
 					.anyMatch(favProd -> favProd.getProdId().equals(prod.getProdId()));
 			model.addAttribute("isFav", isFav);
 		}
+		
+		model.addAttribute("orgEvents",eventSvc.getOrganizerEvents(prod.getOrganizerId(),2));
 
 		return "pages/user/prod-detail";
 	}

@@ -84,13 +84,13 @@
 
                     <!-- Main Image Upload -->
                     <div class="mb-3">
-                        <label class="form-label">主圖</label>
+<!--                         <label class="form-label">主圖</label> -->
                         <div class="upload-zone text-center p-4 border border-secondary border-dashed rounded position-relative"
-                            id="productMainImageZone" style="cursor: pointer;">
+                            id="productMainImageZone" style="cursor: pointer; height: 100px">
                             <input type="file" class="d-none" id="productMainImageInput" accept="image/*" name="imageFiles" multiple>
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                                <p class="small text-muted mb-0">點擊上傳主圖</p>
+                                <p class="small text-muted mb-0">點擊上傳圖片</p>
                                 <small class="text-muted">建議 800x800 px</small>
                             </div>
                             <div class="upload-preview d-none">
@@ -197,7 +197,7 @@
 	    	if (i >= imageContainer_el.length) return false;
 	    	let reader = new FileReader();
 		    $(reader).on("load", function(){
-		        let img_str = `<img src="${reader.result}" class="preview_img" style="width:135px; height:135px"> `;
+		        let img_str = `<img src="${reader.result}" class="preview_img" style="width:100%; height:100%"> `;
 		        imageContainer_el.eq(i).html(img_str);
 		    })
 		    reader.readAsDataURL(file);

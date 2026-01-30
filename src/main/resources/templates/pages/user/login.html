@@ -99,6 +99,7 @@
                             <div class="tab-pane fade show active" id="loginTab">
                                 <form th:action="@{/member/login}"  id="loginForm" method="post">
                                     <div class="mb-3">
+                                    <div th:if="${statusMsg}" th:text="${statusMsg}" style="color:red"></div>
                                         <label class="form-label">帳號</label>
                                         <span th:if="${accountMsg}" th:text="${accountMsg}" style="color:red"></span>
                                         <input type="text" name = "account" th:value="${savedAccount}" class="form-control" placeholder="電子信箱">

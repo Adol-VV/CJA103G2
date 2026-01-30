@@ -7,7 +7,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <p class="text-muted mb-1 small">待使用票券</p>
-                        <h3 class="mb-0">8</h3>
+                        <h3 class="mb-0" th:text="${ticketCounts}">8</h3>
                     </div>
                     <div class="stat-icon bg-primary">
                         <i class="fas fa-ticket-alt"></i>
@@ -72,24 +72,23 @@
             </div>
             <div class="card-body">
                 <div class="event-timeline mt-2">
-                    <div class="timeline-item">
-                        <div class="mb-1 text-success fw-bold">12/28 (六)</div>
-                        <div class="card bg-dark border-secondary">
+                    <div class="timeline-item" th:each="event: ${recentEvents}">
+                        <div class="mb-1 text-success fw-bold" th:text="${#temporals.format(event.event.eventStartAt, 'yyyy/MM/dd (E)')}">12/28 (六)</div>
                             <div class="card-body p-3">
-                                <h6 class="mb-1">2025新年音樂會｜維也納之夜</h6>
+                                <h6 class="mb-1" th:text="${event.event.title}">2025新年音樂會｜維也納之夜</h6>
                                 <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i>
-                                    台北市中山區中山北路二段21-1號 |
-                                    19:30</p>
-                                <button class="btn btn-sm btn-primary w-100 btn-show-qr"
-                                    data-order="ORD-EVT-20241115-001">查看票券</button>
+                                    <span th:text="${event.event.place}">台北市中山區中山北路二段21-1號</span>
+                                    <span th:text="' | ' +${#temporals.format(event.event.eventStartAt, 'HH:mm')}">19:30</span>
+                                </p>
+<!--                                 <button class="btn btn-sm btn-primary w-100 btn-show-qr" -->
+<!--                                     data-order="ORD-EVT-20241115-001">查看票券</button> -->
                             </div>
-                        </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="mb-1 text-muted">04/05 (六)</div>
-                        <h6 class="mb-1">春春季室內樂系列｜弦樂四重奏之夜</h6>
-                        <p class="text-muted small mb-0">國家演奏廳</p>
-                    </div>
+<!--                     <div class="timeline-item"> -->
+<!--                         <div class="mb-1 text-muted">04/05 (六)</div> -->
+<!--                         <h6 class="mb-1">春春季室內樂系列｜弦樂四重奏之夜</h6> -->
+<!--                         <p class="text-muted small mb-0">國家演奏廳</p> -->
+<!--                     </div> -->
                 </div>
             </div>
         </div>
@@ -100,40 +99,47 @@
         <div class="card h-100">
             <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">最近訂單</h5>
-                <a href="#orders" class="text-muted small text-decoration-none">查看全部</a>
+<!--                 <a href="#orders" class="text-muted small text-decoration-none">查看全部</a> -->
             </div>
             <div class="card-body p-0">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item bg-transparent border-secondary">
+                    <div class="list-group-item bg-transparent border-secondary" th:each="order:${latestOrders}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="badge bg-primary mb-1">票券</span>
-                                <h6 class="mb-0 text-truncate" style="max-width: 200px;">
+                                <span class="badge bg-primary mb-1" th:if="${order.type == 'EVENT'}">票券</span>
+                                <span class="badge bg-warning text-dark mb-1" th:if="${order.type == 'PRODUCT'}">商品</span>
+                                <h6 class="mb-0 text-truncate" style="max-width: 200px;" th:text="${order.name}">
                                     2025新年音樂會｜維也納之夜
                                 </h6>
-                                <small class="text-muted">#ORD-EVT-20241115-001</small>
+                                <small class="text-muted" th:text="'#'+${order.id}">#ORD-EVT-20241115-001</small>
                             </div>
                             <div class="text-end">
-                                <div class="fw-bold">NT$ 2,800</div>
-                                <span class="badge bg-success">已完成</span>
+                                <div class="fw-bold" th:text="'NT$ '+${order.amount}">2,800</div>
+                                <span class="badge bg-success" th:if="${order.status == 1}">已付款</span>
+                                <span class="badge bg-primary" th:if="${order.type == 'PRODUCT' && order.status == 2}">已到貨</span>
+                                <span class="badge bg-warning" th:if="${order.type == 'PRODUCT' && order.status == 3}">退貨中</span>
+                                <span class="badge bg-danger" th:if="${order.type == 'PRODUCT' && order.status == 4}">已退貨</span>
+                                <span class="badge bg-warning" th:if="${order.type == 'EVENT' && order.status == 2}">申請退款</span>
+                                <span class="badge bg-danger" th:if="${order.type == 'EVENT' && order.status == 3}">已退款</span>
+                                <span class="badge bg-secondary" th:if="${order.type == 'EVENT' && order.status == 4}">已退款</span>
                             </div>
                         </div>
                     </div>
-                    <div class="list-group-item bg-transparent border-secondary">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="badge bg-warning text-dark mb-1">商品</span>
-                                <h6 class="mb-0 text-truncate" style="max-width: 200px;">
-                                    2024年度音樂會紀念T恤
-                                    x1</h6>
-                                <small class="text-muted">#ORD-PROD-20241120-001</small>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-bold">NT$ 880</div>
-                                <span class="badge bg-info">運送中</span>
-                            </div>
-                        </div>
-                    </div>
+<!--                     <div class="list-group-item bg-transparent border-secondary"> -->
+<!--                         <div class="d-flex justify-content-between align-items-center"> -->
+<!--                             <div> -->
+<!--                                 <span class="badge bg-warning text-dark mb-1">商品</span> -->
+<!--                                 <h6 class="mb-0 text-truncate" style="max-width: 200px;"> -->
+<!--                                     2024年度音樂會紀念T恤 -->
+<!--                                     x1</h6> -->
+<!--                                 <small class="text-muted">#ORD-PROD-20241120-001</small> -->
+<!--                             </div> -->
+<!--                             <div class="text-end"> -->
+<!--                                 <div class="fw-bold">NT$ 880</div> -->
+<!--                                 <span class="badge bg-info">運送中</span> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
                 </div>
             </div>
         </div>

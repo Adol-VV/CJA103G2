@@ -17,12 +17,15 @@
 
 					<div class="col-12">
 
-						<div class="card-body">
+						<div class="card-body" th:onclick="|toggleOrder(this, 'details-${s.index}')|">
 							<div class="d-flex justify-content-between mb-2"
-								th:onclick="|toggleOrder(this, 'details-${s.index}')|">
+								>
 								<h5 class="card-title mb-0" th:id="${order.event.eventId}"
 									th:text="${order.event.title}">2025新年音樂會｜維也納之夜</h5>
-								<span class="badge bg-success">已付款</span>
+								<span class="badge bg-success" th:if="${order.payStatus == 1}">已付款</span>
+								<span class="badge bg-warning" th:if="${order.payStatus == 2}">申請退款</span>
+								<span class="badge bg-danger" th:if="${order.payStatus == 3}">已退款</span>
+								<span class="badge bg-secondary" th:if="${order.payStatus == 4}">已退款</span>
 							</div>
 							<p class="card-text text-muted mb-1">
 								<i class="far fa-calendar me-2"></i> <span
@@ -32,13 +35,15 @@
 							<div class="d-flex justify-content-between align-items-center">
 								<span class="card-text text-muted mb-2"> <i class="fas fa-map-marker-alt me-2"></i>
 									<span th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
-								</span> <span>
-									<!-- 									<button class="btn btn-outline-danger btn-sm" -->
-									<!-- 										data-bs-toggle="modal" data-bs-target="#refundModal" -->
-									<!-- 										data-order-id="MOM2024122801" -->
-									<!-- 										data-event-name="2025新年音樂會｜維也納之夜"> -->
-									<!-- 										<i class="fas fa-undo me-1"></i> 申請退票 -->
-									<!-- 									</button> -->
+								</span> 
+								<span>
+									<button class="btn btn-outline-danger btn-sm refund" th:if="${order.payStatus == 1}"
+										data-bs-toggle="modal" data-bs-target="#refundModal"
+										th:data-order-id="${order.eventOrderId}"
+										th:data-event-title="${order.event.title}"
+										th:onclick="handleRefund(event, this)">
+										<i class="fas fa-undo me-1"></i> 申請退票
+									</button>
 								</span>
 							</div>
 
@@ -50,11 +55,28 @@
 										<span class="card-title mb-0" th:id="${item.eventOrderItemId}"
 											th:text="${item.ticket.ticketName}">貴賓席</span>
 
-										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal">
+										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal" th:if="${order.payStatus == 1}">
 											<i class="fas fa-qrcode me-1"></i> 電子票券
 										</button>
 									</div>
 								</span>
+									<hr>
+									<h7 class="d-flex" style="color:white">訂單編號： 
+										<span th:text="${order.eventOrderId}"></span>
+										<span class="ms-auto" th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+									</h7>
+									<div class="text-muted">訂單總額：
+										<span th:text="${order.total}"></span>
+									</div>
+									<div class="text-muted">使用代幣：
+										<span class="text-danger" th:text="${order.tokenUsed}"></span>
+									</div>
+									<div class="text-muted">付款金額：
+										<span th:text="${order.payable}"></span>
+									</div>
+									<div class="text-muted">獲得代幣：
+										<span class="text-success" th:text="${(order.payable/300)*5}"></span>
+									</div>
 							</div>
 						</div>
 					</div>
@@ -86,27 +108,49 @@
 								<span class="card-text text-muted mb-2"> <i class="fas fa-map-marker-alt me-2"></i>
 									<span th:text="${order.event.place}">台北市中山區中山北路二段21-1號（中山堂中正廳）</span>
 								</span> <span>
-									<button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
-										data-bs-target="#refundModal" data-order-id="MOM2024122801"
-										data-event-name="2025新年音樂會｜維也納之夜">
-										<i class="fas fa-undo me-1"></i> 申請退票
-									</button>
+<!-- 									<button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" -->
+<!-- 										data-bs-target="#refundModal" data-order-id="MOM2024122801" -->
+<!-- 										data-event-name="2025新年音樂會｜維也納之夜"> -->
+<!-- 										<i class="fas fa-undo me-1"></i> 申請退票 -->
+<!-- 									</button> -->
 								</span>
 							</div>
 
-							<div class="order-details mt-3 d-none" th:id="|details-${s.index}|"
-								style="padding: 0; padding-top: 20px">
+							<div class="order-details mt-3" th:id="|details-${s.index}|"
+								style=" padding-top: 20px">
 								<span th:each="item: ${order.eventOrderItems}">
-									<div class="d-flex justify-content-between align-items-center mb-2"
-										style="padding: 10px">
-										<span class="card-title mb-0" th:id="${item.eventOrderItemId}"
-											th:text="${item.ticket.ticketName}">貴賓席</span>
-
-										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal">
-											<i class="fas fa-qrcode me-1"></i> 電子票券
-										</button>
-									</div>
+<!-- 									<div class="d-flex justify-content-between align-items-center mb-2" -->
+<!-- 										style="padding: 10px"> -->
+<!-- 										<span class="card-title mb-0" th:id="${item.eventOrderItemId}" -->
+<!-- 											th:text="${item.ticket.ticketName}">貴賓席</span> -->
+<!-- 										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal"> -->
+<!-- 											<i class="fas fa-qrcode me-1"></i> 電子票券 -->
+<!-- 										</button> -->
+<!-- 									</div> -->
 								</span>
+										<h7 class="d-flex" style="color:white">訂單編號： 
+										<span th:text="${order.eventOrderId}"></span>
+										<span class="ms-auto" th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+									</h7>
+									<div class="text-muted">訂單總額：
+										<span th:text="${order.total}"></span>
+									</div>
+									<div class="text-muted">使用代幣：
+										<span class="text-danger" th:text="${order.tokenUsed}"></span>
+									</div>
+									<div class="text-muted">付款金額：
+										<span th:text="${order.payable}"></span>
+									</div>
+									<div class="text-muted">獲得代幣：
+										<span class="text-success" th:text="${(order.payable/300)*5}"></span>
+									</div>
+									<h8 class="text-muted">訂單明細：</h8>
+									<ul style="list-style: none;">
+                        				<li th:each="entry : ${allOrdersItemCounts.get(order.eventOrderId)}">
+                        					<span th:text="${entry.key}"></span>
+                        					<span th:text="'   x' +${entry.value}"></span>
+                        				</li>
+                       				 </ul>
 							</div>
 						</div>
 					</div>
@@ -124,58 +168,57 @@
 					<h5 class="modal-title">
 						<i class="fas fa-undo me-2"></i> 申請退票/退款
 					</h5>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-close-whiteq" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body">
-					<div class="alert alert-warning">
-						<i class="fas fa-exclamation-triangle me-2"></i> <strong>退票須知</strong>
-						<ul class="mb-0 mt-2 small">
-							<li>活動開始前 7 天申請，可退 90% 票款</li>
-							<li>活動開始前 3-7 天申請，可退 70% 票款</li>
-							<li>活動開始前 3 天內，恕不接受退票</li>
-						</ul>
+<!-- 					<div class="alert alert-warning"> -->
+<!-- 						<i class="fas fa-exclamation-triangle me-2"></i> <strong>退票須知</strong> -->
+<!-- 						<ul class="mb-0 mt-2 small"> -->
+<!-- 							<li>活動開始前 7 天申請，可退 90% 票款</li> -->
+<!-- 							<li>活動開始前 3-7 天申請，可退 70% 票款</li> -->
+<!-- 							<li>活動開始前 3 天內，恕不接受退票</li> -->
+<!-- 						</ul> -->
+<!-- 					</div> -->
+
+					<div class="mb-3">
+						<label class="form-label">訂單編號</label> <input type="text" class="form-control refundOrderId"
+							 readonly>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">訂單編號</label> <input type="text" class="form-control"
-							id="refundOrderId" readonly>
+						<label class="form-label">活動名稱</label> <input type="text" class="form-control refundEventName"
+							id="" readonly>
 					</div>
+
+<!-- 					<div class="mb-3"> -->
+<!-- 						<label class="form-label">退款原因 <span class="text-danger">*</span></label> -->
+<!-- 						<select class="form-select" id="refundReason" required> -->
+<!-- 							<option value="">請選擇退款原因</option> -->
+<!-- 							<option value="schedule">行程異動無法參加</option> -->
+<!-- 							<option value="duplicate">重複購買</option> -->
+<!-- 							<option value="mistake">誤購</option> -->
+<!-- 							<option value="other">其他原因</option> -->
+<!-- 						</select> -->
+<!-- 					</div> -->
 
 					<div class="mb-3">
-						<label class="form-label">活動名稱</label> <input type="text" class="form-control"
-							id="refundEventName" readonly>
+						<label class="form-label">退款原因</label>
+						<textarea class="form-control" id="refundDescription" rows="3"></textarea>
 					</div>
 
-					<div class="mb-3">
-						<label class="form-label">退款原因 <span class="text-danger">*</span></label>
-						<select class="form-select" id="refundReason" required>
-							<option value="">請選擇退款原因</option>
-							<option value="schedule">行程異動無法參加</option>
-							<option value="duplicate">重複購買</option>
-							<option value="mistake">誤購</option>
-							<option value="other">其他原因</option>
-						</select>
-					</div>
+<!-- 					<div class="mb-3"> -->
+<!-- 						<label class="form-label">退款方式</label> <select class="form-select" id="refundMethod"> -->
+<!-- 							<option value="original">原付款方式退款</option> -->
+<!-- 							<option value="token">轉為代幣（可獲得 110% 金額）</option> -->
+<!-- 						</select> <small class="text-muted">選擇轉為代幣可獲得額外 10% 回饋</small> -->
+<!-- 					</div> -->
 
-					<div class="mb-3">
-						<label class="form-label">詳細說明</label>
-						<textarea class="form-control" id="refundDescription" rows="3"
-							placeholder="請說明退款原因（選填）"></textarea>
-					</div>
-
-					<div class="mb-3">
-						<label class="form-label">退款方式</label> <select class="form-select" id="refundMethod">
-							<option value="original">原付款方式退款</option>
-							<option value="token">轉為代幣（可獲得 110% 金額）</option>
-						</select> <small class="text-muted">選擇轉為代幣可獲得額外 10% 回饋</small>
-					</div>
-
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="refundAgree" required> <label
-							class="form-check-label small" for="refundAgree"> 我已閱讀並同意 <a href="#"
-								class="text-primary">退款條款</a>
-						</label>
-					</div>
+<!-- 					<div class="form-check"> -->
+<!-- 						<input class="form-check-input" type="checkbox" id="refundAgree" required> <label -->
+<!-- 							class="form-check-label small" for="refundAgree"> 我已閱讀並同意 <a href="#" -->
+<!-- 								class="text-primary">退款條款</a> -->
+<!-- 						</label> -->
+<!-- 					</div> -->
 				</div>
 				<div class="modal-footer border-secondary">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -215,55 +258,3 @@
 		</div>
 	</div>
 </div>
-
-<script>
-	// 退款申請邏輯
-	$(document).ready(function () {
-		// 開啟 Modal 時填入資料
-		$('#refundModal').on('show.bs.modal', function (event) {
-			const button = $(event.relatedTarget);
-			const orderId = button.data('order-id');
-			const eventName = button.data('event-name');
-
-			$('#refundOrderId').val(orderId);
-			$('#refundEventName').val(eventName);
-		});
-
-		// 提交退款申請
-		$('#btnSubmitRefund').click(function () {
-			const reason = $('#refundReason').val();
-			const agreed = $('#refundAgree').is(':checked');
-
-			if (!reason) {
-				showToast('請選擇退款原因', 'warning');
-				return;
-			}
-
-			if (!agreed) {
-				showToast('請同意退款條款', 'warning');
-				return;
-			}
-
-			// TODO: 呼叫後端 API 提交退款申請
-			// const refundData = {
-			//     orderId: $('#refundOrderId').val(),
-			//     reason: reason,
-			//     description: $('#refundDescription').val(),
-			//     method: $('#refundMethod').val()
-			// };
-
-			// Mock 實作
-			$('#refundModal').modal('hide');
-			showToast('退款申請已提交，我們將在 3 個工作天內處理', 'success');
-
-			// 重置表單
-			setTimeout(() => {
-				$('#refundReason').val('');
-				$('#refundDescription').val('');
-				$('#refundAgree').prop('checked', false);
-			}, 500);
-		});
-	});
-
-
-</script>
