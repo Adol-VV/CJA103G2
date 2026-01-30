@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.momento.prod.model.ProdRepository;
+import com.momento.prod.model.ProdVO;
+import com.momento.prodorderitem.model.ProdOrderItemVO;
+
 @Service("prodOrderIdService")
 @Transactional
 public class ProdOrderIdService {
@@ -14,9 +18,24 @@ public class ProdOrderIdService {
 	@Autowired
 	private ProdOrderIdRepository repository;
 	
+	@Autowired
+	ProdRepository prodRepository;
+	
 	public void addProdOrder(ProdOrderIdVO prodOrderIdVO) {
 		if(prodOrderIdVO.getOrderItems() !=null) {
-			prodOrderIdVO.getOrderItems().forEach(item->item.setProdOrderId(prodOrderIdVO));
+			for (ProdOrderItemVO item : prodOrderIdVO.getOrderItems()) {
+                item.setProdOrderId(prodOrderIdVO);
+                ProdVO product = prodRepository.getById(item.getProdId().getProdId());
+                if(product != null) {
+                	System.out.println( " product.getProdStock()" + product.getProdStock());
+                	int newStock = product.getProdStock() - item.getQuantity();
+                    
+                    if (newStock < 0) {
+                        throw new RuntimeException("商品 " + product.getProdName() + " 庫存不足，剩餘：" + product.getProdStock());
+                    }
+                    product.setProdStock(newStock);
+                }
+            }
 		}
 		repository.save(prodOrderIdVO);
 	}
