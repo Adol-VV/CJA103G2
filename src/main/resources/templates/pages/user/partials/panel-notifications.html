@@ -3,8 +3,8 @@
     <div>
         <button id="btnReadAll" class="btn btn-outline-light btn-sm me-2">
             <i class="fas fa-check-double"></i>全部已讀</button>
-<!--        <button class="btn btn-outline-danger btn-sm">-->
-<!--            <i class="fas fa-trash-alt"></i> 刪除已讀</button>-->
+        <button class="btn btn-outline-danger btn-sm">
+            <i class="fas fa-trash-alt"></i> 刪除已讀</button>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#notif-all">全部</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-system">平台公告</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">主辦方通知
-                <span class="badge bg-danger ms-1" th:if="${unreadNotifyCount > 0}" th:text="${unreadNotifyCount}">0</span></a></li>
+                <span class="badge bg-danger ms-1" th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}" th:text="${unreadNotifyCount}">0</span></a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-orders">訂單更新</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-promo">代幣回饋</a></li>
         </ul>
@@ -193,7 +193,7 @@
             <div class="tab-pane fade" id="notif-organizer">
                 <div class="list-group list-group-flush">
 <!--                    -->
-                    <a th:each="notify : ${notifyList}" href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                    <a th:each="notify : ${notifyList}" href="#"  class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
                                 <span class="badge bg-warning text-dark me-2"><i class="fas fa-calendar-check"></i></span>
@@ -203,7 +203,7 @@
                         </div>
                         <p class="mb-1 text-muted" th:text="${notify.content}">內容</p>
                         <small class="text-muted"><i class="fas fa-user-tie me-1"></i>
-                            <span th:text="${notify.organizerNotifyVO.organizerVO.organizerId}">主辦名稱</span>
+                            <span th:text="${notify.organizerNotifyVO?.organizerVO?.organizerId ?: 'Momento 官方'}">主辦名稱</span>
                         </small>
                     </a>
 <!--                    -->

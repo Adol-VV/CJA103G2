@@ -24,7 +24,7 @@ public class MemberNotifyVO {
     private MemberVO memberVO;
 
     @ManyToOne
-    @JoinColumn(name = "ORG_NOTIFY_ID")
+    @JoinColumn(name = "ORG_NOTIFY_ID", nullable = true)
     @JsonIgnore
     private OrganizerNotifyVO organizerNotifyVO;
 

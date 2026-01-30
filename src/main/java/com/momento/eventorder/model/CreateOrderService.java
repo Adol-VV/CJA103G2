@@ -5,6 +5,7 @@ import com.momento.event.model.EventVO;
 import com.momento.eventorder.dto.*;
 import com.momento.member.model.MemberRepository;
 import com.momento.member.model.MemberVO;
+import com.momento.notify.model.NotificationBridgeService;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.ticket.model.TicketRepository;
 import com.momento.ticket.model.TicketVO;

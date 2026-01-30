@@ -73,7 +73,7 @@ public class MemberNotifyController {
 
     @PostMapping("/member/notifications/read")
     @ResponseBody
-    public String markRead(@RequestParam(name = "id") Integer notifyId) {
+    public String markRead(@RequestParam(name = "notifyId") Integer notifyId) {
         // 呼叫你剛剛寫好的 Service
         memNotifySvc.markAsRead(notifyId);
         return "success"; // 回傳簡單字串即可觸發 JS 的成功回調
