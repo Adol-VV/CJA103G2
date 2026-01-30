@@ -1,14 +1,10 @@
 package com.momento.member.controller;
 
-import com.momento.event.dto.EventListItemDTO;
-import com.momento.event.model.EventService;
-import com.momento.member.model.MemberService;
-import com.momento.member.model.MemberVO;
-import com.momento.notify.model.SystemNotifyService;
-import com.momento.notify.model.SystemNotifyVO;
-import com.momento.prod.model.ProdFavService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +12,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.momento.event.dto.EventListItemDTO;
+import com.momento.event.model.EventService;
+import com.momento.eventorder.model.EventOrderItemVO;
+import com.momento.eventorder.model.EventOrderService;
+import com.momento.eventorder.model.EventOrderVO;
+import com.momento.member.model.MemberService;
+import com.momento.member.model.MemberVO;
+import com.momento.notify.model.SystemNotifyService;
+import com.momento.notify.model.SystemNotifyVO;
+import com.momento.prod.model.ProdFavService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/member")
@@ -34,6 +46,9 @@ public class MemberCenterController {
 
 	@Autowired
 	ProdFavService prodFavSvc;
+	
+	@Autowired
+	EventOrderService eventOrderSvc;
 
 	@Autowired
 	SystemNotifyService systemNotifyService;
@@ -63,6 +78,12 @@ public class MemberCenterController {
 		if (member != null && member.getPassword().equals(password)) {
 
 			session.setAttribute("loginMember", member);
+			
+			if(member.getStatus() == 1) {
+				model.addAttribute("statusMsg", "此帳號已遭停權");
+				return "pages/user/login";
+			}
+			
 			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register")
 					|| targetUrl.contains("/forgot-password")) {
 
@@ -130,6 +151,28 @@ public class MemberCenterController {
 
 			// 抓收藏活動筆數
 			model.addAttribute("favoriteEventCount", eventService.getMemberFavoriteCount(loginMember.getMemberId()));
+			
+			// 待用票券數
+			List<EventOrderVO> eventOrders = eventOrderSvc.getEventOrderByMemberId(loginMember.getMemberId());
+			
+			int ticketCounts = 0;
+			LocalDateTime now = LocalDateTime.now();
+			
+			for(EventOrderVO eventOrder: eventOrders) {
+				if((eventOrder.getPayStatus() == 1 || eventOrder.getPayStatus() == 4) && eventOrder.getEvent().getEventEndAt().isAfter(now)) {
+					List<EventOrderItemVO> eventOrderItems = eventOrder.getEventOrderItems();
+					ticketCounts += eventOrderItems.size();
+				}
+			}
+			
+			model.addAttribute("ticketCounts", ticketCounts);
+			
+			// 最近兩個活動
+			List<EventOrderVO> recentEvents = eventOrderSvc.getTwoRecentEvents(loginMember.getMemberId(), now);
+			model.addAttribute("recentEvents", recentEvents);
+			
+			List<Map<String, Object>> recentThreeOrders = eventOrderSvc.getThreeRecentOrders(loginMember.getMemberId());
+			model.addAttribute("latestOrders",recentThreeOrders);
 		}
 		return "pages/user/partials/panel-overview";
 	}

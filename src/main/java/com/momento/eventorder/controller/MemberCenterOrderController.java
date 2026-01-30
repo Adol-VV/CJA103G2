@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.momento.eventorder.model.EventOrderItemService;
+import com.momento.eventorder.model.EventOrderItemVO;
 import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
+import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 import com.momento.ticket.model.TicketVO;
 
@@ -35,6 +37,9 @@ public class MemberCenterOrderController {
 
 	@Autowired
 	EventOrderItemService eventOrderItemSvc;
+	
+	@Autowired
+	MemberService memberSvc;
 
 	@GetMapping("/panel-tickets")
 	public String MemberOrderEvent(HttpSession session, Model model) {
@@ -125,4 +130,5 @@ public class MemberCenterOrderController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("處理失敗");
 		}
 	}
+
 }

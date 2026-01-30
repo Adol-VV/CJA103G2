@@ -20,29 +20,29 @@ export function initScanner() {
 	// or handle it via event delegation if possible. 
 	// The original HTML calls `resetVerification()` in onclick.
 	window.resetVerification = resetVerification;
-	$("#scannerEventSelect").on("change", function() {
-		// 取得選單元素
-		const selector = document.getElementById('scannerEventSelect');
-
-		// 取得選中的 eventId
-		const selectedId = selector.value;
-
-		const url = `/organizer/dashboard/ticketScanner?eventId=${selectedId}`;
-
-		fetch(url, {
-			method: 'GET',
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest' // 標記為非同步請求
-			}
-		})
-			.then(response => response.text())
-			.then(html => {
-				// 關鍵：將回傳的 HTML 直接替換掉原本的表格內容
-				document.getElementById('orderListContainer').innerHTML = html;
-				console.log("回傳的內容：", html);
-			})
-			.catch(error => console.error('Error:', error));
-	})
+//	$("#scannerEventSelect").on("change", function() {
+//		// 取得選單元素
+//		const selector = document.getElementById('scannerEventSelect');
+//
+//		// 取得選中的 eventId
+//		const selectedId = selector.value;
+//
+//		const url = `/organizer/dashboard/ticketScanner?eventId=${selectedId}`;
+//
+//		fetch(url, {
+//			method: 'GET',
+//			headers: {
+//				'X-Requested-With': 'XMLHttpRequest' // 標記為非同步請求
+//			}
+//		})
+//			.then(response => response.text())
+//			.then(html => {
+//				// 關鍵：將回傳的 HTML 直接替換掉原本的表格內容
+//				document.getElementById('orderListContainer').innerHTML = html;
+//				console.log("回傳的內容：", html);
+//			})
+//			.catch(error => console.error('Error:', error));
+//	})
 }
 
 function startScanner() {

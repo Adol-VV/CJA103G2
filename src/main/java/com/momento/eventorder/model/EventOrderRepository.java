@@ -1,6 +1,6 @@
 package com.momento.eventorder.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EventOrderRepository extends JpaRepository<EventOrderVO, Integer> {
-	
+
 	public EventOrderVO getByEventOrderId(Integer eventOrderId);
 
 	public List<EventOrderVO> findByOrganizer_OrganizerId(Integer organizerId);
@@ -20,7 +20,7 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 
 	public Optional<EventOrderVO> findByEventOrderId(Integer eventOrderId);
 
-	public List<EventOrderVO> findByMember_MemberId(Integer memberId);
+	public List<EventOrderVO> findByMember_MemberIdOrderByCreatedAtDesc(Integer memberId);
 
 	public Page<EventOrderVO> findAll(Pageable pageable);
 
@@ -35,14 +35,24 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 			@Param("buyer") String buyer);
 
 	@Query("SELECT o FROM EventOrderVO o " + "JOIN o.event e " + "JOIN o.member m "
-			+ "WHERE (:eventOrderId IS NULL OR o.eventOrderId = :eventOrderId) "  
-		    + "AND (:memberName IS NULL OR m.name LIKE CONCAT('%', :memberName, '%')) "
+			+ "WHERE (:eventOrderId IS NULL OR o.eventOrderId = :eventOrderId) "
+			+ "AND (:memberName IS NULL OR m.name LIKE CONCAT('%', :memberName, '%')) "
 			+ "AND (:eventTitle IS NULL OR e.title LIKE CONCAT('%', :eventTitle, '%'))"
 			+ "AND (:payStatus IS NULL  OR o.payStatus = :payStatus)")
-	public Page<EventOrderVO> searchOrders(
-			@Param("eventOrderId") Integer eventOrderId,
-			@Param("memberName") String memberName, 
-			@Param("eventTitle")  String eventTitle,
-			@Param("payStatus") Integer payStatus, 
-			Pageable pageable);
+	public Page<EventOrderVO> searchOrders(@Param("eventOrderId") Integer eventOrderId,
+			@Param("memberName") String memberName, @Param("eventTitle") String eventTitle,
+			@Param("payStatus") Integer payStatus, Pageable pageable);
+
+	public List<EventOrderVO> findTop2ByMember_MemberIdAndEvent_EventStartAtAfterOrderByEvent_EventStartAtAsc(
+			Integer memberId, LocalDateTime currentTime);
+
+	@Query(value = "SELECT * FROM (" +
+		       "  SELECT event_order_id as id, created_at as date, payable as amount, pay_status as status, event_id as info , 'EVENT' as type " +
+		       "  FROM event_order WHERE member_id = :memberId " +
+		       "  UNION ALL " +
+		       "  SELECT prod_order_id as id, created_at as date, payable as amount, pay_status as status, organizer_id as info , 'PRODUCT' as type " +
+		       "  FROM prod_order WHERE member_id = :memberId" +
+		       ") AS combined_orders " +
+		       "ORDER BY date DESC LIMIT 3", nativeQuery = true)
+	public List<Object[]> findLatestThreeOrdersUnified(@Param("memberId") Integer memberId);
 }
