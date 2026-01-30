@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/admin")
@@ -267,6 +270,67 @@ public class EmpController {
     }
 
     // ========== 員工管理 API ==========
+
+    /**
+     * 新增員工 (JSON API)
+     */
+    @PostMapping("/employees/create-info")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createEmployeeAPI(@RequestBody EmpVO emp, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        // 只有超級管理員可以新增
+        if (!empSvc.isSuperAdmin(loginEmp.getEmpId())) {
+            return ResponseEntity.status(403).body(Map.of("success", false, "message", "無權限新增員工"));
+        }
+
+        try {
+            if (emp.getAccount() == null || emp.getAccount().trim().isEmpty()) {
+                throw new IllegalArgumentException("帳號為必填");
+            }
+            if (emp.getEmpName() == null || emp.getEmpName().trim().isEmpty()) {
+                throw new IllegalArgumentException("姓名為必填");
+            }
+
+            empSvc.addEmployee(emp);
+            response.put("success", true);
+            response.put("message", "新增成功，預設密碼為 12345678");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "新增失敗: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
+     * 更新員工 (JSON API)
+     */
+    @PostMapping("/employees/update-info")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateEmployeeAPI(@RequestBody EmpVO emp, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+        }
+
+        try {
+            empSvc.updateEmployee(emp);
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "更新失敗: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 
     /**
      * 獲取單一員工資料

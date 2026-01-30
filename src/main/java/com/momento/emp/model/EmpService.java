@@ -156,6 +156,33 @@ public class EmpService {
         return empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(empId, functionId);
     }
 
+    public void addEmployee(EmpVO emp) {
+        // 檢查帳號是否重複
+        if (getEmployeeByAccount(emp.getAccount()) != null) {
+            throw new IllegalArgumentException("帳號已存在: " + emp.getAccount());
+        }
+
+        // 設定預設值
+        emp.setPassword("12345678");
+        if (emp.getStatus() == null) {
+            emp.setStatus((byte) 1); // 預設在職
+        }
+
+        empRepository.save(emp);
+    }
+
+    public void updateEmployee(EmpVO emp) {
+        EmpVO existing = empRepository.findById(emp.getEmpId())
+                .orElseThrow(() -> new IllegalArgumentException("員工不存在 ID: " + emp.getEmpId()));
+
+        existing.setEmpName(emp.getEmpName());
+        existing.setJobTitle(emp.getJobTitle());
+        existing.setStatus(emp.getStatus());
+        // 注意：這裡不更新帳號與密碼
+
+        empRepository.save(existing);
+    }
+
     public List<BackendFunctionVO> getAllFunctions() {
         return backendFunctionRepository.findAll();
     }

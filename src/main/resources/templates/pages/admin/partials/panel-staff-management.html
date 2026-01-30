@@ -28,10 +28,53 @@
             border-bottom: 1px solid rgba(220, 53, 69, 0.1) !important;
             /* 底線帶一點點紅 */
         }
+
+        /* Pagination Styles */
+        .pagination-custom {
+            display: inline-flex;
+            border: 1px solid #444;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .pagination-custom button {
+            background: #212529;
+            color: #ccc;
+            border: none;
+            padding: 6px 12px;
+            border-right: 1px solid #444;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pagination-custom button:last-child {
+            border-right: none;
+        }
+
+        .pagination-custom button:hover:not(:disabled) {
+            background: #343a40;
+            color: #fff;
+        }
+
+        .pagination-custom button.active {
+            background: #0d6efd;
+            color: white;
+            cursor: default;
+        }
+
+        .pagination-custom button:disabled {
+            color: #555;
+            cursor: not-allowed;
+        }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>員工管理</h2>
+        <button class="btn btn-success" onclick="openAddModal()">
+            <i class="fas fa-plus me-1"></i> 新增員工
+        </button>
     </div>
 
     <div class="card bg-dark border-secondary">
@@ -48,7 +91,7 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="staffManagementBody">
                     <!-- Thymeleaf Loop -->
                     <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'super-admin-row' : ''}">
                         <td style="text-align: center !important; vertical-align: middle;" th:text="${emp.empId}">1</td>
@@ -96,12 +139,17 @@
         </div>
     </div>
 
+    <!-- 分頁控制項容器 (置中) -->
+    <div class="d-flex justify-content-center">
+        <div id="staffPagination" class="pagination-custom"></div>
+    </div>
+
     <!-- 員工編輯 Modal -->
     <div class="modal fade" id="permissionModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title">員工管理 - 編輯</h5>
+                    <h5 class="modal-title" id="permissionModalLabel">員工管理 - 編輯</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -110,7 +158,7 @@
 
                         <!-- 帳號（只讀） -->
                         <div class="mb-3">
-                            <label for="editAccount" class="form-label">帳號</label>
+                            <label for="editAccount" class="form-label">帳號 <span class="text-danger">*</span></label>
                             <input type="text" class="form-control bg-secondary text-white" id="editAccount" readonly>
                         </div>
 
@@ -138,10 +186,17 @@
                         </div>
 
                         <!-- 分隔線 -->
-                        <hr class="border-secondary">
+                        <hr class="border-secondary my-4">
+
+                        <!-- 預設密碼提示 (新增時顯示) -->
+                        <div class="alert alert-warning d-flex align-items-center" role="alert" id="passwordHint"
+                            style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <small>預設密碼為 <b>12345678</b>，請通知員工登入後立即修改。</small>
+                        </div>
 
                         <!-- 密碼管理 -->
-                        <div class="mb-3">
+                        <div class="mb-3" id="passwordManagementBlock">
                             <label class="form-label">密碼管理</label>
                             <div class="d-flex align-items-center gap-2">
                                 <button type="button" class="btn btn-sm btn-outline-warning" onclick="resetPassword()">
@@ -152,7 +207,7 @@
                         </div>
 
                         <!-- 提示訊息 -->
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" id="editInfoAlert">
                             <i class="fas fa-info-circle me-2"></i>
                             <small>修改員工基本資料後，請點擊「儲存變更」以更新資訊。</small>
                         </div>
@@ -170,7 +225,109 @@
 
 <!-- JavaScript -->
 <script>
+    // 全域變數
+    let isEditMode = false;
+
+    // 分頁邏輯
+    $(document).ready(function () {
+        initStaffPagination();
+    });
+
+    function initStaffPagination() {
+        const rowsPerPage = 10;
+        const $tbody = $('#staffManagementBody');
+        const $rows = $tbody.find('tr');
+        const totalRows = $rows.length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        let currentPage = 1;
+
+        if (totalRows <= rowsPerPage) {
+            $('#staffPagination').hide();
+            return;
+        }
+
+        function showPage(page) {
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentPage = page;
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            $rows.hide();
+            $rows.slice(start, end).show();
+
+            renderButtons();
+        }
+
+        function renderButtons() {
+            const $pagination = $('#staffPagination');
+            $pagination.empty();
+
+            // 上一頁
+            const $prevBtn = $('<button>上一頁</button>')
+                .prop('disabled', currentPage === 1)
+                .click(() => showPage(currentPage - 1));
+            $pagination.append($prevBtn);
+
+            // 頁碼 (只顯示最近的頁碼，這邊簡單實作顯示全部，如果頁數太多需要再優化)
+            for (let i = 1; i <= totalPages; i++) {
+                const $btn = $('<button>' + i + '</button>')
+                    .click(() => showPage(i));
+                if (i === currentPage) $btn.addClass('active');
+                $pagination.append($btn);
+            }
+
+            // 下一頁
+            const $nextBtn = $('<button>下一頁</button>')
+                .prop('disabled', currentPage === totalPages)
+                .click(() => showPage(currentPage + 1));
+            $pagination.append($nextBtn);
+        }
+
+        // 初始化
+        showPage(1);
+    }
+
+    // let isEditMode = false; (Moved to top)
+
+    function openAddModal() {
+        isEditMode = false;
+        $('#permissionModalLabel').text('員工管理 - 新增');
+        $('#empEditForm')[0].reset();
+        $('#editEmpId').val('');
+
+        // 帳號可編輯
+        $('#editAccount')
+            .prop('readonly', false)
+            .prop('required', true)
+            .removeClass('bg-secondary')
+            .addClass('bg-dark border-secondary');
+
+        // UI 調整：隱藏密碼管理與提示，按鈕改名
+        $('#passwordHint').show();
+        $('#passwordManagementBlock').hide();
+        $('#editInfoAlert').hide();
+        $('#saveEmpBtn').text('確認新增');
+
+        $('#permissionModal').modal('show');
+    }
+
     function openPermissionModal(empId, empName) {
+        isEditMode = true;
+        $('#permissionModalLabel').text('員工管理 - 編輯');
+
+        // 帳號唯讀
+        $('#editAccount')
+            .prop('readonly', true)
+            .removeClass('bg-dark border-secondary')
+            .addClass('bg-secondary');
+
+        // UI 調整：顯示密碼管理與提示，按鈕改名
+        $('#passwordHint').hide();
+        $('#passwordManagementBlock').show();
+        $('#editInfoAlert').show();
+        $('#saveEmpBtn').text('儲存變更');
         console.log('=== 開啟編輯 Modal ===');
         console.log('empId:', empId);
         console.log('empName:', empName);
@@ -212,8 +369,13 @@
         const empName = $('#editEmpName').val().trim();
         const jobTitle = $('#editJobTitle').val().trim();
         const status = $('#editStatus').val();
+        const account = $('#editAccount').val().trim();
 
         // 驗證
+        if (!isEditMode && !account) {
+            alert('請輸入帳號');
+            return;
+        }
         if (!empName) {
             alert('請輸入員工姓名');
             return;
@@ -223,25 +385,34 @@
             return;
         }
 
-        // 呼叫更新 API
+        // 呼叫 API (更新路徑以避免衝突)
+        const url = isEditMode ? '/admin/employees/update-info' : '/admin/employees/create-info';
+
+        const payload = {
+            empName: empName,
+            jobTitle: jobTitle,
+            status: parseInt(status)
+        };
+
+        if (isEditMode) {
+            payload.empId = parseInt(empId);
+        } else {
+            payload.account = account;
+        }
+
         $.ajax({
-            url: '/admin/employees/update',
+            url: url,
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({
-                empId: parseInt(empId),
-                empName: empName,
-                jobTitle: jobTitle,
-                status: parseInt(status)
-            }),
+            data: JSON.stringify(payload),
             success: function (res) {
-                alert('員工資料更新成功');
+                alert(res.message || '操作成功');
                 $('#permissionModal').modal('hide');
                 // 重新載入頁面以顯示更新後的資料
                 location.reload();
             },
             error: function (xhr) {
-                alert('更新失敗: ' + (xhr.responseJSON?.message || xhr.statusText));
+                alert('操作失敗: ' + (xhr.responseJSON?.message || xhr.statusText));
             }
         });
     }
