@@ -72,9 +72,27 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>員工管理</h2>
-        <button class="btn btn-success" onclick="openAddModal()">
-            <i class="fas fa-plus me-1"></i> 新增員工
-        </button>
+        <div class="d-flex gap-3 align-items-center">
+            <!-- 關鍵字搜尋 -->
+            <input type="text" id="staffSearchInput" class="form-control bg-dark text-white border-secondary"
+                placeholder="搜尋姓名/帳號/職稱..." style="width: 200px;">
+
+            <!-- 狀態篩選 -->
+            <div class="d-flex align-items-center gap-2">
+                <label class="text-white-50 mb-0">狀態</label>
+                <select id="staffStatusFilter" class="form-select bg-dark text-white border-secondary"
+                    style="width: 120px;">
+                    <option value="all">全部</option>
+                    <option value="1">在職</option>
+                    <option value="0">離職/停權</option>
+                </select>
+            </div>
+
+            <!-- 新增按鈕 -->
+            <button class="btn btn-success" onclick="openAddModal()">
+                <i class="fas fa-plus me-1"></i> 新增員工
+            </button>
+        </div>
     </div>
 
     <div class="card bg-dark border-secondary">
@@ -93,7 +111,8 @@
                 </thead>
                 <tbody id="staffManagementBody">
                     <!-- Thymeleaf Loop -->
-                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'super-admin-row' : ''}">
+                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'super-admin-row' : ''}"
+                        class="staff-row">
                         <td style="text-align: center !important; vertical-align: middle;" th:text="${emp.empId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -101,22 +120,24 @@
                                     style="width: 32px; height: 32px;"
                                     th:text="${#strings.substring(emp.empName, 0, 1)}">A</div>
                                 <div>
-                                    <div class="fw-bold" th:text="${emp.empName}">Admin</div>
+                                    <div class="fw-bold emp-name" th:text="${emp.empName}">Admin</div>
                                 </div>
                             </div>
                         </td>
                         <td>
                             <!-- 超級管理員顯示特殊標籤 -->
-                            <span th:if="${emp.empId == 1}" class="badge bg-danger">
+                            <span th:if="${emp.empId == 1}" class="badge bg-danger emp-job">
                                 <i class="fas fa-crown me-1"></i>超級管理員
                             </span>
                             <!-- 一般員工顯示職稱 -->
-                            <span th:unless="${emp.empId == 1}" th:text="${emp.jobTitle}">職稱</span>
+                            <span th:unless="${emp.empId == 1}" th:text="${emp.jobTitle}" class="emp-job">職稱</span>
                         </td>
-                        <td th:text="${emp.account}">admin</td>
+                        <td th:text="${emp.account}" class="emp-account">admin</td>
                         <td>
                             <!-- 一般員工狀態 -->
-                            <span class="badge" th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
+                            <!-- 加入 data-status 屬性方便 JS 篩選 -->
+                            <span class="badge emp-status-badge" th:data-status="${emp.status}"
+                                th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
                                 th:text="${emp.status == 1 ? '在職' : '離職/停權'}">正常</span>
                         </td>
                         <td>
@@ -228,68 +249,150 @@
     // 全域變數
     let isEditMode = false;
 
-    // 分頁邏輯
-    $(document).ready(function () {
+    // 確保 jQuery 載入後再執行分頁邏輯
+    // 解決 $ is not defined 問題
+    if (typeof jQuery !== 'undefined') {
         initStaffPagination();
-    });
+    } else {
+        document.addEventListener("DOMContentLoaded", function () {
+            checkJQueryAndInit();
+        });
+    }
+
+    function checkJQueryAndInit() {
+        if (typeof jQuery === 'undefined') {
+            // 若 jQuery 尚未載入，延遲 100ms 重試
+            setTimeout(checkJQueryAndInit, 100);
+        } else {
+            initStaffPagination();
+        }
+    }
 
     function initStaffPagination() {
         const rowsPerPage = 10;
         const $tbody = $('#staffManagementBody');
-        const $rows = $tbody.find('tr');
-        const totalRows = $rows.length;
-        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        // 確保先移除舊的資料綁定，避免重複
+        $tbody.off();
+
+        // 重新抓取所有資料行 (Cache)
+        const $allRows = $tbody.find('tr.staff-row');
+
+        console.log('初始化分頁，總筆數:', $allRows.length);
+
+        let visibleRows = $allRows.toArray();
         let currentPage = 1;
 
-        if (totalRows <= rowsPerPage) {
-            $('#staffPagination').hide();
-            return;
+        // 使用委派事件綁定 (確保動態元素能被抓到)
+        // 先解綁避免重複
+        $(document).off('input change', '#staffSearchInput, #staffStatusFilter');
+
+        $(document).on('input', '#staffSearchInput', function () {
+            console.log('搜尋觸發:', $(this).val());
+            filterRows();
+        });
+
+        $(document).on('change', '#staffStatusFilter', function () {
+            console.log('狀態變更:', $(this).val());
+            filterRows();
+        });
+
+        function filterRows() {
+            const keyword = $('#staffSearchInput').val() ? $('#staffSearchInput').val().toLowerCase().trim() : '';
+            const statusFilter = $('#staffStatusFilter').val();
+
+            visibleRows = [];
+
+            $allRows.each(function () {
+                const $row = $(this);
+                // 修正：使用 text() 取值時要小心空白
+                const name = $row.find('.emp-name').text().trim().toLowerCase();
+                const account = $row.find('.emp-account').text().trim().toLowerCase();
+                const job = $row.find('.emp-job').text().trim().toLowerCase();
+
+                // 狀態取值邏輯
+                const $statusBadge = $row.find('.emp-status-badge');
+                let statusVal = $statusBadge.attr('data-status');
+                if (!statusVal) {
+                    // 超級管理員沒有 badge class，必須給定預設值
+                    if ($row.find('.bg-danger').length > 0) statusVal = '1'; // Super Admin always active
+                    else statusVal = ($statusBadge.text().trim() === '在職') ? '1' : '0';
+                }
+
+                // 關鍵字比對
+                const matchKeyword = (name.includes(keyword) || account.includes(keyword) || job.includes(keyword));
+
+                // 狀態比對
+                const matchStatus = (statusFilter === 'all') || (statusVal == statusFilter);
+
+                if (matchKeyword && matchStatus) {
+                    visibleRows.push(this);
+                }
+            });
+
+            console.log('篩選後筆數:', visibleRows.length);
+
+            // 重置到第一頁並重新渲染
+            currentPage = 1;
+            renderTable();
         }
 
-        function showPage(page) {
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-            currentPage = page;
+        function renderTable() {
+            const totalRows = visibleRows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
 
             const start = (currentPage - 1) * rowsPerPage;
             const end = start + rowsPerPage;
 
-            $rows.hide();
-            $rows.slice(start, end).show();
+            // 1. 先隱藏全部 (必須隱藏原始集合 $allRows)
+            $allRows.hide();
 
-            renderButtons();
+            // 2. 再顯示篩選後並且在當前頁面的
+            if (totalRows > 0) {
+                $(visibleRows).slice(start, end).show();
+            }
+
+            renderButtons(totalPages);
+
+            // 分頁邏輯：與權限管理統一，<=10 隱藏
+            if (totalRows > rowsPerPage) {
+                $('#staffPagination').show();
+            } else {
+                $('#staffPagination').hide();
+            }
         }
 
-        function renderButtons() {
+        function renderButtons(totalPages) {
             const $pagination = $('#staffPagination');
             $pagination.empty();
 
-            // 上一頁
+            if (totalPages <= 1) return;
+
             const $prevBtn = $('<button>上一頁</button>')
                 .prop('disabled', currentPage === 1)
-                .click(() => showPage(currentPage - 1));
+                .click(() => { currentPage--; renderTable(); });
             $pagination.append($prevBtn);
 
-            // 頁碼 (只顯示最近的頁碼，這邊簡單實作顯示全部，如果頁數太多需要再優化)
             for (let i = 1; i <= totalPages; i++) {
                 const $btn = $('<button>' + i + '</button>')
-                    .click(() => showPage(i));
+                    .click(() => { currentPage = i; renderTable(); });
                 if (i === currentPage) $btn.addClass('active');
                 $pagination.append($btn);
             }
 
-            // 下一頁
             const $nextBtn = $('<button>下一頁</button>')
                 .prop('disabled', currentPage === totalPages)
-                .click(() => showPage(currentPage + 1));
+                .click(() => { currentPage++; renderTable(); });
             $pagination.append($nextBtn);
         }
 
-        // 初始化
-        showPage(1);
+        // 初始化立刻執行一次以正確設定分頁
+        filterRows();
     }
 
-    // let isEditMode = false; (Moved to top)
+
 
     function openAddModal() {
         isEditMode = false;
@@ -372,9 +475,17 @@
         const account = $('#editAccount').val().trim();
 
         // 驗證
-        if (!isEditMode && !account) {
-            alert('請輸入帳號');
-            return;
+        if (!isEditMode) {
+            if (!account) {
+                alert('請輸入帳號');
+                return;
+            }
+            // 驗證帳號格式：僅允许英文、數字、底線、減號、點
+            const accountRegex = /^[a-zA-Z0-9._-]+$/;
+            if (!accountRegex.test(account)) {
+                alert('帳號格式錯誤：只能包含英文、數字、底線(_)、減號(-)或點(.)，不可包含中文或空格');
+                return;
+            }
         }
         if (!empName) {
             alert('請輸入員工姓名');
@@ -385,8 +496,8 @@
             return;
         }
 
-        // 呼叫 API (更新路徑以避免衝突)
-        const url = isEditMode ? '/admin/employees/update-info' : '/admin/employees/create-info';
+        // 呼叫 API
+        const url = isEditMode ? '/admin/employees/update' : '/admin/employees/create';
 
         const payload = {
             empName: empName,
@@ -406,7 +517,7 @@
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function (res) {
-                alert(res.message || '操作成功');
+                alert(res.message || '已儲存變更');
                 $('#permissionModal').modal('hide');
                 // 重新載入頁面以顯示更新後的資料
                 location.reload();
