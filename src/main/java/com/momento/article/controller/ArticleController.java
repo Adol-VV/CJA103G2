@@ -42,10 +42,17 @@ public class ArticleController {
         // 1. 從 Service 取得分頁文章
         Page<ArticleVO> articlePage = articleService.getAll(page, size);
 
-        // 2. 將資料加入 Model
+        // 2. 隨機挑選一篇置頂文章 (從全部文章中隨機挑選)
+        List<ArticleVO> allArticles = articleService.getAll();
+        if (!allArticles.isEmpty()) {
+            int randomIndex = (int) (Math.random() * allArticles.size());
+            model.addAttribute("featuredArticle", allArticles.get(randomIndex));
+        }
+
+        // 3. 將資料加入 Model
         model.addAttribute("articlePage", articlePage);
 
-        // 3. 導向頁面
+        // 4. 導向頁面
         return "pages/public/article-list";
     }
 

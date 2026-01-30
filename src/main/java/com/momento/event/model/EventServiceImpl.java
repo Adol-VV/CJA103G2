@@ -42,9 +42,10 @@ public class EventServiceImpl implements EventService {
 
         @Override
         public Page<EventListItemDTO> getAllEvents(int page, int size, String sort) {
-                // 優先顯示 STATUS=3 (上架中) 和 STATUS=5 (已結束)
+                // 僅顯示 STATUS=3 (上架中) 且 已過上架時間
                 Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-                Page<EventVO> eventPage = eventRepository.findByStatus(EventVO.STATUS_PUBLISHED, pageable);
+                Page<EventVO> eventPage = eventRepository.findAvailableEvents(EventVO.STATUS_PUBLISHED,
+                                java.time.LocalDateTime.now(), pageable);
                 return eventPage.map(this::convertToListItemDTO);
         }
 
@@ -55,8 +56,8 @@ public class EventServiceImpl implements EventService {
                 Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(),
                                 Sort.by(direction, filterDTO.getSort()));
 
-                // 顯示已上架 (3) 和已結束/取消 (5)
-                java.util.List<Byte> statuses = java.util.List.of(EventVO.STATUS_PUBLISHED, EventVO.STATUS_CLOSED);
+                // 僅顯示已上架 (3)
+                java.util.List<Byte> statuses = java.util.List.of(EventVO.STATUS_PUBLISHED);
                 Page<EventVO> eventPage = eventRepository.filterEvents(
                                 statuses,
                                 filterDTO.getTypeId(),
@@ -75,8 +76,8 @@ public class EventServiceImpl implements EventService {
         @Override
         public Page<EventListItemDTO> searchEvents(String keyword, int page, int size) {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("eventStartAt").ascending());
-                Page<EventVO> eventPage = eventRepository.findByStatusAndTitleContainingOrContentContaining(
-                                EventVO.STATUS_PUBLISHED, keyword, keyword, pageable);
+                Page<EventVO> eventPage = eventRepository.searchAvailableEvents(
+                                EventVO.STATUS_PUBLISHED, keyword, java.time.LocalDateTime.now(), pageable);
                 return eventPage.map(this::convertToListItemDTO);
         }
 
@@ -89,7 +90,7 @@ public class EventServiceImpl implements EventService {
                 Boolean isFavorited = memberId != null
                                 && eventFavRepository.existsByMember_MemberIdAndEvent_EventId(memberId, eventId);
                 List<EventListItemDTO> relatedEvents = getRelatedEvents(eventId, 3);
-                List<TicketVO> tickets = ticketService.getAvailableTickets(eventId);
+                List<TicketVO> tickets = ticketService.getTicketsByEventId(eventId);
                 Integer minPrice = ticketService.getMinPrice(eventId);
                 Integer maxPrice = ticketService.getMaxPrice(eventId);
 
@@ -133,9 +134,10 @@ public class EventServiceImpl implements EventService {
                 EventVO currentEvent = eventRepository.findById(eventId)
                                 .orElseThrow(() -> new RuntimeException("活動不存在"));
                 Pageable pageable = PageRequest.of(0, limit + 1);
-                Page<EventVO> relatedPage = eventRepository.findByStatusAndType_TypeId(
+                Page<EventVO> relatedPage = eventRepository.findAvailableEventsByType(
                                 EventVO.STATUS_PUBLISHED,
                                 currentEvent.getType().getTypeId(),
+                                java.time.LocalDateTime.now(),
                                 pageable);
 
                 return relatedPage.getContent().stream()
@@ -147,8 +149,8 @@ public class EventServiceImpl implements EventService {
 
         @Override
         public List<EventListItemDTO> getOrganizerEvents(Integer organizerId, int limit) {
-                List<EventVO> events = eventRepository.findByOrganizer_OrganizerIdAndStatus(organizerId,
-                                EventVO.STATUS_PUBLISHED);
+                List<EventVO> events = eventRepository.findOrganizerProfileEvents(organizerId,
+                                java.time.LocalDateTime.now());
                 return events.stream().limit(limit).map(this::convertToListItemDTO).collect(Collectors.toList());
         }
 
@@ -185,6 +187,12 @@ public class EventServiceImpl implements EventService {
                 return favorites.stream().map(fav -> convertToListItemDTO(fav.getEvent())).collect(Collectors.toList());
         }
 
+        @Override
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public Long getMemberFavoriteCount(Integer memberId) {
+                return eventFavRepository.countByMember_MemberId(memberId);
+        }
+
         private EventListItemDTO convertToListItemDTO(EventVO event) {
                 EventListItemDTO dto = new EventListItemDTO();
                 dto.setEventId(event.getEventId());
@@ -198,6 +206,7 @@ public class EventServiceImpl implements EventService {
                 dto.setTypeName(event.getType() != null ? event.getType().getTypeName() : null);
                 dto.setOrganizerName(event.getOrganizer().getName());
                 dto.setOrganizerId(event.getOrganizer().getOrganizerId());
+                dto.setFrontendStatus(event.getFrontendStatus().name());
 
                 Optional<EventImageVO> coverImage = eventImageRepository
                                 .findFirstByEvent_EventIdOrderByEventImageIdAsc(event.getEventId());

@@ -1,8 +1,8 @@
 package com.momento.eventorder.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import com.momento.event.model.EventVO;
@@ -56,18 +56,21 @@ public class EventOrderVO implements Serializable {
 
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(name = "reason")
+	private String reason;
 
 	@OneToMany(mappedBy = "eventOrder", cascade = CascadeType.ALL)
 	@OrderBy("event_order_item_id asc")
-	private Set<EventOrderItemVO> eventOrderItems;
+	private List<EventOrderItemVO> eventOrderItems;
 
 	public EventOrderVO() {
 		super();
 	}
 
 	public EventOrderVO(Integer eventOrderId, MemberVO member, OrganizerVO organizer, EventVO event, Integer total,
-			Integer tokenUsed, Integer payable, Integer payStatus, LocalDateTime createdAt,
-			Set<EventOrderItemVO> eventOrderItems) {
+			Integer tokenUsed, Integer payable, Integer payStatus, LocalDateTime createdAt, String reason,
+			List<EventOrderItemVO> eventOrderItems) {
 		super();
 		this.eventOrderId = eventOrderId;
 		this.member = member;
@@ -78,6 +81,7 @@ public class EventOrderVO implements Serializable {
 		this.payable = payable;
 		this.payStatus = payStatus;
 		this.createdAt = createdAt;
+		this.reason = reason;
 		this.eventOrderItems = eventOrderItems;
 	}
 
@@ -153,11 +157,19 @@ public class EventOrderVO implements Serializable {
 		this.createdAt = createdAt;
 	}
 
-	public Set<EventOrderItemVO> getEventOrderItems() {
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public List<EventOrderItemVO> getEventOrderItems() {
 		return eventOrderItems;
 	}
 
-	public void setEventOrderItems(Set<EventOrderItemVO> eventOrderItems) {
+	public void setEventOrderItems(List<EventOrderItemVO> eventOrderItems) {
 		this.eventOrderItems = eventOrderItems;
 	}
 

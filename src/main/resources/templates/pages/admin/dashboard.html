@@ -51,12 +51,15 @@
                         <img loading="lazy"
                             th:src="'https://ui-avatars.com/api/?name=' + ${loginEmp.empName} + '&background=random'"
                             class="rounded-circle me-2" width="32" height="32">
-                        <span class="small" id="adminName" th:text="${loginEmp.empName}">Admin</span>
+                        <span class="small" id="adminName" th:text="${loginEmp.jobTitle}">Admin</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                         <li><a class="dropdown-item py-2" th:href="@{/}" target="_blank"><i
                                     class="fas fa-external-link-alt me-2"></i>前台首頁</a></li>
-                        <li><a class="dropdown-item text-danger" th:href="@{/admin/logout}">登出</a></li>
+                        <li><a class="dropdown-item py-2" href="#" data-bs-toggle="modal"
+                                data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>修改密碼</a></li>
+                        <li><a class="dropdown-item text-danger py-2" th:href="@{/admin/logout}">
+                            <i class="fas fa-sign-out-alt me-2"></i>登出</a></li>
                     </ul>
                 </div>
             </div>
@@ -70,8 +73,6 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0" style="overflow-y: auto;">
-            <!-- Mobile Nav Content can also be partialized, but kept here for now or loaded same partial via JS -->
-            <!-- For simplicity, I'm keeping the hardcoded mobile nav as it might differ slightly in classes -->
             <ul class="nav flex-column pt-3">
                 <li class="nav-item">
                     <a class="nav-link mobile-nav" href="#" data-section="dashboard">
@@ -110,42 +111,23 @@
                     </a>
                 </li>
 
+                <!-- 訂單管理 (ID: 5) -->
                 <li th:if="${isSuperAdmin or activeFunctionIds.contains(5)}">
                     <hr class="my-2 border-secondary">
-                    <div class="px-3 py-2"><small class="text-muted text-uppercase">訂單管理</small></div>
                 </li>
-                <th:block th:if="${isSuperAdmin or activeFunctionIds.contains(5)}">
-                    <li class="nav-item"><a class="nav-link mobile-nav" href="#" data-section="event-orders"><i
-                                class="fas fa-ticket-alt me-2"></i> 活動訂單</a></li>
-                    <li class="nav-item"><a class="nav-link mobile-nav" href="#" data-section="product-orders"><i
-                                class="fas fa-box me-2"></i> 商品訂單</a></li>
-                    <li class="nav-item"><a class="nav-link mobile-nav" href="#" data-section="refunds"><i
-                                class="fas fa-undo me-2"></i> 退款處理</a></li>
-                    <li class="nav-item"><a class="nav-link mobile-nav" href="#" data-section="disputes"><i
-                                class="fas fa-gavel me-2"></i> 消費爭議</a></li>
-                </th:block>
+                <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(5)}">
+                    <a class="nav-link mobile-nav" href="#" data-section="event-orders">
+                        <i class="fas fa-ticket-alt me-2"></i> 活動訂單
+                    </a>
+                </li>
 
-                <!-- 結算管理 (ID: 6) -->
+                <!-- 財務報表 (ID: 6) -->
+                <li th:if="${isSuperAdmin or activeFunctionIds.contains(6)}">
+                    <hr class="my-2 border-secondary">
+                </li>
                 <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(6)}">
-                    <hr class="my-2 border-secondary">
                     <a class="nav-link mobile-nav" href="#" data-section="settlement">
-                        <i class="fas fa-file-invoice-dollar me-2"></i> 結算管理
-                    </a>
-                </li>
-
-                <!-- 公告管理 (ID: 7) -->
-                <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(7)}">
-                    <hr class="my-2 border-secondary">
-                    <a class="nav-link mobile-nav" href="#" data-section="notification-composer">
-                        <i class="fas fa-bullhorn me-2"></i> 公告管理
-                    </a>
-                </li>
-
-                <!-- 檢舉處理 (ID: 8) -->
-                <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(8)}">
-                    <hr class="my-2 border-secondary">
-                    <a class="nav-link mobile-nav" href="#" data-section="comment-management">
-                        <i class="fas fa-exclamation-triangle me-2"></i> 檢舉處理
+                        <i class="fas fa-file-invoice-dollar me-2"></i> 結算中心
                     </a>
                 </li>
 
@@ -180,7 +162,7 @@
                 <div th:insert="pages/admin/partials/panel-organizer-reviews"></div>
 
                 <!-- Orders -->
-                <div th:insert="pages/admin/partials/panel-event-orders"></div>
+                <div data-partial="/admin/dashboard/eventOrders"></div>
                 <div id="panel-product-orders" class="section">
                     <div class="text-center p-5">
                         <div class="spinner-border text-success" role="status">
@@ -195,6 +177,7 @@
                 <!-- Users -->
                 <div data-partial="/admin/dashboard/member-list"></div>
                 <div th:insert="pages/admin/partials/panel-staff-management"></div>
+                <div th:insert="pages/admin/partials/panel-permission-matrix"></div>
 
                 <!-- Content -->
                 <div th:insert="pages/admin/partials/panel-homepage-editor"></div> <!--主打活動-->
@@ -217,10 +200,77 @@
         </div>
     </div>
 
+    <!-- 修改密碼 Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="fas fa-key me-2"></i>修改個人密碼</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePwdForm">
+                        <div class="mb-3">
+                            <label class="form-label">新密碼</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary"
+                                id="newPassword" required minlength="8" placeholder="請輸入至少 8 位新密碼">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">確認新密碼</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary"
+                                id="confirmPassword" required minlength="8" placeholder="請再次輸入新密碼">
+                        </div>
+                    </form>
+                    <div class="alert alert-info py-2">
+                        <small><i class="fas fa-info-circle me-1"></i>修改成功後，將自動導向登入頁重新登入。</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitChangePassword()">確認修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        function submitChangePassword() {
+            const newPwd = $('#newPassword').val();
+            const confirmPwd = $('#confirmPassword').val();
+
+            if (!newPwd || newPwd.length < 8) {
+                alert('密碼長度至少需 8 位');
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                alert('兩次輸入的密碼不一致');
+                return;
+            }
+
+            $.ajax({
+                url: '/admin/change-password',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ newPassword: newPwd }),
+                success: function (res) {
+                    if (res.success) {
+                        alert('密碼修改成功，請重新登入');
+                        window.location.href = '/admin/logout';
+                    } else {
+                        alert('修改失敗：' + res.message);
+                    }
+                },
+                error: function () {
+                    alert('系統連線失敗');
+                }
+            });
+        }
+    </script>
 
     <!-- Modularized JS -->
     <script type="module" th:src="@{/js/admin/index.js}"></script>

@@ -31,7 +31,7 @@ public class MemberCenterController {
 
 	@Autowired
 	EventService eventService;
-	
+
 	@Autowired
 	ProdFavService prodFavSvc;
 
@@ -85,8 +85,8 @@ public class MemberCenterController {
 	}
 
 	@GetMapping("/dashboard")
-	public String showMemberDashboard(@SessionAttribute("loginMember")MemberVO member, ModelMap model) {
-		model.addAttribute("favProds",prodFavSvc.favProdsByMember(member.getMemberId()));
+	public String showMemberDashboard(@SessionAttribute("loginMember") MemberVO member, ModelMap model) {
+		model.addAttribute("favProds", prodFavSvc.favProdsByMember(member.getMemberId()));
 		List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(member.getMemberId());
 		model.addAttribute("favoriteEvents", favoriteEvents);
 		return "pages/user/dashboard";
@@ -100,7 +100,8 @@ public class MemberCenterController {
 			model.addAttribute("favoriteCount", favoriteEvents.size());
 
 			// 計算未讀通知數量
-			List<com.momento.notify.model.SystemNotifyVO> allNotifies = systemNotifyService.getByMemId(loginMember.getMemberId());
+			List<com.momento.notify.model.SystemNotifyVO> allNotifies = systemNotifyService
+					.getByMemId(loginMember.getMemberId());
 			long unreadNotifyCount = allNotifies.stream().filter(n -> n.getIsRead() == 0).count();
 			model.addAttribute("unreadNotifyCount", unreadNotifyCount);
 		}
@@ -115,13 +116,20 @@ public class MemberCenterController {
 	@GetMapping("/dashboard/overview")
 	public String showDashboardOverview(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
-		if (loginMember != null){
-			Integer loginMemberToken = loginMember.getToken();
+		
+		if (loginMember != null) {
+			
+			MemberVO member = memberSvc.findOneMember(loginMember.getMemberId());
+			
+			Integer loginMemberToken = member.getToken();
 			model.addAttribute("loginMemberToken", loginMemberToken);
 
 			// 抓通知清單
 			List<SystemNotifyVO> notifications = systemNotifyService.getByMemId(loginMember.getMemberId());
 			model.addAttribute("notifyListData", notifications);
+
+			// 抓收藏活動筆數
+			model.addAttribute("favoriteEventCount", eventService.getMemberFavoriteCount(loginMember.getMemberId()));
 		}
 		return "pages/user/partials/panel-overview";
 	}
@@ -149,19 +157,18 @@ public class MemberCenterController {
 
 	@PostMapping("/dashboard/notifications/mark-read")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId){
+	public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId) {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			// 更新狀態為1(已讀)
 			systemNotifyService.updateReadStatus(notifyId, 1);
 			response.put("success", true);
 			return ResponseEntity.ok(response);
-		}	catch (Exception e) {
+		} catch (Exception e) {
 			response.put("success", false);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
-
 
 	@GetMapping("/dashboard/settings")
 	public String showSettings() {

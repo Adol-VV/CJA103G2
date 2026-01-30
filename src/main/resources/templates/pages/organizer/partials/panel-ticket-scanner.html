@@ -191,7 +191,7 @@
 		<table class="table table-dark table-hover mb-0">
 			<thead>
 				<tr>
-					<th>訂單編號</th>
+					<th>核銷時間</th>
 					<th>票券編號</th>
 					<th>票種</th>
 					<th>購票人</th>
@@ -200,7 +200,7 @@
 			</thead>
 			<tbody id="recentVerifications">
 				<tr th:each="info : ${checkedIn}" th:if="${checkedIn != null}">
-					<td><code th:text="${info.eventOrder.eventOrderId}">QR-EVT001-156-20241231</code></td>
+					<td><code th:text="${#temporals.format(info.verifiedAt, 'yyyy-MM-dd HH:mm')}">QR-EVT001-156-20241231</code></td>
 					<td><code th:text="${info.eventOrderItemId}">QR-EVT001-156-20241231</code></td>
 					<td th:text="${info.ticket.ticketName}">貴賓席</td>
 					<td th:text="${info.eventOrder.member.name}">林書涵</td>

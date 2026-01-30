@@ -90,8 +90,19 @@
                         <small class="text-muted" th:text="${#dates.format(order.createdDate,'HH:mm')}">14:30</small>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-info"
-                            onclick="$('#productOrderModal').modal('show')"><i class="fas fa-eye"></i></button>
+                        <div class="btn-group btn-group-sm">
+                            <form th:action="@{/admin/prod_order/orderDetail}" method="post" style="display:inline;">
+                                <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                                <button class="btn btn-sm btn-outline-info " title="查看訂單"
+                                onclick="$('#productOrderModal').modal('show')">查看</button>
+                            </form>
+                            <button class="btn btn-outline-danger btn-refund-action" 
+                                    title="審核退款"
+                                    th:if="${order.status == 3}"
+                                    th:data-orderid="${order.orderId}">
+                                退款
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -115,3 +126,51 @@
     <button class="btn btn-sm btn-success me-2"><i class="fas fa-truck me-1"></i>批次出貨</button>
     <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print me-1"></i>列印出貨單</button>
 </div> -->
+<script>
+   $(document).ready(function() {
+    let refundOrderId = null;
+    $(document).on('click', '.btn-refund-action', function (event) {
+        console.log(123);
+        
+        const button = event.currentTarget;
+        const orderId = button.getAttribute('data-orderid');
+        refundOrderId =orderId;
+        $.ajax({
+            url: '/admin/prod_order/orderRefund',
+            method: 'GET',
+            data: { orderId: orderId },
+            success: function(response) {
+                $('#orderRefundDetailModal').html(response); 
+                $('#orderRefundDetailModal').modal('show');
+            },
+            error: function() {
+                alert("無法取得退款詳情");
+            }
+        });
+    });
+
+    $(document).off('click', '.prod_refund_agree').on('click', '.prod_refund_agree', function (event) {
+        $.ajax({
+            url: '/admin/prod_order/agreeRefund',
+            method: 'GET',
+            data: { orderId: refundOrderId },
+            success: function(response) {
+                refundOrderId=null;
+                location.reload();
+            }
+        });
+    });
+    $(document).off('click', '.prod_refund_disagree').on('click', '.prod_refund_disagree', function (event) {
+        $.ajax({
+            url: '/admin/prod_order/disagreeRefund',
+            method: 'GET',
+            data: { orderId: refundOrderId },
+            success: function(response) {
+                refundOrderId=null;
+                location.reload();
+            }
+        });
+        
+    });
+});
+</script>

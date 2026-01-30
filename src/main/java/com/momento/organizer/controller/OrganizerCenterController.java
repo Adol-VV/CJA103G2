@@ -15,7 +15,9 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,9 @@ public class OrganizerCenterController {
 
     @Autowired
     private ArticleService articleSvc;
+
+    @Autowired
+    private com.momento.eventmanage.model.EventManageService eventManageService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -106,8 +111,17 @@ public class OrganizerCenterController {
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
+        // 載入統計數據 (您的統計功能)
+        com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
+                .getOrganizerStats(organizer.getOrganizerId());
+        model.addAttribute("organizerStats", stats);
 
-        model.addAttribute("prod", new ProdVO());
+        // 隨機產生本月增長數字 (您的展示功能)
+        int randomTrend = (int) (Math.random() * 5) + 1;
+        model.addAttribute("randomTrendMonth", "+" + randomTrend);
+
+        // 使用新版 ProdDTO 對應前端表單
+        model.addAttribute("prod", new ProdDTO());
         return "pages/organizer/dashboard";
     }
 
@@ -319,24 +333,37 @@ public class OrganizerCenterController {
         return "redirect:/organizer/dashboard#product-list";
     }
 
-    // 新增商品
+    // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
-    public String addProd(@Valid ProdVO prodVO, HttpSession session) {
+    public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
+            @RequestParam("imageFiles") MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-        prodVO.getOrganizerVO().setOrganizerId(organizer.getOrganizerId());
-        prodVO.getEmpVO().setEmpId(8);
-        prodVO.setCreatedAt(LocalDateTime.now());
-        prodVO.setUpdatedAt(LocalDateTime.now());
-        prodVO.setProdStatus((byte) 0);
-        prodVO.setReviewStatus((byte) 0);
 
-        prodSvc.addProd(prodVO);
+        // 綁定主辦方ID以確保安全，並呼叫支援多圖上傳的 Service 方法
+        prodDTO.setOrganizerId(organizer.getOrganizerId());
+        prodSvc.addProd(prodDTO, files);
+
         return "redirect:/organizer/dashboard#product-list";
     }
+    
+    //更新商品
+    @PostMapping("/updateProd")
+    public String updateProd(@Valid ProdDTO prodDTO, HttpSession session,
+            @RequestParam("imageFiles") MultipartFile[] files) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
 
+        prodDTO.setOrganizerId(organizer.getOrganizerId());
+        prodSvc.addProd(prodDTO, files);
+
+        return "redirect:/organizer/dashboard#product-list";
+    }
+    
     // 新增文章
     @PostMapping("/article/create")
     @ResponseBody
@@ -474,5 +501,22 @@ public class OrganizerCenterController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "刪除失敗: " + e.getMessage()));
         }
+    }
+
+    // 進入商品編輯頁面
+    @PostMapping("/prodEdit")
+    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
+        if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+        model.addAttribute("prod", prodSvc.getOneProd(prodId));
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        return "pages/organizer/product-edit";
+    }
+
+    // 進入商品列表頁面
+    @GetMapping("/goToProdList")
+    public String goToProdList() {
+        return "redirect:/organizer/dashboard#product-list";
     }
 }

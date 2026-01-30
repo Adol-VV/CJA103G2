@@ -7,6 +7,9 @@
     <title>快樂文創 | 主辦單位 | Momento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <link href="../../css/momento-theme.css" rel="stylesheet">
     <style>
         .profile-header {
@@ -30,18 +33,54 @@
         .stat-item h3 {
             color: #2D5F4F;
             margin-bottom: 5px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .nav-tabs .nav-link {
-            color: #9A9A9A;
+            color: rgba(255, 255, 255, 0.5);
             border: none;
-            padding: 15px 25px;
+            padding: 15px 35px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: transparent !important;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
         }
 
         .nav-tabs .nav-link.active {
-            color: #fff;
+            color: #10B981 !important;
+            /* Momento Green */
             background: transparent;
-            border-bottom: 3px solid #2D5F4F;
+        }
+
+        .nav-tabs .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 4px;
+            background: #10B981;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 -2px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-tabs .nav-link.active::after {
+            width: 70%;
         }
 
         .event-card,
@@ -53,6 +92,45 @@
         .product-card:hover {
             transform: translateY(-5px);
         }
+
+        /* 粉絲數誇張動畫 */
+        @keyframes fan-pop {
+            0% {
+                transform: scale(1);
+                color: #2D5F4F;
+            }
+
+            40% {
+                transform: scale(1.8) rotate(15deg);
+                color: #ffd700;
+                text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            }
+
+            70% {
+                transform: scale(1.1) rotate(-10deg);
+                color: #ffeb3b;
+            }
+
+            100% {
+                transform: scale(1);
+                color: #2D5F4F;
+            }
+        }
+
+        .fan-pop-active {
+            animation: fan-pop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block !important;
+            /* 確保 transform 生效 */
+        }
+
+        /* 嚴格隔離分頁內容，防止重疊 */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -62,14 +140,6 @@
         <div class="container">
             <a class="navbar-brand fw-bold text-success" th:href="@{/}"><i
                     class="fas fa-ticket-alt me-2"></i>Momento</a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/}">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">找活動</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">找商品</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/article}">找文章</a></li>
-                </ul>
-            </div>
         </div>
     </nav>
 
@@ -79,25 +149,31 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <img loading="lazy"
-                        src="https://ui-avatars.com/api/?name=Happy+Creative&background=2D5F4F&color=fff&size=256"
+                        th:src="${organizer != null} ? 'https://ui-avatars.com/api/?name=' + ${organizer.name} + '&background=2D5F4F&color=fff&size=256' : 'https://via.placeholder.com/120'"
                         class="rounded-circle profile-avatar" alt="Organizer Avatar">
                 </div>
                 <div class="col">
                     <div class="d-flex align-items-center mb-2">
-                        <h1 class="mb-0 me-3">快樂文創</h1>
-                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>已認證</span>
+                        <h1 class="mb-0 me-3" th:text="${organizer != null ? organizer.name : '主辦單位'}">快樂文創</h1>
+                        <span class="badge bg-success" th:if="${organizer != null and organizer.status == 1}">
+                            <i class="fas fa-check-circle me-1"></i>已認證
+                        </span>
                     </div>
-                    <p class="text-muted mb-3">致力於打造最獨特的音樂現場體驗，讓感動無所不在。專注於獨立音樂與藝文展演策劃。</p>
+                    <p class="text-muted mb-3" th:text="${organizer != null ? organizer.introduction : ''}">
+                        致力於打造最獨特的音樂現場體驗，讓感動無所不在。</p>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>追蹤主辦</button>
-                        <button class="btn btn-outline-light"><i class="fas fa-share-alt me-2"></i>分享</button>
+                        <button id="follow-btn" class="btn btn-primary" onclick="handleFollow()"><i
+                                class="fas fa-plus me-2"></i>追蹤主辦</button>
+                        <button class="btn btn-outline-light" onclick="copyShareLink()"><i
+                                class="fas fa-share-alt me-2"></i>分享</button>
                     </div>
                 </div>
+                <!-- 統計數據暫採靜態 -->
                 <div class="col-auto d-none d-lg-block">
                     <div class="row g-4">
                         <div class="col">
                             <div class="stat-item">
-                                <h3>12</h3>
+                                <h3 th:text="${events != null ? events.size() : 0}">12</h3>
                                 <small class="text-muted">活動</small>
                             </div>
                         </div>
@@ -109,7 +185,9 @@
                         </div>
                         <div class="col">
                             <div class="stat-item">
-                                <h3>2.5K</h3>
+                                <h3 id="fan-count"
+                                    th:text="${#numbers.formatDecimal(T(java.lang.Math).random() * 99 + 1, 1, 1) + 'K'}">
+                                    2.5K</h3>
                                 <small class="text-muted">粉絲</small>
                             </div>
                         </div>
@@ -127,24 +205,28 @@
 
     <!-- Tabs -->
     <div class="container">
-        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-events">
+        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="events-tab" data-bs-toggle="tab" data-bs-target="#tab-events"
+                    type="button" role="tab" aria-controls="tab-events" aria-selected="true">
                     <i class="fas fa-calendar-alt me-2"></i>活動
                 </button>
             </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-products">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#tab-products"
+                    type="button" role="tab" aria-controls="tab-products" aria-selected="false">
                     <i class="fas fa-box me-2"></i>商品
                 </button>
             </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-articles">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="articles-tab" data-bs-toggle="tab" data-bs-target="#tab-articles"
+                    type="button" role="tab" aria-controls="tab-articles" aria-selected="false">
                     <i class="fas fa-newspaper me-2"></i>文章
                 </button>
             </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-about">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#tab-about" type="button"
+                    role="tab" aria-controls="tab-about" aria-selected="false">
                     <i class="fas fa-info-circle me-2"></i>關於
                 </button>
             </li>
@@ -152,73 +234,54 @@
 
         <div class="tab-content pb-5">
             <!-- Events Tab -->
-            <div class="tab-pane fade show active" id="tab-events">
-                <div class="row g-4">
-                    <!-- Event 1 -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card bg-dark border-secondary event-card h-100">
-                            <div class="position-relative">
-                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
-                                    style="height: 180px; object-fit: cover;">
-                                <span class="badge bg-success position-absolute top-0 end-0 m-2">熱賣中</span>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-primary mb-2">音樂演出</span>
-                                <h5 class="card-title">獨立樂團之夜 Vol.5</h5>
-                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2025/02/14</p>
-                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>Legacy Taipei</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="fw-bold text-white">NT$ 800 起</span>
-                                    <a href="../user/event-detail.html" class="btn btn-sm btn-primary">查看詳情</a>
+            <div class="tab-pane active" id="tab-events">
+                <div class="row g-4" th:if="${events != null and !events.isEmpty()}">
+                    <!-- Dynamic Event Loop -->
+                    <div class="col-6 col-md-3 col-lg-2" th:each="event : ${events}">
+                        <a th:href="@{/event/{id}(id=${event.eventId})}" class="text-decoration-none">
+                            <div class="card bg-dark border-secondary event-card h-100" style="cursor: pointer;">
+                                <div class="position-relative">
+                                    <img loading="lazy" th:src="${event.coverImageUrl}" class="card-img-top"
+                                        style="height: 90px; object-fit: cover;">
+
+                                    <!-- Status Badge -->
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
+                                        th:if="${event.frontendStatus == 'ON_SALE'}">熱賣中</span>
+                                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
+                                        th:if="${event.frontendStatus == 'COMING_SOON'}">即將開賣</span>
+                                    <span class="badge bg-secondary position-absolute top-0 end-0 m-1 small"
+                                        style="font-size: 0.6rem;"
+                                        th:if="${event.frontendStatus == 'FINISHED'}">已結束</span>
+                                </div>
+                                <div class="card-body p-2" style="line-height: 1.2;">
+                                    <span class="badge bg-primary mb-1" style="font-size: 0.6rem;"
+                                        th:text="${event.typeName}">音樂演出</span>
+                                    <h6 class="card-title text-truncate text-white mb-1" style="font-size: 0.85rem;"
+                                        th:text="${event.title}">活動標題</h6>
+                                    <p class="text-muted mb-1" style="font-size: 0.7rem;">
+                                        <i class="far fa-calendar me-1"></i>
+                                        <span
+                                            th:text="${#temporals.format(event.eventStartAt, 'yyyy/MM/dd')}">2025/02/14</span>
+                                    </p>
+                                    <p class="text-muted text-truncate mb-0" style="font-size: 0.7rem;">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <span th:text="${event.place}">地點</span>
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                    <!-- Event 2 -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card bg-dark border-secondary event-card h-100">
-                            <div class="position-relative">
-                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
-                                    style="height: 180px; object-fit: cover;">
-                                <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">即將開賣</span>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-info mb-2">音樂節</span>
-                                <h5 class="card-title">春季電音派對</h5>
-                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2025/03/21</p>
-                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>大安森林公園</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="fw-bold text-white">NT$ 1,200 起</span>
-                                    <a href="#" class="btn btn-sm btn-outline-light">敬請期待</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Event 3 -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card bg-dark border-secondary event-card h-100">
-                            <div class="position-relative">
-                                <img loading="lazy" src="https://via.placeholder.com/800x450" class="card-img-top"
-                                    style="height: 180px; object-fit: cover;">
-                                <span class="badge bg-secondary position-absolute top-0 end-0 m-2">已結束</span>
-                            </div>
-                            <div class="card-body">
-                                <span class="badge bg-success mb-2">音樂演出</span>
-                                <h5 class="card-title">冬季不插電演唱會</h5>
-                                <p class="text-muted small mb-2"><i class="far fa-calendar me-2"></i>2024/12/20</p>
-                                <p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>河岸留言</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="text-muted">已結束</span>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">回顧</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="text-center py-5" th:if="${events == null or events.isEmpty()}">
+                    <i class="fas fa-calendar-times fs-1 text-muted mb-3"></i>
+                    <p class="text-muted">目前暫無上架中的活動</p>
                 </div>
             </div>
 
             <!-- Products Tab -->
-            <div class="tab-pane fade" id="tab-products">
+            <div class="tab-pane" id="tab-products">
                 <div class="row g-4">
                     <!-- Product 1 -->
                     <div class="col-6 col-md-4 col-lg-3">
@@ -288,7 +351,7 @@
             </div>
 
             <!-- Articles Tab -->
-            <div class="tab-pane fade" id="tab-articles">
+            <div class="tab-pane" id="tab-articles">
                 <div class="row g-4">
                     <!-- Article 1 -->
                     <div class="col-md-6">
@@ -332,7 +395,7 @@
             </div>
 
             <!-- About Tab -->
-            <div class="tab-pane fade" id="tab-about">
+            <div class="tab-pane" id="tab-about">
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="card bg-dark border-secondary mb-4">
@@ -379,13 +442,100 @@
     <!-- Footer -->
     <footer class="bg-dark border-top border-secondary py-5">
         <div class="container text-center text-white-50">
-            <p>&copy; 2024 Momento. All Rights Reserved.</p>
+            <p>&copy; 2026 Momento. All Rights Reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../../js/common.js"></script>
+    <script>
+        function handleFollow() {
+            const fanCountEl = document.getElementById('fan-count');
+            const followBtn = document.getElementById('follow-btn');
+
+            // 強制重置動畫
+            fanCountEl.classList.remove('fan-pop-active');
+            void fanCountEl.offsetWidth; // 觸發 reflow
+
+            // 隨機跳轉 1.0K ~ 99.9K
+            const randomFans = (Math.random() * 99 + 1).toFixed(1);
+            fanCountEl.innerText = randomFans + 'K';
+
+            // 觸發誇張動畫
+            fanCountEl.classList.add('fan-pop-active');
+
+            // UI 反饋
+            if (followBtn.classList.contains('btn-primary')) {
+                followBtn.classList.replace('btn-primary', 'btn-success');
+                followBtn.innerHTML = '<i class="fas fa-check me-2"></i>已追蹤';
+            } else {
+                followBtn.classList.replace('btn-success', 'btn-primary');
+                followBtn.innerHTML = '<i class="fas fa-plus me-2"></i>追蹤主辦';
+            }
+        }
+
+        function copyShareLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                // 使用自定義彈窗或簡單 alert
+                alert('主辦頁面連結已複製到剪貼簿！');
+            }).catch(err => {
+                console.error('無法複製連結: ', err);
+                // 備用方案
+                const textArea = document.createElement("textarea");
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('主辦頁面連結已複製到剪貼簿！');
+                } catch (err) {
+                    alert('複製失敗，請手動複製網址列');
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        function copyAddress(address) {
+            if (!address) return;
+            navigator.clipboard.writeText(address).then(() => {
+                alert('主辦地址已複製：' + address);
+            }).catch(err => {
+                console.error('無法複製連結: ', err);
+            });
+        }
+
+        // --- 強制解決分頁重疊問題 ---
+        $(document).ready(function () {
+            const $tabs = $('#profileTabs button');
+            const $panes = $('.tab-pane');
+
+            $tabs.on('click', function (e) {
+                e.preventDefault();
+                const targetSelector = $(this).data('bs-target');
+
+                // 1. 更新按鈕狀態
+                $tabs.removeClass('active').attr('aria-selected', 'false');
+                $(this).addClass('active').attr('aria-selected', 'true');
+
+                // 2. 強制隔離分頁：先全部移除 active 並隱藏
+                $panes.removeClass('active show').css('display', 'none');
+
+                // 3. 只顯示目標分頁
+                $(targetSelector).addClass('active show').css('display', 'block');
+
+                // 觸發 Bootstrap 原生切換事件以保持相容
+                const tabTrigger = new bootstrap.Tab(this);
+                tabTrigger.show();
+            });
+
+            // 初始化：確保預設分頁正確顯示，其餘隱藏
+            const defaultTarget = $tabs.filter('.active').data('bs-target');
+            $panes.not(defaultTarget).css('display', 'none');
+            $(defaultTarget).css('display', 'block');
+        });
+    </script>
 </body>
 
 </html>

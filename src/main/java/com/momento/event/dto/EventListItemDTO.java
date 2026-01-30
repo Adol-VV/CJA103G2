@@ -23,8 +23,17 @@ public class EventListItemDTO {
     private Long favoriteCount;
     private Boolean isFavorited;
     private Byte status;
+    private String frontendStatus;
 
     // ========== Getter & Setter ==========
+
+    public String getFrontendStatus() {
+        return frontendStatus;
+    }
+
+    public void setFrontendStatus(String frontendStatus) {
+        this.frontendStatus = frontendStatus;
+    }
 
     public Integer getEventId() {
         return eventId;

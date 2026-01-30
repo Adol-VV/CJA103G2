@@ -19,6 +19,9 @@ public class EmpVO {
     @Column(name = "EMP_NAME", length = 50, nullable = false)
     private String empName;
 
+    @Column(name = "JOB_TITLE", length = 50, nullable = false)
+    private String jobTitle;
+
     @Column(name = "ACCOUNT", length = 50, nullable = false, unique = true)
     private String account;
 
@@ -32,23 +35,22 @@ public class EmpVO {
     @Column(name = "STATUS", columnDefinition = "TINYINT DEFAULT 1")
     private Byte status;
 
-
     @OneToMany(mappedBy = "emp", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmpAuthorityVO> authorities = new HashSet<>();
 
     public EmpVO() {
     }
 
-    public EmpVO(Integer empId, String empName, String account, String password,
-                 LocalDateTime createdAt, Byte status) {
+    public EmpVO(Integer empId, String empName, String jobTitle, String account, String password,
+            LocalDateTime createdAt, Byte status) {
         this.empId = empId;
         this.empName = empName;
+        this.jobTitle = jobTitle;
         this.account = account;
         this.password = password;
         this.createdAt = createdAt;
         this.status = status;
     }
-
 
     public Integer getEmpId() {
         return empId;
@@ -64,6 +66,14 @@ public class EmpVO {
 
     public void setEmpName(String empName) {
         this.empName = empName;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
 
     public String getAccount() {
@@ -106,6 +116,17 @@ public class EmpVO {
         this.authorities = authorities;
     }
 
+    /**
+     * Helper for Thymeleaf: Check if employee has a specific function
+     */
+    public boolean hasFunction(Integer functionId) {
+        if (this.empId != null && this.empId == 1)
+            return true; // Super Admin has all
+        if (this.authorities == null)
+            return false;
+        return this.authorities.stream().anyMatch(a -> a.getFunctionId().equals(functionId));
+    }
+
     public void addAuthority(EmpAuthorityVO authority) {
         authorities.add(authority);
         authority.setEmp(this);
@@ -116,11 +137,16 @@ public class EmpVO {
         authority.setEmp(null);
     }
 
+    public void clearAuthorities() {
+        this.authorities.clear();
+    }
+
     @Override
     public String toString() {
         return "Emp{" +
                 "empId=" + empId +
                 ", empName='" + empName + '\'' +
+                ", jobTitle='" + jobTitle + '\'' +
                 ", account='" + account + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +

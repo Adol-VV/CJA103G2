@@ -109,12 +109,15 @@ public class EmpService {
             throw new IllegalArgumentException("超級管理員自動擁有所有權限，無需分配");
         }
 
-        if (empAuthorityRepository.existsByEmpIdAndFunctionId(targetEmpId, functionId)) {
+        if (empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId)) {
             throw new IllegalArgumentException("該員工已有此權限");
         }
 
-        EmpAuthorityVO auth = new EmpAuthorityVO(targetEmpId, functionId);
-        empAuthorityRepository.save(auth);
+        BackendFunctionVO func = backendFunctionRepository.findById(functionId).orElse(null);
+        if (func != null) {
+            EmpAuthorityVO auth = new EmpAuthorityVO(targetEmp, func);
+            empAuthorityRepository.save(auth);
+        }
     }
 
     public void revokePermission(Integer currentEmpId, Integer targetEmpId, Integer functionId) {
@@ -127,11 +130,11 @@ public class EmpService {
             throw new IllegalArgumentException("超級管理員權限無法移除");
         }
 
-        if (!empAuthorityRepository.existsByEmpIdAndFunctionId(targetEmpId, functionId)) {
+        if (!empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId)) {
             throw new IllegalArgumentException("該員工沒有此權限");
         }
 
-        empAuthorityRepository.deleteByEmpIdAndFunctionId(targetEmpId, functionId);
+        empAuthorityRepository.deleteByEmp_EmpIdAndFunction_FunctionId(targetEmpId, functionId);
     }
 
     public List<EmpAuthorityVO> getEmployeePermissions(Integer empId) {
@@ -141,7 +144,7 @@ public class EmpService {
             // 前端透過 isSuperAdmin 判斷來顯示所有選單
             return new ArrayList<>();
         }
-        return empAuthorityRepository.findByEmpId(empId);
+        return empAuthorityRepository.findByEmp_EmpId(empId);
     }
 
     public boolean hasPermission(Integer empId, Integer functionId) {
@@ -150,7 +153,7 @@ public class EmpService {
             return true;
         }
 
-        return empAuthorityRepository.existsByEmpIdAndFunctionId(empId, functionId);
+        return empAuthorityRepository.existsByEmp_EmpIdAndFunction_FunctionId(empId, functionId);
     }
 
     public List<BackendFunctionVO> getAllFunctions() {
@@ -182,6 +185,79 @@ public class EmpService {
         }
 
         return emp;
+    }
+
+    // ========== 員工資料管理 ==========
+
+    /**
+     * 獲取單一員工資料
+     */
+    public EmpVO getOneEmp(Integer empId) {
+        return empRepository.findById(empId).orElse(null);
+    }
+
+    /**
+     * 更新員工基本資料
+     */
+    public void updateEmployeeInfo(Integer empId, String empName, String jobTitle, Byte status) {
+        EmpVO emp = empRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("員工不存在"));
+
+        emp.setEmpName(empName);
+        emp.setJobTitle(jobTitle);
+        emp.setStatus(status);
+
+        empRepository.save(emp);
+    }
+
+    /**
+     * 員工自己修改密碼（需驗證舊密碼）
+     */
+    public void changePassword(Integer empId, String oldPassword, String newPassword) {
+        EmpVO emp = empRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("員工不存在"));
+
+        // 驗證舊密碼
+        if (!emp.getPassword().equals(oldPassword)) {
+            throw new RuntimeException("目前密碼錯誤");
+        }
+
+        // 驗證新密碼長度
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new RuntimeException("新密碼長度至少 8 個字元");
+        }
+
+        // 更新密碼
+        emp.setPassword(newPassword);
+        empRepository.save(emp);
+    }
+
+    /**
+     * 直接更新密碼（無需驗證舊密碼，適合已登入狀態）
+     */
+    public void updatePassword(Integer empId, String newPassword) {
+        EmpVO emp = empRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("員工不存在"));
+
+        // 驗證新密碼長度
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new RuntimeException("新密碼長度至少 8 個字元");
+        }
+
+        // 更新密碼
+        emp.setPassword(newPassword);
+        empRepository.save(emp);
+    }
+
+    /**
+     * 管理員重設員工密碼為預設值 12345678
+     */
+    public void resetPassword(Integer empId) {
+        EmpVO emp = empRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("員工不存在"));
+
+        emp.setPassword("12345678");
+        empRepository.save(emp);
     }
 
 }

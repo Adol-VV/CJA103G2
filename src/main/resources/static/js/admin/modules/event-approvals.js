@@ -128,6 +128,9 @@ export function initEventApprovals() {
                 updateBadge('2', stats.approved || 0); // Approved
                 updateBadge('3', stats.published || 0); // Published
                 updateBadge('5', stats.ended || 0); // Closed
+
+                // Sync Sidebar Badge
+                $('#eventReviewBadge').text(stats.pending || 0);
             }
         } catch (e) {
             console.error('Failed to load stats', e);

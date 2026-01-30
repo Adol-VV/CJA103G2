@@ -1,6 +1,37 @@
 <div class="content-panel" id="panel-staff-management">
+    <style>
+        /* 1. 加強超級管理員視覺：加入紅色邊框線與斜紋背景 */
+        .super-admin-row {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            /* 稍微提升亮度 */
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px) !important;
+            /* 質感的微斜紋，代表鎖定區域 */
+            border-left: 4px solid #dc3545 !important;
+            /* 左側紅色狀態條，對應標籤顏色 */
+            pointer-events: none;
+            /* 徹底禁用滑鼠互動 */
+            position: relative;
+        }
+
+        /* 解決表頭對齊問題：讓表頭也預留 4px 空間 */
+        #panel-staff-management thead tr {
+            border-left: 4px solid transparent !important;
+        }
+
+        .super-admin-row td {
+            color: #888;
+            /* 提升一點對比度，讓鎖定的文字依然清晰可讀 */
+            border-bottom: 1px solid rgba(220, 53, 69, 0.1) !important;
+            /* 底線帶一點點紅 */
+        }
+    </style>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>員工管理與權限設定</h2>
+        <h2>員工管理</h2>
     </div>
 
     <div class="card bg-dark border-secondary">
@@ -10,6 +41,7 @@
                 <thead>
                     <tr>
                         <th style="text-align: center !important; vertical-align: middle;">員工編號</th>
+                        <th>員工姓名</th>
                         <th>職稱</th>
                         <th>帳號</th>
                         <th>目前狀態</th>
@@ -18,7 +50,7 @@
                 </thead>
                 <tbody>
                     <!-- Thymeleaf Loop -->
-                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'table-dark' : ''}">
+                    <tr th:each="emp : ${employees}" th:classappend="${emp.empId == 1 ? 'super-admin-row' : ''}">
                         <td style="text-align: center !important; vertical-align: middle;" th:text="${emp.empId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -30,15 +62,18 @@
                                 </div>
                             </div>
                         </td>
-                        <td th:text="${emp.account}">admin</td>
                         <td>
-                            <!-- 超級管理員特殊標籤 -->
+                            <!-- 超級管理員顯示特殊標籤 -->
                             <span th:if="${emp.empId == 1}" class="badge bg-danger">
                                 <i class="fas fa-crown me-1"></i>超級管理員
                             </span>
+                            <!-- 一般員工顯示職稱 -->
+                            <span th:unless="${emp.empId == 1}" th:text="${emp.jobTitle}">職稱</span>
+                        </td>
+                        <td th:text="${emp.account}">admin</td>
+                        <td>
                             <!-- 一般員工狀態 -->
-                            <span th:unless="${emp.empId == 1}" class="badge"
-                                th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
+                            <span class="badge" th:classappend="${emp.status == 1 ? 'bg-success' : 'bg-secondary'}"
                                 th:text="${emp.status == 1 ? '在職' : '離職/停權'}">正常</span>
                         </td>
                         <td>
@@ -48,11 +83,11 @@
                                 <i class="fas fa-ban"></i>
                             </button>
 
-                            <!-- 一般員工：權限設定按鈕 -->
+                            <!-- 一般員工：編輯按鈕 -->
                             <button th:unless="${emp.empId == 1}" class="btn btn-sm btn-outline-info me-1"
                                 th:data-emp-id="${emp.empId}" th:data-emp-name="${emp.empName}"
                                 onclick="openPermissionModal(this.dataset.empId, this.dataset.empName)">
-                                <i class="fas fa-user-cog"></i> 設定權限
+                                <i class="fas fa-edit"></i> 編輯
                             </button>
                         </td>
                     </tr>
@@ -61,155 +96,201 @@
         </div>
     </div>
 
-    <!-- 權限設定 Modal -->
+    <!-- 員工編輯 Modal -->
     <div class="modal fade" id="permissionModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title">權限設定 - <span id="modalEmpName"></span></h5>
+                    <h5 class="modal-title">員工管理 - 編輯</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="permissionForm">
-                        <input type="hidden" id="targetEmpId">
+                    <form id="empEditForm">
+                        <input type="hidden" id="editEmpId">
 
-                        <!-- 提示訊息 -->
-                        <div id="adminWarning" class="alert alert-warning d-none">
-                            <i class="fas fa-exclamation-triangle me-2"></i> 超級管理員 (ID:1) 擁有所有權限，且不可變更。
+                        <!-- 帳號（只讀） -->
+                        <div class="mb-3">
+                            <label for="editAccount" class="form-label">帳號</label>
+                            <input type="text" class="form-control bg-secondary text-white" id="editAccount" readonly>
                         </div>
 
-                        <div class="row g-3" id="checkboxContainer">
-                            <!-- 功能列表 1~8 (暫時硬編碼) -->
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="1" id="f1">
-                                    <label class="form-check-label" for="f1">會員管理 </label>
-                                </div>
+                        <!-- 員工姓名 -->
+                        <div class="mb-3">
+                            <label for="editEmpName" class="form-label">員工姓名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="editEmpName"
+                                required placeholder="請輸入員工姓名">
+                        </div>
+
+                        <!-- 職稱 -->
+                        <div class="mb-3">
+                            <label for="editJobTitle" class="form-label">職稱 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                id="editJobTitle" required placeholder="請輸入職稱">
+                        </div>
+
+                        <!-- 狀態 -->
+                        <div class="mb-3">
+                            <label for="editStatus" class="form-label">狀態 <span class="text-danger">*</span></label>
+                            <select class="form-select bg-dark text-white border-secondary" id="editStatus" required>
+                                <option value="1">在職</option>
+                                <option value="0">離職/停權</option>
+                            </select>
+                        </div>
+
+                        <!-- 分隔線 -->
+                        <hr class="border-secondary">
+
+                        <!-- 密碼管理 -->
+                        <div class="mb-3">
+                            <label class="form-label">密碼管理</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-warning" onclick="resetPassword()">
+                                    <i class="fas fa-key me-1"></i> 重設密碼為 12345678
+                                </button>
+                                <small class="text-muted">員工忘記密碼時使用</small>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="2" id="f2">
-                                    <label class="form-check-label" for="f2">主辦方管理</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="3" id="f3">
-                                    <label class="form-check-label" for="f3">商品審核</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="4" id="f4">
-                                    <label class="form-check-label" for="f4">活動審核</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="5" id="f5">
-                                    <label class="form-check-label" for="f5">訂單管理</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="6" id="f6">
-                                    <label class="form-check-label" for="f6">結算管理</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="7" id="f7">
-                                    <label class="form-check-label" for="f7">公告管理</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="8" id="f8">
-                                    <label class="form-check-label" for="f8">檢舉處理</label>
-                                </div>
-                            </div>
+                        </div>
+
+                        <!-- 提示訊息 -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>修改員工基本資料後，請點擊「儲存變更」以更新資訊。</small>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="savePermissionBtn"
-                        onclick="savePermissions()">儲存變更</button>
+                    <button type="button" class="btn btn-primary" id="saveEmpBtn"
+                        onclick="saveEmployeeInfo()">儲存變更</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- JavaScript -->
-    <script>
-        function openPermissionModal(empId, empName) {
-            // 1. 設定 UI
-            $('#modalEmpName').text(empName);
-            $('#targetEmpId').val(empId);
-
-            // 重置所有 checkbox
-            $('.form-check-input').prop('checked', false);
-            $('.form-check-input').prop('disabled', false); // 先解鎖
-            $('#savePermissionBtn').prop('disabled', false);
-            $('#adminWarning').addClass('d-none'); // 隱藏警告
-
-            // 2. 特殊處理：如果是超級管理員 (ID=1)
-            if (empId === 1) {
-                $('.form-check-input').prop('checked', true); // 全勾
-                $('.form-check-input').prop('disabled', true); // 全鎖
-                $('#savePermissionBtn').prop('disabled', true); // 按鈕鎖
-                $('#adminWarning').removeClass('d-none'); // 顯示警告
-
-                $('#permissionModal').modal('show');
-                return; // 不用去後端查了
-            }
-
-            // 3. 呼叫後端 API 查詢目前權限
-            $.ajax({
-                url: '/admin/permissions/get/' + empId,
-                method: 'GET',
-                success: function (functionIds) {
-                    // 根據回傳的 ID 列表勾選對應的 checkbox
-                    functionIds.forEach(function (fid) {
-                        $('#f' + fid).prop('checked', true);
-                    });
-                    $('#permissionModal').modal('show');
-                },
-                error: function (err) {
-                    alert('無法讀取權限資料');
-                    console.error(err);
-                }
-            });
-        }
-
-        function savePermissions() {
-            const empId = $('#targetEmpId').val();
-            // 蒐集所有被勾選的 checkbox 值
-            const selectedIds = [];
-            $('.form-check-input:checked').each(function () {
-                // 如果是 disabled 的檢查框(例如 admin)，我們還是要確認它的值嗎？
-                // 其實 admin 的 save 按鈕已經被鎖住了，根本進不來這裡，所以這裡只處理一般員工
-                selectedIds.push(parseInt($(this).val()));
-            });
-
-            // 呼叫更新 API
-            $.ajax({
-                url: '/admin/permissions/update',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    empId: empId,
-                    functionIds: selectedIds
-                }),
-                success: function (res) {
-                    alert('權限更新成功');
-                    $('#permissionModal').modal('hide');
-                    // 最好 reload 頁面或是重新渲染表格，這裡簡單起見先不 reload
-                },
-                error: function (xhr) {
-                    alert('更新失敗: ' + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
-                }
-            });
-        }
-    </script>
 </div>
+
+<!-- JavaScript -->
+<script>
+    function openPermissionModal(empId, empName) {
+        console.log('=== 開啟編輯 Modal ===');
+        console.log('empId:', empId);
+        console.log('empName:', empName);
+
+        // 重置表單
+        $('#empEditForm')[0].reset();
+        $('#editEmpId').val(empId);
+
+        // 從後端載入員工資料
+        $.ajax({
+            url: '/admin/employees/' + empId,
+            method: 'GET',
+            success: function (emp) {
+                console.log('✅ 成功載入員工資料:', emp);
+
+                // 填充表單
+                $('#editAccount').val(emp.account || '');
+                $('#editEmpName').val(emp.empName || '');
+                $('#editJobTitle').val(emp.jobTitle || '');
+                $('#editStatus').val(emp.status !== null ? emp.status : 1);
+
+                // 顯示 Modal
+                $('#permissionModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                console.error('❌ 載入失敗');
+                console.error('Status Code:', xhr.status);
+                console.error('Status Text:', xhr.statusText);
+                console.error('Response:', xhr.responseText);
+                console.error('Error:', error);
+
+                alert('無法載入員工資料\n錯誤代碼: ' + xhr.status + '\n' + (xhr.responseText || error));
+            }
+        });
+    }
+
+    function saveEmployeeInfo() {
+        const empId = $('#editEmpId').val();
+        const empName = $('#editEmpName').val().trim();
+        const jobTitle = $('#editJobTitle').val().trim();
+        const status = $('#editStatus').val();
+
+        // 驗證
+        if (!empName) {
+            alert('請輸入員工姓名');
+            return;
+        }
+        if (!jobTitle) {
+            alert('請輸入職稱');
+            return;
+        }
+
+        // 呼叫更新 API
+        $.ajax({
+            url: '/admin/employees/update',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                empId: parseInt(empId),
+                empName: empName,
+                jobTitle: jobTitle,
+                status: parseInt(status)
+            }),
+            success: function (res) {
+                alert('員工資料更新成功');
+                $('#permissionModal').modal('hide');
+                // 重新載入頁面以顯示更新後的資料
+                location.reload();
+            },
+            error: function (xhr) {
+                alert('更新失敗: ' + (xhr.responseJSON?.message || xhr.statusText));
+            }
+        });
+    }
+
+    // 重設密碼（管理員功能）
+    function resetPassword() {
+        const empId = $('#editEmpId').val();
+        const empName = $('#editEmpName').val();
+
+        if (!confirm(`確定要將「${empName}」的密碼重設為 12345678 嗎？`)) {
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/employees/reset-password',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                empId: parseInt(empId)
+            }),
+            success: function (res) {
+                showNotification('密碼已重設為 12345678', '請通知該員工使用新密碼登入。', 'success');
+            },
+            error: function (xhr) {
+                showNotification('密碼重設失敗', xhr.responseJSON?.message || xhr.statusText, 'error');
+            }
+        });
+    }
+
+    // 自訂通知函數
+    function showNotification(title, message, type) {
+        const icon = type === 'success' ? '✅' : '❌';
+        const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+
+        const toast = $(`
+            <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999; margin-top: 20px;">
+                <div class="toast show ${bgClass} text-white" role="alert">
+                    <div class="toast-header ${bgClass} text-white border-0">
+                        <strong class="me-auto">${icon} ${title}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        $('body').append(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+</script>

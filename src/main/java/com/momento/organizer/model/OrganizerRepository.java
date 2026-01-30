@@ -20,4 +20,6 @@ public interface OrganizerRepository extends JpaRepository<OrganizerVO, Integer>
     List<OrganizerVO> findByStatus(Byte status);
 
     List<OrganizerVO> findByStatusOrderByCreatedAtAsc(Byte status);
+
+    List<OrganizerVO> findByNameContainingIgnoreCaseAndStatus(String name, Byte status);
 }

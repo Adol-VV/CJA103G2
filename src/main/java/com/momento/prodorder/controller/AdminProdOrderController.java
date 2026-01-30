@@ -3,11 +3,13 @@ package com.momento.prodorder.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -16,7 +18,7 @@ import com.momento.prodorder.model.ProdOrderIdVO;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/Admin/prod_order")
+@RequestMapping("/admin/prod_order")
 public class AdminProdOrderController {
 
 	@Autowired
@@ -24,13 +26,8 @@ public class AdminProdOrderController {
 
 	@GetMapping("/getAllOrder")
 	public String getAllOrder(Model model, HttpSession session) {
-
-		System.out.println("===================================");
 		List<ProdOrderIdVO> orders = poIdSev.getAll();
 		model.addAttribute("allProdOrders", orders);
-		System.out.println("===================================");
-		System.out.println("========="+ orders.size());
-		System.out.println("===================================");
 		return "pages/admin/partials/panel-product-orders";
 	}
 	
@@ -53,5 +50,48 @@ public class AdminProdOrderController {
 	    stats.put("cancelled", (int) orders.stream().filter(o -> o.getStatus() == 4).count());
 	    
 	    return stats;
+	}
+	
+	
+	@PostMapping("/orderDetail")
+	public String getorderDetail(Integer orderId,Model model) {
+		Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+		if(optional.isPresent()) {
+			ProdOrderIdVO order = optional.get();
+			model.addAttribute("orderDetail",order);
+		}
+		return "pages/user/order-detail";
+	}
+	
+	@GetMapping("/agreeRefund")
+	@ResponseBody
+	public String agreeRefund(Integer orderId) {
+	    Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+	    if(optional.isPresent()) {
+	    	ProdOrderIdVO order = optional.get();
+	    	order.setStatus((byte)4);
+	    	poIdSev.updateProdOrder(order);
+	    }
+	    return "pages/admin/partials/panel-product-orders";
+	}
+	
+	@GetMapping("/disagreeRefund")
+	public String disagreeRefund(Integer orderId, Model model) {
+		Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+	    if(optional.isPresent()) {
+	    	ProdOrderIdVO order = optional.get();
+	    	order.setStatus((byte)1);
+	    	poIdSev.updateProdOrder(order);
+	    }
+	    return "pages/admin/partials/panel-product-orders";
+	}
+	
+	@GetMapping("/orderRefund")
+	public String getOrderRefund(Integer orderId, Model model) {
+	    Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
+	    if(optional.isPresent()) {
+	        model.addAttribute("orderRefund", optional.get());
+	    }
+	    return "pages/admin/partials/modals :: refundModalContent";
 	}
 }

@@ -1,9 +1,17 @@
 package com.momento.prod.model;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.momento.emp.model.EmpVO;
+import com.momento.organizer.model.OrganizerVO;
 import com.momento.prod.dto.ProdDTO;
 
 @Service
@@ -21,7 +32,61 @@ public class ProdService {
 	@Autowired
 	ProdRepository repository;
 	
-	public void addProd(ProdVO prodVO) {
+	private final String uploadDir = "C:/momento-uploads/product/";
+	private final String baseUrl = "/product/";
+	
+	@Transactional
+	public void addProd(ProdDTO prodDTO, MultipartFile[] files) {
+		ProdVO prodVO = new ProdVO();
+		OrganizerVO organizerVO = new OrganizerVO();
+		organizerVO.setOrganizerId(prodDTO.getOrganizerId());
+		ProdSortVO prodSortVO = new ProdSortVO();
+		prodSortVO.setSortId(prodDTO.getSortId());
+		EmpVO empVO = new EmpVO();
+		empVO.setEmpId(8);
+		prodVO.setOrganizerVO(organizerVO);
+		prodVO.setProdSortVO(prodSortVO);
+        prodVO.setEmpVO(empVO);
+        prodVO.setProdName(prodDTO.getProdName());
+        prodVO.setProdContent(prodDTO.getProdContent());
+        prodVO.setProdPrice(prodDTO.getProdPrice());
+        prodVO.setProdStock(prodDTO.getProdStock());
+        prodVO.setCreatedAt(LocalDateTime.now());
+        prodVO.setUpdatedAt(LocalDateTime.now());
+        prodVO.setProdStatus((byte) 0);
+        prodVO.setReviewStatus((byte) 0);
+        
+        //建目標路徑資料夾
+        try {
+            Files.createDirectories(Path.of(uploadDir));
+        } catch (IOException e) {
+            throw new UncheckedIOException("無法建立上傳目錄", e);
+        }
+        //圖片
+		List<ProdImageVO> prodImages = Arrays.stream(files).filter(file -> !file.isEmpty()).map(file -> {
+	        try {
+
+	        	// 建立隨機檔名防止衝突
+		        String originalFilename = file.getOriginalFilename();
+		        String extension = "";
+		        if (originalFilename != null && originalFilename.contains(".")) {
+		            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+		        }
+		        String fileName = UUID.randomUUID().toString() + extension;
+		        // 使用 Path 組合完整的儲存路徑
+		        Path targetPath = Path.of(uploadDir).resolve(fileName);
+		        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+				ProdImageVO image = new ProdImageVO();
+				image.setImageUrl(baseUrl+fileName);
+				image.setProdVO(prodVO);
+				image.setCreatedAt(LocalDateTime.now());
+		        return image;
+	        } catch (IOException e) {
+	        	throw new UncheckedIOException("圖片儲存失敗: " + file.getOriginalFilename(), e);
+	        }
+		}).collect(Collectors.toList());
+		
+		prodVO.setProdImages(prodImages);
 		repository.save(prodVO);
 	}
 	
@@ -58,6 +123,7 @@ public class ProdService {
         dto.setProdPrice(prod.getProdPrice());
         dto.setProdStock(prod.getProdStock());
         dto.setProdContent(prod.getProdContent());
+        dto.setOrganizerId(prod.getOrganizerVO().getOrganizerId());
         dto.setOrganizerName(prod.getOrganizerVO().getName());
         dto.setSortId(prod.getProdSortVO().getSortId());
         dto.setSortName(prod.getProdSortVO().getSortName());

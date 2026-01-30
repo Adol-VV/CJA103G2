@@ -27,6 +27,14 @@ public interface EventFavRepository extends JpaRepository<EventFavVO, Integer> {
                         @org.springframework.data.repository.query.Param("memberId") Integer memberId);
 
         /**
+         * 計算會員收藏的活動數量
+         * 
+         * @param memberId 會員 ID
+         * @return 收藏數量
+         */
+        long countByMember_MemberId(Integer memberId);
+
+        /**
          * 檢查會員是否已收藏該活動
          * 
          * @param memberId 會員 ID

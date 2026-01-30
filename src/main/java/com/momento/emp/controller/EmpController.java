@@ -103,6 +103,10 @@ public class EmpController {
             return "redirect:/admin/login";
         }
 
+        // 【修正】從資料庫重新讀取最新資料，確保權限更新能即時反應在側邊欄
+        loginEmp = empSvc.getOneEmp(loginEmp.getEmpId());
+        session.setAttribute("loginEmp", loginEmp); // 同步更新 Session
+
         model.addAttribute("loginEmp", loginEmp);
         model.addAttribute("isSuperAdmin", empSvc.isSuperAdmin(loginEmp.getEmpId()));
         model.addAttribute("prodSortList", prodSortSvc.getAll());
@@ -260,5 +264,95 @@ public class EmpController {
         System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
         prodSvc.updateProdReviewStatus(prodId, reviewStatus);
         return "redirect:/admin/dashboard#product-approval";
+    }
+
+    // ========== 員工管理 API ==========
+
+    /**
+     * 獲取單一員工資料
+     */
+    @GetMapping("/employees/{empId}")
+    @ResponseBody
+    public java.util.Map<String, Object> getEmployee(@PathVariable Integer empId) {
+        System.out.println("=== 獲取員工資料 ===");
+        System.out.println("empId: " + empId);
+
+        EmpVO emp = empSvc.getOneEmp(empId);
+
+        if (emp == null) {
+            System.out.println("❌ 員工不存在: " + empId);
+            return java.util.Map.of("success", false, "message", "員工不存在");
+        }
+
+        System.out.println("✅ 找到員工: " + emp.getEmpName());
+        System.out.println("   帳號: " + emp.getAccount());
+        System.out.println("   職稱: " + emp.getJobTitle());
+        System.out.println("   狀態: " + emp.getStatus());
+
+        // 只返回必要的欄位，避免序列化問題
+        return java.util.Map.of(
+                "empId", emp.getEmpId(),
+                "empName", emp.getEmpName() != null ? emp.getEmpName() : "",
+                "jobTitle", emp.getJobTitle() != null ? emp.getJobTitle() : "",
+                "account", emp.getAccount() != null ? emp.getAccount() : "",
+                "status", emp.getStatus() != null ? emp.getStatus() : 1);
+    }
+
+    /**
+     * 更新員工資料
+     */
+    @PostMapping("/employees/update")
+    @ResponseBody
+    public java.util.Map<String, Object> updateEmployee(@RequestBody java.util.Map<String, Object> payload) {
+        try {
+            Integer empId = (Integer) payload.get("empId");
+            String empName = (String) payload.get("empName");
+            String jobTitle = (String) payload.get("jobTitle");
+            Integer status = (Integer) payload.get("status");
+
+            empSvc.updateEmployeeInfo(empId, empName, jobTitle, status.byteValue());
+
+            return java.util.Map.of("success", true, "message", "更新成功");
+        } catch (Exception e) {
+            return java.util.Map.of("success", false, "message", "更新失敗: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 員工自己修改密碼（已登入狀態，無需驗證舊密碼）
+     */
+    @PostMapping("/change-password")
+    @ResponseBody
+    public java.util.Map<String, Object> changePassword(
+            @RequestBody java.util.Map<String, String> payload,
+            HttpSession session) {
+        try {
+            EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+            if (loginEmp == null) {
+                return java.util.Map.of("success", false, "message", "請先登入");
+            }
+
+            String newPassword = payload.get("newPassword");
+            empSvc.updatePassword(loginEmp.getEmpId(), newPassword);
+
+            return java.util.Map.of("success", true, "message", "密碼修改成功");
+        } catch (Exception e) {
+            return java.util.Map.of("success", false, "message", e.getMessage());
+        }
+    }
+
+    /**
+     * 管理員重設員工密碼為預設值 12345678
+     */
+    @PostMapping("/employees/reset-password")
+    @ResponseBody
+    public java.util.Map<String, Object> resetPassword(@RequestBody java.util.Map<String, Object> payload) {
+        try {
+            Integer empId = (Integer) payload.get("empId");
+            empSvc.resetPassword(empId);
+            return java.util.Map.of("success", true, "message", "密碼已重設為 12345678");
+        } catch (Exception e) {
+            return java.util.Map.of("success", false, "message", e.getMessage());
+        }
     }
 }

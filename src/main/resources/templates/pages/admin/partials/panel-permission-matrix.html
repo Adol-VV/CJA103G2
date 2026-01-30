@@ -1,0 +1,212 @@
+<div class="content-panel" id="panel-permission-matrix">
+
+    <style>
+        /* 1. 強化凍結視覺：加入紅色邊框線與斜紋背景 */
+        .super-admin-row {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            /* 稍微提升亮度 */
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px) !important;
+            /* 質感的微斜紋，代表鎖定區域 */
+            border-left: 4px solid #dc3545 !important;
+            /* 左側紅色狀態條，對應標籤顏色 */
+            pointer-events: none;
+            /* 徹底禁用滑鼠互動 */
+            position: relative;
+        }
+
+        /* 解決表頭對齊問題：讓表頭也預留 4px 空間 */
+        #panel-permission-matrix thead tr {
+            border-left: 4px solid transparent !important;
+        }
+
+        .super-admin-row td {
+            color: #888;
+            /* 提升一點對比度，讓鎖定的文字依然清晰可讀 */
+            border-bottom: 1px solid rgba(220, 53, 69, 0.1) !important;
+            /* 底線帶一點點紅 */
+        }
+
+        /* 2. 藝文風格質感開關 (Switch) */
+        .permission-switch {
+            cursor: pointer;
+            background-color: #222 !important;
+            /* 黑色背景 */
+            border: 1px solid #444 !important;
+            /* 帶一點金屬質感的邊框 */
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important;
+            /* 彈性動畫 */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255,255,255,0.4)'/%3e%3c/svg%3e") !important;
+        }
+
+        /* 選取狀態：品牌翡翠綠 + 微發光 */
+        .permission-switch:checked {
+            background-color: #2D5F4F !important;
+            /* Momento 品牌綠 */
+            border-color: #3e7a67 !important;
+            box-shadow: 0 0 10px rgba(45, 95, 79, 0.4) !important;
+            /* 綠色微光 */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+        }
+
+        /* 重設超級管理員行的開關外觀 (雖然被 disabled 但要好看) */
+        .super-admin-row .permission-switch {
+            opacity: 0.8 !important;
+            filter: brightness(0.7);
+        }
+
+        /* 移除藍色框框 */
+        .permission-switch:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* 搜尋框質感調整 */
+        #permissionSearchInput {
+            border-radius: 20px;
+            padding-left: 20px;
+            background: #1a1a1a !important;
+        }
+    </style>
+
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>權限管理</h2>
+        <div class="d-flex gap-2">
+            <input type="text" id="permissionSearchInput" class="form-control bg-dark text-white border-secondary"
+                placeholder="搜尋姓名或職稱..." style="width: 250px;">
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover table-bordered align-middle mb-0">
+                <thead class="bg-dark">
+                    <tr class="border-secondary">
+                        <th class="text-center" style="width: 80px;">編號</th>
+                        <th>姓名</th>
+                        <th>職稱</th>
+                        <th class="text-center">會員管理</th>
+                        <th class="text-center">主辦審核</th>
+                        <th class="text-center">商品審核</th>
+                        <th class="text-center">活動審核</th>
+                        <th class="text-center">訂單管理</th>
+                        <th class="text-center">結算管理</th>
+                        <th class="text-center">公告通知</th>
+                        <th class="text-center">留言檢舉</th>
+                    </tr>
+                </thead>
+                <tbody id="permissionMatrixBody">
+                    <tr th:each="emp : ${employees}" th:data-emp-id="${emp.empId}"
+                        th:classappend="${emp.empId == 1} ? 'super-admin-row'">
+                        <td class="text-center" th:text="${emp.empId}"></td>
+                        <td th:text="${emp.empName}"></td>
+                        <td>
+                            <span th:if="${emp.empId == 1}" class="badge bg-danger">
+                                <i class="fas fa-crown me-1"></i>超級管理員
+                            </span>
+                            <span th:unless="${emp.empId == 1}" th:text="${emp.jobTitle}"></span>
+                        </td>
+                        <td th:each="i : ${#numbers.sequence(1, 8)}" class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input permission-switch" type="checkbox" th:data-fid="${i}"
+                                    th:disabled="${emp.empId == 1}" th:checked="${emp.hasFunction(i)}">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 確保 jQuery 載入後再執行
+        document.addEventListener("DOMContentLoaded", function () {
+            bindPermissionEvents();
+        });
+
+        // 如果是透過 AJAX 片段載入，DOMContentLoaded 可能已經觸發過了，直接嘗試執行
+        if (typeof jQuery !== 'undefined') {
+            bindPermissionEvents();
+        }
+
+        function bindPermissionEvents() {
+            if (typeof $ === 'undefined') {
+                console.warn('jQuery not found yet, retrying in 100ms...');
+                setTimeout(bindPermissionEvents, 100);
+                return;
+            }
+
+            // 防止重複綁定
+            if ($('#permissionMatrixBody').data('bound')) return;
+            $('#permissionMatrixBody').data('bound', true);
+
+            // 1. 初始化狀態
+            // (移除原本的 AJAX readAll，改用 Thymeleaf 渲染)
+
+            // 2. 修改權限事件 (使用委派事件，對動態內容更友善)
+            $(document).off('change', '.permission-switch').on('change', '.permission-switch', function () {
+                const $sw = $(this);
+                const eid = $sw.closest('tr').data('emp-id');
+                const isChecked = $sw.is(':checked');
+
+                const fids = [];
+                $sw.closest('tr').find('.permission-switch:checked').each(function () {
+                    fids.push($(this).data('fid'));
+                });
+
+                $.ajax({
+                    url: '/admin/permissions/update',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({ empId: eid, functionIds: fids }),
+                    success: function (res) {
+                        showMatrixAlert(isChecked ? '🔑 權限授權成功' : '🔒 權限已移除');
+                    },
+                    error: function (xhr, status, error) {
+                        $sw.prop('checked', !isChecked); // 恢復狀態
+                        showMatrixAlert('❌ 存檔失敗：' + (xhr.responseJSON?.message || '未知錯誤'));
+                    }
+                });
+            });
+
+            // 3. 關鍵字搜尋
+            $('#permissionSearchInput').off('input').on('input', function () {
+                const val = $(this).val().toLowerCase();
+                $('#permissionMatrixBody tr').each(function () {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.includes(val));
+                });
+            });
+        }
+
+        // 自定義 Alert (全域可用)
+        window.showMatrixAlert = function (msg) {
+            const existingAlert = document.getElementById('matrixCustomAlert');
+            if (existingAlert) existingAlert.remove();
+
+            var alertHtml =
+                '<div id="matrixCustomAlert" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; ' +
+                'background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; ' +
+                'animation: matrixFadeIn 0.2s ease;">' +
+                '<div style="background: #2b2b2b; padding: 40px 60px; border-radius: 12px; border: 1px solid #444; ' +
+                'text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); animation: matrixScaleUp 0.2s ease;">' +
+                '<h5 style="color: #fff; margin-bottom: 25px; letter-spacing: 1px; font-weight: 500;">' + msg + '</h5>' +
+                '<button onclick="document.getElementById(\'matrixCustomAlert\').remove()" ' +
+                'class="btn btn-primary px-5 py-2 fw-bold" style="border-radius: 6px;">確定</button>' +
+                '</div>' +
+                '</div>' +
+                '<style>' +
+                '@keyframes matrixFadeIn { from { opacity: 0; } to { opacity: 1; } }' +
+                '@keyframes matrixScaleUp { from { transform: scale(0.8); } to { transform: scale(1); } }' +
+                '</style>';
+
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+        };
+    </script>
+
+</div>

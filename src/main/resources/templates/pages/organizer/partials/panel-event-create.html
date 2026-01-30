@@ -3,10 +3,12 @@
         <h2 class="mb-0" id="editorTitle">建立新活動</h2>
         <div class="d-flex gap-2">
             <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#draftsModal">
-                <i class="fas fa-save me-1"></i> 我的草稿
+                <i data-lucide="archive" class="me-1"
+                    style="width: 18px; height: 18px; vertical-align: text-bottom;"></i> 我的草稿
             </button>
             <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">
-                <i class="fas fa-times me-1"></i> 取消編輯
+                <i data-lucide="x" class="me-1" style="width: 18px; height: 18px; vertical-align: text-bottom;"></i>
+                取消編輯
             </button>
         </div>
     </div>
@@ -43,7 +45,7 @@
                                 <option value="">正在載入...</option>
                             </select>
                             <button class="btn btn-outline-secondary" type="button" onclick="loadActivityTypes()">
-                                <i class="fas fa-sync-alt"></i>
+                                <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
                             </button>
                         </div>
                     </div>
@@ -54,8 +56,9 @@
                     <div class="col-12">
                         <label class="form-label required">活動主視覺</label>
                         <label class="upload-zone d-block position-relative" for="mainImageInput" id="mainImageUpload">
-                            <div class="upload-placeholder">
-                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                            <div class="upload-placeholder text-center py-4">
+                                <i data-lucide="image-up" class="mb-3 text-muted"
+                                    style="width: 48px; height: 48px;"></i>
                                 <p class="text-muted">點擊或拖曳圖片至此 (建議尺寸 16:9)</p>
                             </div>
                             <input type="file" id="mainImageInput" accept="image/*"
@@ -64,7 +67,7 @@
                             <div class="upload-preview d-none">
                                 <img src="" id="mainImagePreview">
                                 <button type="button" class="btn btn-remove-preview" title="移除圖片">
-                                    <i class="fas fa-times"></i>
+                                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                                 </button>
                             </div>
                         </label>
@@ -76,7 +79,7 @@
                             <!-- Gallery items will be added here -->
                             <label class="gallery-add-zone" for="galleryImageInput"
                                 style="width: 120px; height: 120px; border: 2px dashed #6c757d; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,0.05);">
-                                <i class="fas fa-plus fa-2x text-muted"></i>
+                                <i data-lucide="plus" class="text-muted" style="width: 32px; height: 32px;"></i>
                                 <input type="file" id="galleryImageInput" accept="image/*" class="d-none" multiple>
                             </label>
                         </div>
@@ -95,7 +98,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">票種設定</h5>
                     <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddTicketZone">
-                        <i class="fas fa-plus me-1"></i>新增票種
+                        <i data-lucide="plus" class="me-1"
+                            style="width: 16px; height: 16px; vertical-align: text-bottom;"></i>新增票種
                     </button>
                 </div>
                 <div id="ticketZones">
@@ -135,10 +139,12 @@
         <!-- 操作按鈕 -->
         <div class="d-flex justify-content-end gap-2 mb-5">
             <button type="button" class="btn btn-outline-light" id="btnSaveDraft">
-                <i class="fas fa-save me-1"></i>儲存草稿
+                <i data-lucide="save" class="me-1"
+                    style="width: 18px; height: 18px; vertical-align: text-bottom;"></i>儲存草稿
             </button>
-            <button type="button" class="btn btn-success btn-lg" id="btnSubmitReview">
-                <i class="fas fa-paper-plane me-1"></i>送出審核
+            <button type="button" class="btn btn-success btn-lg px-4" id="btnSubmitReview">
+                <i data-lucide="send" class="me-1"
+                    style="width: 20px; height: 20px; vertical-align: text-bottom;"></i>送出審核
             </button>
         </div>
     </form>
