@@ -190,4 +190,14 @@ public class OrganizerService {
                         o.getIntroduction()))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    // 取得主辦方總數
+    public long getOrganizerCount() {
+        return organizerRepository.count();
+    }
+
+    // 取得活躍主辦方數 (status = 1)
+    public long getActiveOrganizerCount() {
+        return organizerRepository.findByStatus((byte) 1).size();
+    }
 }
