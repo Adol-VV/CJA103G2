@@ -55,4 +55,10 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 		       ") AS combined_orders " +
 		       "ORDER BY date DESC LIMIT 3", nativeQuery = true)
 	public List<Object[]> findLatestThreeOrdersUnified(@Param("memberId") Integer memberId);
+	
+	/**
+	 * 計算特定活動的購買會員人數 (不重複)
+	 */
+	@Query("SELECT COUNT(DISTINCT o.member.memberId) FROM EventOrderVO o WHERE o.event.eventId = :eventId")
+	Integer countDistinctMembersByEventId(@Param("eventId") Integer eventId);
 }

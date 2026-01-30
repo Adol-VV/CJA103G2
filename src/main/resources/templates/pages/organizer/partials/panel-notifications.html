@@ -1,8 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="h3"><i class="fas fa-bell me-2"></i>通知中心</h2>
-    <button class="btn btn-outline-secondary btn-sm" id="btnMarkAllRead">
-        <i class="fas fa-check-double me-1"></i>全部標為已讀
-    </button>
+    <div>
+        <button class="btn btn-outline-secondary btn-sm me-2" id="btnMarkAllRead">
+            <i class="fas fa-check-double me-1"></i>全部標為已讀
+        </button>
+        <button class="btn btn-outline-danger btn-sm" id="btnDeleteAll">
+            <i class="fas fa-trash-alt me-1"></i>全部刪除
+        </button>
+    </div>
 </div>
 
 <!-- 通知來源說明 -->
@@ -26,236 +31,56 @@
     </button>
 </div>
 
-<!-- 通知列表 -->
+<!-- 通知列表 - 使用合併排序後的 allNotifies -->
 <div class="list-group" id="notificationList">
-    <div th:each="notify : ${notifyListData}"
-         class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item btn-view-notify"
+    <div th:each="notify : ${allNotifies}"
+         class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
          th:classappend="${notify.isRead == 0} ? 'unread' : ''"
-         th:data-id="${notify.systemNotifyId}"
-         th:data-title="${notify.title}"
-         th:data-content="${#strings.contains(notify.content, '|') && #strings.arraySplit(notify.content, '\|').length > 3 ? #strings.arraySplit(notify.content, '\|')[3] : notify.content}"
-         th:data-type="${#strings.contains(notify.content, '訂單') || #strings.contains(notify.content, '退款') ? 'member' : 'platform'}">
+         th:data-type="${notify.type == 'MEMBER'} ? 'member' : 'platform'"
+         th:data-id="${notify.id}">
 
         <div class="d-flex w-100 justify-content-between align-items-start">
             <div class="d-flex">
+                <!-- 圖示根據類型顯示 -->
                 <div class="rounded-circle p-2 me-3"
-                     th:classappend="${#strings.contains(notify.content, '訂單')} ? 'bg-warning bg-opacity-10' : (${#strings.contains(notify.content, '審核')} ? 'bg-success bg-opacity-10' : 'bg-info bg-opacity-10')">
-                    <i th:class="${#strings.contains(notify.content, '訂單')} ? 'fas fa-shopping-cart text-warning' : (${#strings.contains(notify.content, '審核')} ? 'fas fa-check-circle text-success' : 'fas fa-bullhorn text-info')"></i>
+                     th:classappend="${notify.type == 'MEMBER'} ? 'bg-warning bg-opacity-10' : 'bg-info bg-opacity-10'">
+                    <i th:class="${notify.type == 'MEMBER'} ? 'fas fa-shopping-cart text-warning' : 'fas fa-bullhorn text-info'"></i>
                 </div>
 
                 <div>
                     <h6 class="mb-1" th:classappend="${notify.isRead == 0} ? 'text-white' : 'text-muted'">
-                        <span th:text="${notify.title}">動態標題</span>
-                        <span th:if="${notify.isRead == 0}" class="badge bg-primary ms-2">未讀</span>
+                        <span th:text="${notify.title}">通知標題</span>
+                        <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
                     </h6>
-                    <p class="mb-1 text-muted" th:text="${#strings.contains(notify.content, '|') && #strings.arraySplit(notify.content, '\|').length > 3 ? #strings.arraySplit(notify.content, '\|')[3] : notify.content}">動態內容內容</p>
+                    <p class="mb-1 text-muted" th:text="${notify.content}">通知內容</p>
                     <div class="d-flex align-items-center mt-2">
-                        <span th:if="${#strings.contains(notify.content, '訂單') || #strings.contains(notify.content, '退款')}" class="badge bg-warning text-dark me-2"><i class="fas fa-user me-1"></i>會員</span>
-                        <span th:unless="${#strings.contains(notify.content, '訂單') || #strings.contains(notify.content, '退款')}" class="badge bg-info me-2"><i class="fas fa-building me-1"></i>平台</span>
+                        <span th:if="${notify.type == 'MEMBER'}" class="badge bg-warning text-dark me-2">
+                            <i class="fas fa-user me-1"></i>會員
+                        </span>
+                        <span th:if="${notify.type == 'PLATFORM'}" class="badge bg-info me-2">
+                            <i class="fas fa-building me-1"></i>平台
+                        </span>
                         <small class="text-muted" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+                        <small class="text-muted ms-2">| 來自：<span th:text="${notify.sourceName}">來源</span></small>
                     </div>
                 </div>
             </div>
-            <button th:if="${notify.isRead == 0}" class="btn btn-sm btn-outline-secondary btn-mark-read">
-                <i class="fas fa-check"></i>
-            </button>
-        </div>
-    </div>
-    <!-- 未讀：會員訂單 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item unread"
-        data-type="member">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                    <i class="fas fa-shopping-cart text-warning"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-white">
-                        新訂單通知
-                        <span class="badge bg-primary ms-2">未讀</span>
-                    </h6>
-                    <p class="mb-1 text-muted">「2025新年音樂會」收到新訂單 #MOM2024122801，金額 NT$ 2,800</p>
-                    <div class="d-flex align-items-center mt-2">
-                        <span class="badge bg-warning text-dark me-2"><i class="fas fa-user me-1"></i>會員</span>
-                        <small class="text-muted">會員：王小明 | 5 分鐘前</small>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-sm btn-outline-secondary btn-mark-read">
-                <i class="fas fa-check"></i>
-            </button>
+            <button th:if="${notify.isRead == 0}"
+                    class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
+                    th:data-id="${notify.id}"
+                    th:data-notify-type="${notify.notifyType}">標記已讀</button>
         </div>
     </div>
 
-    <!-- 未讀：平台審核 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item unread"
-        data-type="platform">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                    <i class="fas fa-check-circle text-success"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-white">
-                        活動審核通過
-                        <span class="badge bg-primary ms-2">未讀</span>
-                    </h6>
-                    <p class="mb-1 text-muted">您的活動「春季室內樂系列」已通過審核，可以正式上架販售！</p>
-                    <div class="d-flex align-items-center mt-2">
-                        <span class="badge bg-info me-2"><i class="fas fa-building me-1"></i>平台</span>
-                        <small class="text-muted">來自：Momento 審核團隊 | 1 小時前</small>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-sm btn-outline-secondary btn-mark-read">
-                <i class="fas fa-check"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- 未讀：平台公告 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item unread"
-        data-type="platform">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                    <i class="fas fa-bullhorn text-info"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-white">
-                        平台公告
-                        <span class="badge bg-primary ms-2">未讀</span>
-                    </h6>
-                    <p class="mb-1 text-muted">2025 年元旦假期客服時間調整：12/31~1/2 客服暫停服務，造成不便敬請見諒。</p>
-                    <div class="d-flex align-items-center mt-2">
-                        <span class="badge bg-info me-2"><i class="fas fa-building me-1"></i>平台</span>
-                        <small class="text-muted">來自：Momento 官方 | 3 小時前</small>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-sm btn-outline-secondary btn-mark-read">
-                <i class="fas fa-check"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- 未讀：會員退款申請 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item unread"
-        data-type="member">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-danger bg-opacity-10 rounded-circle p-2 me-3">
-                    <i class="fas fa-undo text-danger"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-white">
-                        退款申請
-                        <span class="badge bg-danger ms-2">待處理</span>
-                    </h6>
-                    <p class="mb-1 text-muted">訂單 #MOM2024122805 申請退款，原因：「臨時有事無法參加」</p>
-                    <div class="d-flex align-items-center mt-2">
-                        <span class="badge bg-warning text-dark me-2"><i class="fas fa-user me-1"></i>會員</span>
-                        <small class="text-muted">會員：李小華 | 30 分鐘前</small>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <a href="#" class="btn btn-sm btn-primary me-1" onclick="showSection('orders')">處理</a>
-                <button class="btn btn-sm btn-outline-secondary btn-mark-read">
-                    <i class="fas fa-check"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 已讀：會員訂單 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-        data-type="member">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-3">
-                    <i class="fas fa-shopping-cart text-muted"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-muted">新訂單通知</h6>
-                    <p class="mb-1 text-muted small">「2025新年音樂會」收到新訂單 #MOM2024122701</p>
-                    <small class="text-muted"><i class="fas fa-user me-1"></i>會員：張大明 | 昨天 18:30</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 已讀：平台審核 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-        data-type="platform">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-3">
-                    <i class="fas fa-box text-muted"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-muted">商品審核通過</h6>
-                    <p class="mb-1 text-muted small">「2024紀念T恤」已通過審核並上架</p>
-                    <small class="text-muted"><i class="fas fa-building me-1"></i>Momento 審核團隊 | 2 天前</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 已讀：平台結算 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-        data-type="platform">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-3">
-                    <i class="fas fa-money-bill-wave text-muted"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-muted">結算完成通知</h6>
-                    <p class="mb-1 text-muted small">12月商品銷售結算已完成，款項 NT$ 45,800 已匯入帳戶</p>
-                    <small class="text-muted"><i class="fas fa-building me-1"></i>Momento 財務部 | 3 天前</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 已讀：會員退款 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-        data-type="member">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-3">
-                    <i class="fas fa-undo text-muted"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-muted">退款申請通知</h6>
-                    <p class="mb-1 text-muted small">訂單 #MOM2024122501 申請退款，已處理完成</p>
-                    <small class="text-muted"><i class="fas fa-user me-1"></i>會員：陳小玲 | 5 天前</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 已讀：會員詢問 -->
-    <div class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-        data-type="member">
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-3">
-                    <i class="fas fa-comment-dots text-muted"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-muted">會員詢問</h6>
-                    <p class="mb-1 text-muted small">會員針對「新年音樂會」詢問：「請問有提供素食餐點嗎？」</p>
-                    <small class="text-muted"><i class="fas fa-user me-1"></i>會員：林小美 | 1 週前</small>
-                </div>
-            </div>
-        </div>
+    <!-- 無資料時顯示 -->
+    <div th:if="${#lists.isEmpty(allNotifies)}" class="text-center text-muted py-5">
+        <i class="fas fa-inbox fa-3x mb-3"></i>
+        <p class="mb-0">目前沒有通知</p>
     </div>
 </div>
 
 <!-- 載入更多 -->
-<div class="text-center mt-4">
+<div th:if="${not #lists.isEmpty(allNotifies)}" class="text-center mt-4">
     <button class="btn btn-outline-secondary">
         <i class="fas fa-plus me-2"></i>載入更多通知
     </button>

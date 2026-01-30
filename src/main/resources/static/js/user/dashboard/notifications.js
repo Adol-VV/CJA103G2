@@ -1,62 +1,272 @@
+/**
+ * 會員通知模組
+ */
 export function initNotifications() {
-    //  AJAX 同步已讀狀態
+    // 頁面載入時取得通知
+    fetchBellNotifications();
+
+    // 點擊小鈴鐺時重新載入
+    $('#bellDropdown').on('show.bs.dropdown', function () {
+        fetchBellNotifications();
+    });
+
+    // 單則已讀按鈕 (支援 ORGANIZER 和 SYSTEM 兩種類型)
     $(document).on('click', '.btn-mark-read', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        const $btn = $(this);
-        const $item = $btn.closest('[data-id]');
-        // 抓取標籤上的 ID
-        const notifyId = $item.data('id');
-
-        //  發送請求更新資料庫
-        // $.post('/member/dashboard/notifications/mark-read', {
-        $.post('/member/notifications/read', {
-            notifyId: notifyId
-        }, function (res) {
-            if (res.success) {
-                // 成功後執行原有的 UI 變更
-                $item.find('.bg-primary').fadeOut(function() { $(this).remove(); });
-                // 使用 .find() 確保只移除這則通知內的按鈕
-                $btn.fadeOut(function() { $(this).remove(); });
-                // 移除左側的藍色未讀提示條
-                updateAllBadges();
-
-                console.log("資料庫狀態更新成功，已讀率將會同步更新");
-            }
-        });
+        markAsRead(this);
     });
 
-    function updateAllBadges() {
-        $('.badge.bg-danger').each(function() {
-            let count = parseInt($(this).text() || '0');
-            if (count > 1) {
-                $(this).text(count - 1);
-            } else {
-                $(this).fadeOut(function() { $(this).hide(); }); // 數字變 0 就隱藏
-            }
-        });
-    }
+    // 全部已讀按鈕
     $(document).on('click', '#btnReadAll', function () {
-        $('.list-group-item.bg-dark').removeClass('bg-dark').addClass('bg-transparent opacity-75');
-        $('.bg-primary').fadeOut(); // 移除所有藍條
-        $('.btn-mark-read').remove();
-        $('#notificationBadge').text('').hide();
+        markAllAsRead();
     });
 
-    $(document).on('change', '#templateSelect', function() {
-        // 取得目前選中的 option
-        const selectedOption = $(this).find(':selected');
+    // 全部刪除按鈕
+    $(document).on('click', '#btnDeleteAll', function () {
+        deleteAllNotifications();
+    });
 
-        // 抓取 data-title 與 data-content 屬性
-        const title = selectedOption.data('title');
-        const content = selectedOption.data('content');
+    // 通知篩選
+    $('[data-filter]').click(function () {
+        const filter = $(this).data('filter');
+        $('[data-filter]').removeClass('active');
+        $(this).addClass('active');
 
-        // 如果資料存在，則填入標題與內容輸入框
-        if (title && content) {
-            $('#notificationTitle').val(title);
-            $('#notificationContent').val(content);
-            console.log("範本套入成功");
+        if (filter === 'all') {
+            $('.notification-item').show();
+        } else {
+            $('.notification-item').hide();
+            $(`.notification-item[data-type="${filter}"]`).show();
         }
-    })
+    });
+}
+
+/**
+ * 取得小鈴鐺通知列表
+ */
+function fetchBellNotifications() {
+    $.post('/member/notifications/list', function (res) {
+        if (res.success) {
+            const listContainer = $('#bellNotificationList');
+            listContainer.empty();
+
+            if (!res.notifications || res.notifications.length === 0) {
+                listContainer.append('<li class="text-center py-4 text-muted small">目前沒有新通知</li>');
+            } else {
+                // 只顯示最新 5 則
+                const recentNotifications = res.notifications.slice(0, 5);
+                recentNotifications.forEach(notify => {
+                    const isUnread = notify.isRead === 0;
+                    const unreadStyle = isUnread ? 'style="background: rgba(13, 110, 253, 0.05);"' : '';
+                    const dot = isUnread ? '<span class="badge bg-primary rounded-circle p-1 ms-1"> </span>' : '';
+                    const typeIcon = notify.type === 'SYSTEM' ? '📢' : '🏪';
+
+                    listContainer.append(`
+                        <li class="p-2 border-bottom border-secondary notification-bell-item"
+                            data-id="${notify.id}" data-type="${notify.type}" ${unreadStyle}>
+                            <div class="small text-white d-flex justify-content-between">
+                                <span>${typeIcon} ${notify.title} ${dot}</span>
+                            </div>
+                            <div class="text-muted text-truncate" style="font-size: 0.75rem;">${notify.content}</div>
+                            <div class="text-end text-muted" style="font-size: 0.65rem;">${formatDateTime(notify.createdAt)}</div>
+                        </li>
+                    `);
+                });
+            }
+            // 更新紅點計數
+            updateNotificationBadge(res.unreadCount);
+        }
+    }).fail(function() {
+        console.error('載入通知失敗');
+    });
+}
+
+/**
+ * 標記單則為已讀
+ */
+function markAsRead(btn) {
+    // 從按鈕本身取得 data-id 和 data-type
+    const $btn = $(btn);
+    const notifyId = $btn.data('id');
+    const notifyType = $btn.data('type') || 'ORGANIZER';
+
+    // 找到父層的通知項目 (notification-item)
+    const $item = $btn.closest('.notification-item');
+
+    $.post('/member/notifications/read', {
+        notifyId: notifyId,
+        type: notifyType
+    }, function (res) {
+        if (res.success) {
+            // 更新 UI
+            $item.removeClass('unread');
+            $item.find('.badge.bg-danger').remove(); // 移除「未讀」標籤
+            $item.find('.position-absolute.bg-warning, .position-absolute.bg-primary').fadeOut(); // 移除左側色條
+            $btn.fadeOut(function() { $(this).remove(); }); // 移除「標記已讀」按鈕
+
+            // 重新載入鈴鐺通知 (會同步更新側邊欄數量)
+            fetchBellNotifications();
+            showToast('已標為已讀', 'success');
+        }
+    }).fail(function() {
+        showToast('標記失敗', 'danger');
+    });
+}
+
+/**
+ * 標記所有為已讀
+ */
+function markAllAsRead() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '確定要將所有通知標為已讀嗎?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '確定',
+            cancelButtonText: '取消',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                doMarkAllAsRead();
+            }
+        });
+    } else if (confirm('確定要將所有通知標為已讀嗎?')) {
+        doMarkAllAsRead();
+    }
+}
+
+function doMarkAllAsRead() {
+    $.post('/member/notifications/read-all', function (res) {
+        if (res.success) {
+            // 更新所有通知項目的 UI
+            $('.notification-item.unread').each(function () {
+                $(this).removeClass('unread');
+                $(this).find('.badge.bg-danger').remove(); // 移除未讀 badge
+                $(this).find('.badge.bg-primary').remove();
+                $(this).find('.position-absolute.bg-warning, .position-absolute.bg-primary').fadeOut(); // 移除左側色條
+                $(this).find('.btn-mark-read').remove();
+            });
+
+            // 重新載入鈴鐺通知
+            fetchBellNotifications();
+            showToast('所有通知已標為已讀', 'success');
+        }
+    });
+}
+
+/**
+ * 刪除所有通知
+ */
+function deleteAllNotifications() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '確定要刪除所有通知嗎?',
+            text: '此操作無法復原',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '確定刪除',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#dc3545',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                doDeleteAllNotifications();
+            }
+        });
+    } else if (confirm('確定要刪除所有通知嗎？此操作無法復原')) {
+        doDeleteAllNotifications();
+    }
+}
+
+function doDeleteAllNotifications() {
+    $.post('/member/notifications/delete-all', function (res) {
+        if (res.success) {
+            // 清空所有通知項目
+            $('.notification-item').fadeOut(function() {
+                $(this).remove();
+            });
+
+            // 顯示無通知訊息
+            setTimeout(function() {
+                $('.list-group-flush').each(function() {
+                    if ($(this).find('.notification-item').length === 0) {
+                        $(this).html(`
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">目前沒有通知</p>
+                            </div>
+                        `);
+                    }
+                });
+            }, 300);
+
+            // 重新載入鈴鐺通知
+            fetchBellNotifications();
+            showToast('已刪除所有通知', 'success');
+        } else {
+            showToast(res.message || '刪除失敗', 'danger');
+        }
+    }).fail(function() {
+        showToast('刪除通知失敗', 'danger');
+    });
+}
+
+/**
+ * 更新通知紅點數字 (同步更新小鈴鐺和側邊欄)
+ */
+function updateNotificationBadge(count) {
+    const unreadCount = (count !== undefined) ? count : 0;
+    // 同時更新小鈴鐺和側邊欄的通知數量
+    const badgeElements = $('#bellBadge, #notificationBadge, .notification-badge, .sidebar-notify-badge');
+
+    if (unreadCount > 0) {
+        badgeElements.text(unreadCount).show();
+    } else {
+        badgeElements.hide();
+    }
+}
+
+/**
+ * 格式化時間
+ */
+function formatDateTime(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return '剛剛';
+        if (minutes < 60) return `${minutes} 分鐘前`;
+        if (hours < 24) return `${hours} 小時前`;
+        if (days < 7) return `${days} 天前`;
+
+        return dateStr.replace('T', ' ').substring(0, 16);
+    } catch (e) {
+        return dateStr;
+    }
+}
+
+/**
+ * 顯示 Toast 訊息
+ */
+function showToast(message, type = 'info') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: type === 'success' ? 'success' : (type === 'danger' ? 'error' : 'info'),
+            title: message,
+            showConfirmButton: false,
+            timer: 2000
+        });
+    } else {
+        console.log(`[${type}] ${message}`);
+    }
 }

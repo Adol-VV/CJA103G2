@@ -98,7 +98,7 @@ public class EventReviewService {
             notify.setOrganizerVO(event.getOrganizer());
             notify.setEmpVO(emp);
             notify.setTitle("活動審核未通過通知: " + event.getTitle());
-            notify.setContent("您的活動「" + event.getTitle() + "」未能通過審核。\n退回原因: " + reason);
+            notify.setContent("您的活動『" + event.getTitle() + "』未能通過審核。\n退回原因: " + reason);
             notify.setNotifyStatus(0);
             notify.setTargetId(String.valueOf(eventId));
             organizerNotifyRepository.save(notify);

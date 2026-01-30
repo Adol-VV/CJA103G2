@@ -2,298 +2,189 @@
     <h3 class="mb-0">通知中心</h3>
     <div>
         <button id="btnReadAll" class="btn btn-outline-light btn-sm me-2">
-            <i class="fas fa-check-double"></i>全部已讀</button>
-        <button class="btn btn-outline-danger btn-sm">
-            <i class="fas fa-trash-alt"></i> 刪除已讀</button>
+            <i class="fas fa-check-double me-1"></i>全部已讀</button>
+        <button id="btnDeleteAll" class="btn btn-outline-danger btn-sm">
+            <i class="fas fa-trash-alt me-1"></i>全部刪除</button>
     </div>
 </div>
 
 <div class="card bg-dark border-secondary">
     <div class="card-header border-secondary">
         <ul class="nav nav-tabs card-header-tabs flex-nowrap overflow-auto" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#notif-all">全部</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-system">平台公告</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">主辦方通知
-                <span class="badge bg-danger ms-1" th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}" th:text="${unreadNotifyCount}">0</span></a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-orders">訂單更新</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notif-promo">代幣回饋</a></li>
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#notif-all">
+                    全部
+                    <span class="badge bg-secondary ms-1" th:if="${totalCount != null and totalCount > 0}" th:text="${totalCount}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#notif-system">
+                    平台公告
+                    <span class="badge bg-primary ms-1" th:if="${systemCount != null and systemCount > 0}" th:text="${systemCount}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#notif-organizer">
+                    主辦方通知
+                    <span class="badge bg-warning text-dark ms-1" th:if="${organizerCount != null and organizerCount > 0}" th:text="${organizerCount}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#notif-orders">
+                    訂單更新
+                    <span class="badge bg-success ms-1" th:if="${orderCount != null and orderCount > 0}" th:text="${orderCount}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#notif-promo">
+                    代幣回饋
+                    <span class="badge bg-info ms-1" th:if="${tokenCount != null and tokenCount > 0}" th:text="${tokenCount}">0</span>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="card-body p-0">
         <div class="tab-content">
             <div class="tab-pane fade show active" id="notif-all">
                 <div class="list-group list-group-flush">
-                    <!-- Unread: Platform System -->
-<!--                    -->
-                    <a th:each="notify : ${notifyList}" href="javascript:void(0)"
-                       th:data-id="${notify.memberNotifyId}"
-                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
+                    <!-- 使用已排序的 allNotifies -->
+                    <a th:each="notify : ${allNotifies}" href="javascript:void(0)"
+                       th:data-id="${notify.id}"
+                       th:data-type="${notify.type}"
+                       th:classappend="${notify.isRead == 0} ? ' unread' : ''"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative notification-item">
 
-                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
+                        <!-- 未讀標記 - 根據類型顯示不同顏色 -->
+                        <div th:if="${notify.isRead == 0}"
+                             th:class="${notify.type == 'ORGANIZER'} ? 'position-absolute top-0 start-0 h-100 bg-warning' : 'position-absolute top-0 start-0 h-100 bg-primary'"
+                             style="width: 4px;"></div>
 
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
-                    <span class="badge bg-warning text-dark me-2">
-                        <i class="fas fa-store"></i> 主辦方
-                    </span>
-                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">動態標題</h6>
+                                <!-- 主辦方通知 badge -->
+                                <span th:if="${notify.type == 'ORGANIZER'}" class="badge bg-warning text-dark me-2">
+                                    <i class="fas fa-store"></i> 主辦方
+                                </span>
+                                <!-- 系統通知 badge -->
+                                <span th:if="${notify.type == 'SYSTEM'}" class="badge bg-primary me-2">
+                                    <i class="fas fa-bullhorn"></i> 系統
+                                </span>
+                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">標題</h6>
+                                <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
                             </div>
-                            <small class="text-warning" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+                            <small th:class="${notify.type == 'ORGANIZER'} ? 'text-warning' : 'text-primary'"
+                                   th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
                         </div>
 
                         <p class="mb-1 text-muted" th:text="${notify.content}">通知內容</p>
 
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <small class="text-muted">
-                                <i class="fas fa-user-tie me-1"></i>來自：
-                                <span th:text="${notify.organizerNotifyVO?.organizerVO?.organizerId ?: 'Momento 官方'}">主辦單位</span>
+                                <i th:class="${notify.type == 'ORGANIZER'} ? 'fas fa-user-tie me-1' : 'fas fa-building me-1'"></i>來自：
+                                <span th:text="${notify.sourceName}">來源</span>
                             </small>
                             <button th:if="${notify.isRead == 0}"
                                     class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
-                                    th:onclick="'markAsRead(' + ${notify.memberNotifyId} + ')'">標記已讀</button>
+                                    th:data-type="${notify.type}"
+                                    th:data-id="${notify.id}">標記已讀</button>
                         </div>
                     </a>
-<!--                    -->
-                    <a th:each="notify : ${notifyListData}" href="javascript:void(0)" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative"
-                          th:data-id="${notify.systemNotifyId}">
-                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-primary me-2">
-                                    <i class="fas fa-bullhorn"></i>
-                                    <span th:text="${#strings.contains(notify.content, '|') ? #strings.replace(#strings.arraySplit(notify.content, '\|')[0], '[', '').replace(']', '') : '系統'}">平台</span>
-                                </span>
-                                <h6 class="mb-0 fw-bold" th:text="${notify.title}">標題</h6>
-                            </div>
-                            <small class="text-primary" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">剛剛</small>
-                        </div>
-                        <p class="mb-1 text-muted" th:text="${#strings.contains(notify.content, '|') && #strings.arraySplit(notify.content, '\|').length > 3 ? #strings.arraySplit(notify.content, '\|')[3] : notify.content}">內容</p>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
-                            <button th:if="${notify.isRead == 0}" class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read" >標記已讀</button>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
-                        <div class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i>
-                                    平台</span>
-                                <h6 class="mb-0 fw-bold">平台維護公告</h6>
-                            </div>
-                            <small class="text-primary">剛剛</small>
-                        </div>
-                        <p class="mb-1 text-muted">Momento 將於 2024/12/31 02:00-04:00
-                            進行系統維護，期間將無法進行購票。</p>
-                        <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
-                    </a>
-
-                    <!-- Unread: Organizer Notification -->
-                    <a href="#"
-                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
-                        <div class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-store"></i>
-                                    主辦方</span>
-                                <h6 class="mb-0 fw-bold">活動提醒：跨年演唱會明日開始</h6>
-                            </div>
-                            <small class="text-warning">1 小時前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您購買的「2025 跨年演唱會」將於明日 20:00 開始，請記得攜帶電子票券入場！</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：五月天工作室</small>
-                    </a>
-
-                    <!-- Unread: Organizer Notification -->
-                    <a href="#"
-                        class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative">
-                        <div class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-store"></i>
-                                    主辦方</span>
-                                <h6 class="mb-0 fw-bold">商品出貨通知</h6>
-                            </div>
-                            <small class="text-warning">2 小時前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您訂購的「限定款應援棒」已出貨，物流單號：SF1234567890</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：演唱會官方商店</small>
-                    </a>
-
-                    <!-- Order Item -->
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-success me-2"><i class="fas fa-box"></i>
-                                    訂單</span>
-                                <h6 class="mb-0">訂單 #MOP20241225001 已出貨</h6>
-                            </div>
-                            <small class="text-muted">2 小時前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您購買的「官方週邊 T-shirt」已經交寄物流，預計 2-3 天內送達。</p>
-                        <small class="text-muted"><i class="fas fa-cog me-1"></i>系統自動通知</small>
-                    </a>
-
-                    <!-- Token Reward Item -->
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-info me-2"><i class="fas fa-coins"></i>
-                                    代幣</span>
-                                <h6 class="mb-0">跨年購物代幣回饋已入帳</h6>
-                            </div>
-                            <small class="text-muted">1 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您上次消費已滿額，我們已贈送 50 元代幣至您的帳戶，可於下次購票或購物時折抵使用。</p>
-                        <small class="text-muted"><i class="fas fa-building me-1"></i>來自：Momento 官方</small>
-                    </a>
+                    <!-- 無資料時顯示 -->
+                    <div th:if="${#lists.isEmpty(allNotifies)}" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">目前沒有通知</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Platform System Notifications -->
             <div class="tab-pane fade" id="notif-system">
                 <div class="list-group list-group-flush">
-<!--                    -->
                     <a th:each="notify : ${notifyListData}" href="javascript:void(0)"
-                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                       th:data-id="${notify.systemNotifyId}"
+                       data-type="SYSTEM"
+                       th:classappend="${notify.isRead == 0} ? ' unread' : ''"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative notification-item">
+                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;"></div>
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
                                 <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i> 系統</span>
                                 <h6 class="mb-0 fw-bold" th:text="${notify.title}">系統標題</h6>
+                                <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
                             </div>
                             <small class="text-primary" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
                         </div>
                         <p class="mb-1 text-muted" th:text="${notify.content}">內容</p>
-                    </a>
-<!--                    -->
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-primary me-2"><i class="fas fa-bullhorn"></i></span>
-                                <h6 class="mb-0 fw-bold">平台維護公告</h6>
-                            </div>
-                            <small class="text-primary">剛剛</small>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button th:if="${notify.isRead == 0}"
+                                    class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
+                                    th:data-id="${notify.systemNotifyId}"
+                                    data-type="SYSTEM">標記已讀</button>
                         </div>
-                        <p class="mb-1 text-muted">Momento 將於 2024/12/31 02:00-04:00 進行系統維護。</p>
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-primary me-2"><i class="fas fa-info-circle"></i></span>
-                                <h6 class="mb-0">新功能上線：電子票券錢包</h6>
-                            </div>
-                            <small class="text-muted">3 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">現在您可以在會員中心查看所有電子票券，入場更方便！</p>
-                    </a>
+                    <!-- 無資料時顯示 -->
+                    <div th:if="${#lists.isEmpty(notifyListData)}" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">目前沒有平台公告</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Organizer Notifications -->
             <div class="tab-pane fade" id="notif-organizer">
                 <div class="list-group list-group-flush">
-<!--                    -->
-                    <a th:each="notify : ${notifyList}" href="#"  class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
+                    <a th:each="notify : ${notifyList}" href="javascript:void(0)"
+                       th:data-id="${notify.memberNotifyId}"
+                       data-type="ORGANIZER"
+                       th:classappend="${notify.isRead == 0} ? ' unread' : ''"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative notification-item">
+                        <div th:if="${notify.isRead == 0}" class="position-absolute top-0 start-0 h-100 bg-warning" style="width: 4px;"></div>
                         <div class="d-flex w-100 justify-content-between mb-1">
                             <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-calendar-check"></i></span>
+                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-store"></i> 主辦方</span>
                                 <h6 class="mb-0 fw-bold" th:text="${notify.title}">標題</h6>
+                                <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
                             </div>
-                            <small class="text-warning" th:text="${#temporals.format(notify.createdAt, 'MM/dd HH:mm')}">時間</small>
+                            <small class="text-warning" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
                         </div>
                         <p class="mb-1 text-muted" th:text="${notify.content}">內容</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>
-                            <span th:text="${notify.organizerNotifyVO?.organizerVO?.organizerId ?: 'Momento 官方'}">主辦名稱</span>
-                        </small>
-                    </a>
-<!--                    -->
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i
-                                        class="fas fa-calendar-check"></i></span>
-                                <h6 class="mb-0 fw-bold">活動提醒：跨年演唱會明日開始</h6>
-                            </div>
-                            <small class="text-warning">1 小時前</small>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：
+                                <span th:text="${notify.organizerNotifyVO?.organizerVO?.name ?: 'Momento 官方'}">主辦名稱</span>
+                            </small>
+                            <button th:if="${notify.isRead == 0}"
+                                    class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
+                                    th:data-id="${notify.memberNotifyId}"
+                                    data-type="ORGANIZER">標記已讀</button>
                         </div>
-                        <p class="mb-1 text-muted">您購買的「2025 跨年演唱會」將於明日 20:00 開始，請記得攜帶電子票券入場！</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：五月天工作室</small>
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i class="fas fa-truck"></i></span>
-                                <h6 class="mb-0 fw-bold">商品出貨通知</h6>
-                            </div>
-                            <small class="text-warning">2 小時前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您訂購的「限定款應援棒」已出貨，物流單號：SF1234567890</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：演唱會官方商店</small>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning text-dark me-2"><i
-                                        class="fas fa-map-marker-alt"></i></span>
-                                <h6 class="mb-0">活動地點異動通知</h6>
-                            </div>
-                            <small class="text-muted">2 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">「春季音樂祭」活動地點由原本的大安森林公園改至台北小巨蛋，敬請留意。</p>
-                        <small class="text-muted"><i class="fas fa-user-tie me-1"></i>來自：春季音樂祭主辦單位</small>
-                    </a>
+                    <!-- 無資料時顯示 -->
+                    <div th:if="${#lists.isEmpty(notifyList)}" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">目前沒有主辦方通知</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Order Notifications -->
             <div class="tab-pane fade" id="notif-orders">
                 <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-success me-2"><i class="fas fa-box"></i></span>
-                                <h6 class="mb-0">訂單 #MOP20241225001 已出貨</h6>
-                            </div>
-                            <small class="text-muted">2 小時前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您購買的「官方週邊 T-shirt」已經交寄物流，預計 2-3 天內送達。</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-success me-2"><i class="fas fa-check-circle"></i></span>
-                                <h6 class="mb-0">訂單 #MOT20241220003 付款成功</h6>
-                            </div>
-                            <small class="text-muted">5 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">「2025 跨年演唱會」門票 x2 購買成功，電子票券已存入您的帳戶。</p>
-                    </a>
+                    <!-- TODO: 待接入訂單通知資料 -->
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">目前沒有訂單通知</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Token Reward Notifications -->
             <div class="tab-pane fade" id="notif-promo">
                 <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-info me-2"><i class="fas fa-coins"></i></span>
-                                <h6 class="mb-0">跨年購物代幣回饋已入帳</h6>
-                            </div>
-                            <small class="text-muted">1 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">您上次消費已滿額，我們已贈送 50 元代幣至您的帳戶。</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4">
-                        <div class="d-flex w-100 justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-info me-2"><i class="fas fa-gift"></i></span>
-                                <h6 class="mb-0">首購會員禮 30 元代幣</h6>
-                            </div>
-                            <small class="text-muted">7 天前</small>
-                        </div>
-                        <p class="mb-1 text-muted">感謝您成為 Momento 會員，首購禮 30 元代幣已入帳！</p>
-                    </a>
+                    <!-- TODO: 待接入代幣回饋資料 -->
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">目前沒有代幣回饋通知</p>
+                    </div>
                 </div>
             </div>
         </div>

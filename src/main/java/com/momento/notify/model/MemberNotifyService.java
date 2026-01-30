@@ -30,4 +30,27 @@ public class MemberNotifyService {
     public void  addMemberNotify(MemberNotifyVO memberNotifyVO){
         memberNotifyRepository.save(memberNotifyVO);
     }
+
+    /**
+     * 標記該會員所有通知為已讀
+     */
+    @Transactional
+    public void markAllAsReadByMemberId(Integer memberId) {
+        List<MemberNotifyVO> notifications = memberNotifyRepository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
+        for (MemberNotifyVO notify : notifications) {
+            if (notify.getIsRead() == 0) {
+                notify.setIsRead(1);
+                memberNotifyRepository.save(notify);
+            }
+        }
+    }
+
+    /**
+     * 刪除該會員所有通知
+     */
+    @Transactional
+    public void deleteAllByMemberId(Integer memberId) {
+        List<MemberNotifyVO> notifications = memberNotifyRepository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
+        memberNotifyRepository.deleteAll(notifications);
+    }
 }

@@ -33,6 +33,29 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/event/list}">探索活動</a></li>
                     <li class="nav-item"><a class="nav-link" href="../public/article-list.html">最新消息</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">周邊商品</a></li>
+                    <!-- 通知小鈴鐺 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link position-relative" href="#" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="far fa-bell"></i>
+                            <span id="bellBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display: none;">0</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg" style="width: 320px; max-height: 400px;">
+                            <li class="p-3 pb-2 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">通知中心</h6>
+                                <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none" id="btnReadAll" style="font-size: 0.8rem;">全部標記已讀</button>
+                            </li>
+                            <li><hr class="dropdown-divider m-0"></li>
+                            <li>
+                                <ul id="bellNotificationList" class="list-unstyled mb-0" style="max-height: 280px; overflow-y: auto;">
+                                    <li class="text-center py-4 text-muted small">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>載入中...
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><hr class="dropdown-divider m-0"></li>
+                            <li><a class="dropdown-item text-center small text-primary py-2" href="#notifications">查看所有通知</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i> 會員中心

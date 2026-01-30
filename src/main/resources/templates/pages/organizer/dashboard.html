@@ -45,9 +45,9 @@
                     <button class="btn btn-link text-muted position-relative p-2" data-bs-toggle="dropdown"
                         id="bellDropdown" type="button" aria-expanded="false">
                         <i class="far fa-bell fs-5"></i>
-                        <span id="bellBadge" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}"
+                        <span id="bellBadge" th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}" th:text="${unreadNotifyCount}"
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="font-size: 0.6rem;">3</span>
+                            style="font-size: 0.6rem;">0</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary"
                         style="width: 320px;">
@@ -73,8 +73,8 @@
                         <li>
                             <hr class="dropdown-divider m-0">
                         </li>
-                        <li><a class="dropdown-item text-center small text-primary py-2" href="#notifications"
-                                data-section="notifications">查看所有通知</a></li>
+                        <li><a class="dropdown-item text-center small py-2" href="javascript:void(0);"
+                                id="btnViewAllNotifications" style="color: #0d6efd !important;">查看所有通知</a></li>
                     </ul>
                 </div>
 

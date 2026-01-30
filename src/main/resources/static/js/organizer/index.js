@@ -21,7 +21,7 @@ import { initArticleManagement } from './modules/articles.js';
 import { initReports } from './modules/reports.js';
 import { initSettlement } from './modules/settlement.js';
 import { initSettings } from './modules/settings.js';
-import { initSidebarNavigation, initNotificationBell } from './modules/ui-control.js';
+import { initSidebarNavigation } from './modules/ui-control.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Auth Check
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initSettlement();
     initSettings();
     initSidebarNavigation();
-    initNotificationBell();
+    // initNotificationBell(); // 已整合到 notifications.js
 
     console.log('Organizer Dashboard Fully Modularized');
 });

@@ -74,6 +74,38 @@ public class SystemNotifyService {
         repository.markAllAsReadByOrgId(orgId);
     }
 
+    /**
+     * 標記該會員所有系統通知為已讀
+     */
+    @Transactional
+    public void markAllAsReadByMemberId(Integer memberId) {
+        List<SystemNotifyVO> notifications = repository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
+        for (SystemNotifyVO notify : notifications) {
+            if (notify.getIsRead() != null && notify.getIsRead() == 0) {
+                notify.setIsRead(1);
+                repository.save(notify);
+            }
+        }
+    }
+
+    /**
+     * 刪除該會員所有系統通知
+     */
+    @Transactional
+    public void deleteAllByMemberId(Integer memberId) {
+        List<SystemNotifyVO> notifications = repository.findByMemberVO_MemberIdOrderByCreatedAtDesc(memberId);
+        repository.deleteAll(notifications);
+    }
+
+    /**
+     * 刪除該主辦方所有系統通知
+     */
+    @Transactional
+    public void deleteAllByOrgId(Integer organizerId) {
+        List<SystemNotifyVO> notifications = repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+        repository.deleteAll(notifications);
+    }
+
     private String getTargetLabel(String group) {
         if (group == null) return "未知對象";
         return switch (group) {

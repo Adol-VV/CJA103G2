@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,21 +113,74 @@ public class OrganizerCenterController {
             model.addAttribute("prodList", prodSvc.getProdsByOrg(organizer.getOrganizerId()));
         }
 
-        // 抓主辦方通知
-        List<OrganizerNotifyVO> list = orgNotifySvc.getAll();
-        List<SystemNotifyVO> notifyList = sysNotifySvc.getByOrgId(organizer.getOrganizerId());
-        if (notifyList == null) {
-            notifyList = new java.util.ArrayList<>();
+        // 抓通知資料
+        List<OrganizerNotifyVO> orgNotifyList = orgNotifySvc.getByOrgId(organizer.getOrganizerId());
+        List<SystemNotifyVO> sysNotifyList = sysNotifySvc.getByOrgId(organizer.getOrganizerId());
+        if (orgNotifyList == null) orgNotifyList = new ArrayList<>();
+        if (sysNotifyList == null) sysNotifyList = new ArrayList<>();
+
+        // 主辦方"接收"通知
+        List<OrganizerNotifyVO> receivedNotifies = orgNotifyList.stream()
+                .filter(n -> n.getEmpVO() != null || (n.getTitle() != null && n.getTitle().contains("訂單")))
+                .toList();
+        // 主辦方"發送"的紀錄
+        List<OrganizerNotifyVO> sentNotifies = orgNotifyList.stream()
+                .filter(n -> n.getEmpVO() == null && (n.getTitle() != null && !n.getTitle().contains("訂單")))
+                .toList();
+
+        // 合併所有通知並按時間排序 (新到舊)
+        List<Map<String, Object>> allNotifiesNormalized = new ArrayList<>();
+
+        // 加入主辦方接收的通知
+        for (OrganizerNotifyVO n : receivedNotifies) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", n.getOrganizerNotifyId());
+            map.put("title", n.getTitle());
+            map.put("content", n.getContent());
+            map.put("createdAt", n.getCreatedAt());
+            map.put("isRead", n.getIsRead());
+            map.put("type", n.getEmpVO() == null ? "MEMBER" : "PLATFORM");
+            map.put("notifyType", "ORG"); // 用於區分 API 路徑
+            map.put("sourceName", n.getEmpVO() == null ? "會員" : "平台");
+            allNotifiesNormalized.add(map);
         }
 
-        long totalCount = notifyList.size();
-        long platformCount = notifyList.stream()
-                .filter(n -> !n.getContent().contains("訂單") && !n.getContent().contains("退款"))
-                .count();
-        long memberCount = totalCount - platformCount;
+        // 加入系統公告
+        for (SystemNotifyVO s : sysNotifyList) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", s.getSystemNotifyId());
+            map.put("title", s.getTitle());
+            map.put("content", s.getContent());
+            map.put("createdAt", s.getCreatedAt());
+            map.put("isRead", s.getIsRead());
+            map.put("type", "PLATFORM");
+            map.put("notifyType", "SYS"); // 用於區分 API 路徑
+            map.put("sourceName", "Momento 官方");
+            allNotifiesNormalized.add(map);
+        }
+
+        // 依照時間由新到舊排序
+        allNotifiesNormalized.sort((a, b) -> {
+            java.time.LocalDateTime t1 = (java.time.LocalDateTime) a.get("createdAt");
+            java.time.LocalDateTime t2 = (java.time.LocalDateTime) b.get("createdAt");
+            if (t1 == null) return 1;
+            if (t2 == null) return -1;
+            return t2.compareTo(t1); // DESC 排序
+        });
+
+        // 計算數量
+        long memberCount = receivedNotifies.stream().filter(n -> n.getEmpVO() == null).count();
+        long platformCount = sysNotifyList.size() + receivedNotifies.stream().filter(n -> n.getEmpVO() != null).count();
+        long totalCount = memberCount + platformCount;
+
         // 計算未讀數量
-        long unreadNotifyCount = notifyList.stream().filter(n -> n.getIsRead() == 0).count();
-        model.addAttribute("notifyListData", notifyList);
+        long unreadNotifyCount = sysNotifyList.stream().filter(n -> n.getIsRead() == 0).count() +
+                receivedNotifies.stream().filter(n -> n.getIsRead() == 0).count();
+
+        model.addAttribute("allNotifies", allNotifiesNormalized); // 合併排序後的通知列表
+        model.addAttribute("receivedNotifyList", receivedNotifies); // 給通知中心遍歷
+        model.addAttribute("sentNotifyHistoryList", sentNotifies);    // 給已發送紀錄遍歷
+        model.addAttribute("sysAnnouncementList", sysNotifyList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("platformCount", platformCount);
         model.addAttribute("memberCount", memberCount);
@@ -135,6 +189,13 @@ public class OrganizerCenterController {
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
+
+        // 載入主辦方的活動列表 (用於通知會員下拉選單)
+        org.springframework.data.domain.Page<com.momento.event.model.EventVO> eventPage = eventManageService
+                .getOrganizerEvents(organizer.getOrganizerId(), null, null,
+                        org.springframework.data.domain.PageRequest.of(0, 100));
+        model.addAttribute("eventList", eventPage.getContent());
+
         // 載入統計數據 (您的統計功能)
         com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
                 .getOrganizerStats(organizer.getOrganizerId());

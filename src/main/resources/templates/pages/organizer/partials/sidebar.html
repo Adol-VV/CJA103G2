@@ -11,7 +11,9 @@
     <li class="nav-item">
         <a class="nav-link" href="#notifications" data-section="notifications">
             <i class="fas fa-bell"></i> 通知中心
-            <span class="badge bg-danger float-end" id="notificationBadge">0</span>
+            <span class="badge bg-danger float-end sidebar-notify-badge" id="notificationBadge"
+                  th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}"
+                  th:text="${unreadNotifyCount}">0</span>
         </a>
     </li>
     <li class="nav-item">

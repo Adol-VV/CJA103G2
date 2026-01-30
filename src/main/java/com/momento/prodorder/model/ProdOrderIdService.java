@@ -38,10 +38,18 @@ public class ProdOrderIdService {
                 }
             }
 		}
-		repository.save(prodOrderIdVO);
+		// 確保 createdDate 有值
+		if (prodOrderIdVO.getCreatedDate() == null) {
+			prodOrderIdVO.setCreatedDate(new Date());
+		}
+		// 儲存訂單
+		ProdOrderIdVO savedOrder = repository.save(prodOrderIdVO);
 
-		// pei
-		bridgeService.processProdOrderNotify(prodOrderIdVO);
+		// 重新載入訂單以確保所有關聯資料（包含商品名稱）都已載入
+		ProdOrderIdVO reloadedOrder = repository.findById(savedOrder.getOrderId()).orElse(savedOrder);
+
+		// pei - 發送通知
+		bridgeService.processProdOrderNotify(reloadedOrder);
 	}
 	
 	public void updateProdOrder(ProdOrderIdVO prodOrderIdVO) {

@@ -53,6 +53,9 @@ public class MemberCenterController {
 	@Autowired
 	SystemNotifyService systemNotifyService;
 
+	@Autowired
+	MemberNotifyService memberNotifyService;
+
 	@GetMapping("/login")
 	public String showLoginPage(String targetUrl, HttpServletRequest request, Model model, HttpSession session) {
 		String referer = request.getHeader("Referer");
@@ -120,10 +123,14 @@ public class MemberCenterController {
 			List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(loginMember.getMemberId());
 			model.addAttribute("favoriteCount", favoriteEvents.size());
 
-			// 計算未讀通知數量
-			List<com.momento.notify.model.SystemNotifyVO> allNotifies = systemNotifyService
-					.getByMemId(loginMember.getMemberId());
-			long unreadNotifyCount = allNotifies.stream().filter(n -> n.getIsRead() == 0).count();
+			// 計算未讀通知數量 (系統通知 + 主辦方通知)
+			List<SystemNotifyVO> sysNotifies = systemNotifyService.getByMemId(loginMember.getMemberId());
+			List<MemberNotifyVO> orgNotifies = memberNotifyService.getNotificationsByMemberId(loginMember.getMemberId());
+
+			long sysUnread = sysNotifies != null ? sysNotifies.stream().filter(n -> n.getIsRead() == 0).count() : 0;
+			long orgUnread = orgNotifies != null ? orgNotifies.stream().filter(n -> n.getIsRead() == 0).count() : 0;
+			long unreadNotifyCount = sysUnread + orgUnread;
+
 			model.addAttribute("unreadNotifyCount", unreadNotifyCount);
 		}
 		return "pages/user/partials/sidebar";

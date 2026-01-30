@@ -82,4 +82,27 @@ public class OrganizerNotifyService {
                 repository.save(vo);
             }
         }
+
+    /**
+     * 標記該主辦方所有通知為已讀
+     */
+    @Transactional
+    public void markAllAsReadByOrgId(Integer organizerId) {
+        List<OrganizerNotifyVO> notifications = repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+        for (OrganizerNotifyVO notify : notifications) {
+            if (notify.getIsRead() != null && notify.getIsRead() == 0) {
+                notify.setIsRead(1);
+                repository.save(notify);
+            }
+        }
+    }
+
+    /**
+     * 刪除該主辦方所有通知
+     */
+    @Transactional
+    public void deleteAllByOrgId(Integer organizerId) {
+        List<OrganizerNotifyVO> notifications = repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
+        repository.deleteAll(notifications);
+    }
 }
