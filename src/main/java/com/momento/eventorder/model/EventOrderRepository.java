@@ -37,10 +37,12 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 	@Query("SELECT o FROM EventOrderVO o " + "JOIN o.event e " + "JOIN o.member m "
 			+ "WHERE (:eventOrderId IS NULL OR o.eventOrderId = :eventOrderId) "  
 		    + "AND (:memberName IS NULL OR m.name LIKE CONCAT('%', :memberName, '%')) "
-			+ "AND (:eventTitle IS NULL OR e.title LIKE CONCAT('%', :eventTitle, '%'))")
+			+ "AND (:eventTitle IS NULL OR e.title LIKE CONCAT('%', :eventTitle, '%'))"
+			+ "AND (:payStatus IS NULL  OR o.payStatus = :payStatus)")
 	public Page<EventOrderVO> searchOrders(
 			@Param("eventOrderId") Integer eventOrderId,
 			@Param("memberName") String memberName, 
-			@Param("eventTitle")  String eventTitle, 
+			@Param("eventTitle")  String eventTitle,
+			@Param("payStatus") Integer payStatus, 
 			Pageable pageable);
 }

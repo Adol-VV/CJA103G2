@@ -17,6 +17,9 @@ public class EventOrderService {
 	@Autowired
 	EventOrderItemRepository eventOrderItemRepo;
 	
+	public void updateEventOrder(EventOrderVO eventOrder) {
+		eventOrderRepo.save(eventOrder);
+	}
 
 	public List<EventOrderVO> getEventOrderByMemberId(Integer memberId){
 		return eventOrderRepo.findByMember_MemberId(memberId);
@@ -34,10 +37,10 @@ public class EventOrderService {
 		return eventOrderRepo.findAll();
 	}
 	
-	public Page<EventOrderVO> getEventOrdersbyPages(Integer eventOrderId, String memberName, String eventTitle, Pageable pageable){
+	public Page<EventOrderVO> getEventOrdersbyPages(Integer eventOrderId, String memberName, String eventTitle, Integer payStatus , Pageable pageable){
 		
-		if (eventOrderId != null || memberName != null || eventTitle != null) {
-		    return eventOrderRepo.searchOrders(eventOrderId, memberName, eventTitle, pageable);
+		if (eventOrderId != null || memberName != null || eventTitle != null || payStatus != null) {
+		    return eventOrderRepo.searchOrders(eventOrderId, memberName, eventTitle, payStatus , pageable);
 		}
 		
 		return eventOrderRepo.findAll(pageable);

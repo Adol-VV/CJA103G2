@@ -116,8 +116,12 @@ public class MemberCenterController {
 	@GetMapping("/dashboard/overview")
 	public String showDashboardOverview(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		
 		if (loginMember != null) {
-			Integer loginMemberToken = loginMember.getToken();
+			
+			MemberVO member = memberSvc.findOneMember(loginMember.getMemberId());
+			
+			Integer loginMemberToken = member.getToken();
 			model.addAttribute("loginMemberToken", loginMemberToken);
 
 			// 抓通知清單

@@ -20,8 +20,8 @@ import com.momento.eventorder.dto.OrderCreateDTO;
 import com.momento.eventorder.dto.SelectionFormDTO;
 import com.momento.eventorder.dto.TicketItemsDTO;
 import com.momento.eventorder.model.CreateOrderService;
-import com.momento.eventorder.model.EventOrderItemVO;
 import com.momento.eventorder.model.EventOrderVO;
+import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +33,9 @@ public class OrderController {
 	@Autowired
 	CreateOrderService eventOrderSvc;
 	
+	@Autowired
+	MemberService memberSvc;
+	
 	// 從event-detail抓到資料放到event-checkout
 	@PostMapping("/checkout")
 	public String showCheckout(@ModelAttribute SelectionFormDTO selectionForm, HttpSession session) {
@@ -40,17 +43,21 @@ public class OrderController {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
 		Integer memberId = loginMember.getMemberId();
 		
+		MemberVO member = memberSvc.findOneMember(memberId);
+		Integer tokenRemain = member.getToken();
+		
 		List<TicketItemsDTO> finalSelectedItems = eventOrderSvc.processSelectedTickets(selectionForm);
 		CheckoutDTO checkoutData = eventOrderSvc.calculateCheckout(selectionForm, false, memberId);
 		
 		session.setAttribute("originalform", selectionForm);
 		session.setAttribute("finalSelectedItems", finalSelectedItems);
 		session.setAttribute("checkoutData", checkoutData);
-	
+		session.setAttribute("tokenRemain", tokenRemain);
 		
 		return "pages/user/event-checkout";
 	}
 	
+	// 右邊結帳框框
 	@PostMapping("/checkout/refresh-summary")
 	@ResponseBody
 	public CheckoutDTO updateCheckout(@RequestParam boolean useToken, HttpSession session) {
