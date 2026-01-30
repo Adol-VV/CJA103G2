@@ -29,18 +29,6 @@
                     <span class="badge bg-warning text-dark ms-1" th:if="${organizerCount != null and organizerCount > 0}" th:text="${organizerCount}">0</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#notif-orders">
-                    訂單更新
-                    <span class="badge bg-success ms-1" th:if="${orderCount != null and orderCount > 0}" th:text="${orderCount}">0</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#notif-promo">
-                    代幣回饋
-                    <span class="badge bg-info ms-1" th:if="${tokenCount != null and tokenCount > 0}" th:text="${tokenCount}">0</span>
-                </a>
-            </li>
         </ul>
     </div>
     <div class="card-body p-0">
