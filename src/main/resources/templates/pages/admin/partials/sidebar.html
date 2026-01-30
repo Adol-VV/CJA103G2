@@ -16,20 +16,20 @@
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(4)}">
                 <a class="nav-link" href="#" data-section="event-approval">
                     <i class="far fa-calendar-check me-2"></i> 活動審核
-                    <span class="badge bg-warning float-end">3</span>
+                    <span class="badge bg-warning float-end" id="eventReviewBadge">0</span>
                 </a>
             </li>
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(3)}">
                 <a class="nav-link" href="#" data-section="product-approval">
                     <i class="fas fa-box-open me-2"></i> 商品審核
-                    <span class="badge bg-warning float-end" id="prodApprovalCount">4</span>
+                    <span class="badge bg-warning float-end" id="prodApprovalCount">0</span>
                 </a>
             </li>
             <!-- 文章審核 (無ID功能，預設開放) -->
             <li class="nav-item">
                 <a class="nav-link" href="#" data-section="article-approval">
                     <i class="fas fa-newspaper me-2"></i> 文章審核
-                    <span class="badge bg-info float-end">2</span>
+                    <span class="badge bg-info float-end" id="articleReviewBadge">0</span>
                 </a>
             </li>
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(2)}">
@@ -80,6 +80,11 @@
                     <i class="fas fa-user-shield me-2"></i> 員工管理
                 </a>
             </li>
+            <li class="nav-item" th:if="${isSuperAdmin}">
+                <a class="nav-link" href="#" data-section="permission-matrix">
+                    <i class="fas fa-user-lock me-2"></i> 權限管理
+                </a>
+            </li>
 
             <!-- 內容運營 -->
             <li>
@@ -105,7 +110,7 @@
             <li class="nav-item" th:if="${isSuperAdmin or activeFunctionIds.contains(8)}">
                 <a class="nav-link" href="#" data-section="comment-management">
                     <i class="fas fa-comments me-2"></i> 留言管理
-                    <!-- <span class="badge bg-danger float-end">5</span> -->
+                    <span class="badge bg-danger float-end" id="commentReviewBadge">0</span>
                 </a>
             </li>
             <!-- ID 7: 公告管理 -->

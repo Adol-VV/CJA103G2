@@ -19,6 +19,9 @@ public class EmpVO {
     @Column(name = "EMP_NAME", length = 50, nullable = false)
     private String empName;
 
+    @Column(name = "JOB_TITLE", length = 50, nullable = false)
+    private String jobTitle;
+
     @Column(name = "ACCOUNT", length = 50, nullable = false, unique = true)
     private String account;
 
@@ -39,10 +42,11 @@ public class EmpVO {
     public EmpVO() {
     }
 
-    public EmpVO(Integer empId, String empName, String account, String password,
+    public EmpVO(Integer empId, String empName, String jobTitle, String account, String password,
                  LocalDateTime createdAt, Byte status) {
         this.empId = empId;
         this.empName = empName;
+        this.jobTitle = jobTitle;
         this.account = account;
         this.password = password;
         this.createdAt = createdAt;
@@ -65,6 +69,10 @@ public class EmpVO {
     public void setEmpName(String empName) {
         this.empName = empName;
     }
+
+    public String getJobTitle() { return jobTitle; }
+
+    public  void setJobTitle(String jobTitle) {this.jobTitle = jobTitle; }
 
     public String getAccount() {
         return account;
@@ -121,6 +129,7 @@ public class EmpVO {
         return "Emp{" +
                 "empId=" + empId +
                 ", empName='" + empName + '\'' +
+                ", jobTitle='" + jobTitle + '\'' +
                 ", account='" + account + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +

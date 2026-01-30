@@ -257,7 +257,7 @@ export function initEventList() {
         // 2. 草稿 (0) 或 已駁回 (4)
         else if (event.status === 0 || event.status === 4) {
             buttons += `
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.editDraft(${event.eventId})">
+                <button type="button" class="btn btn-sm btn-warning text-dark fw-bold" onclick="window.editDraft(${event.eventId})">
                     <i class="fas fa-edit me-1"></i>編輯
                 </button>
                 <button type="button" class="btn btn-sm btn-outline-success" onclick="window.submitEvent(${event.eventId})">
@@ -274,7 +274,7 @@ export function initEventList() {
                 <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info">
                     <i class="fas fa-external-link-alt me-1"></i>詳情
                 </a>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.toggleTimeForm(${event.eventId})">
+                <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="window.toggleTimeForm(${event.eventId})">
                     <i class="fas fa-clock me-1"></i>設定時間
                 </button>
             `;
@@ -420,46 +420,134 @@ export function initEventList() {
 
     // --- Global Actions (Submit, Withdraw, Delete, ForceClose) ---
     window.submitEvent = function (eventId) {
-        if (!confirm('確定要送出審核嗎？')) return;
-        $.post('/organizer/event/submit/' + eventId, function (res) {
-            if (res.success) { showToast('活動已送出審核！', 'success'); loadOrganizerEvents(); }
-            else alert(res.message);
+        Swal.fire({
+            title: '確定要送出審核嗎？',
+            text: '送出後活動資訊將進入審核佇列。',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '確定送出',
+            cancelButtonText: '取消',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/organizer/event/submit/' + eventId,
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.success) {
+                            showToast('活動已送出審核！', 'success');
+                            loadOrganizerEvents();
+                        } else {
+                            Swal.fire({ icon: 'error', title: '錯誤', text: res.message, background: '#1a1d20', color: '#fff' });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: '錯誤', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                    }
+                });
+            }
         });
     };
 
     window.withdrawEvent = function (eventId) {
-        if (!confirm('確定要撤回審核嗎？')) return;
-        $.post('/organizer/event/withdraw/' + eventId, function (res) {
-            if (res.success) { showToast('活動已撤回！', 'success'); loadOrganizerEvents(); }
-            else alert(res.message);
+        Swal.fire({
+            title: '確定要撤回審核嗎？',
+            text: '撤回後活動將回到草稿狀態，您可以重新編輯。',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '確定撤回',
+            cancelButtonText: '取消',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/organizer/event/withdraw/' + eventId,
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.success) {
+                            showToast('活動已撤回！', 'success');
+                            loadOrganizerEvents();
+                        } else {
+                            Swal.fire({ icon: 'error', title: '失敗', text: res.message, background: '#1a1d20', color: '#fff' });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: '失敗', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                    }
+                });
+            }
         });
     };
 
     window.deleteEvent = function (eventId) {
-        if (!confirm('⚠️ 警告：確定要刪除此活動嗎？\n此操作將會永久刪除活動內容且無法復原。')) return;
-        $.ajax({
-            url: '/organizer/event/' + eventId, type: 'DELETE', success: function (res) {
-                if (res.success) { showToast('已成功刪除活動！', 'success'); loadOrganizerEvents(); }
-                else alert(res.message);
+        Swal.fire({
+            title: '⚠️ 確定要刪除此活動嗎？',
+            text: '此操作將會永久刪除活動內容且無法復原！',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: '確定刪除',
+            cancelButtonText: '取消',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/organizer/event/' + eventId,
+                    type: 'DELETE',
+                    success: function (res) {
+                        if (res.success) {
+                            showToast('已成功刪除活動！', 'success');
+                            loadOrganizerEvents();
+                        } else {
+                            Swal.fire({ icon: 'error', title: '錯誤', text: res.message, background: '#1a1d20', color: '#fff' });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: '錯誤', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                    }
+                });
             }
         });
     };
 
     window.forceClose = function (eventId) {
-        if (!confirm('🛑 確定要「強制下架」此活動嗎？\n下架後前台將立即停止該活動的所有售票。')) return;
-        const reason = prompt('請輸入下架原因（必填）：');
-        if (reason === null || reason.trim() === '') {
-            if (reason !== null) alert('請輸入下架原因方可進行操作。');
-            return;
-        }
-        $.ajax({
-            url: `/organizer/event/${eventId}/force-close`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ reason: reason }),
-            success: function (res) {
-                if (res.success) { showToast('活動已下架', 'success'); loadOrganizerEvents(); }
-                else alert(res.message);
+        Swal.fire({
+            title: '🛑 確定要「強制下架」嗎？',
+            text: '下架後前台將立即停止該活動的所有售票。',
+            input: 'text',
+            inputPlaceholder: '請輸入下架原因（必填）',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: '確定下架',
+            cancelButtonText: '取消',
+            background: '#1a1d20',
+            color: '#fff',
+            inputValidator: (value) => {
+                if (!value) return '必須輸入原因才能下架！'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/organizer/event/${eventId}/force-close`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ reason: result.value }),
+                    success: function (res) {
+                        if (res.success) {
+                            showToast('活動已下架', 'success');
+                            loadOrganizerEvents();
+                        } else {
+                            Swal.fire({ icon: 'error', title: '錯誤', text: res.message, background: '#1a1d20', color: '#fff' });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: '錯誤', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                    }
+                });
             }
         });
     };

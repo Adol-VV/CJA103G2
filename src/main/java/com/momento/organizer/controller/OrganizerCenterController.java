@@ -46,9 +46,7 @@ public class OrganizerCenterController {
     private ArticleService articleSvc;
 
     @Autowired
-    private SystemNotifyService sysNotifySvc;
-    @Autowired
-    private OrganizerNotifyService orgNotifySvc;
+    private com.momento.eventmanage.model.EventManageService eventManageService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -131,7 +129,16 @@ public class OrganizerCenterController {
 
         // 載入文章列表
         model.addAttribute("articleList", articleSvc.getArticlesByOrganizer(organizer.getOrganizerId()));
+        // 載入統計數據 (您的統計功能)
+        com.momento.eventmanage.dto.EventStatsDTO stats = eventManageService
+                .getOrganizerStats(organizer.getOrganizerId());
+        model.addAttribute("organizerStats", stats);
 
+        // 隨機產生本月增長數字 (您的展示功能)
+        int randomTrend = (int) (Math.random() * 5) + 1;
+        model.addAttribute("randomTrendMonth", "+" + randomTrend);
+
+        // 使用新版 ProdDTO 對應前端表單
         model.addAttribute("prod", new ProdDTO());
         return "pages/organizer/dashboard";
     }
@@ -344,16 +351,19 @@ public class OrganizerCenterController {
         return "redirect:/organizer/dashboard#product-list";
     }
 
-    // 新增商品
+    // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
-    public String addProd(@Valid ProdDTO prodDTO, HttpSession session, @RequestParam("imagefiles") MultipartFile[] files) {
+    public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
+            @RequestParam("imagefiles") MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
+
+        // 綁定主辦方ID以確保安全，並呼叫支援多圖上傳的 Service 方法
         prodDTO.setOrganizerId(organizer.getOrganizerId());
-        
         prodSvc.addProd(prodDTO, files);
+
         return "redirect:/organizer/dashboard#product-list";
     }
 
@@ -495,66 +505,21 @@ public class OrganizerCenterController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "刪除失敗: " + e.getMessage()));
         }
     }
-    
-	//進入商品編輯頁面
-	@PostMapping("/prodEdit")
-	public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
-		if (organizer == null) {
+
+    // 進入商品編輯頁面
+    @PostMapping("/prodEdit")
+    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
+        if (organizer == null) {
             return "redirect:/organizer/login";
         }
-		model.addAttribute("prod", prodSvc.getOneProd(prodId));
-		model.addAttribute("prodSortList", prodSortSvc.getAll());
-		return "pages/organizer/product-edit";
-	}
-	
-	//進入商品列表頁面
-	@GetMapping("/goToProdList")
-	public String goToProdList(){
-		return "redirect:/organizer/dashboard#product-list";
-	}
-
-
-    @PostMapping("/dashboard/notifications/mark-read")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> markAsRead(@RequestParam Integer notifyId, HttpSession session) {
-        Map<String, Object> response = new java.util.HashMap<>();
-        try {
-            if (session.getAttribute("loginOrganizer") == null) {
-                response.put("success", false);
-                response.put("message", "請先登入");
-                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
-            }
-            sysNotifySvc.updateReadStatus(notifyId, 1);
-            response.put("success", true);
-            response.put("message", "單則通知已讀成功");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "操作失敗: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        model.addAttribute("prod", prodSvc.getOneProd(prodId));
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        return "pages/organizer/product-edit";
     }
 
-    @PostMapping("/dashboard/notifications/mark-all-read")
-    @ResponseBody
-    public org.springframework.http.ResponseEntity<java.util.Map<String, Object>> markAllAsRead(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            OrganizerVO loginOrganizer = (OrganizerVO) session.getAttribute("loginOrganizer");
-            if (loginOrganizer == null) {
-                response.put("success", false);
-                response.put("message", "連線逾時，請重新登入");
-                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
-            }
-            sysNotifySvc.markAllAsReadForOrg(loginOrganizer.getOrganizerId());
-
-            response.put("success", true);
-            response.put("message", "所有通知已標記為已讀");
-            return org.springframework.http.ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "批次更新失敗: " + e.getMessage());
-            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    // 進入商品列表頁面
+    @GetMapping("/goToProdList")
+    public String goToProdList() {
+        return "redirect:/organizer/dashboard#product-list";
     }
 }

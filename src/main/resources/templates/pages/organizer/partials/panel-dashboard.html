@@ -19,8 +19,9 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <p class="text-muted mb-1 small text-uppercase">進行中活動</p>
-                        <h3 class="mb-0">12</h3>
-                        <small class="text-success"><i class="fas fa-arrow-up"></i> +2 本月</small>
+                        <h3 class="mb-0" th:text="${organizerStats.activeCount}">12</h3>
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> <span
+                                th:text="${randomTrendMonth}">+2</span> 本月</small>
                     </div>
                     <div class="stats-icon bg-primary">
                         <i class="far fa-calendar-check"></i>

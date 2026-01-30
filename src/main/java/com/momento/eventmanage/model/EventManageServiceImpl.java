@@ -63,12 +63,12 @@ public class EventManageServiceImpl implements EventManageService {
     @Override
     @Transactional
     public Integer createEvent(EventCreateDTO dto) {
-        // 限制草稿數量 (包含 0:草稿 與 4:駁回)
-        java.util.List<Byte> draftStatuses = java.util.List.of(EventVO.STATUS_DRAFT, EventVO.STATUS_REJECTED);
-        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatusIn(dto.getOrganizerId(), draftStatuses);
+        // 限制草稿數量 (僅計算 0:草稿)
+        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(dto.getOrganizerId(),
+                EventVO.STATUS_DRAFT);
 
         if (draftCount >= 3) {
-            throw new RuntimeException("草稿區容量已達上限！您的「草稿區」最多只能存放 3 個活動（包含編輯中與被駁回的活動）。請先送審現有草稿，或刪除不需要的內容後再建立新活動。");
+            throw new RuntimeException("草稿區容量已達上限！您的「編輯中草稿」最多只能存放 3 則。請先送審現有草稿，或刪除不需要的內容後再建立新活動。");
         }
 
         // 1. 建立活動實體 (初始狀態為草稿)
@@ -93,14 +93,22 @@ public class EventManageServiceImpl implements EventManageService {
         // 儲存活動
         EventVO savedEvent = eventRepository.save(event);
 
-        // 2. 儲存圖片
-        if (dto.getBannerUrl() != null) {
-            saveEventImage(savedEvent, dto.getBannerUrl(), 0);
+        // 2. 儲存圖片 (過濾空值與重複網址)
+        java.util.LinkedHashSet<String> uniqueUrls = new java.util.LinkedHashSet<>();
+
+        if (dto.getBannerUrl() != null && !dto.getBannerUrl().trim().isEmpty()) {
+            saveEventImage(savedEvent, dto.getBannerUrl().trim(), 0);
+            uniqueUrls.add(dto.getBannerUrl().trim());
         }
+
         if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
             int order = 1;
             for (String imageUrl : dto.getImageUrls()) {
-                saveEventImage(savedEvent, imageUrl, order++);
+                if (imageUrl != null && !imageUrl.trim().isEmpty() && !uniqueUrls.contains(imageUrl.trim())) {
+                    String trimmedUrl = imageUrl.trim();
+                    saveEventImage(savedEvent, trimmedUrl, order++);
+                    uniqueUrls.add(trimmedUrl);
+                }
             }
         }
 
@@ -170,19 +178,30 @@ public class EventManageServiceImpl implements EventManageService {
         }
 
         // 圖片處理
-        if (dto.getBannerUrl() != null && !dto.getBannerUrl().isEmpty()) {
+        // 圖片處理 (過濾空值與重複網址，並確保更新逻辑不依賴於 bannerUrl 的存在)
+        if ((dto.getBannerUrl() != null && !dto.getBannerUrl().isEmpty())
+                || (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty())) {
+            // 先清除該活動所有圖
             eventImageRepository
                     .deleteAll(eventImageRepository.findByEvent_EventIdOrderByEventImageIdAsc(event.getEventId()));
 
+            java.util.LinkedHashSet<String> uniqueUrls = new java.util.LinkedHashSet<>();
+
             // 儲存主視覺 (Order 0)
-            saveEventImage(event, dto.getBannerUrl(), 0);
+            if (dto.getBannerUrl() != null && !dto.getBannerUrl().trim().isEmpty()) {
+                String banner = dto.getBannerUrl().trim();
+                saveEventImage(event, banner, 0);
+                uniqueUrls.add(banner);
+            }
 
             // 儲存其他圖片 (Order 1, 2...)
             if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
                 int order = 1;
                 for (String imageUrl : dto.getImageUrls()) {
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                        saveEventImage(event, imageUrl, order++);
+                    if (imageUrl != null && !imageUrl.trim().isEmpty() && !uniqueUrls.contains(imageUrl.trim())) {
+                        String trimmedUrl = imageUrl.trim();
+                        saveEventImage(event, trimmedUrl, order++);
+                        uniqueUrls.add(trimmedUrl);
                     }
                 }
             }
@@ -314,13 +333,12 @@ public class EventManageServiceImpl implements EventManageService {
         if (!event.isPending())
             throw new RuntimeException("僅限待審核狀態可撤回");
 
-        // 限制草稿數量 (包含 0:草稿 與 4:駁回)
-        java.util.List<Byte> draftStatuses = java.util.List.of(EventVO.STATUS_DRAFT, EventVO.STATUS_REJECTED);
-        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatusIn(event.getOrganizer().getOrganizerId(),
-                draftStatuses);
+        // 限制草稿數量 (僅計算 0:草稿)
+        long draftCount = eventRepository.countByOrganizer_OrganizerIdAndStatus(event.getOrganizer().getOrganizerId(),
+                EventVO.STATUS_DRAFT);
 
         if (draftCount >= 3) {
-            throw new RuntimeException("無法撤回！您的「草稿區」容量已滿（上限 3 個），請先處理現有草稿或刪除內容。");
+            throw new RuntimeException("無法撤回！您的「編輯中草稿」已達上限 (3 個)，請先處理現有草稿或刪除內容後再嘗試撤回。");
         }
 
         event.setStatus(EventVO.STATUS_DRAFT);

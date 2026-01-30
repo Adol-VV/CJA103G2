@@ -92,4 +92,12 @@ public interface EventService {
      * @return 收藏活動列表
      */
     List<EventListItemDTO> getMemberFavorites(Integer memberId);
+
+    /**
+     * 查詢會員的收藏活動數量
+     * 
+     * @param memberId 會員 ID
+     * @return 收藏活動數量
+     */
+    Long getMemberFavoriteCount(Integer memberId);
 }

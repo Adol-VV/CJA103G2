@@ -305,8 +305,12 @@ export function initEventEdit() {
         if ($saleEnd.length && $saleEnd.val()) data.saleEndAt = $saleEnd.val() + ':00';
 
         const btn = submitReview ? $('#btnUpdateSubmit') : $('#btnUpdateSave');
-        const originalHtml = btn.html();
+        const originalHtml = submitReview ?
+            `<i data-lucide="send" class="me-2"></i> 修正並重新送審` :
+            `<i data-lucide="save" class="me-2"></i> 儲存修改`;
+
         btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>處理中...');
+        let skipFinallyReset = false;
 
         try {
             await $.ajax({
@@ -322,11 +326,18 @@ export function initEventEdit() {
                     icon: 'success',
                     title: '成功',
                     text: '活動已送出審核',
+                    timer: 2000,
+                    showConfirmButton: false,
                     background: '#1a1d20',
                     color: '#fff'
                 });
                 if (window.Navigation) window.Navigation.showSection('events-list');
             } else {
+                // 按鈕回饋
+                skipFinallyReset = true;
+                btn.html('<i data-lucide="check" class="me-2"></i>儲存成功').addClass('btn-success').removeClass('btn-outline-primary');
+                if (window.lucide) window.lucide.createIcons();
+
                 Swal.fire({
                     icon: 'success',
                     title: '成功',
@@ -336,6 +347,11 @@ export function initEventEdit() {
                     background: '#1a1d20',
                     color: '#fff'
                 });
+
+                setTimeout(() => {
+                    btn.html(originalHtml).removeClass('btn-success').addClass('btn-outline-primary').prop('disabled', false);
+                    if (window.lucide) window.lucide.createIcons();
+                }, 2000);
             }
         } catch (e) {
             Swal.fire({
@@ -346,7 +362,10 @@ export function initEventEdit() {
                 color: '#fff'
             });
         } finally {
-            btn.prop('disabled', false).html(originalHtml);
+            if (!skipFinallyReset) {
+                btn.prop('disabled', false).html(originalHtml);
+                if (window.lucide) window.lucide.createIcons();
+            }
         }
     }
 

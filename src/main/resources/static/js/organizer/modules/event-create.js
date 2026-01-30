@@ -500,44 +500,48 @@ export function initEventCreate() {
             const qtyRaw = $(this).find('.zone-qty').val();
             const name = $(this).find('.zone-name').val()?.trim();
 
-            if (!isDraft && !name) {
-                alert('請填寫所有票種名稱');
-                ticketsValid = false;
-                return false;
-            }
-
-            // 強制檢查：如果是空值或包含非數字字元 (雖然 type=number 會擋一些，但 JS 再次檢查更保險)
-            if (priceRaw === "" || !/^\d+$/.test(priceRaw)) {
-                alert('票價欄位請輸入純數字');
-                $(this).find('.zone-price').focus();
-                ticketsValid = false;
-                return false;
-            }
-
-            if (qtyRaw === "" || !/^\d+$/.test(qtyRaw)) {
-                alert('數量欄位請輸入純數字');
-                $(this).find('.zone-qty').focus();
-                ticketsValid = false;
-                return false;
+            if (!isDraft) {
+                if (!name) {
+                    alert('請填寫所有票種名稱');
+                    ticketsValid = false;
+                    return false;
+                }
+                // 送審模式：強制檢查價格與數量
+                if (priceRaw === "" || !/^\d+$/.test(priceRaw)) {
+                    alert('請為票種「' + (name || '未命名') + '」填入有效的票價');
+                    $(this).find('.zone-price').focus();
+                    ticketsValid = false;
+                    return false;
+                }
+                if (qtyRaw === "" || !/^\d+$/.test(qtyRaw)) {
+                    alert('請為票種「' + (name || '未命名') + '」填入有效的數量');
+                    $(this).find('.zone-qty').focus();
+                    ticketsValid = false;
+                    return false;
+                }
             }
 
             const ticketId = $(this).find('.zone-id').val();
             eventData.tickets.push({
                 ticketId: ticketId ? parseInt(ticketId) : null,
-                name: name,
-                price: parseInt(priceRaw),
-                total: parseInt(qtyRaw)
+                name: name || '',
+                price: priceRaw !== "" ? parseInt(priceRaw) : 0,
+                total: qtyRaw !== "" ? parseInt(qtyRaw) : 0
             });
         });
 
         if (!ticketsValid) return;
 
         const btn = isDraft ? $('#btnSaveDraft') : $('#btnSubmitReview');
-        const originalHtml = btn.html();
+        const originalHtml = isDraft ?
+            `<i data-lucide="save" class="me-1" style="width: 18px; height: 18px; vertical-align: text-bottom;"></i>儲存草稿` :
+            `<i data-lucide="send" class="me-1" style="width: 20px; height: 20px; vertical-align: text-bottom;"></i>送出審核`;
+
         btn.html('<span class="spinner-border spinner-border-sm me-2"></span>處理中...').prop('disabled', true);
 
         const url = eventId ? `/organizer/event/${eventId}` : '/organizer/event/create';
         const method = eventId ? 'PUT' : 'POST';
+        let skipFinallyReset = false;
 
         try {
             const response = await $.ajax({
@@ -551,23 +555,56 @@ export function initEventCreate() {
                 const targetEventId = eventId || response.eventId;
                 if (!isDraft) {
                     await $.post('/organizer/event/submit/' + targetEventId);
-                    alert('活動已送出審核！');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '成功',
+                        text: '活動已送出審核！',
+                        background: '#1a1d20',
+                        color: '#fff',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                     if (window.Navigation) window.Navigation.showSection('events-list');
                 } else {
-                    showToast('草稿儲存成功!', 'success');
+                    // 按鈕回饋
+                    skipFinallyReset = true;
+                    btn.html('<i data-lucide="check" class="me-1" style="width:18px;height:18px;vertical-align:text-bottom;"></i>儲存成功')
+                        .addClass('btn-success').removeClass('btn-outline-light');
+                    if (window.lucide) window.lucide.createIcons();
+
                     if (!eventId && response.eventId) {
                         $('#editEventId').val(response.eventId);
                         $('#editorTitle').text('編輯活動');
                         $('#btnCancelEdit').removeClass('d-none');
                     }
+
+                    setTimeout(() => {
+                        btn.html(originalHtml).removeClass('btn-success').addClass('btn-outline-light').prop('disabled', false);
+                        if (window.lucide) window.lucide.createIcons();
+                    }, 2000);
                 }
             } else {
-                alert('處理失敗: ' + (response.message || '未知錯誤'));
+                Swal.fire({
+                    icon: 'error',
+                    title: '失敗',
+                    text: '處理失敗: ' + (response.message || '未知錯誤'),
+                    background: '#1a1d20',
+                    color: '#fff'
+                });
             }
         } catch (error) {
-            alert('處理失敗: ' + (error.responseJSON?.message || '未知錯誤'));
+            Swal.fire({
+                icon: 'error',
+                title: '失敗',
+                text: '處理失敗: ' + (error.responseJSON?.message || '未知錯誤'),
+                background: '#1a1d20',
+                color: '#fff'
+            });
         } finally {
-            btn.html(originalHtml).prop('disabled', false);
+            if (!skipFinallyReset) {
+                btn.html(originalHtml).prop('disabled', false);
+                if (window.lucide) window.lucide.createIcons();
+            }
         }
     }
 

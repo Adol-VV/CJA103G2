@@ -50,25 +50,33 @@
             <!-- Article Grid -->
             <div class="col-lg-12">
                 <!-- Featured Article -->
-                <div class="card bg-dark border-secondary mb-4 overflow-hidden position-relative">
+                <div class="card bg-dark border-secondary mb-4 overflow-hidden position-relative"
+                    th:if="${featuredArticle != null}">
                     <div class="row g-0">
                         <div class="col-md-7">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1459749411177-260f11c7a858"
+                            <img loading="lazy"
+                                th:src="${featuredArticle.articleImages != null and not #lists.isEmpty(featuredArticle.articleImages)} ? ${featuredArticle.articleImages[0].imageUrl} : 'https://images.unsplash.com/photo-1459749411177-260f11c7a858'"
                                 class="img-fluid h-100" style="object-fit: cover; min-height: 300px;">
                         </div>
                         <div class="col-md-5">
                             <div class="card-body d-flex flex-column h-100 p-4">
                                 <span class="badge bg-danger align-self-start mb-2">置頂文章</span>
-                                <h3 class="card-title fw-bold">2024 年度大型演唱會回顧：那些感動我們的瞬間</h3>
-                                <p class="card-text text-muted flex-grow-1">
+                                <h3 class="card-title fw-bold" th:text="${featuredArticle.title}">2024
+                                    年度大型演唱會回顧：那些感動我們的瞬間</h3>
+                                <p class="card-text text-muted flex-grow-1"
+                                    th:text="${#strings.abbreviate(featuredArticle.content, 100)}">
                                     回顧過去一年最震撼的現場演出，從燈光舞美到安可曲的驚喜，我們為您整理了年度十大經典時刻...</p>
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div class="d-flex align-items-center">
-                                        <img loading="lazy" src="https://via.placeholder.com/32"
-                                            class="rounded-circle me-2">
-                                        <small class="text-muted">Momento 編輯部</small>
+                                        <img loading="lazy"
+                                            th:src="${featuredArticle.organizerVO != null} ? 'https://ui-avatars.com/api/?name=' + ${featuredArticle.organizerVO.name} + '&background=10B981&color=fff' : 'https://via.placeholder.com/32'"
+                                            class="rounded-circle me-2" style="width: 32px; height: 32px;">
+                                        <small class="text-muted"
+                                            th:text="${featuredArticle.organizerVO != null ? featuredArticle.organizerVO.name : 'Momento 編輯部'}">Momento
+                                            編輯部</small>
                                     </div>
-                                    <a href="article-detail.html" class="btn btn-outline-light stretched-link">閱讀更多</a>
+                                    <a th:href="@{/article/detail(id=${featuredArticle.articleId})}"
+                                        class="btn btn-outline-light stretched-link">閱讀更多</a>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +104,11 @@
 
                                 <div
                                     class="mt-3 d-flex justify-content-between align-items-center border-top border-secondary pt-3">
-                                    <small class="text-muted"><i class="fas fa-eye me-1"></i> 0</small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>
+                                        <span
+                                            th:text="${#numbers.formatInteger(T(java.lang.Math).random() * 999000 + 1000, 1, 'COMMA')}">0</span>
+                                    </small>
                                     <a th:href="@{/article/detail(id=${article.articleId})}"
                                         class="text-success text-decoration-none stretched-link">
                                         閱讀全文 <i class="fas fa-arrow-right"></i>

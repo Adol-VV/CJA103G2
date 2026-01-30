@@ -1,0 +1,137 @@
+<div class="content-panel" id="panel-permission-matrix">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>權限管理</h2>
+        <div class="d-flex gap-2">
+            <input type="text" id="permissionSearchInput" class="form-control bg-dark text-white border-secondary"
+                placeholder="搜尋姓名或職稱..." style="width: 250px;">
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover table-bordered align-middle mb-0">
+                <thead class="bg-dark sticky-top">
+                    <tr class="border-secondary">
+                        <th class="text-center" style="width: 80px;">編號</th>
+                        <th>姓名</th>
+                        <th>職稱</th>
+                        <th class="text-center">會員</th>
+                        <th class="text-center">主辦</th>
+                        <th class="text-center">商品</th>
+                        <th class="text-center">活動</th>
+                        <th class="text-center">訂單</th>
+                        <th class="text-center">結算</th>
+                        <th class="text-center">公告</th>
+                        <th class="text-center">留言</th>
+                    </tr>
+                </thead>
+                <tbody id="permissionMatrixBody">
+                    <tr th:each="emp : ${employees}" th:data-emp-id="${emp.empId}">
+                        <td class="text-center" th:text="${emp.empId}"></td>
+                        <td th:text="${emp.empName}"></td>
+                        <td>
+                            <span th:if="${emp.empId == 1}" class="badge bg-danger">
+                                <i class="fas fa-crown me-1"></i>超級管理員
+                            </span>
+                            <span th:unless="${emp.empId == 1}" th:text="${emp.jobTitle}"></span>
+                        </td>
+                        <td th:each="i : ${#numbers.sequence(1, 8)}" class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input permission-switch" type="checkbox" th:data-fid="${i}"
+                                    th:disabled="${emp.empId == 1}" th:checked="${emp.empId == 1}">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        (function ($) {
+            $(document).ready(function () {
+                // 初始化狀態
+                $('.permission-switch').each(function () {
+                    const $sw = $(this);
+                    const eid = $sw.closest('tr').data('emp-id');
+                    const fid = $sw.data('fid');
+                    if (eid === 1) return;
+
+                    $.get('/admin/permissions/get/' + eid, function (ids) {
+                        if (ids && ids.indexOf(fid) !== -1) {
+                            $sw.prop('checked', true);
+                        }
+                    });
+                });
+
+                // 修改權限事件
+                $('.permission-switch').on('change', function () {
+                    const $sw = $(this);
+                    const eid = $sw.closest('tr').data('emp-id');
+                    const isChecked = $sw.is(':checked');
+
+                    const fids = [];
+                    $sw.closest('tr').find('.permission-switch:checked').each(function () {
+                        fids.push($(this).data('fid'));
+                    });
+
+                    $.ajax({
+                        url: '/admin/permissions/update',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ empId: eid, functionIds: fids }),
+                        success: function () {
+                            showMatrixAlert(isChecked ? '✅ 權限授權成功' : 'ℹ️ 權限已移除');
+                        },
+                        error: function () {
+                            $sw.prop('checked', !isChecked);
+                            showMatrixAlert('❌ 存檔失敗，請確認網路與服務狀態');
+                        }
+                    });
+                });
+
+                // 自定義純色置中 Alert
+                function showMatrixAlert(msg) {
+                    const alertHtml = `
+                        <div id="matrixCustomAlert" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                             background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center;
+                             animation: matrixFadeIn 0.2s ease;">
+                            <div style="background: #2b2b2b; padding: 40px 60px; border-radius: 12px; border: 1px solid #444;
+                                 text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); animation: matrixScaleUp 0.2s ease;">
+                                <h5 style="color: #fff; margin-bottom: 25px; letter-spacing: 1px; font-weight: 500;">${msg}</h5>
+                                <button onclick="$('#matrixCustomAlert').remove()" 
+                                        class="btn btn-primary px-5 py-2 fw-bold" style="border-radius: 6px;">確定</button>
+                            </div>
+                        </div>
+                        <style>
+                            @keyframes matrixFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                            @keyframes matrixScaleUp { from { transform: scale(0.8); } to { transform: scale(1); } }
+                        </style>
+                    `;
+                    $('body').append(alertHtml);
+                }
+
+                // 關鍵字搜尋
+                $('#permissionSearchInput').on('input', function () {
+                    const val = $(this).val().toLowerCase();
+                    $('#permissionMatrixBody tr').each(function () {
+                        const text = $(this).text().toLowerCase();
+                        $(this).toggle(text.includes(val));
+                    });
+                });
+            });
+        })(jQuery);
+    </script>
+
+    <style>
+        #panel-permission-matrix .table-responsive {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .permission-switch:checked {
+            background-color: #198754 !important;
+            border-color: #198754 !important;
+        }
+    </style>
+</div>

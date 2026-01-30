@@ -149,12 +149,13 @@
                     <li class="nav-item"><a class="nav-link active" th:href="@{/event/list}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/about}">關於我們</a></li>
                 </ul>
                 <form class="d-flex mx-auto col-lg-4" role="search" action="/event/search" method="GET">
                     <div class="input-group">
-                        <span class="input-group-text bg-dark border-secondary text-secondary"><i
-                                class="fas fa-search"></i></span>
+                        <button type="submit" class="input-group-text bg-dark border-secondary text-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
                         <input class="form-control" type="search" name="keyword" placeholder="搜尋活動..."
                             aria-label="Search">
                     </div>
@@ -189,6 +190,12 @@
 
 
                     <div class="type-filter-container mb-4">
+                        <button type="button" class="type-filter-item text-success" id="onSaleFilter"
+                            data-on-sale="true" th:classappend="${currentOnSaleOnly ? 'active' : ''}">
+                            <span><i class="fas fa-fire me-2"></i> 熱賣中</span>
+                        </button>
+                        <hr class="border-secondary opacity-25 my-3">
+
                         <button type="button" class="type-filter-item" data-type-id=""
                             th:classappend="${currentTypeId == null ? 'active' : ''}">
                             <span><i class="fas fa-th-large me-2 small"></i> 全部類型</span>
@@ -234,6 +241,13 @@
                         <div class="mb-4">
                             <div class="list-group list-group-flush border-secondary">
                                 <button type="button"
+                                    class="list-group-item list-group-item-action bg-transparent text-success border-0 py-2 type-filter-item"
+                                    id="onSaleFilterMobile" data-on-sale="true"
+                                    th:classappend="${currentOnSaleOnly ? 'active' : ''}">
+                                    <i class="fas fa-fire me-2"></i> 熱賣中
+                                </button>
+                                <hr class="border-secondary opacity-25 my-1 mx-3">
+                                <button type="button"
                                     class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 type-filter-item"
                                     data-type-id="">全部類型</button>
                                 <button type="button"
@@ -267,21 +281,21 @@
                         <option>最新上架</option>
                         <option>價格由低到高</option>
                         <option>價格由高到低</option>
-                        <option>開賣中</option>
                     </select>
                 </div>
 
                 <!-- Event Grid -->
                 <div class="row g-4">
                     <div class="col-12 col-md-6 col-lg-4" th:each="event : ${events}">
-                        <div class="card h-100 event-card">
+                        <a th:href="@{/event/{id}(id=${event.eventId})}"
+                            class="card h-100 event-card text-decoration-none border-0 shadow-sm">
                             <div class="card-img-wrapper">
                                 <img loading="lazy" th:src="${event.coverImageUrl}" src="https://picsum.photos/800/450"
                                     class="card-img-top" th:alt="${event.title}">
                                 <span class="badge date-badge"
                                     th:text="${#temporals.format(event.eventStartAt, 'MM/dd')}">12/31</span>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-3 d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="badge bg-primary" th:text="${event.typeName}">音樂演出</span>
                                     <!-- Dynamic Status Badge -->
@@ -308,20 +322,19 @@
                                         </th:block>
                                     </th:block>
                                 </div>
-                                <h5 class="card-title text-truncate-2" th:text="${event.title}">活動標題</h5>
-                                <p class="text-muted small mb-3">
+                                <h5 class="card-title text-truncate-1 mb-1 text-white" th:text="${event.title}">活動標題
+                                </h5>
+                                <p class="text-muted small mb-2 text-truncate">
                                     <i class="fas fa-map-marker-alt me-2"></i>
                                     <span th:text="${event.place}">地點</span>
                                 </p>
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="mt-auto text-end">
                                     <span class="price">NT$ <span
                                             th:text="${event.minPrice != null ? #numbers.formatInteger(event.minPrice, 0, 'COMMA') : '0'}">0</span>
                                         起</span>
-                                    <a th:href="@{/event/{id}(id=${event.eventId})}" href="#"
-                                        class="btn btn-sm btn-primary px-3">查看詳情</a>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     <div th:if="${events == null || events.isEmpty()}" class="col-12 text-center py-5">
                         <div class="py-5">
@@ -391,6 +404,11 @@
                     url += '?typeId=' + typeId;
                 }
 
+                const onSaleOnly = $('#onSaleFilter').hasClass('active');
+                if (onSaleOnly) {
+                    url += (typeId ? '&' : '?') + 'onSaleOnly=true';
+                }
+
                 // Smooth delay for animation
                 setTimeout(() => {
                     window.location.href = url;
@@ -404,12 +422,20 @@
                 fetchEvents();
             });
 
+            // On Sale Filter Toggle
+            $('#onSaleFilter, #onSaleFilterMobile').click(function () {
+                const isActive = $(this).hasClass('active');
+                $('#onSaleFilter, #onSaleFilterMobile').toggleClass('active', !isActive);
+                fetchEvents();
+            });
+
             // --- AJAX Fetch Function ---
             function fetchEvents(page = 0) {
-                const typeId = $('.type-filter-item.active').first().data('type-id') || null;
+                const typeId = $('.type-filter-item.active').not('#onSaleFilter, #onSaleFilterMobile').first().data('type-id') || null;
                 const place = null;
                 const maxPrice = $('#priceFilter').val();
                 const sortVal = $('#sortSelect').val();
+                const onSaleOnly = $('#onSaleFilter').hasClass('active');
 
                 let sortParam = 'eventStartAt';
                 let direction = 'ASC';
@@ -419,7 +445,10 @@
                     direction = 'DESC';
                 }
                 if (sortVal === '最新上架') sortParam = 'newest';
-                if (sortVal === '開賣中') sortParam = 'onSale';
+
+                if (onSaleOnly) {
+                    sortParam = 'onSale';
+                }
 
                 // Show Loading
                 $('.row.g-4').css('opacity', '0.5');
@@ -433,7 +462,8 @@
                         place: place,
                         maxPrice: maxPrice,
                         sort: sortParam,
-                        direction: direction
+                        direction: direction,
+                        onSaleOnly: onSaleOnly
                     },
                     success: function (data) {
                         renderEvents(data.content);
@@ -495,27 +525,26 @@
 
                     const html = `
                     <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 event-card">
+                        <a href="/event/${event.eventId}" class="card h-100 event-card text-decoration-none border-0 shadow-sm">
                             <div class="card-img-wrapper">
                                 <img loading="lazy" src="${event.coverImageUrl}" class="card-img-top" alt="${event.title}">
                                 <span class="badge date-badge">${dateDisplay}</span>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-3 d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="badge bg-primary">${event.typeName}</span>
                                     ${statusBadge}
                                 </div>
-                                <h5 class="card-title text-truncate-2">${event.title}</h5>
-                                <p class="text-muted small mb-3">
+                                <h5 class="card-title text-truncate-1 mb-1 text-white">${event.title}</h5>
+                                <p class="text-muted small mb-2 text-truncate">
                                     <i class="fas fa-map-marker-alt me-2"></i>
                                     <span>${event.place}</span>
                                 </p>
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="mt-auto text-end">
                                     <span class="price">NT$ ${priceStr} 起</span>
-                                    <a href="/event/${event.eventId}" class="btn btn-sm btn-primary px-3">查看詳情</a>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     `;
                     container.append(html);
