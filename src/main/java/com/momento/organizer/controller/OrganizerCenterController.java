@@ -421,7 +421,7 @@ public class OrganizerCenterController {
     // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
     public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
-            @RequestParam("imageFiles") MultipartFile[] files) {
+            @RequestParam(value="imageFiles",required = false) MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -437,14 +437,30 @@ public class OrganizerCenterController {
     //更新商品
     @PostMapping("/updateProd")
     public String updateProd(@Valid ProdDTO prodDTO, HttpSession session,
-            @RequestParam("imageFiles") MultipartFile[] files) {
+            @RequestParam(value="imageFile1",required = false) MultipartFile file1,
+            @RequestParam(value="imageFile2",required = false) MultipartFile file2,
+            @RequestParam(value="imageFile3",required = false) MultipartFile file3,
+            @RequestParam(value="imageFile4",required = false) MultipartFile file4,
+            @RequestParam(value="imageId1",required = false) Integer imageId1,
+            @RequestParam(value="imageId2",required = false) Integer imageId2,
+            @RequestParam(value="imageId3",required = false) Integer imageId3,
+            @RequestParam(value="imageId4",required = false) Integer imageId4
+    		) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
-
         prodDTO.setOrganizerId(organizer.getOrganizerId());
-        prodSvc.addProd(prodDTO, files);
+        MultipartFile[] files = {file1,file2,file3,file4}; 
+        
+        Integer[] imageIds = {imageId1,imageId2,imageId3,imageId4}; 
+        for(int i=0;i<4;i++) {
+        	System.out.println(files[i]);
+        	System.out.println(imageIds[i]);
+        	System.out.println("=============");
+        }
+        
+        prodSvc.updateProd(prodDTO, files, imageIds);
 
         return "redirect:/organizer/dashboard#product-list";
     }

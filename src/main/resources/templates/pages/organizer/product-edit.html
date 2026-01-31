@@ -117,7 +117,8 @@
 			    </button>
 		    </a>
 		</div>
-		<form id="formProductUpdate" method="post" th:action="@{prodUpdate}" th:object="${prod}">
+		<form id="formProductUpdate" method="post" th:action="@{updateProd}" th:object="${prod}" enctype="multipart/form-data">
+		    <input type="hidden" th:field="*{prodId}">
 		    <div class="row g-4">
 		        <div class="col-lg-8">
 		            <!-- Basic Info -->
@@ -203,66 +204,70 @@
 		                    <h5 class="card-title mb-4"><i class="fas fa-images me-2 text-warning"></i>商品圖片</h5>
 		
 		                    <!-- Main Image Upload -->
-		                    <div class="mb-3">
-<!-- 		                        <label class="form-label">主圖</label> -->
-		                        <div class="upload-zone text-center p-4 border border-secondary border-dashed rounded position-relative"
-		                            id="productMainImageZone" style="cursor: pointer;">
-		                            <input type="file" class="d-none" id="productMainImageInput" accept="image/*" name="imageFiles" multiple>
-		                            <div class="upload-placeholder">
-		                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-		                                <p class="small text-muted mb-0">點擊上傳圖片</p>
-		                                <small class="text-muted">建議 800x800 px</small>
-		                            </div>
-		                            <div class="upload-preview d-none">
-		                                <img src="" id="productMainImagePreview" class="img-fluid rounded"
-		                                    style="max-height: 150px;">
-		                                <button type="button"
-		                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 btn-remove-main-image">
-		                                    <i class="fas fa-times"></i>
-		                                </button>
-		                            </div>
-		                        </div>
-		                    </div>
+<!-- 		                    <div class="mb-3"> -->
+<!--	                        <label class="form-label">主圖</label> -->
+<!-- 		                        <div class="upload-zone text-center p-4 border border-secondary border-dashed rounded position-relative" -->
+<!-- 		                            id="productMainImageZone" style="cursor: pointer;"> -->
+<!-- 		                            <input type="file" class="d-none" id="productMainImageInput" accept="image/*" name="imageFiles" multiple> -->
+<!-- 		                            <div class="upload-placeholder"> -->
+<!-- 		                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i> -->
+<!-- 		                                <p class="small text-muted mb-0">點擊上傳圖片</p> -->
+<!-- 		                                <small class="text-muted">建議 800x800 px</small> -->
+<!-- 		                            </div> -->
+<!-- 		                            <div class="upload-preview d-none"> -->
+<!-- 		                                <img src="" id="productMainImagePreview" class="img-fluid rounded" -->
+<!-- 		                                    style="max-height: 150px;"> -->
+<!-- 		                                <button type="button" -->
+<!-- 		                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 btn-remove-main-image"> -->
+<!-- 		                                    <i class="fas fa-times"></i> -->
+<!-- 		                                </button> -->
+<!-- 		                            </div> -->
+<!-- 		                        </div> -->
+<!-- 		                    </div> -->
 		
 		                    <!-- Additional Images -->
 		                    <label class="form-label">圖片（最多 4 張）</label>
 		                    <div class="row g-2" id="additionalImagesContainer">
 		                        <div class="col-6">
+		                        	<input type="hidden" name="imageId1" th:value="${prod.images.size()}<1?null:${prod.images[0].prodImageId}">
+		                            <input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput1" name="imageFile1">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
-		                                style="cursor: pointer;">
-<!-- 		                                <input type="file" class="d-none additional-image-input" accept="image/*"> -->
-		                                <img th:src="${prod.prodImages.size()}<1?'':${prod.prodImages[0]}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.prodImages.size()}<1">
-		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.prodImages.size()}<1">
+		                                id="productImageZone1" style="cursor: pointer;">										
+		                                <img th:src="${prod.images.size()}<1?'':${prod.images[0].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<1">
+		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<1">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
+		                        	<input type="hidden" name="imageId2" th:value="${prod.images.size()}<2?null:${prod.images[1].prodImageId}">
+		                        	<input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput2" name="imageFile2">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
-		                                style="cursor: pointer;">
-<!-- 		                                <input type="file" class="d-none additional-image-input" accept="image/*"> -->
-		                                <img th:src="${prod.prodImages.size()}<2?'':${prod.prodImages[1]}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.prodImages.size()}<2">
-		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.prodImages.size()}<2">
+		                                id="productImageZone2" style="cursor: pointer;">
+		                                <img th:src="${prod.images.size()}<2?'':${prod.images[1].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<2">
+		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<2">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
+		                        	<input type="hidden" name="imageId3" th:value="${prod.images.size()}<3?null:${prod.images[2].prodImageId}">
+		                            <input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput3" name="imageFile3">		                        
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
-		                                style="cursor: pointer;">
-<!-- 		                                <input type="file" class="d-none additional-image-input" accept="image/*"> -->
-		                                <img th:src="${prod.prodImages.size()}<3?'':${prod.prodImages[2]}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.prodImages.size()}<3">
-		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.prodImages.size()}<3">
+		                                id="productImageZone3" style="cursor: pointer;">
+		                                <img th:src="${prod.images.size()}<3?'':${prod.images[2].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<3">
+		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<3">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
+		                        	<input type="hidden" name="imageId4" th:value="${prod.images.size()}<4?null:${prod.images[3].prodImageId}">
+		                        	<input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput4" name="imageFile4">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
-		                                style="cursor: pointer;">
-<!-- 		                                <input type="file" class="d-none additional-image-input" accept="image/*"> -->
-		                                <img th:src="${prod.prodImages.size()}<4?'':${prod.prodImages[3]}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.prodImages.size()}<4">
-		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.prodImages.size()}<4">
+		                                id="productImageZone4" style="cursor: pointer;"> 
+		                                <img th:src="${prod.images.size()}<4?'':${prod.images[3].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<4">
+		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<4">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
@@ -304,38 +309,22 @@
         window.INITIAL_PANEL = /*[[${activePanel}]]*/ null;
     </script>
 	<script>
-	$("#productMainImageInput").on("click",function(e){
-		e.stopPropagation();
-	})
-	$("#productMainImageZone").on("click",function(e){
-		$("#productMainImageInput").click();
-	})
-	
-	function preview_img(files){
-	    let imageContainer_el = $("div.imageContainer");
-	    $.each(files,function(i, file){
-	    	if (i >= imageContainer_el.length) return false;
+
+		$(".imageContainer").on("click",function(e){
+			let index = $(".imageContainer").index(this);
+			$(".productImageInput").eq(index).click();
+		})
+		
+		$(".productImageInput").on("change", function(){
+			let index = $(".productImageInput").index(this);
+			let icon = `<div class="d-flex align-items-center justify-content-center h-100"><i class="fas fa-plus text-muted"></i></div>`
 	    	let reader = new FileReader();
 		    $(reader).on("load", function(){
 		        let img_str = `<img src="${reader.result}" class="preview_img" style="width:100%; height:100%"> `;
-		        imageContainer_el.eq(i).html(img_str);
+		        $(".imageContainer").eq(index).html(img_str);
 		    })
-		    reader.readAsDataURL(file);
-	    })
-	}
-	
-	$("#productMainImageInput").on("change", function(){
-		let imageContainer_el = $("div.imageContainer");
-		let icon = `<div class="d-flex align-items-center justify-content-center h-100"><i class="fas fa-plus text-muted"></i></div>`
-		$.each(imageContainer_el,function(i, image){
-	    	$(image).empty();
-	    	$(image).html(icon);
+		    reader.readAsDataURL(this.files[0]);
 		});
-		
-		if($(this)[0].files.length > 0){
-            preview_img(this.files);
-        }
-	})
 	
 </script>
 </body>
