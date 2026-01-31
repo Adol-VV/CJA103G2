@@ -331,12 +331,12 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/about}">關於我們</a></li>
                 </ul>
-                <form class="d-flex mx-auto col-lg-4" role="search" action="/event/search" method="GET">
+                <form class="d-flex mx-auto col-lg-4" role="search" th:action="@{/search}" method="GET">
                     <div class="input-group">
                         <button type="submit" class="input-group-text bg-dark border-secondary text-secondary">
                             <i class="fas fa-search"></i>
                         </button>
-                        <input class="form-control" type="search" name="keyword" placeholder="搜尋活動..."
+                        <input class="form-control" type="search" name="q" placeholder="搜尋活動、商品、主辦方..."
                             aria-label="Search">
                     </div>
                 </form>
@@ -693,7 +693,7 @@
                                     </p>
 
                                     <p class="text-center text-muted small mt-3 mb-0">
-                                        購票即同意 <a href="#" class="text-muted">服務條款</a>
+                                        購票即同意 <a th:href="@{/member-terms}" class="text-muted" target="_blank">服務條款</a>
                                     </p>
                                 </div>
                             </div>

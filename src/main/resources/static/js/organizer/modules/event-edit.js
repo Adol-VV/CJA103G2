@@ -1,7 +1,18 @@
 export function initEventEdit() {
     let uploadedEditBannerUrl = null; // 改用 null 表示未設定
+    let isEditFormDirty = false;
 
     console.log('initEventEdit: Module Initialized');
+
+    // ========== 追蹤表單變動 ==========
+    function markAsEditDirty() {
+        if (!isEditFormDirty) {
+            console.log('Edit form marked as dirty');
+            isEditFormDirty = true;
+        }
+    }
+
+    $(document).on('input change', '#eventUpdateForm input, #eventUpdateForm select, #eventUpdateForm textarea', markAsEditDirty);
 
     // ========== 核心：開啟編輯器 ==========
     window.openEventEditEditor = function (eventId) {
@@ -109,6 +120,7 @@ export function initEventEdit() {
             }
 
             $('#eventUpdateForm').removeClass('opacity-50');
+            isEditFormDirty = false; // 載入完畢，重置 dirty 狀態
             console.log('✅ 資料載入完成');
 
         } catch (error) {
@@ -197,15 +209,43 @@ export function initEventEdit() {
     }
 
     // ========== 事件綁定 ==========
-    $(document).on('click', '#btnEditAddTicket', () => addEditTicketZone());
+    $(document).on('click', '#btnEditAddTicket', () => {
+        addEditTicketZone();
+        markAsEditDirty();
+    });
 
     $(document).on('click', '.btn-remove-edit-zone', function () {
         $(this).closest('.ticket-zone-card').remove();
+        markAsEditDirty();
     });
 
     $(document).on('click', '#btnEditBackToList', (e) => {
         e.preventDefault();
-        if (window.Navigation) window.Navigation.showSection('events-list');
+
+        if (!isEditFormDirty) {
+            // 如果沒變動，直接跳轉
+            if (window.Navigation) window.Navigation.showSection('events-list');
+            return;
+        }
+
+        // 如果有變動才提示
+        Swal.fire({
+            title: '確定要取消編輯嗎？',
+            text: '您有尚未儲存的變更，離開後這些變更將會遺失。',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '確定離開',
+            cancelButtonText: '繼續編輯',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                isEditFormDirty = false; // 重置狀態
+                if (window.Navigation) window.Navigation.showSection('events-list');
+            }
+        });
     });
 
     // 圖片更換
@@ -228,6 +268,7 @@ export function initEventEdit() {
             success: function (res) {
                 if (res.success && res.imageUrl) {
                     uploadedEditBannerUrl = res.imageUrl;
+                    markAsEditDirty();
 
                     // 更新圖片顯示
                     $('#editImagePreview').attr('src', res.imageUrl);
@@ -254,6 +295,7 @@ export function initEventEdit() {
         if (!confirm('確定要移除此圖片嗎?')) return;
 
         uploadedEditBannerUrl = null;
+        markAsEditDirty();
         $('#editImagePreview').attr('src', '');
         $('#editImagePreview').closest('.upload-preview').addClass('d-none');
         $('#editImageEmpty').removeClass('d-none');
@@ -333,25 +375,26 @@ export function initEventEdit() {
                 });
                 if (window.Navigation) window.Navigation.showSection('events-list');
             } else {
-                // 按鈕回饋
-                skipFinallyReset = true;
-                btn.html('<i data-lucide="check" class="me-2"></i>儲存成功').addClass('btn-success').removeClass('btn-outline-primary');
-                if (window.lucide) window.lucide.createIcons();
+                // 儲存修改成功後，重置 dirty 狀態
+                isEditFormDirty = false;
 
+                // 顯示彈窗提示，並提供回到列表的按鈕
                 Swal.fire({
                     icon: 'success',
-                    title: '成功',
-                    text: '修改已儲存',
-                    timer: 1500,
-                    showConfirmButton: false,
+                    title: '修改儲存成功',
+                    text: '您的活動修改已成功儲存！',
                     background: '#1a1d20',
-                    color: '#fff'
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonText: '回到列表',
+                    cancelButtonText: '留在本頁',
+                    confirmButtonColor: '#198754',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (window.Navigation) window.Navigation.showSection('events-list');
+                    }
                 });
-
-                setTimeout(() => {
-                    btn.html(originalHtml).removeClass('btn-success').addClass('btn-outline-primary').prop('disabled', false);
-                    if (window.lucide) window.lucide.createIcons();
-                }, 2000);
             }
         } catch (e) {
             Swal.fire({

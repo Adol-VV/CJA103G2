@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -10,129 +10,145 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <link th:href="@{/css/momento-theme.css}" rel="stylesheet">
     <style>
+        body {
+            background-color: #050807;
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        /* 背景動態漸層 (與首頁一致) */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
         .search-header {
-            background: linear-gradient(135deg, rgba(45, 95, 79, 0.2), transparent);
-            padding: 3rem 0;
-            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+            padding: 4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .search-input-lg {
             font-size: 1.25rem;
-            padding: 1rem 1.5rem;
-            padding-left: 3rem;
+            padding: 1.2rem 1.5rem;
+            padding-left: 3.5rem;
             border-radius: 50px;
-            background: #1a1a1a;
-            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .search-input-lg:focus {
-            border-color: var(--momento-green);
-            box-shadow: 0 0 0 4px rgba(45, 95, 79, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
         }
 
         .search-icon-lg {
             position: absolute;
-            left: 1.25rem;
+            left: 1.5rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
+            color: rgba(16, 185, 129, 0.8);
             font-size: 1.25rem;
+            z-index: 5;
         }
 
         .filter-chip {
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 50px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
         .filter-chip:hover,
         .filter-chip.active {
-            background: var(--momento-green);
+            background: rgba(16, 185, 129, 0.15);
             border-color: var(--momento-green);
-            color: white;
+            color: var(--momento-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
         }
 
         .result-card {
-            transition: all 0.3s;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
         }
 
         .result-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(45, 95, 79, 0.2);
+            transform: translateY(-10px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .result-type-badge {
             position: absolute;
             top: 1rem;
             left: 1rem;
-            z-index: 1;
+            z-index: 10;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
         }
 
         .highlight {
-            background: rgba(45, 95, 79, 0.3);
-            padding: 0 4px;
-            border-radius: 4px;
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
-            background-size: 200% 100%;
-            animation: skeleton 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        @keyframes skeleton {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
+            color: var(--momento-green);
+            font-weight: 700;
         }
 
         .no-results {
-            padding: 4rem 0;
-        }
-
-        .suggestion-tag {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .suggestion-tag:hover {
-            background: var(--momento-green) !important;
-            border-color: var(--momento-green) !important;
+            padding: 6rem 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 30px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 
-<body class="bg-black text-white">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="../../index.html">
-                <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
-            </a>
+<body>
+    <!-- Navbar (與 index.html 同步的高質感導覽列) -->
+    <nav class="navbar navbar-expand-lg sticky-top border-bottom border-dark"
+        style="backdrop-filter: blur(15px); background: rgba(5, 8, 7, 0.8);">
+        <div class="container px-lg-5">
+            <a class="navbar-brand fw-bold fs-3" th:href="@{/}" style="color: var(--momento-green);">Momento</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../../index.html">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../user/event-list.html">找活動</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../user/prod-list.html">找商品</a></li>
-                    <li class="nav-item"><a class="nav-link" href="article-list.html">文章</a></li>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link px-3" th:href="@{/event/list}">找活動</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" th:href="@{/prod/listAllProd}">找商品</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" th:href="@{/article}">文章</a></li>
                 </ul>
-                <div class="d-flex ms-3">
-                    <a href="../user/login.html" class="btn btn-outline-light btn-sm me-2">登入</a>
-                    <a href="../user/register.html" class="btn btn-primary btn-sm">註冊</a>
+                <div class="d-flex align-items-center gap-3 ms-lg-4 mt-3 mt-lg-0">
+                    <div th:if="${session.loginMember}" class="d-flex align-items-center gap-3">
+                        <span class="text-white-50 small" th:text="${session.loginMember.name}">會員姓名</span>
+                        <a th:href="@{/member/dashboard}"
+                            class="btn btn-outline-success btn-sm px-3 rounded-pill">會員中心</a>
+                    </div>
+                    <div th:unless="${session.loginMember}">
+                        <a th:href="@{/member/login}" class="btn btn-outline-light btn-sm px-3 rounded-pill">登入</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,15 +159,12 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <h1 class="h4 text-center mb-4">
-                        <i class="fas fa-search me-2 text-success"></i>搜尋 Momento
-                    </h1>
                     <div class="position-relative">
                         <i class="fas fa-search search-icon-lg"></i>
                         <input type="text" class="form-control search-input-lg text-white" id="searchInput"
-                            placeholder="搜尋活動、商品、主辦方..." autofocus>
+                            placeholder="搜尋活動、商品、主辦方..." autofocus th:value="${keyword}">
                         <button
-                            class="btn btn-primary position-absolute end-0 top-50 translate-middle-y me-2 rounded-pill px-4"
+                            class="btn btn-success position-absolute end-0 top-50 translate-middle-y me-2 rounded-pill px-4 py-2 fw-bold"
                             id="btnSearch">
                             搜尋
                         </button>
@@ -163,213 +176,73 @@
 
     <div class="container py-5">
         <!-- Filters -->
-        <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
-            <span class="text-muted me-2">篩選：</span>
-            <button class="filter-chip active" data-type="all">
-                <i class="fas fa-globe me-1"></i>全部
-            </button>
-            <button class="filter-chip" data-type="event">
-                <i class="fas fa-calendar me-1"></i>活動
-            </button>
-            <button class="filter-chip" data-type="product">
-                <i class="fas fa-box me-1"></i>商品
-            </button>
-            <button class="filter-chip" data-type="article">
-                <i class="fas fa-newspaper me-1"></i>文章
-            </button>
-            <button class="filter-chip" data-type="organizer">
-                <i class="fas fa-building me-1"></i>主辦方
-            </button>
+        <div class="d-flex flex-wrap gap-2 mb-5 align-items-center">
+            <span class="text-muted me-2 small uppercase tracking-wider">篩選探索：</span>
+            <button class="filter-chip active" data-type="all">全部</button>
+            <button class="filter-chip" data-type="event">活動</button>
+            <button class="filter-chip" data-type="product">商品</button>
+            <button class="filter-chip" data-type="organizer">主辦方</button>
 
-            <div class="ms-auto">
-                <select class="form-select form-select-sm bg-dark text-white border-secondary" id="sortSelect">
-                    <option value="relevance">相關性排序</option>
-                    <option value="newest">最新優先</option>
-                    <option value="popular">熱門優先</option>
-                </select>
-            </div>
+
         </div>
 
         <!-- Search Stats -->
         <div class="mb-4" id="searchStats">
-            <span class="text-muted">搜尋 "<span id="searchKeyword" class="text-white">音樂會</span>" 找到 <span
-                    id="resultCount" class="text-success">24</span> 筆結果</span>
+            <h2 class="h5 text-muted">
+                搜尋 "<span id="searchKeyword" class="text-white fw-bold" th:text="${keyword}">...</span>"
+                為您找到 <span id="resultCount" class="text-success">0</span> 筆結果
+            </h2>
         </div>
 
         <!-- Results Grid -->
         <div class="row g-4" id="resultsGrid">
-            <!-- Event Card -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="event">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-primary result-type-badge">活動</span>
-                        <img loading="lazy" src="https://picsum.photos/seed/event1/400/200" class="card-img-top"
-                            alt="Event" style="height: 160px; object-fit: cover;">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate-2">2025新年<span class="highlight">音樂會</span>｜維也納之夜</h5>
-                        <p class="text-muted small mb-2">
-                            <i class="far fa-calendar me-1"></i>2024/12/31
-                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>國家音樂廳
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-success fw-bold">NT$ 800 起</span>
-                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Card -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="product">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-warning text-dark result-type-badge">商品</span>
-                        <img loading="lazy" src="https://picsum.photos/seed/prod1/400/200" class="card-img-top"
-                            alt="Product" style="height: 160px; object-fit: cover;">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate-2"><span class="highlight">音樂會</span>紀念T恤 - 2025限定版</h5>
-                        <p class="text-muted small mb-2">
-                            <i class="fas fa-store me-1"></i>快樂文創
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-success fw-bold">NT$ 680</span>
-                            <a href="../user/prod-detail.html" class="btn btn-sm btn-outline-warning">查看商品</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Article Card -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="article">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-info result-type-badge">文章</span>
-                        <img loading="lazy" src="https://picsum.photos/seed/art1/400/200" class="card-img-top"
-                            alt="Article" style="height: 160px; object-fit: cover;">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate-2">如何挑選人生第一場<span class="highlight">音樂會</span>？新手指南</h5>
-                        <p class="text-muted small mb-2">
-                            <i class="far fa-clock me-1"></i>2024/12/20
-                            <i class="far fa-eye ms-2 me-1"></i>1,234
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">by Momento 編輯部</span>
-                            <a href="article-detail.html" class="btn btn-sm btn-outline-info">閱讀更多</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Event Card 2 -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="event">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-primary result-type-badge">活動</span>
-                        <img loading="lazy" src="https://picsum.photos/seed/event2/400/200" class="card-img-top"
-                            alt="Event" style="height: 160px; object-fit: cover;">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate-2">春季爵士<span class="highlight">音樂</span>節 2025</h5>
-                        <p class="text-muted small mb-2">
-                            <i class="far fa-calendar me-1"></i>2025/03/15
-                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>華山文創園區
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-success fw-bold">NT$ 1,200 起</span>
-                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Organizer Card -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="organizer">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-success result-type-badge">主辦方</span>
-                    </div>
-                    <div class="card-body text-center py-4">
-                        <img loading="lazy"
-                            src="https://ui-avatars.com/api/?name=Classic+Music&background=2D5F4F&color=fff&size=128"
-                            class="rounded-circle mb-3" style="width: 80px; height: 80px;">
-                        <h5 class="card-title">古典<span class="highlight">音樂</span>推廣協會</h5>
-                        <p class="text-muted small mb-3">專注於古典音樂會與藝文活動的推廣</p>
-                        <div class="d-flex justify-content-center gap-4 text-muted small mb-3">
-                            <span><i class="fas fa-calendar me-1"></i>12 場活動</span>
-                            <span><i class="fas fa-users me-1"></i>5.2k 追蹤</span>
-                        </div>
-                        <a href="organizer-profile.html" class="btn btn-sm btn-outline-success">查看主辦</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Event Card 3 -->
-            <div class="col-md-6 col-lg-4 result-item" data-type="event">
-                <div class="card bg-dark border-secondary result-card h-100">
-                    <div class="position-relative">
-                        <span class="badge bg-primary result-type-badge">活動</span>
-                        <span class="badge bg-danger position-absolute" style="top: 1rem; right: 1rem;">熱賣中</span>
-                        <img loading="lazy" src="https://picsum.photos/seed/event3/400/200" class="card-img-top"
-                            alt="Event" style="height: 160px; object-fit: cover;">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate-2">五月天 2025 巡迴<span class="highlight">演唱會</span></h5>
-                        <p class="text-muted small mb-2">
-                            <i class="far fa-calendar me-1"></i>2025/05/01
-                            <i class="fas fa-map-marker-alt ms-2 me-1"></i>台北小巨蛋
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-success fw-bold">NT$ 2,800 起</span>
-                            <a href="../user/event-detail.html" class="btn btn-sm btn-outline-primary">查看詳情</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- 這裡會由 search.js 動態填入 -->
         </div>
 
-        <!-- No Results State (Hidden) -->
+        <!-- No Results State (Hidden by default) -->
         <div class="no-results text-center d-none" id="noResults">
-            <i class="fas fa-search fa-4x text-muted mb-4"></i>
-            <h3 class="text-muted">找不到相關結果</h3>
-            <p class="text-muted mb-4">試試其他關鍵字，或瀏覽下方熱門推薦</p>
             <div class="mb-4">
-                <span class="text-muted me-2">熱門搜尋：</span>
-                <span
-                    class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">五月天</span>
-                <span
-                    class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">音樂節</span>
-                <span class="badge bg-secondary bg-opacity-25 border border-secondary p-2 me-2 suggestion-tag">展覽</span>
-                <span class="badge bg-secondary bg-opacity-25 border border-secondary p-2 suggestion-tag">周邊商品</span>
+                <i class="fas fa-search-minus fa-4x text-muted opacity-50"></i>
             </div>
-            <a href="../../index.html" class="btn btn-primary">
+            <h3 class="text-white-50">找不到相關結果</h3>
+            <p class="text-muted mb-5">換個關鍵字試試看，或者點擊下方建議標籤</p>
+            <div class="mb-5">
+                <span
+                    class="badge bg-secondary bg-opacity-10 border border-secondary p-2 me-2 suggestion-tag cursor-pointer">熱門活動</span>
+                <span
+                    class="badge bg-secondary bg-opacity-10 border border-secondary p-2 me-2 suggestion-tag cursor-pointer">演唱會</span>
+                <span
+                    class="badge bg-secondary bg-opacity-10 border border-secondary p-2 me-2 suggestion-tag cursor-pointer">手作</span>
+            </div>
+            <a th:href="@{/}" class="btn btn-outline-success rounded-pill px-5 py-2">
                 <i class="fas fa-home me-2"></i>回首頁探索
             </a>
         </div>
 
         <!-- Load More -->
-        <div class="text-center mt-5" id="loadMoreSection">
-            <button class="btn btn-outline-secondary px-5" id="btnLoadMore">
-                <i class="fas fa-plus me-2"></i>載入更多結果
+        <div class="text-center mt-5 d-none" id="loadMoreSection">
+            <button class="btn btn-outline-secondary px-5 rounded-pill" id="btnLoadMore">
+                載入更多結果
             </button>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark border-top border-secondary py-4 mt-5">
+    <footer class="py-5" style="background: rgba(0,0,0,0.3); margin-top: 10rem;">
         <div class="container text-center text-muted small">
-            &copy; 2024 Momento. All Rights Reserved.
+            <p>&copy; 2025 Momento. All Rights Reserved. 每一刻精彩都值得被收藏。</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- Modularized JS -->
-    <script type="module" src="../../js/common/index.js"></script>
-    <script type="module" src="../../js/pages/search.js"></script>
+    <!-- JS 初始化關鍵關鍵字 -->
+    <script th:inline="javascript">
+        window.initialKeyword = [[${ keyword != null ? keyword : ''}]];
+    </script>
+    <script type="module" th:src="@{/js/common/index.js}"></script>
+    <script type="module" th:src="@{/js/pages/search.js}"></script>
 </body>
 
 </html>

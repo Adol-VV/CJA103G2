@@ -38,49 +38,70 @@
         }
 
         .nav-tabs {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 100px;
+            padding: 8px;
+            margin-top: 60px !important;
+            /* 往下移動一點 */
+            margin-bottom: 60px !important;
+            backdrop-filter: blur(10px);
+            display: flex !important;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .nav-tabs .nav-link {
             color: rgba(255, 255, 255, 0.5);
             border: none;
-            padding: 15px 35px;
-            font-size: 1.25rem;
+            padding: 12px 35px;
+            font-size: 1.3rem;
             font-weight: 700;
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
             background: transparent !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 100px;
+        }
+
+        .nav-tabs .nav-link i {
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+            opacity: 0.7;
         }
 
         .nav-tabs .nav-link:hover {
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .nav-tabs .nav-link:hover i {
+            transform: scale(1.1);
+            opacity: 1;
         }
 
         .nav-tabs .nav-link.active {
             color: #10B981 !important;
-            /* Momento Green */
-            background: transparent;
+            background: rgba(16, 185, 129, 0.1) !important;
+            box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);
+        }
+
+        .nav-tabs .nav-link.active i {
+            opacity: 1;
+            color: #10B981;
         }
 
         .nav-tabs .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 4px;
-            background: #10B981;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-            border-radius: 4px 4px 0 0;
-            box-shadow: 0 -2px 10px rgba(16, 185, 129, 0.3);
-        }
-
-        .nav-tabs .nav-link.active::after {
-            width: 70%;
+            display: none;
+            /* 移除舊底線 */
         }
 
         .event-card,
@@ -205,7 +226,7 @@
 
     <!-- Tabs -->
     <div class="container">
-        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs" role="tablist">
+        <ul class="nav nav-tabs border-secondary mb-4 justify-content-center" id="profileTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="events-tab" data-bs-toggle="tab" data-bs-target="#tab-events"
                     type="button" role="tab" aria-controls="tab-events" aria-selected="true">
@@ -396,28 +417,60 @@
 
             <!-- About Tab -->
             <div class="tab-pane" id="tab-about">
-                <div class="row">
+                <div class="row g-4">
                     <div class="col-lg-8">
-                        <div class="card bg-dark border-secondary mb-4">
-                            <div class="card-header border-secondary">
-                                <h5 class="mb-0"><i class="fas fa-building me-2"></i>關於我們</h5>
+                        <div class="card bg-dark border-secondary mb-4 shadow-lg overflow-hidden">
+                            <div class="card-header border-secondary bg-gradient-dark py-3">
+                                <h5 class="mb-0 fs-4"><i class="fas fa-building me-3 text-success"></i>主辦簡介</h5>
                             </div>
-                            <div class="card-body">
-                                <p>快樂文創成立於 2018 年，是一家專注於獨立音樂與藝文展演策劃的公司。我們相信音樂能夠連結人心，創造無可取代的感動時刻。</p>
-                                <p>從小型 Live House 演出到大型戶外音樂節，我們累積了豐富的策展經驗，致力於為觀眾帶來最優質的現場體驗。</p>
-                                <h6 class="mt-4 mb-3">我們的理念</h6>
-                                <ul>
-                                    <li>支持獨立音樂創作者</li>
-                                    <li>打造沈浸式觀演體驗</li>
-                                    <li>促進藝文交流與合作</li>
-                                </ul>
+                            <div class="card-body p-4">
+                                <div class="introduction-content text-light mb-5"
+                                    style="line-height: 2; font-size: 1.1rem; letter-spacing: 0.5px;">
+                                    <p th:if="${organizer != null and organizer.introduction != null}"
+                                        th:text="${organizer.introduction}">這裡顯示主辦單位的詳細介紹...</p>
+                                    <p th:if="${organizer == null or organizer.introduction == null}"
+                                        class="text-muted italic">
+                                        該主辦單位暫時沒有提供詳細簡介。
+                                    </p>
+                                </div>
+
+                                <div class="vision-section mt-5 pt-4 border-top border-secondary">
+                                    <h6 class="text-success text-uppercase fw-bold mb-4" style="letter-spacing: 2px;">
+                                        Core Values | 核心理念</h6>
+                                    <div class="row g-4">
+                                        <div class="col-md-4">
+                                            <div
+                                                class="p-3 rounded bg-black bg-opacity-50 border border-secondary border-opacity-50 h-100">
+                                                <i class="fas fa-heart text-danger mb-2 fs-3"></i>
+                                                <h7 class="d-block text-white mb-2 fw-bold">熱情投入</h7>
+                                                <small class="text-muted">我們對每一場活動都注入靈魂與創意。</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div
+                                                class="p-3 rounded bg-black bg-opacity-50 border border-secondary border-opacity-50 h-100">
+                                                <i class="fas fa-magic text-info mb-2 fs-3"></i>
+                                                <h7 class="d-block text-white mb-2 fw-bold">極致體驗</h7>
+                                                <small class="text-muted">打造沉浸式的藝文空間，讓感動觸手可及。</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div
+                                                class="p-3 rounded bg-black bg-opacity-50 border border-secondary border-opacity-50 h-100">
+                                                <i class="fas fa-users text-primary mb-2 fs-3"></i>
+                                                <h7 class="d-block text-white mb-2 fw-bold">藝文連結</h7>
+                                                <small class="text-muted">連結創作者與觀眾，共創美好的文化記憶。</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <div class="card bg-dark border-secondary mb-4">
-                            <div class="card-header border-secondary">
-                                <h5 class="mb-0"><i class="fas fa-link me-2"></i>聯絡資訊</h5>
+                        <div class="card bg-dark border-secondary mb-4 shadow-lg">
+                            <div class="card-header border-secondary py-3">
+                                <h5 class="mb-0"><i class="fas fa-link me-2 text-success"></i>官方連結</h5>
                             </div>
                             <div class="card-body">
                                 <p><i class="fas fa-globe me-2 text-muted"></i><a href="#"

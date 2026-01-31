@@ -24,7 +24,7 @@ public class EventReviewService {
     @Autowired
     private OrganizerNotifyRepository organizerNotifyRepository;
 
-    @Autowired //pei
+    @Autowired // pei
     private NotificationBridgeService bridgeService;
 
     public List<EventVO> getEventsByTab(String tabType, String keyword) {
@@ -67,13 +67,14 @@ public class EventReviewService {
     }
 
     @Transactional
-    public void approveEvent(Integer eventId) {
+    public void approveEvent(Integer eventId, com.momento.emp.model.EmpVO emp) {
         Optional<EventVO> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isPresent()) {
             EventVO event = eventOpt.get();
             if (!event.isPending())
                 throw new RuntimeException("活動非待審核狀態");
             event.setStatus(EventVO.STATUS_APPROVED); // 審核通過，等待主辦設定時間
+            event.setEmp(emp); // 更新審核人為當前員工
             eventRepository.save(event);
 
             // pei
@@ -91,6 +92,7 @@ public class EventReviewService {
             if (!event.isPending())
                 throw new RuntimeException("活動非待審核狀態");
             event.setStatus(EventVO.STATUS_REJECTED);
+            event.setEmp(emp); // 更新審核人為當前員工
             event.setPublishedAt(null);
             eventRepository.save(event);
 
@@ -103,8 +105,8 @@ public class EventReviewService {
             notify.setTargetId(String.valueOf(eventId));
             organizerNotifyRepository.save(notify);
 
-//            // pei
-//            bridgeService.processEventReviewNotify(event, false, reason);
+            // // pei
+            // bridgeService.processEventReviewNotify(event, false, reason);
         } else {
             throw new RuntimeException("活動不存在: " + eventId);
         }

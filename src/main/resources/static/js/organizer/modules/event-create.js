@@ -10,8 +10,19 @@ export function initEventCreate() {
 
     let uploadedBannerUrl = '';
     let uploadedGalleryUrls = [];
+    let isFormDirty = false;
 
     console.log('initEventCreate: Module Fully Initialized');
+
+    // ========== 追蹤表單變動 ==========
+    function markAsDirty() {
+        if (!isFormDirty) {
+            console.log('Form marked as dirty');
+            isFormDirty = true;
+        }
+    }
+
+    $(document).on('input change', '#eventCreateForm input, #eventCreateForm select, #eventCreateForm textarea', markAsDirty);
 
     // ========== 載入活動類型 ==========
     function loadActivityTypes() {
@@ -199,6 +210,7 @@ export function initEventCreate() {
         $('#mainImageUpload').removeClass('has-preview');
         uploadedBannerUrl = '';
         uploadedGalleryUrls = [];
+        isFormDirty = false;
         renderGallery();
         $('#ticketZones').html(`
             <div class="ticket-zone-card mb-3 p-3" style="background: #1A1A1A; border-radius: 6px;">
@@ -273,6 +285,7 @@ export function initEventCreate() {
             success: function (response) {
                 if (response.success && response.imageUrl) {
                     uploadedBannerUrl = response.imageUrl;
+                    markAsDirty();
                     $('#mainImagePreview').attr('src', response.imageUrl);
                     $('#panel-event-create .upload-spinner').remove();
                     $('#panel-event-create .upload-preview').css('opacity', '1');
@@ -295,6 +308,7 @@ export function initEventCreate() {
         e.stopPropagation();
         if (!confirm('確定要移除此圖片嗎?')) return;
         uploadedBannerUrl = '';
+        markAsDirty();
         $('#mainImagePreview').attr('src', '');
         $('#mainImageUpload').removeClass('has-preview');
         $('#panel-event-create .upload-preview').addClass('d-none');
@@ -343,6 +357,7 @@ export function initEventCreate() {
                     $('#' + tempId).remove();
                     if (response.success && response.imageUrl) {
                         uploadedGalleryUrls.push(response.imageUrl);
+                        markAsDirty();
                         renderGallery();
                     } else {
                         showToast('相簿圖片上傳失敗', 'danger');
@@ -392,6 +407,7 @@ export function initEventCreate() {
         e.preventDefault();
         const index = $(this).data('index');
         uploadedGalleryUrls.splice(index, 1);
+        markAsDirty();
         renderGallery();
     });
 
@@ -428,6 +444,7 @@ export function initEventCreate() {
     $(document).on('click', '.btn-remove-zone', function () {
         if ($('#ticketZones .ticket-zone-card').length > 1) {
             $(this).closest('.ticket-zone-card').remove();
+            markAsDirty();
         } else {
             alert('至少需要一個票種');
         }
@@ -566,22 +583,32 @@ export function initEventCreate() {
                     });
                     if (window.Navigation) window.Navigation.showSection('events-list');
                 } else {
-                    // 按鈕回饋
-                    skipFinallyReset = true;
-                    btn.html('<i data-lucide="check" class="me-1" style="width:18px;height:18px;vertical-align:text-bottom;"></i>儲存成功')
-                        .addClass('btn-success').removeClass('btn-outline-light');
-                    if (window.lucide) window.lucide.createIcons();
+                    // 草稿儲存成功後，重置 dirty 狀態
+                    isFormDirty = false;
+
+                    // 顯示彈窗提示，並提供回到上一頁（列表）的按鈕
+                    Swal.fire({
+                        icon: 'success',
+                        title: '草稿儲存成功',
+                        text: '您的活動草稿已成功儲存！',
+                        background: '#1a1d20',
+                        color: '#fff',
+                        showCancelButton: true,
+                        confirmButtonText: '回到列表',
+                        cancelButtonText: '留在本頁',
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#6c757d'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if (window.Navigation) window.Navigation.showSection('events-list');
+                        }
+                    });
 
                     if (!eventId && response.eventId) {
                         $('#editEventId').val(response.eventId);
                         $('#editorTitle').text('編輯活動');
                         $('#btnCancelEdit').removeClass('d-none');
                     }
-
-                    setTimeout(() => {
-                        btn.html(originalHtml).removeClass('btn-success').addClass('btn-outline-light').prop('disabled', false);
-                        if (window.lucide) window.lucide.createIcons();
-                    }, 2000);
                 }
             } else {
                 Swal.fire({
@@ -620,9 +647,30 @@ export function initEventCreate() {
     }
 
     $(document).on('click', '#btnCancelEdit', function () {
-        if (confirm('確定要取消編輯嗎？未儲存的變更將會遺失。')) {
-            window.Navigation.showSection('events-list');
+        if (!isFormDirty) {
+            // 如果沒變動，直接跳轉
+            if (window.Navigation) window.Navigation.showSection('events-list');
+            return;
         }
+
+        // 如果有變動才提示
+        Swal.fire({
+            title: '確定要取消編輯嗎？',
+            text: '您有尚未儲存的變更，離開後這些變更將會遺失。',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '確定離開',
+            cancelButtonText: '繼續編輯',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            background: '#1a1d20',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                isFormDirty = false; // 重置狀態
+                if (window.Navigation) window.Navigation.showSection('events-list');
+            }
+        });
     });
 
     $(document).on('show.bs.modal', '#draftsModal', function () {

@@ -54,6 +54,9 @@ public class EventManageServiceImpl implements EventManageService {
     @Autowired
     private EventOrderRepository eventOrderRepository;
 
+    @Autowired
+    private com.momento.emp.model.EmpRepository empRepository;
+
     @Override
     @Transactional
     public Integer saveDraft(EventCreateDTO dto) {
@@ -89,6 +92,10 @@ public class EventManageServiceImpl implements EventManageService {
         event.setPlace(dto.getPlace());
         event.setContent(dto.getContent());
         event.setStatus(EventVO.STATUS_DRAFT);
+
+        // 預設審核人為 ID 1 (系統或預設小幫手)
+        com.momento.emp.model.EmpVO defaultEmp = empRepository.findById(1).orElse(null);
+        event.setEmp(defaultEmp);
 
         // 儲存活動
         EventVO savedEvent = eventRepository.save(event);
