@@ -112,6 +112,33 @@
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
         }
 
+        /* 熱賣中專屬樣式 - Capsule Look */
+        #onSaleFilter,
+        #onSaleFilterMobile {
+            border-radius: 50px;
+            font-weight: 700;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        #onSaleFilter.active,
+        #onSaleFilterMobile.active {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border: 1px solid var(--momento-green) !important;
+            color: var(--momento-green) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
+        }
+
+        #onSaleFilter .fa-fire,
+        #onSaleFilterMobile .fa-fire {
+            transition: transform 0.3s ease;
+        }
+
+        #onSaleFilter:hover .fa-fire,
+        #onSaleFilterMobile:hover .fa-fire {
+            transform: scale(1.2);
+        }
+
         .type-filter-item.active::before {
             content: '';
             position: absolute;
@@ -121,6 +148,12 @@
             width: 4px;
             background: var(--momento-green);
             border-radius: 0 4px 4px 0;
+        }
+
+        /* 隱藏熱賣中的側邊條，因為它是膠囊狀 */
+        #onSaleFilter.active::before,
+        #onSaleFilterMobile.active::before {
+            display: none;
         }
 
         .type-filter-item .count-badge {
@@ -449,41 +482,39 @@
 
 
 
-            // Type filter click - Direct Navigation
-            $('.type-filter-item').click(function () {
+            // Type filter click - Use AJAX instead of Page Reload for better UX
+            $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
+                e.preventDefault();
                 const typeId = $(this).data('type-id');
 
-                // Visual feedback immediate
-                $('.type-filter-item').removeClass('active');
+                // Visual feedback
+                $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
                 $(this).addClass('active');
 
-                let url = '/event/list';
-                if (typeId) {
-                    url += '?typeId=' + typeId;
-                }
-
-                const onSaleOnly = $('#onSaleFilter').hasClass('active');
-                if (onSaleOnly) {
-                    url += (typeId ? '&' : '?') + 'onSaleOnly=true';
-                }
-
-                // Smooth delay for animation
-                setTimeout(() => {
-                    window.location.href = url;
-                }, 150);
-            });
-
-
-
-            // Sort Change
-            $('#sortSelect').change(function () {
                 fetchEvents();
+                // Close offcanvas on mobile if open
+                const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('filterOffcanvas'));
+                if (offcanvas) offcanvas.hide();
             });
 
-            // On Sale Filter Toggle
-            $('#onSaleFilter, #onSaleFilterMobile').click(function () {
+            // On Sale Filter Toggle - Click to Toggle, Click again to Reset to All
+            $('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 const isActive = $(this).hasClass('active');
-                $('#onSaleFilter, #onSaleFilterMobile').toggleClass('active', !isActive);
+
+                if (isActive) {
+                    // 已是熱賣中 -> 取消 -> 變成全部活動
+                    $('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
+                    // 同時重置類型篩選到「全部類型」
+                    $('.type-filter-item').removeClass('active');
+                    $('.type-filter-item[data-type-id=""]').addClass('active');
+                } else {
+                    // 未開啟 -> 變成熱賣中
+                    $('#onSaleFilter, #onSaleFilterMobile').addClass('active');
+                }
+
                 fetchEvents();
             });
 
