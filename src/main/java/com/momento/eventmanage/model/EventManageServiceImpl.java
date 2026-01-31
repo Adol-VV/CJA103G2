@@ -410,6 +410,22 @@ public class EventManageServiceImpl implements EventManageService {
 
         // 取消活動實質上是將其轉為已結束狀態(5)
         changeStatus(eventId, EventVO.STATUS_CLOSED, reason);
+
+        // 自動發送通知給主辦方自己 (系統內存證)
+        try {
+            OrganizerNotifyVO notify = new OrganizerNotifyVO();
+            notify.setOrganizerVO(event.getOrganizer());
+            notify.setIsRead(0); // 這裡設定 0 代表「未讀」，才會在小鈴鐺顯示紅點
+            notify.setTitle("【系統通知】您的活動已成功停辦（活動ID: " + eventId + "）");
+            notify.setContent(String.format("您已於 %s 執行取消活動操作。活動標題：%s\n停辦原因：%s\n\n註：此通知作為您的操作存證，若有任何售票爭議請以此為準。",
+                    LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    event.getTitle(),
+                    reason));
+            organizerNotifyRepository.save(notify);
+        } catch (Exception e) {
+            // 通知失敗不影響主流程，僅記錄日誌
+            System.err.println("[NOTIFY_ERROR] 無法發送停辦通知給主辦方: " + e.getMessage());
+        }
     }
 
     @Override

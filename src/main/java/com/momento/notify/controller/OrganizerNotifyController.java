@@ -59,11 +59,13 @@ public class OrganizerNotifyController {
 
             // 查詢主辦方通知 (會員動態)
             List<OrganizerNotifyVO> orgNotifications = orgNotifySvc.getByOrgId(organizerId);
-            if (orgNotifications == null) orgNotifications = new ArrayList<>();
+            if (orgNotifications == null)
+                orgNotifications = new ArrayList<>();
 
             // 查詢系統通知 (平台公告)
             List<SystemNotifyVO> sysNotifications = sysNotifySvc.getByOrgId(organizerId);
-            if (sysNotifications == null) sysNotifications = new ArrayList<>();
+            if (sysNotifications == null)
+                sysNotifications = new ArrayList<>();
 
             // 合併成統一格式
             List<Map<String, Object>> allNotifications = new ArrayList<>();
@@ -75,7 +77,9 @@ public class OrganizerNotifyController {
                 map.put("content", n.getContent());
                 map.put("createdAt", n.getCreatedAt() != null ? n.getCreatedAt().toString() : "");
                 map.put("isRead", n.getIsRead());
-                map.put("type", n.getEmpVO() == null ? "MEMBER" : "PLATFORM");
+                boolean isPlatform = n.getEmpVO() != null
+                        || (n.getTitle() != null && n.getTitle().startsWith("【系統通知】"));
+                map.put("type", isPlatform ? "PLATFORM" : "MEMBER");
                 map.put("notifyType", "ORG");
                 allNotifications.add(map);
             }
@@ -96,8 +100,10 @@ public class OrganizerNotifyController {
             allNotifications.sort((a, b) -> {
                 String t1 = (String) a.get("createdAt");
                 String t2 = (String) b.get("createdAt");
-                if (t1 == null || t1.isEmpty()) return 1;
-                if (t2 == null || t2.isEmpty()) return -1;
+                if (t1 == null || t1.isEmpty())
+                    return 1;
+                if (t2 == null || t2.isEmpty())
+                    return -1;
                 return t2.compareTo(t1);
             });
 
@@ -245,7 +251,6 @@ public class OrganizerNotifyController {
             vo.setCreatedAt(java.time.LocalDateTime.now());
             vo.setIsRead(1);
             vo.setEmpVO(null);
-
 
             // 執行儲存
             orgNotifySvc.addNotify(vo);

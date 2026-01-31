@@ -62,9 +62,9 @@ public class OrganizerCenterController {
 
     @PostMapping("/login")
     public String login(@RequestParam String account,
-                        @RequestParam String password,
-                        HttpSession session,
-                        Model model) {
+            @RequestParam String password,
+            HttpSession session,
+            Model model) {
 
         // 查詢主辦方
         OrganizerVO organizer = organizerService.findByAccount(account);
@@ -116,12 +116,15 @@ public class OrganizerCenterController {
         // 抓通知資料
         List<OrganizerNotifyVO> orgNotifyList = orgNotifySvc.getByOrgId(organizer.getOrganizerId());
         List<SystemNotifyVO> sysNotifyList = sysNotifySvc.getByOrgId(organizer.getOrganizerId());
-        if (orgNotifyList == null) orgNotifyList = new ArrayList<>();
-        if (sysNotifyList == null) sysNotifyList = new ArrayList<>();
+        if (orgNotifyList == null)
+            orgNotifyList = new ArrayList<>();
+        if (sysNotifyList == null)
+            sysNotifyList = new ArrayList<>();
 
-        // 主辦方"接收"通知
+        // 主辦方"接收"通知 (包含平台發送、訂單動態及系統自動通知)
         List<OrganizerNotifyVO> receivedNotifies = orgNotifyList.stream()
-                .filter(n -> n.getEmpVO() != null || (n.getTitle() != null && n.getTitle().contains("訂單")))
+                .filter(n -> n.getEmpVO() != null
+                        || (n.getTitle() != null && (n.getTitle().contains("訂單") || n.getTitle().startsWith("【系統通知】"))))
                 .toList();
         // 主辦方"發送"的紀錄
         List<OrganizerNotifyVO> sentNotifies = orgNotifyList.stream()
@@ -139,9 +142,10 @@ public class OrganizerCenterController {
             map.put("content", n.getContent());
             map.put("createdAt", n.getCreatedAt());
             map.put("isRead", n.getIsRead());
-            map.put("type", n.getEmpVO() == null ? "MEMBER" : "PLATFORM");
+            boolean isPlatform = n.getEmpVO() != null || (n.getTitle() != null && n.getTitle().startsWith("【系統通知】"));
+            map.put("type", isPlatform ? "PLATFORM" : "MEMBER");
             map.put("notifyType", "ORG"); // 用於區分 API 路徑
-            map.put("sourceName", n.getEmpVO() == null ? "會員" : "平台");
+            map.put("sourceName", isPlatform ? "平台" : "會員");
             allNotifiesNormalized.add(map);
         }
 
@@ -163,8 +167,10 @@ public class OrganizerCenterController {
         allNotifiesNormalized.sort((a, b) -> {
             java.time.LocalDateTime t1 = (java.time.LocalDateTime) a.get("createdAt");
             java.time.LocalDateTime t2 = (java.time.LocalDateTime) b.get("createdAt");
-            if (t1 == null) return 1;
-            if (t2 == null) return -1;
+            if (t1 == null)
+                return 1;
+            if (t2 == null)
+                return -1;
             return t2.compareTo(t1); // DESC 排序
         });
 
@@ -179,7 +185,7 @@ public class OrganizerCenterController {
 
         model.addAttribute("allNotifies", allNotifiesNormalized); // 合併排序後的通知列表
         model.addAttribute("receivedNotifyList", receivedNotifies); // 給通知中心遍歷
-        model.addAttribute("sentNotifyHistoryList", sentNotifies);    // 給已發送紀錄遍歷
+        model.addAttribute("sentNotifyHistoryList", sentNotifies); // 給已發送紀錄遍歷
         model.addAttribute("sysAnnouncementList", sysNotifyList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("platformCount", platformCount);
@@ -421,7 +427,7 @@ public class OrganizerCenterController {
     // 新增商品 (結合上傳功能與主辦方ID綁定)
     @PostMapping("/addProd")
     public String addProd(@Valid ProdDTO prodDTO, HttpSession session,
-            @RequestParam(value="imageFiles",required = false) MultipartFile[] files) {
+            @RequestParam(value = "imageFiles", required = false) MultipartFile[] files) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
@@ -433,38 +439,37 @@ public class OrganizerCenterController {
 
         return "redirect:/organizer/dashboard#product-list";
     }
-    
-    //更新商品
+
+    // 更新商品
     @PostMapping("/updateProd")
     public String updateProd(@Valid ProdDTO prodDTO, HttpSession session,
-            @RequestParam(value="imageFile1",required = false) MultipartFile file1,
-            @RequestParam(value="imageFile2",required = false) MultipartFile file2,
-            @RequestParam(value="imageFile3",required = false) MultipartFile file3,
-            @RequestParam(value="imageFile4",required = false) MultipartFile file4,
-            @RequestParam(value="imageId1",required = false) Integer imageId1,
-            @RequestParam(value="imageId2",required = false) Integer imageId2,
-            @RequestParam(value="imageId3",required = false) Integer imageId3,
-            @RequestParam(value="imageId4",required = false) Integer imageId4
-    		) {
+            @RequestParam(value = "imageFile1", required = false) MultipartFile file1,
+            @RequestParam(value = "imageFile2", required = false) MultipartFile file2,
+            @RequestParam(value = "imageFile3", required = false) MultipartFile file3,
+            @RequestParam(value = "imageFile4", required = false) MultipartFile file4,
+            @RequestParam(value = "imageId1", required = false) Integer imageId1,
+            @RequestParam(value = "imageId2", required = false) Integer imageId2,
+            @RequestParam(value = "imageId3", required = false) Integer imageId3,
+            @RequestParam(value = "imageId4", required = false) Integer imageId4) {
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
         prodDTO.setOrganizerId(organizer.getOrganizerId());
-        MultipartFile[] files = {file1,file2,file3,file4}; 
-        
-        Integer[] imageIds = {imageId1,imageId2,imageId3,imageId4}; 
-        for(int i=0;i<4;i++) {
-        	System.out.println(files[i]);
-        	System.out.println(imageIds[i]);
-        	System.out.println("=============");
+        MultipartFile[] files = { file1, file2, file3, file4 };
+
+        Integer[] imageIds = { imageId1, imageId2, imageId3, imageId4 };
+        for (int i = 0; i < 4; i++) {
+            System.out.println(files[i]);
+            System.out.println(imageIds[i]);
+            System.out.println("=============");
         }
-        
+
         prodSvc.updateProd(prodDTO, files, imageIds);
 
         return "redirect:/organizer/dashboard#product-list";
     }
-    
+
     // 新增文章
     @PostMapping("/article/create")
     @ResponseBody
@@ -629,7 +634,8 @@ public class OrganizerCenterController {
             if (session.getAttribute("loginOrganizer") == null) {
                 response.put("success", false);
                 response.put("message", "請先登入");
-                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                        .body(response);
             }
             sysNotifySvc.updateReadStatus(notifyId, 1);
             response.put("success", true);
@@ -651,7 +657,8 @@ public class OrganizerCenterController {
             if (loginOrganizer == null) {
                 response.put("success", false);
                 response.put("message", "連線逾時，請重新登入");
-                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(response);
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                        .body(response);
             }
             sysNotifySvc.markAllAsReadForOrg(loginOrganizer.getOrganizerId());
 
@@ -661,7 +668,8 @@ public class OrganizerCenterController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "批次更新失敗: " + e.getMessage());
-            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return org.springframework.http.ResponseEntity
+                    .status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }
