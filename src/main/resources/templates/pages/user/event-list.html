@@ -27,6 +27,25 @@
             border: none;
         }
 
+        /* 側邊欄固定且可內部滾動 */
+        .filter-sidebar.sticky-top {
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+            padding-right: 10px;
+        }
+
+        .filter-sidebar.sticky-top::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .filter-sidebar.sticky-top::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
         .event-card .card-img-wrapper {
             position: relative;
             overflow: hidden;
@@ -239,7 +258,7 @@
                     <li class="nav-item"><a class="nav-link active" th:href="@{/event/list}">找活動</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/prod/listAllProd}">找商品</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/about}">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/article/about}">關於我們</a></li>
                 </ul>
                 <form class="d-flex mx-auto col-lg-4" role="search" th:action="@{/search}" method="GET">
                     <div class="input-group">
@@ -366,7 +385,8 @@
             <main class="col-lg-10">
                 <!-- Sort Bar -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <span class="text-muted">共 <span th:text="${page.totalElements}">10</span> 個活動</span>
+                    <span class="text-muted">共 <span id="eventTotalCount" th:text="${page.totalElements}">10</span>
+                        個活動</span>
                     <select class="form-select w-auto" id="sortSelect">
                         <option>最新上架</option>
                         <option>價格由低到高</option>
@@ -427,40 +447,15 @@
                             </div>
                         </a>
                     </div>
-                    <div th:if="${events == null || events.isEmpty()}" class="col-12 text-center py-5">
-                        <div class="py-5">
-                            <i class="fas fa-search fa-4x text-white-50 mb-4"></i>
-                            <h3 class="text-white mb-3">找不到符合條件的活動</h3>
-                            <p class="text-white-50 mb-4">目前沒有相關活動</p>
-                            <a th:href="@{/event/list}" class="btn btn-outline-light px-4"><i
-                                    class="fas fa-redo me-2"></i>清除所有篩選</a>
-                        </div>
+                </div>
+
+                <!-- Loading Spinner for Infinite Scroll -->
+                <div id="infinite-scroll-loading" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
 
-                <!-- Pagination -->
-                <nav class="mt-5" th:if="${page.totalPages > 1}">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
-                            <a class="page-link"
-                                th:href="@{/event/list(page=${page.number - 1}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
-                                href="#">上一頁</a>
-                        </li>
-
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-                            th:classappend="${i == page.number ? 'active' : ''}">
-                            <a class="page-link"
-                                th:href="@{/event/list(page=${i}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
-                                th:text="${i + 1}" href="#">1</a>
-                        </li>
-
-                        <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
-                            <a class="page-link"
-                                th:href="@{/event/list(page=${page.number + 1}, size=${page.size}, typeId=${currentTypeId}, place=${currentPlace})}"
-                                href="#">下一頁</a>
-                        </li>
-                    </ul>
-                </nav>
             </main>
         </div>
     </div>
@@ -469,57 +464,19 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- <script src="../../js/common.js"></script> -->
-    <script>
+    <script th:inline="javascript">
         $(document).ready(function () {
             lucide.createIcons();
-            // Price filter sync and immediate fetch
-            $('#priceFilter, #priceFilterMobile').change(function () {
-                const val = $(this).val();
-                $('#priceFilter, #priceFilterMobile').val(val);
-                fetchEvents();
-            });
 
-
-
-            // Type filter click - Use AJAX instead of Page Reload for better UX
-            $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
-                e.preventDefault();
-                const typeId = $(this).data('type-id');
-
-                // Visual feedback
-                $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
-                $(this).addClass('active');
-
-                fetchEvents();
-                // Close offcanvas on mobile if open
-                const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('filterOffcanvas'));
-                if (offcanvas) offcanvas.hide();
-            });
-
-            // On Sale Filter Toggle - Click to Toggle, Click again to Reset to All
-            $('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const isActive = $(this).hasClass('active');
-
-                if (isActive) {
-                    // 已是熱賣中 -> 取消 -> 變成全部活動
-                    $('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
-                    // 同時重置類型篩選到「全部類型」
-                    $('.type-filter-item').removeClass('active');
-                    $('.type-filter-item[data-type-id=""]').addClass('active');
-                } else {
-                    // 未開啟 -> 變成熱賣中
-                    $('#onSaleFilter, #onSaleFilterMobile').addClass('active');
-                }
-
-                fetchEvents();
-            });
+            // --- Infinite Scroll Logic ---
+            let currentPage = 0;
+            let totalPages = /*[[${page.totalPages}]]*/ 1;
+            let isLoading = false;
 
             // --- AJAX Fetch Function ---
-            function fetchEvents(page = 0) {
+            function fetchEvents(page = 0, append = false) {
+                if (isLoading) return;
+
                 const typeId = $('.type-filter-item.active').not('#onSaleFilter, #onSaleFilterMobile').first().data('type-id') || null;
                 const place = null;
                 const maxPrice = $('#priceFilter').val();
@@ -539,8 +496,12 @@
                     sortParam = 'onSale';
                 }
 
-                // Show Loading
-                $('.row.g-4').css('opacity', '0.5');
+                isLoading = true;
+                if (!append) {
+                    $('.row.g-4').css('opacity', '0.5');
+                } else {
+                    $('#infinite-scroll-loading').show();
+                }
 
                 $.ajax({
                     url: '/event/api/list',
@@ -555,24 +516,30 @@
                         onSaleOnly: onSaleOnly
                     },
                     success: function (data) {
-                        renderEvents(data.content);
-                        renderPagination(data);
+                        currentPage = data.number;
+                        totalPages = data.totalPages;
+
+                        renderEvents(data.content, append);
+
                         $('.row.g-4').css('opacity', '1');
-                        // Update result count
-                        $('.text-muted span').text(data.totalElements);
+                        $('#infinite-scroll-loading').hide();
+                        $('#eventTotalCount').text(data.totalElements);
+                        isLoading = false;
                     },
                     error: function (err) {
                         console.error('Fetch error:', err);
                         $('.row.g-4').css('opacity', '1');
+                        $('#infinite-scroll-loading').hide();
+                        isLoading = false;
                     }
                 });
             }
 
-            function renderEvents(events) {
+            function renderEvents(events, append = false) {
                 const container = $('.row.g-4');
-                container.empty();
+                if (!append) container.empty();
 
-                if (events.length === 0) {
+                if (events.length === 0 && !append) {
                     container.html(`
                         <div class="col-12 text-center py-5">
                             <div class="py-5">
@@ -594,7 +561,6 @@
                     const dateDisplay = event.eventStartAt ? new Date(event.eventStartAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }) : '??/??';
                     const priceStr = event.minPrice ? event.minPrice.toLocaleString() : '0';
 
-                    // Dynamic Status logic
                     let statusBadge = '';
                     if (event.status === 5) {
                         const isCanceled = event.eventEndAt && now < new Date(event.eventEndAt);
@@ -640,12 +606,46 @@
                 });
             }
 
-            function renderPagination(pageData) {
-                const nav = $('nav.mt-5');
-                if (pageData.totalPages <= 1) { nav.hide(); return; }
-                nav.show();
-                // Standard pagination logic
-            }
+            // --- UI Events ---
+            $(window).scroll(function () {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 400) {
+                    if (!isLoading && currentPage < totalPages - 1) {
+                        fetchEvents(currentPage + 1, true);
+                    }
+                }
+            });
+
+            $('#priceFilter, #priceFilterMobile').change(function () {
+                const val = $(this).val();
+                $('#priceFilter, #priceFilterMobile').val(val);
+                fetchEvents();
+            });
+
+            $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
+                e.preventDefault();
+                $('.type-filter-item').not('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
+                $(this).addClass('active');
+                fetchEvents();
+                const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('filterOffcanvas'));
+                if (offcanvas) offcanvas.hide();
+            });
+
+            $('#onSaleFilter, #onSaleFilterMobile').click(function (e) {
+                e.preventDefault();
+                const isActive = $(this).hasClass('active');
+                if (isActive) {
+                    $('#onSaleFilter, #onSaleFilterMobile').removeClass('active');
+                    $('.type-filter-item').removeClass('active');
+                    $('.type-filter-item[data-type-id=""]').addClass('active');
+                } else {
+                    $('#onSaleFilter, #onSaleFilterMobile').addClass('active');
+                }
+                fetchEvents();
+            });
+
+            $('#sortSelect').change(function () {
+                fetchEvents();
+            });
         });
     </script>
 </body>

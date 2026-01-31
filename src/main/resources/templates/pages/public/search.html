@@ -239,7 +239,9 @@
 
     <!-- JS 初始化關鍵關鍵字 -->
     <script th:inline="javascript">
-        window.initialKeyword = [[${ keyword != null ? keyword : ''}]];
+        /*<![CDATA[*/
+        window.initialKeyword = /*[[${keyword != null ? keyword : ''}]]*/ '';
+        /*]]>*/
     </script>
     <script type="module" th:src="@{/js/common/index.js}"></script>
     <script type="module" th:src="@{/js/pages/search.js}"></script>

@@ -47,7 +47,7 @@ public class EventController {
     public Page<EventListItemDTO> getEventListJson(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam(defaultValue = "eventStartAt") String sort,
+            @RequestParam(defaultValue = "newest") String sort,
             @RequestParam(required = false) Integer typeId,
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,
@@ -131,7 +131,7 @@ public class EventController {
     public String eventList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam(defaultValue = "eventStartAt") String sort,
+            @RequestParam(defaultValue = "newest") String sort,
             @RequestParam(required = false) Integer typeId,
             @RequestParam(required = false) String place,
             @RequestParam(required = false) Integer minPrice,

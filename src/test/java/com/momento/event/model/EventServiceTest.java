@@ -151,7 +151,7 @@ public class EventServiceTest {
             filterDTO.setSort("newest");
 
             Page<EventVO> page = new PageImpl<>(Collections.singletonList(eventVO));
-            when(eventRepository.filterEvents(anyList(), any(), any(), any(), any(), any(), any(), any(),
+            when(eventRepository.filterEvents(any(), any(), any(), any(), any(), any(), any(),
                     any(LocalDateTime.class), any(Pageable.class)))
                     .thenReturn(page);
             when(eventImageRepository.findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(1))

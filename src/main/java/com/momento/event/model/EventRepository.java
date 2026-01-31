@@ -55,18 +55,18 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
 
         // ========== 複合篩選查詢 (使用 @Query) ==========
 
-        @Query("SELECT e FROM EventVO e " +
+        @Query("SELECT e FROM EventVO e LEFT JOIN FETCH e.type t " +
                         "WHERE e.status = 3 " +
                         "AND (e.publishedAt IS NULL OR e.publishedAt <= :now) " +
-                        "AND (:typeId IS NULL OR e.type.typeId = :typeId) " +
-                        "AND (:place IS NULL OR e.place LIKE %:place%) " +
+                        "AND (:typeId IS NULL OR :typeId = 0 OR t.typeId = :typeId) " +
+                        "AND (:place IS NULL OR :place = '' OR e.place LIKE CONCAT('%', :place, '%')) " +
                         "AND (:startDate IS NULL OR e.eventStartAt >= :startDate) " +
                         "AND (:endDate IS NULL OR e.eventStartAt <= :endDate) " +
                         "AND (:minPrice IS NULL OR e.minPrice >= :minPrice) " +
-                        "AND (:maxPrice IS NULL OR e.minPrice <= :maxPrice) " +
+                        "AND (:maxPrice IS NULL OR :maxPrice = 99999 OR (e.minPrice IS NOT NULL AND e.minPrice <= :maxPrice)) "
+                        +
                         "AND (:onSaleOnly = false OR (e.saleStartAt IS NOT NULL AND e.saleEndAt IS NOT NULL AND e.saleStartAt <= :now AND e.saleEndAt > :now))")
         Page<EventVO> filterEvents(
-                        @Param("statuses") java.util.List<Byte> statuses,
                         @Param("typeId") Integer typeId,
                         @Param("place") String place,
                         @Param("startDate") java.time.LocalDateTime startDate,
