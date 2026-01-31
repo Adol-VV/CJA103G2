@@ -285,8 +285,8 @@ export function initEventList() {
                 <a href="/event/${event.eventId}" target="_blank" class="btn btn-sm btn-outline-info">
                     <i class="fas fa-external-link-alt me-1"></i>詳情
                 </a>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.forceClose(${event.eventId})">
-                    <i class="fas fa-stop-circle me-1"></i>下架
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.cancelEvent(${event.eventId})">
+                    <i class="fas fa-stop-circle me-1"></i>取消活動
                 </button>
             `;
         }
@@ -502,55 +502,100 @@ export function initEventList() {
                             showToast('已成功刪除活動！', 'success');
                             loadOrganizerEvents();
                         } else {
-                            Swal.fire({ icon: 'error', title: '錯誤', text: res.message, background: '#1a1d20', color: '#fff' });
+                            Swal.fire({
+                                icon: 'info',
+                                title: '無法執行刪除',
+                                html: `<div class="text-start small p-2">${res.message}</div>`,
+                                background: '#1a1d20',
+                                color: '#fff',
+                                confirmButtonText: '我知道了'
+                            });
                         }
                     },
                     error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: '錯誤', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                        Swal.fire({
+                            icon: 'error',
+                            title: '系統錯誤',
+                            text: xhr.responseJSON?.message || '刪除時發生意外錯誤，請稍後再試。',
+                            background: '#1a1d20',
+                            color: '#fff'
+                        });
                     }
                 });
             }
         });
     };
 
-    window.forceClose = function (eventId) {
+    window.cancelEvent = function (eventId) {
         Swal.fire({
-            title: '🛑 確定要「強制下架」嗎？',
-            text: '下架後前台將立即停止該活動的所有售票。',
+            title: '🛑 確定要「取消活動」嗎？',
+            html: `
+                <div class="text-start small p-2">
+                    <p class="text-danger fw-bold mb-2">⚠️ 極致謹慎提醒：</p>
+                    <ul class="ps-3 mb-3">
+                        <li>此操作將立即停止前台所有售票。</li>
+                        <li><b>活動取消後將無法重新上架。</b></li>
+                        <li>若已有售出票券，主辦方需負擔後續退款與通知責任。</li>
+                    </ul>
+                    <div class="form-check mt-3 bg-dark p-2 rounded border border-danger">
+                        <input class="form-check-input ms-0" type="checkbox" id="confirmCancelResponsibility">
+                        <label class="form-check-label ms-2 text-warning fw-bold" for="confirmCancelResponsibility">
+                            我已明確瞭解停辦責任，並願自行承擔後續衍生之維權與退款事宜
+                        </label>
+                    </div>
+                </div>
+            `,
             input: 'text',
-            inputPlaceholder: '請輸入下架原因（必填）',
+            inputPlaceholder: '請輸入停辦具體理由（必填，將記錄於伺服器日誌）',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            confirmButtonText: '確定下架',
-            cancelButtonText: '取消',
+            confirmButtonText: '確定取消活動',
+            cancelButtonText: '再考慮一下',
             background: '#1a1d20',
             color: '#fff',
-            inputValidator: (value) => {
-                if (!value) return '必須輸入原因才能下架！'
+            preConfirm: (reason) => {
+                const isChecked = document.getElementById('confirmCancelResponsibility').checked;
+                if (!isChecked) {
+                    Swal.showValidationMessage('您必須勾選下方的責任聲明方可執行取消');
+                    return false;
+                }
+                if (!reason || reason.trim() === '') {
+                    Swal.showValidationMessage('請務必提供停辦理由以供後台存證');
+                    return false;
+                }
+                return reason;
             }
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: `/organizer/event/${eventId}/force-close`,
+                    url: `/organizer/event/${eventId}/cancel`,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ reason: result.value }),
                     success: function (res) {
                         if (res.success) {
-                            showToast('活動已下架', 'success');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '活動已停辦',
+                                text: '系統已自動停止購票流程。',
+                                background: '#1a1d20',
+                                color: '#fff'
+                            });
                             loadOrganizerEvents();
                         } else {
-                            Swal.fire({ icon: 'error', title: '錯誤', text: res.message, background: '#1a1d20', color: '#fff' });
+                            Swal.fire({ icon: 'error', title: '操作失敗', text: res.message, background: '#1a1d20', color: '#fff' });
                         }
                     },
                     error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: '錯誤', text: xhr.responseJSON?.message || '系統錯誤', background: '#1a1d20', color: '#fff' });
+                        Swal.fire({ icon: 'error', title: '系統錯誤', text: xhr.responseJSON?.message || '操作異常', background: '#1a1d20', color: '#fff' });
                     }
                 });
             }
         });
     };
+
+
 
     /**
      * 內部檢視詳情

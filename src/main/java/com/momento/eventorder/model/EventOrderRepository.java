@@ -18,6 +18,8 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 
 	public List<EventOrderVO> findByEvent_EventId(Integer eventId);
 
+	public boolean existsByEvent_EventId(Integer eventId);
+
 	public Optional<EventOrderVO> findByEventOrderId(Integer eventOrderId);
 
 	public List<EventOrderVO> findByMember_MemberIdOrderByCreatedAtDesc(Integer memberId);
@@ -47,15 +49,17 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 			Integer memberId, LocalDateTime currentTime);
 
 	@Query(value = "SELECT * FROM (" +
-		       "  SELECT event_order_id as id, created_at as date, payable as amount, pay_status as status, event_id as info , 'EVENT' as type " +
-		       "  FROM event_order WHERE member_id = :memberId " +
-		       "  UNION ALL " +
-		       "  SELECT prod_order_id as id, created_at as date, payable as amount, pay_status as status, organizer_id as info , 'PRODUCT' as type " +
-		       "  FROM prod_order WHERE member_id = :memberId" +
-		       ") AS combined_orders " +
-		       "ORDER BY date DESC LIMIT 3", nativeQuery = true)
+			"  SELECT event_order_id as id, created_at as date, payable as amount, pay_status as status, event_id as info , 'EVENT' as type "
+			+
+			"  FROM event_order WHERE member_id = :memberId " +
+			"  UNION ALL " +
+			"  SELECT prod_order_id as id, created_at as date, payable as amount, pay_status as status, organizer_id as info , 'PRODUCT' as type "
+			+
+			"  FROM prod_order WHERE member_id = :memberId" +
+			") AS combined_orders " +
+			"ORDER BY date DESC LIMIT 3", nativeQuery = true)
 	public List<Object[]> findLatestThreeOrdersUnified(@Param("memberId") Integer memberId);
-	
+
 	/**
 	 * 計算特定活動的購買會員人數 (不重複)
 	 */

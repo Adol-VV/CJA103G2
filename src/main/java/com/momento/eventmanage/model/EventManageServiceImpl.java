@@ -364,23 +364,25 @@ public class EventManageServiceImpl implements EventManageService {
             throw new RuntimeException("僅限草稿、駁回或已下架狀態可刪除");
         }
 
-        // 刪除相關紀錄 (收藏、訂單、票種、圖片)
-        eventFavRepository.deleteAll(eventFavRepository.findByEvent_EventId(eventId));
+        // 核心安全檢查：若已有訂單，禁止刪除活動以確保財務資料完整性
+        if (eventOrderRepository.existsByEvent_EventId(eventId)) {
+            throw new RuntimeException("此活動已有訂單紀錄，為確保帳務完整性，不允許刪除。");
+        }
 
-        // 注意：訂單刪除在正式環境可能不適合，但在專題開發中為了能徹底刪除資料而執行
-        // 我們假設 EventOrderVO 的 eventOrderItems 是 CascadeType.ALL
-        eventOrderRepository.deleteAll(eventOrderRepository.findByEvent_EventId(eventId));
+        // 刪除相關紀錄 (收藏、票種、圖片)
+        try {
+            eventFavRepository.deleteAll(eventFavRepository.findByEvent_EventId(eventId));
 
-        ticketRepository.deleteAll(ticketRepository.findByEvent_EventId(eventId));
-        eventImageRepository
-                .deleteAll(eventImageRepository.findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(eventId));
-        eventRepository.delete(event);
-    }
-
-    @Override
-    public boolean canEditTicket(Integer ticketId) {
-        // MVP 階段暫時允許
-        return true;
+            ticketRepository.deleteAll(ticketRepository.findByEvent_EventId(eventId));
+            eventImageRepository
+                    .deleteAll(eventImageRepository.findByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(eventId));
+            eventRepository.delete(event);
+            eventRepository.flush(); // 強制觸發資料庫檢查
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new RuntimeException("無法刪除活動：此活動已經產生正式訂單或票券紀錄。為確保帳務與數據完整性，系統禁止刪除包含交易資料的活動。建議您將其保留在「已下架」區作為歷史紀錄。");
+        } catch (Exception e) {
+            throw new RuntimeException("刪除失敗：" + e.getMessage());
+        }
     }
 
     @Override
@@ -394,7 +396,19 @@ public class EventManageServiceImpl implements EventManageService {
 
     @Override
     @Transactional
-    public void forceClose(Integer eventId, String reason) {
+    public void cancelEvent(Integer eventId, String reason) {
+        EventVO event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("活動不存在"));
+
+        // 最小化安全性優化：僅允許上架中(3)的活動執行「取消」
+        if (!event.isPublished()) {
+            throw new RuntimeException("僅能取消「上架中」的活動");
+        }
+
+        // 行為存證：將取消原因記錄至伺服器日誌 (在不新增資料庫欄位的情況下保留證據)
+        System.err.println("[EVENT_CANCEL_LOG] 主辦方取消活動 ID: " + eventId + " | 原因: " + reason);
+
+        // 取消活動實質上是將其轉為已結束狀態(5)
         changeStatus(eventId, EventVO.STATUS_CLOSED, reason);
     }
 

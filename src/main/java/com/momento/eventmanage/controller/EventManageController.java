@@ -300,9 +300,9 @@ public class EventManageController {
                 }
         }
 
-        @PostMapping("/{id}/force-close")
+        @PostMapping("/{id}/cancel")
         @ResponseBody
-        public ResponseEntity<Map<String, Object>> forceClose(@PathVariable Integer id,
+        public ResponseEntity<Map<String, Object>> cancelEvent(@PathVariable Integer id,
                         @RequestBody Map<String, String> body, HttpSession session) {
                 com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
                                 .getAttribute("loginOrganizer");
@@ -311,10 +311,11 @@ public class EventManageController {
                 try {
                         if (!isEventOwner(id, organizer.getOrganizerId()))
                                 return ResponseEntity.status(403).body(Map.of("success", false, "message", "無權限"));
-                        eventManageService.forceClose(id, body.get("reason"));
-                        return ResponseEntity.ok(Map.of("success", true, "message", "已下架"));
+                        eventManageService.cancelEvent(id, body.get("reason"));
+                        return ResponseEntity.ok(Map.of("success", true, "message", "活動已取消停辦"));
                 } catch (Exception e) {
                         return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
                 }
         }
+
 }

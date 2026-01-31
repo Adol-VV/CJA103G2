@@ -18,10 +18,10 @@
     <!-- Navbar (Simplified) -->
     <nav class="navbar navbar-dark bg-dark border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
                 <i class="fas fa-ticket-alt me-2 text-success"></i>Momento
             </a>
-            <a href="cart" class="btn btn-outline-secondary btn-sm">
+            <a th:href="@{/member/cart}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-arrow-left me-2"></i>返回購物車
             </a>
         </div>
@@ -81,7 +81,8 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="order-item">
-                                <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img" alt="Product">
+                                <img loading="lazy" src="https://picsum.photos/seed/prod1/200" class="order-item-img"
+                                    alt="Product">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1">經典Logo帆布袋</h6>
                                 </div>
@@ -115,16 +116,19 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label">姓名 <span class="text-danger">*</span></label>
-                                        <label type="text" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.name}">
+                                        <label type="text" class="form-control bg-dark text-white border-secondary"
+                                            th:text="${session.loginMember.name}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">手機號碼 <span class="text-danger">*</span></label>
-                                        <label type="tel" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.phone}">
+                                        <label type="tel" class="form-control bg-dark text-white border-secondary"
+                                            th:text="${session.loginMember.phone}">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">電子郵件 <span class="text-danger">*</span></label>
-                                        <label type="email" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.account}">
-                                        <div class="form-text">票券將寄送至此信箱</div>
+                                        <label type="email" class="form-control bg-dark text-white border-secondary"
+                                            th:text="${session.loginMember.account}">
+                                            <div class="form-text">票券將寄送至此信箱</div>
                                     </div>
                                 </div>
                             </div>
@@ -155,11 +159,13 @@
                                     </div>-->
                                     <div class="col-12">
                                         <label class="form-label">詳細地址</label>
-                                        <label type="text" class="form-control bg-dark text-white border-secondary" th:text="${session.loginMember.Address}">
+                                        <label type="text" class="form-control bg-dark text-white border-secondary"
+                                            th:text="${session.loginMember.Address}">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">備註（選填）</label>
-                                        <textarea class="form-control bg-dark text-white border-secondary" rows="2" placeholder="例如：請放管理室"></textarea>
+                                        <textarea class="form-control bg-dark text-white border-secondary" rows="2"
+                                            placeholder="例如：請放管理室"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -279,19 +285,23 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">卡號</label>
-                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="1234 5678 9012 3456" maxlength="19">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        placeholder="1234 5678 9012 3456" maxlength="19">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">有效期限</label>
-                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="MM/YY" maxlength="5">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        placeholder="MM/YY" maxlength="5">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">安全碼 (CVV)</label>
-                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="123" maxlength="4">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        placeholder="123" maxlength="4">
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">持卡人姓名</label>
-                                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="與卡片上相同">
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        placeholder="與卡片上相同">
                                 </div>
                             </div>
                         </div>
@@ -304,8 +314,9 @@
                                 <input class="form-check-input" type="checkbox" id="useTokensCheckout">
                                 <label class="form-check-label" for="useTokensCheckout">
                                     使用 Momento 代幣折抵
-                                    <span class="badge bg-success ms-2">可用餘額: 
-                                        <label class = "token" id="tokenAmount" th:text="${session.loginMember.token}"></label>                                            
+                                    <span class="badge bg-success ms-2">可用餘額:
+                                        <label class="token" id="tokenAmount"
+                                            th:text="${session.loginMember.token}"></label>
                                     </span>
                                 </label>
                             </div>
@@ -321,7 +332,8 @@
                     </div>
 
                     <!-- Token Reward Notice -->
-                    <div class="alert alert-success bg-success bg-opacity-10 border-success mb-4" id="tokenRewardNotice">
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success mb-4"
+                        id="tokenRewardNotice">
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <i class="fas fa-coins fa-2x text-success"></i>
@@ -333,7 +345,8 @@
                                 <p class="mb-0 small">
                                     單筆消費滿 <strong>NT$ 300</strong> 即贈 <strong class="text-success">5 元代幣</strong>！
                                     <span id="tokenRewardMsg" class="ms-2">
-                                        此筆訂單將獲得 <span class="badge bg-success"><span class="momentoCoins">54</span> 代幣</span> 回饋
+                                        此筆訂單將獲得 <span class="badge bg-success"><span class="momentoCoins">54</span>
+                                            代幣</span> 回饋
                                     </span>
                                 </p>
                             </div>
@@ -359,7 +372,7 @@
                             </div>
                             <h2 class="mb-3">訂單完成！</h2>
                             <p class="text-muted mb-4">感謝您的購買，訂單確認信已寄送至您的信箱</p>
-                            
+
                             <div class="bg-black rounded p-4 mb-4 d-inline-block">
                                 <div class="text-muted small mb-1">訂單編號</div>
                                 <div class="h4 text-success mb-0" id="orderNumber">MO-20241226-001234</div>
@@ -469,4 +482,3 @@
 </body>
 
 </html>
-
