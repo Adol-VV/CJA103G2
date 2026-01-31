@@ -114,8 +114,24 @@
 		/* 1. 背景噪點紋理 (Noise Texture) - 增加電影感 */
 		body {
 			position: relative;
-			background-color: #0b0f0d;
-			/* 更深邃的基底色 */
+			background-color: #050807;
+			/* 深度曜石綠黑 */
+			color: #e2e8f0;
+		}
+
+		/* 2. 背景動態漸層 (Dynamic Background Glows) */
+		body::after {
+			content: "";
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background:
+				radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+				radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+			pointer-events: none;
+			z-index: -2;
 		}
 
 		body::before {
@@ -162,12 +178,12 @@
 		/* 3. 卡片質感優化 (Glassmorphism Lite) */
 		.event-card,
 		.product-card {
-			border: 1px solid rgba(255, 255, 255, 0.05);
-			background: rgba(30, 34, 32, 0.6);
-			/* 半透明背景 */
-			backdrop-filter: blur(10px);
-			/* 毛玻璃效果 (支援的瀏覽器) */
-			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			background: linear-gradient(135deg, rgba(25, 30, 28, 0.8) 0%, rgba(15, 18, 17, 0.9) 100%);
+			/* 複合式背景 */
+			backdrop-filter: blur(12px) saturate(120%);
+			/* 增強毛玻璃 */
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 		}
 
 		.event-card:hover,
@@ -302,6 +318,101 @@
 
 		.btn-glow {
 			animation: glowPulse 3s infinite;
+		}
+
+		/* === Premium Search Modal Styling === */
+		#search_modal .modal-content {
+			background: linear-gradient(165deg, rgba(10, 15, 13, 0.9) 0%, rgba(5, 8, 7, 0.95) 100%);
+			backdrop-filter: blur(25px) saturate(200%);
+			border: 1px solid rgba(16, 185, 129, 0.2);
+			/* 帶點微弱綠光的邊框 */
+			border-radius: 24px;
+			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+		}
+
+		#search_modal .modal-header {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+			padding: 1.5rem 2rem;
+		}
+
+		#search_input {
+			font-size: 1.25rem !important;
+			letter-spacing: 0.5px;
+			transition: all 0.3s ease;
+		}
+
+		#search_input::placeholder {
+			color: rgba(255, 255, 255, 0.3);
+		}
+
+		#search_modal .input-group {
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			border-radius: 12px;
+			padding: 4px 8px;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		#search_modal .input-group:focus-within {
+			background: rgba(255, 255, 255, 0.06);
+			border-color: rgba(16, 185, 129, 0.5);
+			box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+			transform: scale(1.01);
+		}
+
+		#search_modal .btn-close {
+			transition: all 0.3s ease;
+			opacity: 0.5;
+		}
+
+		#search_modal .btn-close:hover {
+			transform: rotate(90deg);
+			opacity: 1;
+		}
+
+		.popular-tag {
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			color: rgba(255, 255, 255, 0.7);
+			padding: 6px 16px;
+			border-radius: 100px;
+			font-size: 0.85rem;
+			text-decoration: none;
+			transition: all 0.3s ease;
+		}
+
+		.popular-tag:hover {
+			background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+			border-color: #10B981;
+			color: #10B981;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+		}
+
+		.recent-search-item {
+			background: transparent !important;
+			color: rgba(255, 255, 255, 0.6) !important;
+			border: none !important;
+			padding: 12px 20px !important;
+			border-radius: 12px !important;
+			transition: all 0.2s ease !important;
+			margin-bottom: 4px;
+		}
+
+		.recent-search-item:hover {
+			background: rgba(255, 255, 255, 0.03) !important;
+			color: #fff !important;
+			transform: translateX(8px);
+		}
+
+		.recent-search-item i {
+			opacity: 0.4;
+			transition: all 0.2s ease;
+		}
+
+		.recent-search-item:hover i {
+			opacity: 1;
+			color: #10B981;
 		}
 	</style>
 </head>
@@ -463,7 +574,7 @@
 			<!-- Featured Event (大卡片) - 使用最新的一筆 -->
 			<div class="col-12 col-lg-6" th:with="mainEvent=${latestEvents[0]}">
 				<div class="card h-100 border-0 overflow-hidden reveal-on-scroll hover-float"
-					style="background: #2a2a2a;">
+					style="background: linear-gradient(180deg, #1a1e1c 0%, #0d100f 100%);">
 					<div class="position-relative">
 						<a th:href="@{/event/{id}(id=${mainEvent.eventId})}">
 							<img loading="lazy" th:src="${mainEvent.coverImageUrl}" class="card-img-top"
@@ -791,9 +902,9 @@
 					<li class="mb-2"><a th:href="@{/member/login}" class="text-decoration-none text-muted">會員登入</a></li>
 					<li class="mb-2"><a th:href="@{/member/dashboard}" class="text-decoration-none text-muted">會員中心</a>
 					</li>
-					<li class="mb-2"><a href="pages/public/faq.html" class="text-decoration-none text-muted">常見問題</a>
+					<li class="mb-2"><a th:href="@{/faq}" class="text-decoration-none text-muted">常見問題</a>
 					</li>
-					<li class="mb-2"><a href="#" class="text-decoration-none text-muted">聯絡客服</a></li>
+					<li class="mb-2"><a th:href="@{/contact}" class="text-decoration-none text-muted">聯絡客服</a></li>
 				</ul>
 			</div>
 			<div class="col-6 col-md-2">
@@ -801,7 +912,7 @@
 				<ul class="list-unstyled text-muted small">
 					<li class="mb-2"><a th:href="@{/organizer/apply}" class="text-decoration-none text-muted">成為主辦方</a>
 					</li>
-					<li class="mb-2"><a href="@{/terms}" class="text-decoration-none text-muted">服務條款</a></li>
+					<li class="mb-2"><a th:href="@{/terms}" class="text-decoration-none text-muted">服務條款</a></li>
 				</ul>
 			</div>
 			<div class="col-12 col-md-4">

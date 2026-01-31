@@ -75,7 +75,8 @@
         <div class="d-flex gap-3 align-items-center">
             <!-- 關鍵字搜尋 -->
             <input type="text" id="staffSearchInput" class="form-control bg-dark text-white border-secondary"
-                placeholder="搜尋姓名/帳號/職稱..." style="width: 200px;">
+                placeholder="搜尋姓名/帳號/職稱..."
+                style="width: 250px; border-radius: 20px; padding-left: 20px; background: #1a1a1a !important;">
 
             <!-- 狀態篩選 -->
             <div class="d-flex align-items-center gap-2">
@@ -407,9 +408,14 @@
             .removeClass('bg-secondary')
             .addClass('bg-dark border-secondary');
 
-        // UI 調整：隱藏密碼管理與提示，按鈕改名
-        $('#passwordHint').show();
+        // UI 調整：顯示預設密碼提示
+        // 必須操作 class，因為 d-flex 會蓋過 jQuery 的 hide()
+        $('#passwordHint')
+            .removeClass('d-none')
+            .addClass('d-flex');
+
         $('#passwordManagementBlock').hide();
+
         $('#editInfoAlert').hide();
         $('#saveEmpBtn').text('確認新增');
 
@@ -426,14 +432,16 @@
             .removeClass('bg-dark border-secondary')
             .addClass('bg-secondary');
 
-        // UI 調整：顯示密碼管理與提示，按鈕改名
-        $('#passwordHint').hide();
+        // UI 調整：編輯模式下，嚴格隱藏「預設密碼提示」
+        // 移除 d-flex 並加上 d-none 以確保隱藏
+        $('#passwordHint')
+            .removeClass('d-flex')
+            .addClass('d-none');
+
         $('#passwordManagementBlock').show();
+
         $('#editInfoAlert').show();
         $('#saveEmpBtn').text('儲存變更');
-        console.log('=== 開啟編輯 Modal ===');
-        console.log('empId:', empId);
-        console.log('empName:', empName);
 
         // 重置表單
         $('#empEditForm')[0].reset();

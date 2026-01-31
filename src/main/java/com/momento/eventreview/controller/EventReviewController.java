@@ -109,8 +109,9 @@ public class EventReviewController {
             return ResponseEntity.status(401).body(Map.of("error", "未登入"));
 
         Integer eventId = ((Number) request.get("eventId")).intValue();
+        com.momento.emp.model.EmpVO emp = (com.momento.emp.model.EmpVO) session.getAttribute("loginEmp");
         try {
-            eventReviewService.approveEvent(eventId);
+            eventReviewService.approveEvent(eventId, emp);
             return ResponseEntity.ok(Map.of("success", true, "message", "活動已核准"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

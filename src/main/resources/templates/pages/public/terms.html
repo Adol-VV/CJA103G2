@@ -78,12 +78,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand" href="/index.html">Momento</a>
-            <div class="ms-auto">
-                <a href="javascript:window.close()" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-times me-1"></i>關閉
-                </a>
-            </div>
+            <a class="navbar-brand fw-bold text-success" th:href="@{/}"><i
+                    class="fas fa-ticket-alt me-2"></i>Momento</a>
+
         </div>
     </nav>
 
@@ -246,14 +243,27 @@
         <div class="last-updated">
             <p>最後更新日期：2026年1月17日</p>
             <p class="mt-2">
-                <a href="javascript:window.close()" class="btn btn-outline-success">
+                <button type="button" class="btn btn-outline-success" onclick="closeWindow()">
                     <i class="fas fa-check me-1"></i>我已閱讀完畢
-                </a>
+                </button>
             </p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function closeWindow() {
+            // 嘗試關閉視窗
+            window.close();
+
+            // 如果視窗沒有關閉（例如非腳本開啟的視窗），則返回首頁
+            setTimeout(function () {
+                if (!window.closed) {
+                    window.location.href = '/';
+                }
+            }, 30);
+        }
+    </script>
 </body>
 
 </html>

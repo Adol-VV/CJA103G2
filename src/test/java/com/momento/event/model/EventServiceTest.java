@@ -151,7 +151,7 @@ public class EventServiceTest {
             filterDTO.setSort("newest");
 
             Page<EventVO> page = new PageImpl<>(Collections.singletonList(eventVO));
-            when(eventRepository.filterEvents(anyList(), any(), any(), any(), any(), any(), any(), any(),
+            when(eventRepository.filterEvents(any(), any(), any(), any(), any(), any(), any(),
                     any(LocalDateTime.class), any(Pageable.class)))
                     .thenReturn(page);
             when(eventImageRepository.findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(1))
@@ -403,7 +403,7 @@ public class EventServiceTest {
             eventVO.setStatus(EventVO.STATUS_PENDING);
             when(eventRepository.findById(1)).thenReturn(Optional.of(eventVO));
 
-            eventReviewService.approveEvent(1);
+            eventReviewService.approveEvent(1, empVO);
 
             assertEquals(EventVO.STATUS_APPROVED, eventVO.getStatus());
         }
@@ -413,7 +413,7 @@ public class EventServiceTest {
         void testApproveEvent_NotPending() {
             eventVO.setStatus(EventVO.STATUS_DRAFT);
             when(eventRepository.findById(1)).thenReturn(Optional.of(eventVO));
-            assertThrows(RuntimeException.class, () -> eventReviewService.approveEvent(1));
+            assertThrows(RuntimeException.class, () -> eventReviewService.approveEvent(1, empVO));
         }
 
         @Test

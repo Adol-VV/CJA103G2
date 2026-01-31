@@ -56,10 +56,7 @@ public class EventServiceImpl implements EventService {
                 Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(),
                                 Sort.by(direction, filterDTO.getSort()));
 
-                // 僅顯示已上架 (3)
-                java.util.List<Byte> statuses = java.util.List.of(EventVO.STATUS_PUBLISHED);
                 Page<EventVO> eventPage = eventRepository.filterEvents(
-                                statuses,
                                 filterDTO.getTypeId(),
                                 filterDTO.getPlace(),
                                 filterDTO.getStartDate(),

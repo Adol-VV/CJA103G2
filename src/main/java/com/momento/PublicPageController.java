@@ -19,6 +19,11 @@ public class PublicPageController {
         return "pages/public/terms";
     }
 
+    @GetMapping("/member-terms")
+    public String memberTerms() {
+        return "pages/public/member-terms";
+    }
+
     @Autowired
     private com.momento.organizer.model.OrganizerService organizerService;
 
@@ -69,6 +74,17 @@ public class PublicPageController {
     @GetMapping("/faq")
     public String faq() {
         return "pages/public/faq";
+    }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "pages/public/contact";
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam(name = "q", required = false) String q, Model model) {
+        model.addAttribute("keyword", q);
+        return "pages/public/search";
     }
 
     @GetMapping("/member/cart")
