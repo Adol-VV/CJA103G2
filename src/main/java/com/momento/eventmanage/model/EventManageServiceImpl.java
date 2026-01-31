@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Event Manage Service Implementation - 主辦方活動管理服務實作
  */
+@lombok.extern.slf4j.Slf4j
 @Service
 public class EventManageServiceImpl implements EventManageService {
 
@@ -366,8 +367,11 @@ public class EventManageServiceImpl implements EventManageService {
 
         // 核心安全檢查：若已有訂單，禁止刪除活動以確保財務資料完整性
         if (eventOrderRepository.existsByEvent_EventId(eventId)) {
+            log.error("刪除活動失敗：活動 ID {} 已有訂單記錄", eventId);
             throw new RuntimeException("此活動已有訂單紀錄，為確保帳務完整性，不允許刪除。");
         }
+
+        log.warn("執行刪除活動：eventId={}, organizerId={}", eventId, event.getOrganizer().getOrganizerId());
 
         // 刪除相關紀錄 (收藏、票種、圖片)
         try {
@@ -406,6 +410,7 @@ public class EventManageServiceImpl implements EventManageService {
         }
 
         // 行為存證：將取消原因記錄至伺服器日誌 (在不新增資料庫欄位的情況下保留證據)
+        log.warn("取消活動：eventId={}, organizerId={}, reason={}", eventId, event.getOrganizer().getOrganizerId(), reason);
         System.err.println("[EVENT_CANCEL_LOG] 主辦方取消活動 ID: " + eventId + " | 原因: " + reason);
 
         // 取消活動實質上是將其轉為已結束狀態(5)

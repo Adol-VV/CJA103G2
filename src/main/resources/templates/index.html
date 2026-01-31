@@ -518,7 +518,7 @@
 	</div>
 
 	<!-- Announcement Bar / 公告欄 -->
-	<div class="announce_bar py-2" style="background: linear-gradient(90deg, #1a1a1a 0%, #2D5F4F 50%, #1a1a1a 100%);">
+	<div class="announce_bar py-3" style="background: linear-gradient(90deg, #1a1a1a 0%, #2D5F4F 50%, #1a1a1a 100%);">
 		<div class="container-fluid" style="max-width: 1400px;">
 			<div class="d-flex align-items-center">
 				<span class="badge bg-warning text-dark me-3 d-none d-sm-inline-block">
@@ -648,7 +648,7 @@
 			<div th:each="tc : ${eventTypes}" style="flex: 1 1 0; min-width: 0;">
 				<a th:href="@{/event/list(typeId=${tc.type.typeId})}"
 					class="card text-decoration-none d-flex flex-row align-items-center justify-content-center py-2 px-3 article_hover"
-					style="height: 75px; width: 100%; background-color: #16241D; border: 1px solid #2C4236;">
+					style="height: 60px; width: 100%; background-color: #16241D; border: 1px solid #2C4236;">
 					<i th:data-lucide="${tc.lucideIcon}" th:class="${tc.colorClass} + ' me-2 flex-shrink-0'"
 						style="width: 24px; height: 24px;"></i>
 					<p class="text-white small mb-0 fw-bold text-truncate" th:text="${tc.type.typeName}"

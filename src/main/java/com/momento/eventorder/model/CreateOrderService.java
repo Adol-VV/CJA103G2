@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@lombok.extern.slf4j.Slf4j
 @Service
 public class CreateOrderService {
 
@@ -136,6 +137,9 @@ public class CreateOrderService {
 
 		eventOrderItemRepo.saveAll(orderItemList);
 		eventOrder.setEventOrderItems(new ArrayList<>(orderItemList));
+
+		log.info("創建訂單成功：memberId={}, orderId={}, total={}, eventId={}",
+				memberId, eventOrder.getEventOrderId(), totalAmount, event.getEventId());
 
 		// pei
 		bridgeService.processEventOrderNotify(eventOrder);

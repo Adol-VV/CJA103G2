@@ -11,6 +11,7 @@ import java.util.Map;
  * 票種業務邏輯層實作
  * 實作票種查詢、庫存管理、票價計算等功能
  */
+@lombok.extern.slf4j.Slf4j
 @Service
 @Transactional
 public class TicketServiceImpl implements TicketService {
@@ -64,6 +65,7 @@ public class TicketServiceImpl implements TicketService {
                     "」剩餘 " + ticket.getRemain() + " 張，需要 " + quantity + " 張");
         }
 
+        log.info("扣減庫存：ticketId={}, quantity={}, remain={}", ticketId, quantity, ticket.getRemain() - quantity);
         ticket.setRemain(ticket.getRemain() - quantity);
         ticketRepository.save(ticket);
     }
