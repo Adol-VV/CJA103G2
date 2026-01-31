@@ -3,6 +3,8 @@ package com.momento.prod.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.momento.prod.model.ProdImageVO;
+
 
 public class ProdDTO {
 	private Integer prodId;
@@ -19,6 +21,9 @@ public class ProdDTO {
     private String reviewStatus;
     private String mainImageUrl; // 存儲第一張圖片  
 	private List<String> prodImages = new ArrayList<String>();
+	private List<ProdImageVO> images = new ArrayList<ProdImageVO>();
+	
+	
 	public Integer getProdId() {
 		return prodId;
 	}
@@ -102,6 +107,12 @@ public class ProdDTO {
 	}
 	public void setProdImages(List<String> prodImages) {
 		this.prodImages = prodImages;
+	}
+	public List<ProdImageVO> getImages() {
+		return images;
+	}
+	public void setImages(List<ProdImageVO> images) {
+		this.images = images;
 	}
     
     

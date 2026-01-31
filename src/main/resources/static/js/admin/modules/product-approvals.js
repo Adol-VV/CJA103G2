@@ -172,4 +172,33 @@ export function initProductApprovals() {
 		}
 	})
 	loadOrderStats();
+	
+	//變更審核狀態的確認訊息
+	$(document).on("click", "#btn-approve1", function(e){
+		let productName = $("#prodName").text();
+		if(!confirm(`確定要通過「${productName}」的申請嗎？`)){
+			e.preventDefault();
+		}
+	})
+	
+	$(document).on("click", "#btn-reject1", function(e){
+		let productName = $("#prodName").text();
+		if(!confirm(`確定要駁回「${productName}」的申請嗎？`)){
+			e.preventDefault();
+		}
+	})
+	
+	$(document).on("click", "#btn-approve2", function(e){
+		let productName = $("#reviewProductName").text();
+		if(!confirm(`確定要通過「${productName}」的申請嗎？`)){
+			e.preventDefault();
+		}
+	})
+
+	$(document).on("click", "#btn-reject2", function(e){
+		let productName = $("#reviewProductName").text();
+		if(!confirm(`確定要駁回「${productName}」的申請嗎？`)){
+			e.preventDefault();
+		}
+	})
 }

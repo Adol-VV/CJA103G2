@@ -90,7 +90,80 @@ public class ProdService {
 		repository.save(prodVO);
 	}
 	
-	public void updateProd(ProdVO prodVO) {
+	@Transactional
+	public void updateProd(ProdDTO prodDTO, MultipartFile[] files, Integer[] imageIds) {
+		Optional<ProdVO> optional = repository.findById(prodDTO.getProdId());
+		ProdVO prodVO = optional.get();
+        prodVO.setProdContent(prodDTO.getProdContent());
+        prodVO.setProdPrice(prodDTO.getProdPrice());
+        prodVO.setProdStock(prodDTO.getProdStock());
+        prodVO.setUpdatedAt(LocalDateTime.now());
+        prodVO.setProdStatus((byte) 0);
+        prodVO.setReviewStatus((byte) 0);
+        
+        //建目標路徑資料夾
+        try {
+            Files.createDirectories(Path.of(uploadDir));
+        } catch (IOException e) {
+            throw new UncheckedIOException("無法建立上傳目錄", e);
+        }
+        
+        //圖片
+        List<ProdImageVO> currentImages = prodVO.getProdImages();  //先抓原本的ProdImageVO出來
+		for(int i = 0 ; i < files.length; i++) {
+			MultipartFile file = files[i];
+			System.out.println("aaaa");
+			//這個位置沒有上傳新圖的話就跳過
+			if(file == null || file.isEmpty()) {
+				continue;
+			}else {
+				System.out.println("bbbb");
+				if(imageIds[i] == null) {
+					System.out.println("cccc");
+					//新圖
+					try {				
+			        	// 建立隨機檔名防止衝突
+				        String originalFilename = file.getOriginalFilename();
+				        String extension = "";
+				        if (originalFilename != null && originalFilename.contains(".")) {
+				            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+				        }
+				        String fileName = UUID.randomUUID().toString() + extension;
+				        // 使用 Path 組合完整的儲存路徑
+				        Path targetPath = Path.of(uploadDir).resolve(fileName);
+				        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+						//建新的物件塞進list
+				        ProdImageVO image = new ProdImageVO();
+						image.setImageUrl(baseUrl+fileName);
+						image.setProdVO(prodVO);
+						image.setCreatedAt(LocalDateTime.now());
+						currentImages.add(image);
+			        } catch (IOException e) {
+			        	throw new UncheckedIOException("圖片儲存失敗: " + file.getOriginalFilename(), e);
+			        }
+				}else {
+					//舊圖更新
+					try {				
+			        	// 建立隨機檔名防止衝突
+				        String originalFilename = file.getOriginalFilename();
+				        String extension = "";
+				        if (originalFilename != null && originalFilename.contains(".")) {
+				            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+				        }
+				        String fileName = UUID.randomUUID().toString() + extension;
+				        // 使用 Path 組合完整的儲存路徑
+				        Path targetPath = Path.of(uploadDir).resolve(fileName);
+				        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+						//抓對應的既存物件去更新欄位
+				        ProdImageVO image = currentImages.get(i);
+				        image.setImageUrl(baseUrl+fileName);
+						image.setCreatedAt(LocalDateTime.now());
+			        } catch (IOException e) {
+			        	throw new UncheckedIOException("圖片儲存失敗: " + file.getOriginalFilename(), e);
+			        }
+				}
+			}
+		}
 		repository.save(prodVO);
 	}
 	
@@ -157,10 +230,12 @@ public class ProdService {
         } else {
             dto.setMainImageUrl(prod.getProdImages().get(0).getImageUrl());
         }
-        List<String> ImageUrls = prod.getProdImages().stream().map(prodImage -> 
+        List<String> imageUrls = prod.getProdImages().stream().map(prodImage -> 
         	prodImage.getImageUrl()).collect(Collectors.toList());
-        dto.setProdImages(ImageUrls);
+        dto.setProdImages(imageUrls);
         
+        List<ProdImageVO> images = prod.getProdImages();
+        dto.setImages(images);
 		return dto;
 	}
 	

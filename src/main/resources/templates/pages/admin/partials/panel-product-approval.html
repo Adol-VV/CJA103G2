@@ -61,7 +61,7 @@
                                     alt="商品圖片">
                             </td>
                             <td>
-                                <div class="fw-bold" th:text="${prod.prodName}"></div>
+                                <div class="fw-bold" id="" th:text="${prod.prodName}"></div>
                                 <small class="text-muted" th:text="|ID: ${prod.prodId}|"></small>
                             </td>
                             <td th:text="${prod.organizerName}">藝響樂團文化基金會</td>
@@ -76,10 +76,10 @@
                                     </button>
                                     <form th:action="@{/admin/changeReviewStatus}" method="post">
 	                                    <input type="hidden" name="prodId" th:value="${prod.prodId}" />
-	                                    <button style="padding:6px 6px 6px 6px" class="btn btn-outline-success" type="submit" title="通過" name="reviewStatus" value="1">
+	                                    <button style="padding:6px 6px 6px 6px" class="btn btn-outline-success" id="btn-approve1" type="submit" title="通過" name="reviewStatus" value="1">
 	                                        <i class="fas fa-check"></i>
 	                                    </button>
-										<button style="padding:6px 7px 6px 7px" class="btn btn-outline-danger"  type="submit" title="駁回" name="reviewStatus" value="2">
+										<button style="padding:6px 7px 6px 7px" class="btn btn-outline-danger" id="btn-reject1" type="submit" title="駁回" name="reviewStatus" value="2">
 	                                        <i class="fas fa-times"></i>
 	                                    </button>
 									</form>
@@ -152,21 +152,21 @@
 	                        </div>
 	                    </div>
 	                </div>
-	                <hr class="border-secondary">
-	                <div class="mb-3">
-	                    <label class="form-label">審核意見</label>
-	                    <textarea class="form-control bg-dark text-white border-secondary" rows="3"
-	                        id="reviewProductComment" placeholder="輸入審核意見（駁回時必填）..."></textarea>
-	                </div>
+<!-- 	                <hr class="border-secondary"> -->
+<!-- 	                <div class="mb-3"> -->
+<!-- 	                    <label class="form-label">審核意見</label> -->
+<!-- 	                    <textarea class="form-control bg-dark text-white border-secondary" rows="3" -->
+<!-- 	                        id="reviewProductComment" placeholder="輸入審核意見（駁回時必填）..."></textarea> -->
+<!-- 	                </div> -->
 	            </div>
 	            <div class="modal-footer border-secondary">
 	                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border:1px solid white">取消</button>
 					<form  th:action="@{/admin/changeReviewStatus}" method="post">
 						<input id="reviewBtn" type="hidden" name="prodId"value=""/>
-						<button type="submit" class="btn btn-danger" name="reviewStatus" value="2">
+						<button type="submit" class="btn btn-danger" id="btn-reject2" name="reviewStatus" value="2">
 		                    <i class="fas fa-times me-1"></i>駁回
 		                </button>
-						<button type="submit" class="btn btn-success" name="reviewStatus" value="1">
+						<button type="submit" class="btn btn-success" id="btn-approve2" name="reviewStatus" value="1">
 		                    <i class="fas fa-check me-1"></i>通過審核
 		                </button>
 					</form>
