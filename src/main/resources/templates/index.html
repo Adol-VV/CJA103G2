@@ -487,23 +487,25 @@
 
 			<div th:each="item, iterStat : ${carouselList}" class="carousel-item"
 				th:classappend="${iterStat.index == 0} ? 'active'" data-bs-interval="5000">
+				<a th:href="@{/event/{id}(id=${item.eventId})}" class="text-decoration-none">
+					<img loading="lazy" th:src="${item.imageUrl}" class="d-block w-100"
+						style="height: 500px; object-fit: cover; filter: brightness(0.7);" th:alt="${item.title}">
 
-				<img loading="lazy" th:src="${item.imageUrl}" class="d-block w-100"
-					style="height: 500px; object-fit: cover; filter: brightness(0.7);" th:alt="${item.title}">
+					<div class="carousel-caption d-none d-md-block text-start">
+						<span class="badge bg-success mb-2 hero-animate">主打活動</span>
 
-				<div class="carousel-caption d-none d-md-block text-start">
-					<span class="badge bg-success mb-2 hero-animate">主打活動</span>
+						<h1 class="display-4 fw-bold hero-animate hero-delay-1 text-white" th:text="${item.title}">活動標題
+						</h1>
 
-					<h1 class="display-4 fw-bold hero-animate hero-delay-1" th:text="${item.title}">活動標題</h1>
+						<p class="lead hero-animate hero-delay-2 text-white-50"
+							th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...
+						</p>
 
-					<p class="lead hero-animate hero-delay-2" th:text="${#strings.abbreviate(item.content, 50)}">活動簡介...
-					</p>
-
-					<a th:href="@{/event/{id}(id=${item.eventId})}"
-						class="btn btn-primary btn-lg mt-3 hero-animate hero-delay-3 btn-glow">
-						查看詳情 <i class="fas fa-arrow-right ms-2"></i>
-					</a>
-				</div>
+						<div class="btn btn-primary btn-lg mt-3 hero-animate hero-delay-3 btn-glow">
+							查看詳情 <i class="fas fa-arrow-right ms-2"></i>
+						</div>
+					</div>
+				</a>
 			</div>
 		</div>
 
