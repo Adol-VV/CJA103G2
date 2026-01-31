@@ -44,7 +44,8 @@
                         <i class="fas fa-dollar-sign text-success"></i>
                     </div>
                 </div>
-                <h3 class="mb-0 fw-bold counter-anim" id="report-rev-val" data-target="12540800" data-prefix="NT$ ">0
+                <h3 class="mb-0 fw-bold counter-anim text-white" id="report-rev-val" data-target="12540800"
+                    data-prefix="NT$ ">0
                 </h3>
                 <small class="text-success" id="report-rev-trend"><i class="fas fa-arrow-up"></i> +12.5% <span
                         class="text-muted ms-1">較上月</span></small>
@@ -61,7 +62,7 @@
                         <i class="fas fa-ticket-alt text-primary"></i>
                     </div>
                 </div>
-                <h3 class="mb-0 fw-bold counter-anim" id="report-ticket-val" data-target="8542">0</h3>
+                <h3 class="mb-0 fw-bold counter-anim text-white" id="report-ticket-val" data-target="8542">0</h3>
                 <small class="text-success" id="report-ticket-trend"><i class="fas fa-arrow-up"></i> +5.2% <span
                         class="text-muted ms-1">較上月</span></small>
             </div>
@@ -77,7 +78,8 @@
                         <i class="fas fa-tshirt text-warning"></i>
                     </div>
                 </div>
-                <h3 class="mb-0 fw-bold counter-anim" id="report-merch-val" data-target="3240000" data-prefix="NT$ ">0
+                <h3 class="mb-0 fw-bold counter-anim text-white" id="report-merch-val" data-target="3240000"
+                    data-prefix="NT$ ">0
                 </h3>
                 <small class="text-danger" id="report-merch-trend"><i class="fas fa-arrow-down"></i> -2.1% <span
                         class="text-muted ms-1">較上月</span></small>
@@ -94,7 +96,8 @@
                         <i class="fas fa-users text-info"></i>
                     </div>
                 </div>
-                <h3 class="mb-0 fw-bold counter-anim" id="report-aov-val" data-target="2450" data-prefix="NT$ ">0</h3>
+                <h3 class="mb-0 fw-bold counter-anim text-white" id="report-aov-val" data-target="2450"
+                    data-prefix="NT$ ">0</h3>
                 <small class="text-muted" id="report-aov-trend"><i class="fas fa-minus"></i> 0.0% <span
                         class="text-muted ms-1">持平</span></small>
             </div>
@@ -136,16 +139,16 @@
                 <!-- Custom Legend -->
                 <div class="mt-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span><i class="fas fa-circle text-primary me-2"></i>VIP 區</span>
-                        <span class="fw-bold">45%</span>
+                        <span class="text-light"><i class="fas fa-circle text-primary me-2"></i>VIP 區</span>
+                        <span class="fw-bold text-white-50">45%</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span><i class="fas fa-circle text-success me-2"></i>一般區 A</span>
-                        <span class="fw-bold">35%</span>
+                        <span class="text-light"><i class="fas fa-circle text-success me-2"></i>一般區 A</span>
+                        <span class="fw-bold text-white-50">35%</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-circle text-warning me-2"></i>一般區 B</span>
-                        <span class="fw-bold">20%</span>
+                        <span class="text-light"><i class="fas fa-circle text-warning me-2"></i>一般區 B</span>
+                        <span class="fw-bold text-white-50">20%</span>
                     </div>
                 </div>
             </div>
@@ -530,8 +533,8 @@
             html += `
                 <tr>
                     <td class="ps-4"><span class="badge ${badgeClass} shadow-sm">#${rank}</span></td>
-                    <td class="fw-bold text-truncate" style="max-width: 200px;" title="${evt.title}">${evt.title}</td>
-                    <td class="text-muted small">${evt.date}</td>
+                    <td class="fw-bold text-truncate text-light" style="max-width: 200px;" title="${evt.title}">${evt.title}</td>
+                    <td class="text-white-50 small">${evt.date}</td>
                     <td>
                         <div class="d-flex align-items-center">
                             <span class="me-2" style="width: 35px;">${evt.salesRate}%</span>

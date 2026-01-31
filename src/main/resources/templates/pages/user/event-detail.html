@@ -356,6 +356,39 @@
             /* momento-green */
             border-radius: 3px;
         }
+
+        /* 強化分頁顯示邏輯，徹底防止內容重疊 */
+        #eventTabContent {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .tab-content>* {
+            display: none !important;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .tab-content>.active {
+            display: block !important;
+            opacity: 1;
+            height: auto;
+            overflow: visible;
+            animation: fadeInTab 0.4s ease-out;
+        }
+
+        @keyframes fadeInTab {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -535,14 +568,14 @@
 
                 <div class="tab-content mb-5" id="eventTabContent">
                     <!-- 活動介紹 Tab -->
-                    <div class="tab-pane fade show active" id="about">
+                    <div class="tab-pane active" id="about">
                         <div class="section-text text-muted" th:utext="${event.content}">
                             與維也納愛樂管弦樂團一同迎接嶄新的一年。本次音樂會將演奏史特勞斯家族經典圓舞曲、波爾卡舞曲，以及多首膾炙人口的古典名曲。
                         </div>
                     </div>
 
                     <!-- 地點資訊 Tab -->
-                    <div class="tab-pane fade" id="location">
+                    <div class="tab-pane" id="location">
                         <div class="card bg-dark border-secondary">
                             <div class="card-body p-0">
                                 <!-- Google Maps 嵌入 -->
@@ -594,7 +627,7 @@
                     </div>
 
                     <!-- 主辦方 Tab -->
-                    <div class="tab-pane fade" id="organizer">
+                    <div class="tab-pane" id="organizer">
                         <div class="d-flex align-items-center gap-3 p-3 border border-secondary rounded-3">
                             <img loading="lazy"
                                 th:src="'https://ui-avatars.com/api/?name=' + ${organizer.name} + '&background=2D5F4F&color=fff&size=128'"

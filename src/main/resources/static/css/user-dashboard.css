@@ -40,9 +40,17 @@
 }
 
 /* Page-specific styles */
-.member-sidebar .card {
+.member-sidebar {
     position: sticky;
-    top: 20px;
+    top: 90px;
+    /* 避開頂部 navbar (約 70px-80px) */
+    height: fit-content;
+    align-self: flex-start;
+}
+
+.member-sidebar .card {
+    position: relative;
+    top: 0;
 }
 
 .list-group-item {
@@ -125,8 +133,10 @@
     transform: translateY(-2px);
     border-color: var(--momento-green);
 }
+
 .order-container {
-    background: #1a1a1a; /* 深色背景 */
+    background: #1a1a1a;
+    /* 深色背景 */
     border: 1px solid #333;
     border-radius: 12px;
     margin-bottom: 16px;
@@ -142,7 +152,9 @@
     transition: background 0.3s;
 }
 
-.order-header:hover { background: #222; }
+.order-header:hover {
+    background: #222;
+}
 
 /* 詳情區初始狀態：隱藏 */
 .order-details {
@@ -150,20 +162,56 @@
     overflow: hidden;
     transition: max-height 0.3s ease-out;
     background: #1e1e1e;
-    padding: 0 20px; /* 初始 padding 設為 0 */
+    padding: 0 20px;
+    /* 初始 padding 設為 0 */
 }
 
 /* 展開狀態 */
 .order-container.active .order-details {
-    max-height: 500px; /* 給予足夠的高度 */
+    max-height: 500px;
+    /* 給予足夠的高度 */
     padding: 20px;
     border-top: 1px solid #333;
 }
 
 /* 箭頭旋轉動畫 */
-.arrow-icon { transition: transform 0.3s; color: #888; }
-.order-container.active .arrow-icon { transform: rotate(180deg); }
+.arrow-icon {
+    transition: transform 0.3s;
+    color: #888;
+}
+
+.order-container.active .arrow-icon {
+    transform: rotate(180deg);
+}
 
 /* 按鈕樣式簡化範例 */
-.btn-ticket { background: #2d5a4c; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; }
-.btn-refund { color: #ff5c5c; background: none; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; }
+.btn-ticket {
+    background: #2d5a4c;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+.avatar-img {
+    transition: all 0.3s ease;
+}
+
+.avatar-wrapper:hover .avatar-img {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+}
+
+.avatar-wrapper .btn {
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.avatar-wrapper .btn:hover {
+    background-color: var(--momento-green) !important;
+    transform: scale(1.1);
+}
+
+.x-small {
+    font-size: 0.7rem;
+}
