@@ -420,8 +420,8 @@
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
                     <a href="pages/user/cart.html" class="position-relative text-white text-decoration-none">
                         <i class="fas fa-shopping-cart fa-lg"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="font-size: 0.6rem;"> 2 </span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
+                            style="font-size: 0.6rem;">  </span>
                     </a>
                     <div th:if="${session.loginMember}" class="d-flex align-items-center gap-3">
                         <span class="text-white" th:text="${session.loginMember.name}">會員姓名</span>
@@ -1284,6 +1284,30 @@
 
             // Initialize Total on load
             updateTotal();
+
+            //Update_Cart_UI
+            let cart = [];
+
+            // Load from LocalStorage
+            const saved = localStorage.getItem('momento_cart');
+            if (saved) {
+                try {
+                    cart = JSON.parse(saved);
+                } catch (e) { console.error('Error loading cart', e); }
+            }
+            updateCartUI();
+
+            function updateCartUI() {
+                const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Update Badge
+                if (count > 0) {
+                    $('.cart-count').text(count).show();
+                } else {
+                    $('.cart-count').hide();
+                }
+            };
         });
     </script>
 </body>
