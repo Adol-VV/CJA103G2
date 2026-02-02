@@ -63,9 +63,9 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
-                    <a href="cart.html" class="btn btn-outline-secondary position-relative">
+                    <a href="/member/cart" class="btn btn-outline-secondary position-relative">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">2</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"></span>
                     </a>
                     <div th:if="${session.loginMember}">
                         <a th:text="${session.loginMember.name}"></a>
@@ -309,6 +309,31 @@
                     if (typeof showToast === 'function') showToast('已取消收藏', 'info');
                 }
             });
+
+            //Update_Cart_UI
+            let cart = [];
+
+            // Load from LocalStorage
+            const saved = localStorage.getItem('momento_cart');
+            if (saved) {
+                try {
+                    cart = JSON.parse(saved);
+                } catch (e) { console.error('Error loading cart', e); }
+            }
+            updateCartUI();
+
+            function updateCartUI() {
+                const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Update Badge
+                if (count > 0) {
+                    $('.cart-count').text(count).show();
+                } else {
+                    $('.cart-count').hide();
+                }
+            };
+
         });
     </script>
 </body>

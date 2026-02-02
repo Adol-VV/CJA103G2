@@ -373,45 +373,47 @@
 
             <!-- Articles Tab -->
             <div class="tab-pane" id="tab-articles">
-                <div class="row g-4">
-                    <!-- Article 1 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <div class="row g-0">
-                                <div class="col-4">
-                                    <img loading="lazy" src="https://via.placeholder.com/300x200"
-                                        class="img-fluid h-100" style="object-fit: cover;">
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body">
-                                        <span class="badge bg-success mb-2">主辦專欄</span>
-                                        <h5 class="card-title">打造沈浸式音樂體驗的幕後推手</h5>
-                                        <p class="text-muted small mb-2">不僅僅是聽覺的饗宴，我們致力於將視覺與互動結合...</p>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/15</small>
+                <div class="row g-4" th:if="${articles != null and !articles.isEmpty()}">
+                    <!-- Dynamic Article Loop -->
+                    <div class="col-md-6" th:each="article : ${articles}">
+                        <a th:href="@{/article/detail/{id}(id=${article.articleId})}"
+                            class="text-decoration-none text-reset">
+                            <div class="card bg-dark border-secondary h-100 article-card">
+                                <div class="row g-0 h-100">
+                                    <div class="col-4">
+                                        <img loading="lazy"
+                                            th:src="${article.articleImages != null and !article.articleImages.isEmpty()} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/300x200?text=No+Image'"
+                                            class="img-fluid h-100 w-100" style="object-fit: cover;">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body d-flex flex-column h-100">
+                                            <div>
+                                                <span class="badge bg-success mb-2">主辦專欄</span>
+                                                <h5 class="card-title text-truncate" th:text="${article.title}">文章標題
+                                                </h5>
+                                                <p class="text-muted small mb-2"
+                                                    style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                                                    th:utext="${article.content}">
+                                                    文章內容...
+                                                </p>
+                                            </div>
+                                            <div class="mt-auto">
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock me-1"></i>
+                                                    <span
+                                                        th:text="${#themes.code('Timestamp')} ? ${#dates.format(article.createdAt, 'yyyy/MM/dd')} : ${article.createdAt}">2024/12/15</span>
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                    <!-- Article 2 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <div class="row g-0">
-                                <div class="col-4">
-                                    <img loading="lazy" src="https://via.placeholder.com/300x200"
-                                        class="img-fluid h-100" style="object-fit: cover;">
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body">
-                                        <span class="badge bg-success mb-2">主辦專欄</span>
-                                        <h5 class="card-title">2024年度回顧：我們一起走過的音樂歷程</h5>
-                                        <p class="text-muted small mb-2">感謝每一位支持者，讓我們共同創造了無數美好回憶...</p>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/28</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="text-center py-5" th:if="${articles == null or articles.isEmpty()}">
+                    <i class="fas fa-newspaper fs-1 text-muted mb-3"></i>
+                    <p class="text-muted">目前暫無文章</p>
                 </div>
             </div>
 

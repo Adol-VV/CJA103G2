@@ -30,6 +30,9 @@ public class PublicPageController {
     @Autowired
     private com.momento.event.model.EventService eventService;
 
+    @Autowired
+    private com.momento.article.model.ArticleService articleService;
+
     @GetMapping({ "/orginformation", "/orginformation/{id}" })
     public String organizer(
             @org.springframework.web.bind.annotation.PathVariable(name = "id", required = false) Integer id,
@@ -56,6 +59,11 @@ public class PublicPageController {
             java.util.List<com.momento.event.dto.EventListItemDTO> events = eventService.getOrganizerEvents(organizerId,
                     100);
             model.addAttribute("events", events);
+
+            // 撈取主辦方文章
+            java.util.List<com.momento.article.model.ArticleVO> articles = articleService
+                    .getArticlesByOrganizer(organizerId);
+            model.addAttribute("articles", articles);
         }
 
         return "pages/public/organizer-profile";

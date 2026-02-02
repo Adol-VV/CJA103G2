@@ -252,14 +252,15 @@
                             <small class="text-muted"><i class="fas fa-pen-fancy me-2"></i>文章來源</small>
                         </div>
                         <div class="card-body text-center">
-                            <a href="#" id="authorLink">
+                            <a th:href="@{/orginformation/{id}(id=${article.organizerVO.organizerId})}" id="authorLink">
                                 <img loading="lazy"
                                     th:src="'https://ui-avatars.com/api/?name=' + ${article.organizerVO.name} + '&background=2D5F4F&color=fff&size=128'"
                                     class="rounded-circle mb-3 border border-secondary p-1" width="80" height="80"
                                     id="authorAvatar">
                             </a>
                             <h5 class="text-white">
-                                <a th:href="@{/orginformation}" class="text-white text-decoration-none" id="authorName"
+                                <a th:href="@{/orginformation/{id}(id=${article.organizerVO.organizerId})}"
+                                    class="text-white text-decoration-none" id="authorName"
                                     th:text="${article.organizerVO.name}">Momento 編輯部</a>
                             </h5>
                             <p class="text-muted small mb-3" id="authorDesc"
