@@ -98,6 +98,30 @@ $(document).ready(function () {
         const btn = $(this);
         const paymentMethod = $('input[name="paymentMethod"]:checked').val();
 
+        if (paymentMethod === 'credit') {
+            const ccNum = $('#cc-number').val().replace(/\s/g, '');
+            const ccExpiry = $('#cc-expiry').val();
+            const ccCvv = $('#cc-cvv').val();
+            const ccHolder = $('#cc-holder').val().trim();
+
+            if (ccNum.length !== 16 || !/^\d+$/.test(ccNum)) {
+                showToast('請輸入有效的信用卡號 (16碼)', 'error');
+                return;
+            }
+            if (!/^\d{2}\/\d{2}$/.test(ccExpiry)) {
+                showToast('請輸入有效的有效期限 (MM/YY)', 'error');
+                return;
+            }
+            if (ccCvv.length < 3 || ccCvv.length > 4 || !/^\d+$/.test(ccCvv)) {
+                showToast('請輸入有效的安全碼 (3-4碼)', 'error');
+                return;
+            }
+            if (ccHolder === '') {
+                showToast('請輸入持卡人姓名', 'error');
+                return;
+            }
+        }
+
         btn.prop('disabled', true)
             .empty()
             .append($('<span>').addClass('spinner-border spinner-border-sm me-2'))
