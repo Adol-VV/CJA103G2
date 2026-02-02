@@ -24,6 +24,8 @@ import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
+import com.momento.ticket.model.TicketRepository;
+import com.momento.ticket.model.TicketService;
 import com.momento.ticket.model.TicketVO;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,6 +39,9 @@ public class AdminOrderController {
 
 	@Autowired
 	EventOrderItemService eventOrderItemSvc;
+	
+	@Autowired
+	TicketRepository ticketRepo;
 
 	@Autowired
 	MemberService memberSvc;
@@ -79,7 +84,7 @@ public class AdminOrderController {
 			Integer ticketId = (Integer) count[0];
 			Integer quantity = ((Number) count[1]).intValue();
 
-			TicketVO ticket = eventOrderItemSvc.getTicketById(ticketId);
+			TicketVO ticket = ticketRepo.getById(ticketId);
 			String ticketName = ticket.getTicketName();
 
 			itemCount.put(ticketName, quantity);

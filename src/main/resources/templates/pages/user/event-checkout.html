@@ -501,7 +501,7 @@
 		            document.getElementById("payable").innerText = data.payable;
 		        } else {
 		            const errorMsg = await res.text();
-		            alert("失敗：" + errorMsg);
+		            alert("訂單成立失敗！");
 		        }
 		    })
 		    .catch(err => console.error("網路錯誤:", err));

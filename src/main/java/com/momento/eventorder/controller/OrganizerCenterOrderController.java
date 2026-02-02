@@ -2,8 +2,9 @@ package com.momento.eventorder.controller;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,8 +20,11 @@ import com.momento.eventorder.model.EventOrderItemVO;
 import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.organizer.model.OrganizerVO;
+import com.momento.ticket.model.TicketRepository;
+import com.momento.ticket.model.TicketVO;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -35,6 +39,9 @@ public class OrganizerCenterOrderController {
 
 	@Autowired
 	EventOrderItemService eventOrderItemSvc;
+	
+	@Autowired
+	TicketRepository ticketRepo;
 
 	@GetMapping("/tickets")
 	public String showOrders(@RequestParam(required = false) Integer activeEvent,
@@ -112,5 +119,31 @@ public class OrganizerCenterOrderController {
 		}
 
 		return "pages/organizer/partials/panel-ticket-scanner";
+	}
+	
+	@GetMapping("/order-detail")
+	public String showOrderInformation(@RequestParam Integer eventOrderId, Model model, HttpServletResponse response) {
+
+		EventOrderVO eventOrder = eventOrderSvc.getOneEventOrder(eventOrderId);
+
+		List<Object[]> eventOrderItems = eventOrderItemSvc.getTicketCount(eventOrderId);
+
+		Map<String, Integer> itemCount = new HashMap();
+
+		for (Object[] count : eventOrderItems) {
+			Integer ticketId = (Integer) count[0];
+			Integer quantity = ((Number) count[1]).intValue();
+
+			TicketVO ticket = ticketRepo.getById(ticketId);
+			String ticketName = ticket.getTicketName();
+
+			itemCount.put(ticketName, quantity);
+		}
+
+		model.addAttribute("eventOrder", eventOrder);
+		model.addAttribute("itemCount", itemCount);
+
+		response.setHeader("X-Fragment-Type", "order");
+		return "pages/organizer/partials/panel-orders :: order-body";
 	}
 }

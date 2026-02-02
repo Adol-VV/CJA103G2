@@ -54,6 +54,29 @@ export function initOrderManagement() {
 	    })
 	    .catch(error => console.error('Error:', error));
 	})
+	
+	$(".orderInformation").on("click", function(){
+		let eventOrderId = $(this).attr("data-id");
+
+		fetch(`/organizer/dashboard/order-detail?eventOrderId=${eventOrderId}`, {
+			method: "GET"
+
+		}).then(response => {
+			// 取得後端設定的片段類型
+			const fragmentType = response.headers.get("X-Fragment-Type");
+
+			// 將 HTML 內容與類型一起傳下去
+			return response.text().then(html => ({ html, type: fragmentType }));
+		}).then(({ html, type }) => {
+			// 在這裡你就可以根據 type 分別處理邏輯
+				// 填充 Modal 內容並顯示
+				$("#orderDetailModal .modal-body").html(html);
+				$("#orderDetailModal").modal('show');
+			
+
+		});
+	})
+	
 }
 
 function batchUpdateStatus(status) {
