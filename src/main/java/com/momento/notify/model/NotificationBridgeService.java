@@ -108,21 +108,25 @@ public class NotificationBridgeService {
         }
         String prodNameStr = !prodNames.isEmpty() ? prodNames.toString() : "商品";
 
-        // 通知會員
-        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
-        memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
-        memberNotifyVO.setTitle("商品訂單 #" + orderId + "付款成功");
-        memberNotifyVO.setContent("您購買的商品『" + prodNameStr + "』已於 " + dateStr + " 下單成功，金額：$" + payable + "，賣家將盡快為您安排出貨。");
-        memberNotifyVO.setIsRead(0);
-        memberNotifyService.addMemberNotify(memberNotifyVO);
-
-        // 通知主辦方
+        // 通知主辦方 (先儲存以取得 ID)
         OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
+        organizerNotifyVO.setEmpVO(getSystemAdmin()); // Set System Admin as sender
         organizerNotifyVO.setOrganizerVO(prodOrderIdVO.getOrganizerId());
         organizerNotifyVO.setTitle("新商品訂單 #" + orderId);
         organizerNotifyVO.setContent("您有一筆新訂單，商品：" + prodNameStr + "，金額：$" + payable + "，請盡快安排出貨。");
         organizerNotifyVO.setIsRead(0);
-        organizerNotifyRepository.save(organizerNotifyVO);
+        OrganizerNotifyVO savedOrgNotify = organizerNotifyRepository.save(organizerNotifyVO);
+        
+        // 通知會員
+        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
+        memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
+        memberNotifyVO.setTitle("商品訂單 #" + orderId + "付款成功");
+        memberNotifyVO
+                .setContent("您購買的商品『" + prodNameStr + "』已於 " + dateStr + " 下單成功，金額：$" + payable + "，賣家將盡快為您安排出貨。");
+        memberNotifyVO.setIsRead(0);
+        // 設定關聯 (如果 MEMBER_NOTIFY 需要 FK)
+        memberNotifyVO.setOrganizerNotifyVO(savedOrgNotify);
+        memberNotifyService.addMemberNotify(memberNotifyVO);
     }
 
     // 活動審核通知 (EventReviewService)
