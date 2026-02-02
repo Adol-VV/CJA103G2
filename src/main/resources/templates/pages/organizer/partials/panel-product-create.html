@@ -14,7 +14,7 @@
                     <div class="mb-3">
                         <label class="form-label required">商品名稱</label>
                         <input type="text" class="form-control bg-dark text-white border-secondary" th:field="*{prodName}"
-                            maxlength="50" placeholder="例：官方限定版 T-Shirt" required>
+                            minlength="2" maxlength="50" placeholder="例：官方限定版 T-Shirt" required>
                         <div class="d-flex justify-content-between mt-1">
                             <small class="text-muted">簡潔明瞭的商品名稱</small>
 <!--                             <small class="text-muted"><span class="prod-name-count">0</span>/50</small> -->
@@ -80,13 +80,13 @@
             <!-- Product Images -->
             <div class="card bg-dark border-secondary mb-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-4"><i class="fas fa-images me-2 text-warning"></i>商品圖片</h5>
+                    <h5 class="card-title mb-4"><i class="fas fa-images me-2 text-warning"></i>商品圖片（最多 4 張）</h5>
 
                     <!-- Main Image Upload -->
                     <div class="mb-3">
 <!--                         <label class="form-label">主圖</label> -->
                         <div class="upload-zone text-center p-4 border border-secondary border-dashed rounded position-relative"
-                            id="productMainImageZone" style="cursor: pointer; height: 100px">
+                            id="productMainImageZone" style="cursor: pointer">
                             <input type="file" class="d-none" id="productMainImageInput" accept="image/*" name="imageFiles" multiple>
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
@@ -105,7 +105,7 @@
                     </div>
 
                     <!-- Additional Images -->
-                    <label class="form-label">其他圖片（最多 4 張）</label>
+                    <label class="form-label">圖片預覽</label>
                     <div class="row g-2" id="additionalImagesContainer">
                         <div class="col-6">
                             <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"

@@ -70,7 +70,7 @@ export function initProductCreate() {
 //        }, 2000);
 //    });
 
-    $(document).on('click', '#btnSaveProductDraft', function () {
-        if (window.showToast) window.showToast('草稿已儲存', 'success');
-    });
+//    $(document).on('click', '#btnSaveProductDraft', function () {
+//        if (window.showToast) window.showToast('草稿已儲存', 'success');
+//    });
 }

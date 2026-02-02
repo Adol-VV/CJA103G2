@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.momento.prod.model.ProdService;
+
 @Controller
 public class PublicPageController {
 
@@ -29,6 +31,9 @@ public class PublicPageController {
 
     @Autowired
     private com.momento.event.model.EventService eventService;
+    
+    @Autowired
+    private ProdService prodSvc;
 
     @GetMapping({ "/orginformation", "/orginformation/{id}" })
     public String organizer(
@@ -56,6 +61,8 @@ public class PublicPageController {
             java.util.List<com.momento.event.dto.EventListItemDTO> events = eventService.getOrganizerEvents(organizerId,
                     100);
             model.addAttribute("events", events);
+            model.addAttribute("prodList", prodSvc.getProdsByOrg(organizerId));
+            
         }
 
         return "pages/public/organizer-profile";

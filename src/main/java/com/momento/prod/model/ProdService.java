@@ -117,9 +117,7 @@ public class ProdService {
 			if(file == null || file.isEmpty()) {
 				continue;
 			}else {
-				System.out.println("bbbb");
 				if(imageIds[i] == null) {
-					System.out.println("cccc");
 					//新圖
 					try {				
 			        	// 建立隨機檔名防止衝突
