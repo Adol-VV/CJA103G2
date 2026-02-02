@@ -14,7 +14,7 @@
 <!-- KPI Cards -->
 <div class="row g-4 mb-4">
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card h-100">
+        <div class="card stats-card h-100" onclick="animateCard(this, 'primary')" style="cursor: pointer;">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -31,8 +31,8 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card h-100" id="revenueCard" onclick="randomizeRevenue()"
-            style="cursor: pointer; transition: all 0.1s;">
+        <div class="card stats-card h-100" id="revenueCard" onclick="animateCard(this, 'success'); randomizeRevenue()"
+            style="cursor: pointer;">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -48,7 +48,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card h-100">
+        <div class="card stats-card h-100" onclick="animateCard(this, 'warning')" style="cursor: pointer;">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -64,7 +64,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card h-100">
+        <div class="card stats-card h-100" onclick="animateCard(this, 'danger')" style="cursor: pointer;">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -118,71 +118,105 @@
     </div>
 
     <script>
-        function randomizeRevenue() {
-            const card = document.getElementById('revenueCard');
+        function animateCard(element, type) {
+            const colors = {
+                'primary': '#0d6efd',
+                'success': '#198754',
+                'warning': '#ffc107',
+                'danger': '#dc3545'
+            };
+            const color = colors[type];
 
-            // CSS Animation for click effect
-            card.style.transform = "scale(0.95)";
-            card.style.animation = "shake 0.5s cubic-bezier(.36,.07,.19,.97) both";
+            // 強烈的縮放彈跳
+            element.style.animation = 'none';
+            element.offsetHeight; // reflow
+            element.style.animation = 'hyper-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+            // 光暈閃爍
+            const originalBorder = element.style.borderColor;
+            element.style.borderColor = color;
+            element.style.boxShadow = `0 0 30px ${color}88, inset 0 0 10px ${color}44`;
+
+            // 圖標旋轉
+            const icon = element.querySelector('.stats-icon');
+            if (icon) {
+                icon.style.transform = 'rotate(360deg) scale(1.2)';
+                setTimeout(() => { icon.style.transform = ''; }, 500);
+            }
 
             setTimeout(() => {
-                card.style.transform = "scale(1)";
-                card.style.animation = "";
+                element.style.borderColor = originalBorder;
+                element.style.boxShadow = '';
             }, 500);
+        }
 
+        function randomizeRevenue() {
             // Random Revenue Generation
-            // Range: -10.0M to 10.0M
             const randomVal = (Math.random() * 20 - 10).toFixed(1);
             const revenueText = document.getElementById('revenueValue');
             const trendText = document.getElementById('revenueTrend');
-
-            // Update Revenue Text
             revenueText.innerText = `NT$ ${randomVal}M`;
-
-            // Determine Trend (Positive/Negative)
             const isPositive = parseFloat(randomVal) >= 0;
             const trendIcon = isPositive ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>';
             const trendPercent = Math.floor(Math.random() * 100);
-
-            // Update Trend Display
             trendText.className = isPositive ? 'text-success' : 'text-danger';
             trendText.innerHTML = `${trendIcon} ${isPositive ? '+' : '-'}${trendPercent}%`;
-
-            // Card Border Color Flash
-            const originalBorder = card.style.borderColor;
-            card.style.borderColor = isPositive ? '#198754' : '#dc3545';
-            card.style.boxShadow = isPositive ? '0 0 15px rgba(25, 135, 84, 0.5)' : '0 0 15px rgba(220, 53, 69, 0.5)';
-
-            setTimeout(() => {
-                card.style.borderColor = originalBorder;
-                card.style.boxShadow = '';
-            }, 300);
         }
     </script>
 
     <style>
-        @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
+        @keyframes hyper-pop {
+            0% {
+                transform: scale(1);
             }
 
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
+            15% {
+                transform: scale(0.85) rotate(-1deg);
             }
 
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
+            30% {
+                transform: scale(1.15) rotate(1deg);
             }
 
-            40%,
+            45% {
+                transform: scale(0.95);
+            }
+
             60% {
-                transform: translate3d(4px, 0, 0);
+                transform: scale(1.05);
             }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .stats-card {
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stats-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .stats-card:active::after {
+            left: 100%;
+            top: 100%;
+        }
+
+        .stats-icon {
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
     </style>
 </div>

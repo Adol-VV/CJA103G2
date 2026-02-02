@@ -124,6 +124,18 @@
             border-top: 1px solid var(--border-color);
             padding-top: 16px;
         }
+
+        /* 隱藏 number input 的上下箭頭 */
+        .cart-item-qty::-webkit-outer-spin-button,
+        .cart-item-qty::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cart-item-qty[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
     </style>
 </head>
 
@@ -147,7 +159,8 @@
                     <div class="input-group">
                         <span class="input-group-text bg-dark border-secondary text-secondary"><i
                                 class="fas fa-search"></i></span>
-                        <input class="form-control" type="search" placeholder="搜尋商品..." aria-label="Search" name="prodNameLike">
+                        <input class="form-control" type="search" placeholder="搜尋商品..." aria-label="Search"
+                            name="prodNameLike">
                     </div>
                 </form>
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
@@ -180,7 +193,8 @@
                     <h5 class="mb-3">商品分類</h5>
                     <ul class="list-unstyled mb-4">
                         <li><a class="sort active" sortid="all" th:href="@{listAllProd}">全部商品</a></li>
-                        <li th:each="prodSort:${prodSortList}" ><a class="sort" th:text="${prodSort.getSortName()}" th:attr="sortid=${prodSort.sortId}"></a></li>
+                        <li th:each="prodSort:${prodSortList}"><a class="sort" th:text="${prodSort.getSortName()}"
+                                th:attr="sortid=${prodSort.sortId}"></a></li>
                     </ul>
                 </div>
             </aside>
@@ -189,45 +203,48 @@
             <main class="col-lg-9">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 id="sortTitle">全部商品 <span class="text-muted fs-5" id="productCount"></span></h3>
-<!--                     <div class="d-flex align-items-center gap-2"> -->
-<!--                         <span class="text-muted small">排序：</span> -->
-<!--                         <select class="form-select w-auto bg-dark text-white border-secondary" id="sortSelect"> -->
-<!--                             <option value="popular">預設</option> -->
-<!--                             <option value="price-asc">價格：低到高</option> -->
-<!--                             <option value="price-desc">價格：高到低</option> -->
-<!--                             <option value="newest">最新上架</option> -->
-<!--                         </select> -->
-<!--                     </div> -->
+                    <!--                     <div class="d-flex align-items-center gap-2"> -->
+                    <!--                         <span class="text-muted small">排序：</span> -->
+                    <!--                         <select class="form-select w-auto bg-dark text-white border-secondary" id="sortSelect"> -->
+                    <!--                             <option value="popular">預設</option> -->
+                    <!--                             <option value="price-asc">價格：低到高</option> -->
+                    <!--                             <option value="price-desc">價格：高到低</option> -->
+                    <!--                             <option value="newest">最新上架</option> -->
+                    <!--                         </select> -->
+                    <!--                     </div> -->
                 </div>
 
                 <div class="row g-4" id="productGrid">
                     <!-- Product -->
-                    <div class="col-12 col-sm-6 col-lg-4 prod" style="display:block;" th:each="prod : ${prodList}" th:attr="sortid=${prod.sortId}" th:if="${prod.prodStatus}=='上架中'">
+                    <div class="col-12 col-sm-6 col-lg-4 prod" style="display:block;" th:each="prod : ${prodList}"
+                        th:attr="sortid=${prod.sortId}" th:if="${prod.prodStatus}=='上架中'">
                         <div class="card h-100 product-card">
-                            <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
+                            <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}"
+                                class="text-decoration-none">
                                 <div class="product-img-wrapper">
                                     <img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img-top">
-<!--                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button> -->
+                                    <!--                                     <button class="btn-favorite" onclick="event.preventDefault(); toggleFavorite(this);"><i class="far fa-heart"></i></button> -->
                                 </div>
                             </a>
                             <div class="card-body">
-                                <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="text-decoration-none">
-                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;" th:text="${prod.prodName}"></h6>
+                                <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}"
+                                    class="text-decoration-none">
+                                    <h6 class="product-title text-truncate-2 mb-2 text-white" style="height: 48px;"
+                                        th:text="${prod.prodName}"></h6>
                                 </a>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="price" th:text="'NT$ '+${prod.prodPrice}"></span>
                                     <span class="text-muted small" th:text="'庫存 '+${prod.prodStock}"></span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                    <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}"
+                                        class="btn btn-outline-secondary btn-sm flex-grow-1">
                                         <i class="fas fa-eye me-1"></i>詳情
                                     </a>
-                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart" 
-                                            th:data-id="${prod.prodId}"
-                                            th:data-name="${prod.prodName}" 
-                                            th:data-price="${prod.prodPrice}"
-                                            th:data-image="${prod.mainImageUrl}"
-                                            th:data-organizer="${prod.organizerId}"> <i class="fas fa-cart-plus me-1"></i>加入
+                                    <button class="btn btn-primary btn-sm flex-grow-1 btn-add-cart"
+                                        th:data-id="${prod.prodId}" th:data-name="${prod.prodName}"
+                                        th:data-price="${prod.prodPrice}" th:data-image="${prod.mainImageUrl}"
+                                        th:data-organizer="${prod.organizerId}"> <i class="fas fa-cart-plus me-1"></i>加入
                                     </button>
                                 </div>
                             </div>
@@ -237,31 +254,31 @@
             </main>
         </div>
     </div>
-	
-<!-- 	<!-- 分頁導覽區域 -->
-<!--     <div class="pagination-wrapper"> -->
-<!--         <hr> -->
-<!--         上一頁：只有在不是第一頁時顯示 -->
-<!--         <a th:if="${prodList.hasPrevious()}"  -->
-<!--            th:href="@{listAllProd(page=${prodList.number - 1}, size=${prodList.size})}"> -->
-<!--            &laquo; 上一頁 -->
-<!--         </a> -->
 
-<!--         顯示當前頁碼 (從1開始) -->
-<!--         <span>第 <span th:text="${prodList.number + 1}">1</span> 頁</span> -->
+    <!-- 	<!-- 分頁導覽區域 -->
+    <!--     <div class="pagination-wrapper"> -->
+    <!--         <hr> -->
+    <!--         上一頁：只有在不是第一頁時顯示 -->
+    <!--         <a th:if="${prodList.hasPrevious()}"  -->
+    <!--            th:href="@{listAllProd(page=${prodList.number - 1}, size=${prodList.size})}"> -->
+    <!--            &laquo; 上一頁 -->
+    <!--         </a> -->
 
-<!--         下一頁：關鍵在於使用 hasNext() -->
-<!--         <a th:if="${prodList.hasNext()}"  -->
-<!--            th:href="@{listAllProd(page=${prodList.number + 1}, size=${prodList.size})}"> -->
-<!--            下一頁 &raquo; -->
-<!--         </a> -->
-<!--     </div> -->
+    <!--         顯示當前頁碼 (從1開始) -->
+    <!--         <span>第 <span th:text="${prodList.number + 1}">1</span> 頁</span> -->
 
-<!--     <p th:if="${!prodList.hasNext()}">已經到底囉！沒有更多商品了。</p> -->
+    <!--         下一頁：關鍵在於使用 hasNext() -->
+    <!--         <a th:if="${prodList.hasNext()}"  -->
+    <!--            th:href="@{listAllProd(page=${prodList.number + 1}, size=${prodList.size})}"> -->
+    <!--            下一頁 &raquo; -->
+    <!--         </a> -->
+    <!--     </div> -->
 
-	
-	
-	
+    <!--     <p th:if="${!prodList.hasNext()}">已經到底囉！沒有更多商品了。</p> -->
+
+
+
+
     <!-- Floating Cart Button -->
     <button class="btn btn-primary btn-floating-cart" id="btnOpenCart">
         <i class="fas fa-shopping-cart"></i>
@@ -271,7 +288,7 @@
     <!-- Cart Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel"
         style="background: var(--card-bg);">
-        <div class="offcanvas-header border-bottom border-secondary">
+        <div class="offcanvas-header border-bottom border-secondary" style="background: #1a1a1a;">
             <h5 class="offcanvas-title" id="cartOffcanvasLabel">購物車 (<span id="cartItemCount">0</span>)</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
                 aria-label="Close"></button>
@@ -298,8 +315,10 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <button class="btn btn-sm btn-outline-secondary btn-qty-minus py-0 px-2">-</button>
                                     <input type="number"
-                                        class="form-control form-control-sm text-center cart-item-qty bg-dark border-secondary text-white"
-                                        value="1" min="1" style="width: 50px;" readonly>
+                                        class="form-control form-control-sm text-center cart-item-qty border-secondary text-white"
+                                        value="1" min="1"
+                                        style="width: 60px; height: 32px; background: #2a2a2a; padding: 0; line-height: 32px;"
+                                        readonly>
                                     <button class="btn btn-sm btn-outline-secondary btn-qty-plus py-0 px-2">+</button>
                                     <button
                                         class="btn btn-sm btn-link text-danger ms-auto btn-remove-item p-0 text-decoration-none">
@@ -335,57 +354,57 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
-		
-    //商品分類顯示    
+
+        //商品分類顯示    
         let sorts = document.querySelectorAll("a.sort");
         let prods = document.querySelectorAll("div.prod");
-		let sortTitle = document.getElementById("sortTitle");
-		
-		
-        function removeActive(){
-           sorts.forEach(function(sort,i){
+        let sortTitle = document.getElementById("sortTitle");
+
+
+        function removeActive() {
+            sorts.forEach(function (sort, i) {
                 sort.classList.remove("active");
-            }) 
+            })
         }
 
-        sorts.forEach(function(sort,i){
-            sort.addEventListener("click", function(){
+        sorts.forEach(function (sort, i) {
+            sort.addEventListener("click", function () {
                 //點擊的類別要加綠色
                 removeActive();
                 sort.classList.add("active");
 
 
-                
+
                 let count = 0;
-                prods.forEach(function(prod, j){
-                    if(prod.getAttribute("sortid") === sort.getAttribute("sortid") || sort.getAttribute("sortid")==="all"){
-                        prod.style.display="block";
-                    }else{
-                        prod.style.display="none";
+                prods.forEach(function (prod, j) {
+                    if (prod.getAttribute("sortid") === sort.getAttribute("sortid") || sort.getAttribute("sortid") === "all") {
+                        prod.style.display = "block";
+                    } else {
+                        prod.style.display = "none";
                     }
 
-                    if(prod.style.display === "block"){
+                    if (prod.style.display === "block") {
                         count += 1;
                     }
                 })
-                sortTitle.innerHTML = `${sort.innerHTML} <span class="text-muted fs-5" id="productCount">(${count})</span>`; 
+                sortTitle.innerHTML = `${sort.innerHTML} <span class="text-muted fs-5" id="productCount">(${count})</span>`;
 
             })
         })
 
-    	
-    
-    //--------------------------------------------------------------
-    	$(document).ready(function () {
+
+
+        //--------------------------------------------------------------
+        $(document).ready(function () {
             let count_el = document.getElementById("productCount");
             let count = 0;
-                prods.forEach(function(prod, j){
-                    if(prod.style.display === "block"){
-                        count += 1;
-                    }
-                })
-                count_el.innerHTML = `(${count})`; 
-            
+            prods.forEach(function (prod, j) {
+                if (prod.style.display === "block") {
+                    count += 1;
+                }
+            })
+            count_el.innerHTML = `(${count})`;
+
             let cart = [];
 
             // Load from LocalStorage
@@ -457,9 +476,9 @@
                 const price = btn.data('price');
                 const image = btn.data('image');
                 const organizerId = btn.data('organizer');
-                
+
                 const existing = cart.find(item => item.id === id);
-                
+
                 if (existing) {
                     existing.quantity++;
                 } else {
@@ -471,10 +490,10 @@
                 // Show simple feedback (safe method)
                 const originalHtml = btn.html();
                 btn.empty()
-                   .append($('<i>').addClass('fas fa-check'))
-                   .append(' 已加入')
-                   .removeClass('btn-primary')
-                   .addClass('btn-success');
+                    .append($('<i>').addClass('fas fa-check'))
+                    .append(' 已加入')
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
                 showToast('已加入購物車', 'success');
                 setTimeout(() => {
                     btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');

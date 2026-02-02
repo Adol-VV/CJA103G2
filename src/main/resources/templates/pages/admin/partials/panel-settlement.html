@@ -44,25 +44,25 @@
                     <div class="card bg-dark border-secondary">
                         <div class="card-body">
                             <p class="text-muted mb-1"><i class="fas fa-clock me-1"></i>票券待結算</p>
-                            <h4 class="mb-0 text-warning">NT$ 1,250,000</h4>
-                            <small class="text-muted">3 筆待處理</small>
+                            <h4 class="mb-0 text-warning" id="adminEventPendingAmount">NT$ 0</h4>
+                            <small class="text-muted" id="adminEventPendingCount">0 筆待處理</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card bg-dark border-secondary">
                         <div class="card-body">
-                            <p class="text-muted mb-1"><i class="fas fa-check-circle me-1"></i>本月已撥款</p>
-                            <h4 class="mb-0 text-success">NT$ 4,820,000</h4>
-                            <small class="text-muted">12 筆已完成</small>
+                            <p class="text-muted mb-1"><i class="fas fa-check-circle me-1"></i>已撥款總額</p>
+                            <h4 class="mb-0 text-success" id="adminEventPaidAmount">NT$ 0</h4>
+                            <small class="text-muted" id="adminEventPaidCount">0 筆已完成</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card bg-dark border-secondary">
                         <div class="card-body">
-                            <p class="text-muted mb-1"><i class="fas fa-percentage me-1"></i>平台服務費</p>
-                            <h4 class="mb-0 text-info">NT$ 482,000</h4>
+                            <p class="text-muted mb-1"><i class="fas fa-percentage me-1"></i>預估平台服務費</p>
+                            <h4 class="mb-0 text-info" id="adminEventServiceFee">NT$ 0</h4>
                             <small class="text-muted">費率 10%</small>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                     <div class="card bg-dark border-secondary">
                         <div class="card-body">
                             <p class="text-muted mb-1"><i class="fas fa-exclamation-triangle me-1"></i>異常待處理</p>
-                            <h4 class="mb-0 text-danger">2</h4>
+                            <h4 class="mb-0 text-danger" id="adminEventErrorCount">0</h4>
                             <small class="text-muted">需人工審核</small>
                         </div>
                     </div>
@@ -83,11 +83,9 @@
                 <div class="card-body py-2">
                     <div class="row g-2 align-items-center">
                         <div class="col-md-3">
-                            <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                            <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                                id="adminEventOrganizerFilter">
                                 <option value="">所有主辦方</option>
-                                <option>相信音樂</option>
-                                <option>動漫協進會</option>
-                                <option>LiveNation</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -131,82 +129,10 @@
                                 <th>操作</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="adminEventSettlementBody">
                             <tr>
-                                <td><input type="checkbox" class="event-settle-chk" value="1"></td>
-                                <td>
-                                    <strong>五月天 2024 巡迴演唱會</strong><br>
-                                    <small class="text-muted">ID: E20241231</small>
-                                </td>
-                                <td>相信音樂</td>
-                                <td>2024/12/31</td>
-                                <td>NT$ 5,000,000</td>
-                                <td class="text-info">NT$ 500,000</td>
-                                <td class="text-success"><strong>NT$ 4,500,000</strong></td>
-                                <td><span class="badge bg-warning text-dark">待審核</span></td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
-                                        <button class="btn btn-success" title="確認撥款" ><i
-                                                class="fas fa-check"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" class="event-settle-chk" value="2"></td>
-                                <td>
-                                    <strong>2024 動漫節</strong><br>
-                                    <small class="text-muted">ID: E20240201</small>
-                                </td>
-                                <td>動漫協進會</td>
-                                <td>2024/02/01-03</td>
-                                <td>NT$ 2,000,000</td>
-                                <td class="text-info">NT$ 200,000</td>
-                                <td class="text-success"><strong>NT$ 1,800,000</strong></td>
-                                <td><span class="badge bg-info">計算中</span></td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" class="event-settle-chk" value="3"></td>
-                                <td>
-                                    <strong>跨年電音派對</strong><br>
-                                    <small class="text-muted">ID: E20250101</small>
-                                </td>
-                                <td>夜貓娛樂</td>
-                                <td>2025/01/01</td>
-                                <td>NT$ 850,000</td>
-                                <td class="text-info">NT$ 85,000</td>
-                                <td class="text-success"><strong>NT$ 765,000</strong></td>
-                                <td><span class="badge bg-success">已撥款</span></td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-primary" title="查看詳情"><i class="fas fa-eye"></i></button>
-                                        <button class="btn btn-outline-secondary" title="列印收據"><i
-                                                class="fas fa-print"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="table-danger">
-                                <td><input type="checkbox" class="event-settle-chk" value="4"></td>
-                                <td>
-                                    <strong>獨立音樂祭</strong><br>
-                                    <small class="text-muted">ID: E20250115</small>
-                                </td>
-                                <td>地下社會</td>
-                                <td>2025/01/15</td>
-                                <td>NT$ 320,000</td>
-                                <td class="text-info">NT$ 32,000</td>
-                                <td class="text-danger"><strong>待確認</strong></td>
-                                <td><span class="badge bg-danger">異常</span></td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-danger" title="處理異常"><i
-                                                class="fas fa-exclamation-circle"></i></button>
-                                    </div>
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>結算數據加載中...
                                 </td>
                             </tr>
                         </tbody>
@@ -444,6 +370,114 @@
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    (function () {
+        let allSettlements = [];
+
+        function loadAdminEventSettlement() {
+            console.log("開始載入管理員結算數據...");
+            $.get('/admin/event/review/api/settlement-data')
+                .done(function (res) {
+                    console.log("結算數據收到:", res);
+                    if (res.success) {
+                        allSettlements = res.settlements;
+
+                        // 更新統計卡片
+                        $('#adminEventPendingAmount').text('NT$ ' + res.stats.totalSalesToSettle.toLocaleString());
+                        $('#adminEventPendingCount').text(res.stats.pendingCount + ' 筆待處理');
+                        $('#adminEventPaidAmount').text('NT$ ' + res.stats.totalPaid.toLocaleString());
+                        $('#adminEventPaidCount').text(res.stats.paidCount + ' 筆已完成');
+                        $('#adminEventErrorCount').text('0'); // 預設 0，若有異常邏輯可在此擴充
+
+                        let totalServiceFee = res.settlements.reduce((sum, s) => sum + s.serviceFee, 0);
+                        $('#adminEventServiceFee').text('NT$ ' + totalServiceFee.toLocaleString());
+
+                        // 動態生成主辦方選單
+                        const organizers = [...new Set(res.settlements.map(s => s.organizerName))];
+                        let optHtml = '<option value="">所有主辦方</option>';
+                        organizers.forEach(org => {
+                            optHtml += `<option value="${org}">${org}</option>`;
+                        });
+                        $('#adminEventOrganizerFilter').html(optHtml);
+
+                        renderTable(allSettlements);
+                    } else {
+                        $('#adminEventSettlementBody').html(`<tr><td colspan="9" class="text-center py-4 text-danger">加載失敗: ${res.message}</td></tr>`);
+                    }
+                })
+                .fail(function (xhr) {
+                    console.error("結算數據加載 API 失敗:", xhr);
+                    const msg = xhr.status === 401 ? "請先登入員工帳號" : "系統回傳錯誤 (" + xhr.status + ")";
+                    $('#adminEventSettlementBody').html(`<tr><td colspan="9" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>${msg}</td></tr>`);
+                });
+        }
+
+        function renderTable(data) {
+            let html = '';
+            if (data && data.length > 0) {
+                data.forEach(function (s) {
+                    const date = s.eventDate ? new Date(s.eventDate).toLocaleDateString() : '-';
+                    let statusHtml = '';
+                    let actionBtns = `
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-primary" title="查看詳情" onclick="viewEventDetail(${s.eventId})"><i class="fas fa-eye"></i></button>
+                `;
+
+                    if (s.settleStatus === 1) {
+                        statusHtml = '<span class="badge bg-success">已撥款</span>';
+                        actionBtns += `<button class="btn btn-outline-secondary" title="列印收據"><i class="fas fa-print"></i></button>`;
+                    } else if (s.settleStatus === 0) {
+                        statusHtml = '<span class="badge bg-warning text-dark">待審核</span>';
+                        actionBtns += `<button class="btn btn-success" title="確認撥款"><i class="fas fa-check"></i></button>`;
+                    } else {
+                        statusHtml = '<span class="badge bg-info">計算中</span>';
+                    }
+
+                    actionBtns += '</div>';
+
+                    html += `
+                    <tr>
+                        <td><input type="checkbox" class="event-settle-chk" value="${s.eventId}"></td>
+                        <td>
+                            <strong>${s.title}</strong><br>
+                            <small class="text-muted">ID: E${s.eventId}</small>
+                        </td>
+                        <td>${s.organizerName}</td>
+                        <td>${date}</td>
+                        <td>NT$ ${s.sales.toLocaleString()}</td>
+                        <td class="text-info">NT$ ${s.serviceFee.toLocaleString()}</td>
+                        <td class="text-success"><strong>NT$ ${s.payable.toLocaleString()}</strong></td>
+                        <td>${statusHtml}</td>
+                        <td>${actionBtns}</td>
+                    </tr>
+                `;
+                });
+            } else {
+                html = '<tr><td colspan="9" class="text-center py-4 text-muted">目前暫無已下架活動的業績資料</td></tr>';
+            }
+            $('#adminEventSettlementBody').html(html);
+        }
+
+        // 主辦方篩選邏輯
+        $('#adminEventOrganizerFilter').on('change', function () {
+            const selected = $(this).val();
+            if (!selected) {
+                renderTable(allSettlements);
+            } else {
+                const filtered = allSettlements.filter(s => s.organizerName === selected);
+                renderTable(filtered);
+            }
+        });
+
+        // 頁面加載後執行
+        loadAdminEventSettlement();
+    })();
+
+    function viewEventDetail(id) {
+        console.log("查看活動詳情:", id);
+    }
+</script>
 
 <div class="modal fade" id="settlementDetailModal" tabindex="-1">
     <div class="modal-dialog modal-xl">

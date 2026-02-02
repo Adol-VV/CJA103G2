@@ -10,6 +10,14 @@ import com.momento.ticket.model.TicketRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Optional;
+import com.momento.eventsettle.model.EventSettleRepository;
+import com.momento.eventsettle.model.EventSettleVO;
+import com.momento.eventorder.model.EventOrderRepository;
+import com.momento.eventorder.model.EventOrderVO;
+import com.momento.event.model.EventRepository;
 
 @RestController
 @RequestMapping("/admin/event/review/api")
@@ -23,6 +31,15 @@ public class EventReviewController {
 
     @Autowired
     private com.momento.notify.model.OrganizerNotifyRepository organizerNotifyRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private EventOrderRepository eventOrderRepository;
+
+    @Autowired
+    private EventSettleRepository eventSettleRepository;
 
     @GetMapping("/list")
     public ResponseEntity<?> getEvents(@RequestParam(defaultValue = "all") String tab,
@@ -141,5 +158,84 @@ public class EventReviewController {
         if (session.getAttribute("loginEmp") == null)
             return ResponseEntity.status(401).body(null);
         return ResponseEntity.ok(eventReviewService.getReviewStats());
+    }
+
+    /**
+     * 管理員取得所有活動的結算數據 (僅限已下架活動 status=5)
+     */
+    @GetMapping("/settlement-data")
+    public ResponseEntity<?> getSettlementData(jakarta.servlet.http.HttpSession session) {
+        if (session.getAttribute("loginEmp") == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "未登入"));
+        }
+
+        // 1. 找出所有「已下架 (status 5)」的活動
+        List<EventVO> closedEvents = eventRepository.findAll().stream()
+                .filter(e -> e.getStatus() != null && e.getStatus() == 5)
+                .toList();
+
+        System.out.println("=== Admin Settlement Debug ===");
+        System.out.println("All Events count in DB: " + eventRepository.count());
+        System.out.println("Status 5 events found: " + closedEvents.size());
+
+        // 2. 找出所有的結算紀錄 (用來判斷撥款狀態)
+        List<EventSettleVO> allSettles = eventSettleRepository.findAll();
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        long totalSalesToSettle = 0;
+        long totalPaid = 0;
+        int pendingCount = 0;
+        int paidCount = 0;
+
+        for (EventVO event : closedEvents) {
+            // 3. 找出該活動所有「已付款 (payStatus 1)」的訂單
+            List<EventOrderVO> orders = eventOrderRepository.findByEvent_EventId(event.getEventId()).stream()
+                    .filter(o -> o.getPayStatus() == 1)
+                    .toList();
+
+            System.out.println("Event ID: " + event.getEventId() + ", Orders count: " + orders.size());
+
+            if (!orders.isEmpty()) {
+                int eventSales = orders.stream().mapToInt(EventOrderVO::getTotal).sum();
+                int serviceFee = (int) (eventSales * 0.10); // 平台方預設 10%
+                int payable = eventSales - serviceFee;
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("eventId", event.getEventId());
+                map.put("title", event.getTitle());
+                map.put("organizerName", event.getOrganizer() != null ? event.getOrganizer().getName() : "未知");
+                map.put("eventDate", event.getEventStartAt());
+                map.put("sales", eventSales);
+                map.put("serviceFee", serviceFee);
+                map.put("payable", payable);
+
+                // 4. 判斷狀態
+                Optional<EventSettleVO> sOpt = allSettles.stream()
+                        .filter(s -> s.getEvent().getEventId().equals(event.getEventId()))
+                        .findFirst();
+
+                int status = sOpt.map(EventSettleVO::getStatus).orElse(-1); // -1 代表尚未產生成對結算單 (計算中)
+                map.put("settleStatus", status);
+
+                if (status == 1) {
+                    totalPaid += payable;
+                    paidCount++;
+                } else {
+                    totalSalesToSettle += payable;
+                    pendingCount++;
+                }
+
+                result.add(map);
+            }
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "settlements", result,
+                "stats", Map.of(
+                        "totalSalesToSettle", totalSalesToSettle,
+                        "totalPaid", totalPaid,
+                        "pendingCount", pendingCount,
+                        "paidCount", paidCount)));
     }
 }

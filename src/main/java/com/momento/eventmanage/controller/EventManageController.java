@@ -5,6 +5,10 @@ import com.momento.event.model.EventVO;
 import com.momento.eventmanage.dto.EventCreateDTO;
 import com.momento.eventmanage.dto.EventUpdateDTO;
 import com.momento.eventmanage.model.EventManageService;
+import com.momento.eventsettle.model.EventSettleRepository;
+import com.momento.eventsettle.model.EventSettleVO;
+import com.momento.eventorder.model.EventOrderRepository;
+import com.momento.eventorder.model.EventOrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * Event Manage Controller - 主辦方活動管理控制器
@@ -35,6 +40,12 @@ public class EventManageController {
 
         @Autowired
         private com.momento.event.model.EventRepository eventRepository;
+
+        @Autowired
+        private EventSettleRepository eventSettleRepository;
+
+        @Autowired
+        private EventOrderRepository eventOrderRepository;
 
         private boolean isEventOwner(Integer eventId, Integer organizerId) {
                 EventVO event = eventRepository.findById(eventId).orElse(null);
@@ -316,6 +327,67 @@ public class EventManageController {
                 } catch (Exception e) {
                         return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
                 }
+        }
+
+        /**
+         * 取得活動結算數據 (直接從活動表與訂單表即時計算)
+         */
+        @GetMapping("/api/settlement-data")
+        @ResponseBody
+        public ResponseEntity<?> getSettlementData(HttpSession session) {
+                com.momento.organizer.model.OrganizerVO organizer = (com.momento.organizer.model.OrganizerVO) session
+                                .getAttribute("loginOrganizer");
+                if (organizer == null)
+                        return ResponseEntity.status(401).body(Map.of("success", false, "message", "請先登入"));
+
+                Integer organizerId = organizer.getOrganizerId();
+
+                // 1. 找出該主辦方所有「已下架 (status 5)」的活動
+                List<EventVO> closedEvents = eventRepository.findByOrganizer_OrganizerId(organizerId).stream()
+                                .filter(e -> e.getStatus() == 5)
+                                .toList();
+
+                // 2. 找出該主辦方已有的結算紀錄 (用來判斷是否「已撥款」)
+                List<EventSettleVO> existSettles = eventSettleRepository
+                                .findByOrganizer_OrganizerIdOrderByCreatedAtDesc(organizerId);
+
+                List<Map<String, Object>> result = new ArrayList<>();
+                int totalSalesAll = 0;
+
+                for (EventVO event : closedEvents) {
+                        // 3. 找出該活動所有「已付款 (payStatus 1)」的訂單
+                        List<EventOrderVO> orders = eventOrderRepository.findByEvent_EventId(event.getEventId())
+                                        .stream()
+                                        .filter(o -> o.getPayStatus() == 1)
+                                        .toList();
+
+                        // 只要有訂單就顯示
+                        if (!orders.isEmpty()) {
+                                int eventSales = orders.stream().mapToInt(EventOrderVO::getTotal).sum();
+
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("title", event.getTitle());
+                                map.put("eventDate", event.getEventStartAt());
+                                map.put("sales", eventSales);
+                                map.put("serviceFee", (int) (eventSales * 0.05));
+                                map.put("payable", (int) (eventSales * 0.95));
+
+                                // 4. 判斷撥款狀態：如果 event_settle 表已有紀錄且 status=1 則為已撥款
+                                Optional<EventSettleVO> sOpt = existSettles.stream()
+                                                .filter(s -> s.getEvent().getEventId().equals(event.getEventId()))
+                                                .findFirst();
+
+                                map.put("status", sOpt.map(EventSettleVO::getStatus).orElse(0));
+
+                                result.add(map);
+                                totalSalesAll += eventSales;
+                        }
+                }
+
+                return ResponseEntity.ok(Map.of(
+                                "success", true,
+                                "settlements", result,
+                                "totalSales", totalSalesAll));
         }
 
 }
