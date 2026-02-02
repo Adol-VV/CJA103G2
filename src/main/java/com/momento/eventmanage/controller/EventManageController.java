@@ -109,7 +109,7 @@ public class EventManageController {
         @ResponseBody
         public ResponseEntity<Map<String, Object>> setTimes(
                         @PathVariable Integer id,
-                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime publishedAt,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime publishedAt,
                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime saleStartAt,
                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime saleEndAt,
                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventStartAt,
@@ -124,6 +124,9 @@ public class EventManageController {
                 try {
                         if (!isEventOwner(id, organizer.getOrganizerId()))
                                 return ResponseEntity.status(403).body(Map.of("success", false, "message", "無權限"));
+                        if (publishedAt == null) {
+                                publishedAt = LocalDateTime.now();
+                        }
                         eventManageService.setTimesAndPublish(id, publishedAt, saleStartAt, saleEndAt, eventStartAt,
                                         eventEndAt);
                         return ResponseEntity.ok(Map.of("success", true, "message", "上架成功"));

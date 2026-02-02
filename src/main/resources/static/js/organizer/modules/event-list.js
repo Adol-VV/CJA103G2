@@ -143,41 +143,43 @@ export function initEventList() {
                             <div class="alert alert-info py-2">
                                 <i class="fas fa-info-circle me-2"></i>審核已通過！請設定活動時間以完成上架。
                             </div>
-                            <form class="row g-3" onsubmit="window.submitTime(event, ${event.eventId})">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">1. 上架時間 *</label>
-                                    <input type="datetime-local" name="publishedAt" class="form-control form-control-sm" required>
-                                    <small class="text-muted">設定後活動立即在前台上架</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">2. 售票開始時間 *</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="datetime-local" name="saleStartAt" class="form-control" required>
-                                        <button class="btn btn-outline-secondary" type="button" onclick="window.syncPublished(${event.eventId})">🔗 同步上架</button>
+                            <form class="row g-2" onsubmit="window.submitTime(event, ${event.eventId})">
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold mb-0 small">1. 售票開始 *</label>
+                                        <div class="form-check form-switch p-0" style="min-height: auto;">
+                                            <input class="form-check-input" type="checkbox" name="syncSaleStart" id="sync-${event.eventId}" onchange="window.toggleSaleStart(${event.eventId})" style="margin-left: 0; float: right; transform: scale(0.8);">
+                                            <label class="form-check-label small text-info pe-1" for="sync-${event.eventId}" style="float: right; font-size: 0.7rem;">立即開賣</label>
+                                        </div>
                                     </div>
-                                    <small class="text-muted">消費者開始購票時間</small>
+                                    <div id="saleStartContainer-${event.eventId}">
+                                        <input type="datetime-local" name="saleStartAt" class="form-control form-control-sm" required>
+                                    </div>
+                                    <div id="saleStartMsg-${event.eventId}" class="text-success small d-none p-1 bg-dark rounded border border-success border-opacity-25" style="font-size: 0.7rem;">
+                                        <i class="fas fa-bolt me-1"></i> 與上架同步
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">3. 售票結束時間 *</label>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold mb-1 small">2. 售票結束 *</label>
                                     <input type="datetime-local" name="saleEndAt" class="form-control form-control-sm" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">4. 活動開始時間 *</label>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold mb-1 small">3. 活動開始 *</label>
                                     <input type="datetime-local" name="eventStartAt" class="form-control form-control-sm" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">5. 活動結束時間 *</label>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold mb-1 small">4. 活動結束 *</label>
                                     <input type="datetime-local" name="eventEndAt" class="form-control form-control-sm" required>
                                 </div>
                                 <div class="col-12">
                                     <div class="time-preview p-3 bg-black rounded border border-secondary mt-2">
-                                        <h6 class="text-primary small fw-bold mb-2">⏰ 時間順序預覽：</h6>
+                                        <h6 class="text-primary small fw-bold mb-2">⏰ 時間順序預覽 (確認後立即上架)：</h6>
                                         <ul class="preview-list list-unstyled small mb-0 ms-2"><li>請填寫時間...</li></ul>
                                     </div>
                                 </div>
                                 <div class="col-12 text-end mt-3">
                                     <button type="button" class="btn btn-sm btn-outline-light me-2" onclick="window.toggleTimeForm(${event.eventId})">取消</button>
-                                    <button type="submit" class="btn btn-sm btn-primary px-4">✅ 確認設定並上架</button>
+                                    <button type="submit" class="btn btn-sm btn-success px-4 fw-bold">✅ 確認設定並立即上架</button>
                                 </div>
                             </form>
                         </div>
@@ -320,36 +322,49 @@ export function initEventList() {
         $row.toggleClass('d-none');
     };
 
-    window.syncPublished = function (eventId) {
+    window.toggleSaleStart = function (eventId) {
         const $form = $('#timeRow-' + eventId);
-        const pub = $form.find('[name="publishedAt"]').val();
-        if (pub) {
-            $form.find('[name="saleStartAt"]').val(pub);
-            window.updatePreview(eventId);
+        const isSynced = $form.find('[name="syncSaleStart"]').is(':checked');
+        const $container = $('#saleStartContainer-' + eventId);
+        const $msg = $('#saleStartMsg-' + eventId);
+
+        if (isSynced) {
+            $container.addClass('d-none');
+            $msg.removeClass('d-none');
+            $container.find('input').removeAttr('required');
         } else {
-            alert('請先填寫上架時間');
+            $container.removeClass('d-none');
+            $msg.addClass('d-none');
+            $container.find('input').attr('required', 'required');
         }
+        window.updatePreview(eventId);
     };
+
 
     window.updatePreview = function (eventId) {
         const $form = $('#timeRow-' + eventId);
+        const isSynced = $form.find('[name="syncSaleStart"]').is(':checked');
         const format = (v) => v ? v.replace('T', ' ') : null;
+
+        let saleStartText = format($form.find('[name="saleStartAt"]').val());
+        if (isSynced) {
+            saleStartText = '<span class="text-info">與上架同步 (立即開賣)</span>';
+        }
+
         const times = {
-            published: format($form.find('[name="publishedAt"]').val()),
-            saleStart: format($form.find('[name="saleStartAt"]').val()),
             saleEnd: format($form.find('[name="saleEndAt"]').val()),
             eventStart: format($form.find('[name="eventStartAt"]').val()),
             eventEnd: format($form.find('[name="eventEndAt"]').val())
         };
 
         let html = '';
-        if (times.published) html += `<li>上架: ${times.published}</li>`;
-        if (times.saleStart) html += `<li>售票開始: ${times.saleStart}</li>`;
+        html += `<li class="text-success"><i class="fas fa-check-circle me-1"></i>上架時間: 立即上架</li>`;
+        html += `<li>售票開始: ${saleStartText || '<span class="text-muted">未設定</span>'}</li>`;
         if (times.saleEnd) html += `<li>售票結束: ${times.saleEnd}</li>`;
         if (times.eventStart) html += `<li>活動開始: ${times.eventStart}</li>`;
         if (times.eventEnd) html += `<li>活動結束: ${times.eventEnd}</li>`;
 
-        $form.find('.preview-list').html(html || '<li>請填寫時間...</li>');
+        $form.find('.preview-list').html(html);
     };
 
     window.submitTime = function (e, eventId) {
@@ -357,9 +372,10 @@ export function initEventList() {
         const formData = new FormData(e.target);
         const now = new Date();
 
-        // 取得時間值並轉化為 Date 物件
-        const pub = new Date(formData.get('publishedAt'));
-        const saleStart = new Date(formData.get('saleStartAt'));
+        // 上架時間自動設為現在
+        const pub = now;
+        const isSynced = formData.get('syncSaleStart') === 'on';
+        const saleStart = isSynced ? now : new Date(formData.get('saleStartAt'));
         const saleEnd = new Date(formData.get('saleEndAt'));
         const eventStart = new Date(formData.get('eventStartAt'));
         const eventEnd = new Date(formData.get('eventEndAt'));
@@ -367,19 +383,18 @@ export function initEventList() {
         // 1. 確保所有時間都在未來 (考慮幾秒鐘的誤差，故多減一點)
         const checkNow = new Date(now.getTime() - 60000); // 容許1分鐘內誤差
 
-        if (pub < checkNow) { alert('上架時間不允許過去的時間！'); return; }
-        if (saleStart < checkNow) { alert('售票開始時間不允許過去的時間！'); return; }
-        if (saleEnd < checkNow) { alert('售票結束時間不允許過去的時間！'); return; }
-        if (eventStart < checkNow) { alert('活動舉辦時間不允許過去的時間！'); return; }
-        if (eventEnd < checkNow) { alert('活動結束時間不允許過去的時間！'); return; }
+        if (saleStart < checkNow) { alert('售票開始時間不可早於現在！'); return; }
+        if (saleEnd < checkNow) { alert('售票結束時間不可早於現在！'); return; }
+        if (eventStart < checkNow) { alert('活動舉辦時間不可早於現在！'); return; }
+        if (eventEnd < checkNow) { alert('活動結束時間不可早於現在！'); return; }
 
         // 2. 順序邏輯檢查
-        if (saleStart < pub) {
-            alert('❌ 售票開始時間不能早於上架時間');
-            return;
-        }
         if (saleEnd <= saleStart) {
-            alert('❌ 售票結束時間必須晚於售票開始時間');
+            if (isSynced) {
+                alert('❌ 售票結束時間必須晚於現在 (立即開賣)！');
+            } else {
+                alert('❌ 售票結束時間必須晚於售票開始時間');
+            }
             return;
         }
         if (eventStart < saleEnd) {
@@ -395,7 +410,17 @@ export function initEventList() {
 
         // Convert ISO format to Spring expecting format
         const data = new URLSearchParams();
+        const pubISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+        // 手動加上自動產生的 publishedAt
+        data.append('publishedAt', pubISO);
+
+        // 如果是同步，也要補上 saleStartAt
+        if (isSynced) {
+            data.append('saleStartAt', pubISO);
+        }
+
         for (const [key, value] of formData) {
+            if (key === 'syncSaleStart') continue;
             data.append(key, value);
         }
 
@@ -584,11 +609,39 @@ export function initEventList() {
                             });
                             loadOrganizerEvents();
                         } else {
-                            Swal.fire({ icon: 'error', title: '操作失敗', text: res.message, background: '#1a1d20', color: '#fff' });
+                            Swal.fire({
+                                icon: 'info',
+                                title: '暫時無法執行取消',
+                                html: `
+                                    <div class="text-start small">
+                                        <p class="mb-2"><strong>可能原因：</strong></p>
+                                        <ul class="mb-0">
+                                            <li>活動目前可能已不是「上架中」狀態 (例如已被手動下架)。</li>
+                                            <li>系統檢測到您的權限或登入狀態異常。</li>
+                                            <li>或者是「${res.message || '伺服器拒絕請求'}」</li>
+                                        </ul>
+                                    </div>
+                                `,
+                                background: '#1a1d20',
+                                color: '#fff'
+                            });
                         }
                     },
                     error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: '系統錯誤', text: xhr.responseJSON?.message || '操作異常', background: '#1a1d20', color: '#fff' });
+                        const msg = xhr.responseJSON?.message || '發生未知錯誤';
+                        Swal.fire({
+                            icon: 'error',
+                            title: '取消失敗',
+                            html: `
+                                <div class="text-start small">
+                                    <p>伺服器回應：<span class="text-danger">${msg}</span></p>
+                                    <hr class="border-secondary">
+                                    <p class="mb-0 text-muted">提示：請確認您的網路連線是否正常，或嘗試重新整理頁面後再次操作。若活動已進入「已結束」狀態，則不需重複取消。</p>
+                                </div>
+                            `,
+                            background: '#1a1d20',
+                            color: '#fff'
+                        });
                     }
                 });
             }
