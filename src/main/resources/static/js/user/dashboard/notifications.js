@@ -10,7 +10,7 @@ export function initNotifications() {
         fetchBellNotifications();
     });
 
-    // 單則已讀按鈕 (支援 ORGANIZER 和 SYSTEM 兩種類型)
+    // 單則已讀按鈕
     $(document).on('click', '.btn-mark-read', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -42,9 +42,7 @@ export function initNotifications() {
     });
 }
 
-/**
- * 取得小鈴鐺通知列表
- */
+// 取得小鈴鐺通知列表
 function fetchBellNotifications() {
     $.post('/member/notifications/list', function (res) {
         if (res.success) {
@@ -82,16 +80,14 @@ function fetchBellNotifications() {
     });
 }
 
-/**
- * 標記單則為已讀
- */
+// 標記單則為已讀
 function markAsRead(btn) {
-    // 從按鈕本身取得 data-id 和 data-type
+    // 從按鈕取得data-id和data-type
     const $btn = $(btn);
     const notifyId = $btn.data('id');
     const notifyType = $btn.data('type') || 'ORGANIZER';
 
-    // 找到父層的通知項目 (notification-item)
+    // 找到通知項目
     const $item = $btn.closest('.notification-item');
 
     $.post('/member/notifications/read', {
@@ -99,13 +95,13 @@ function markAsRead(btn) {
         type: notifyType
     }, function (res) {
         if (res.success) {
-            // 更新 UI
+            // 更新UI
             $item.removeClass('unread');
             $item.find('.badge.bg-danger').remove(); // 移除「未讀」標籤
             $item.find('.position-absolute.bg-warning, .position-absolute.bg-primary').fadeOut(); // 移除左側色條
             $btn.fadeOut(function() { $(this).remove(); }); // 移除「標記已讀」按鈕
 
-            // 重新載入鈴鐺通知 (會同步更新側邊欄數量)
+            // 重新載入鈴鐺通知(同步更新側邊欄數量)
             fetchBellNotifications();
             showToast('已標為已讀', 'success');
         }
@@ -114,9 +110,7 @@ function markAsRead(btn) {
     });
 }
 
-/**
- * 標記所有為已讀
- */
+// 標記所有為已讀
 function markAllAsRead() {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
@@ -140,7 +134,7 @@ function markAllAsRead() {
 function doMarkAllAsRead() {
     $.post('/member/notifications/read-all', function (res) {
         if (res.success) {
-            // 更新所有通知項目的 UI
+            // 更新所有通知項目的UI
             $('.notification-item.unread').each(function () {
                 $(this).removeClass('unread');
                 $(this).find('.badge.bg-danger').remove(); // 移除未讀 badge
@@ -156,9 +150,7 @@ function doMarkAllAsRead() {
     });
 }
 
-/**
- * 刪除所有通知
- */
+// 刪除所有通知
 function deleteAllNotifications() {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
@@ -214,9 +206,7 @@ function doDeleteAllNotifications() {
     });
 }
 
-/**
- * 更新通知紅點數字 (同步更新小鈴鐺和側邊欄)
- */
+// 更新通知紅點數字 (同步更新小鈴鐺和側邊欄)
 function updateNotificationBadge(count) {
     const unreadCount = (count !== undefined) ? count : 0;
     // 同時更新小鈴鐺和側邊欄的通知數量
@@ -229,9 +219,7 @@ function updateNotificationBadge(count) {
     }
 }
 
-/**
- * 格式化時間
- */
+// 格式化時間
 function formatDateTime(dateStr) {
     if (!dateStr) return '';
     try {
@@ -253,9 +241,7 @@ function formatDateTime(dateStr) {
     }
 }
 
-/**
- * 顯示 Toast 訊息
- */
+// 顯示Toast 訊息
 function showToast(message, type = 'info') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({

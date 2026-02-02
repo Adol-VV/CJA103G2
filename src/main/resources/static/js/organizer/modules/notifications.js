@@ -53,7 +53,7 @@ export function initNotifications() {
             $(`.notification-item[data-type="${filter}"]`).show();
         }
     });
-    updateNotificationBadge();
+
 }
 
 function fetchBellNotifications() {
@@ -94,9 +94,7 @@ function fetchBellNotifications() {
     });
 }
 
-/**
- * 格式化時間
- */
+// 格式化時間
 function formatDateTime(dateStr) {
     if (!dateStr) return '';
     try {
@@ -118,32 +116,28 @@ function formatDateTime(dateStr) {
     }
 }
 
-/**
- * 標記通知中心面板的單則通知為已讀
- */
+// 標記通知中心面板的單則通知為已讀
 function markAsRead(btn) {
     // 從按鈕本身取得資料
     const $btn = $(btn);
     const notifyId = $btn.data('id');
     const notifyType = $btn.data('notify-type'); // ORG 或 SYS
 
-    // 找到父層的通知項目
+    // 找到通知項目
     const $item = $btn.closest('.notification-item');
 
-    // 根據類型決定 API 路徑
+    // API
     const url = notifyType === 'SYS' ? '/organizer/notify/markSysAsRead' : '/organizer/notify/markAsRead';
 
     $.post(url, { notifyId: notifyId }, function (res) {
         if (res.success) {
-            // 更新 UI
+            // 更新UI
             $item.removeClass('unread');
-            $item.find('.badge.bg-danger').remove(); // 移除「未讀」標籤
-            $item.find('.badge.bg-primary').remove();
-            $item.find('.text-white').removeClass('text-white').addClass('text-muted');
-            $item.find('.bg-opacity-10').removeClass('bg-opacity-10').addClass('bg-opacity-25');
-            $btn.fadeOut(function() { $(this).remove(); }); // 移除「標記已讀」按鈕
+            $item.find('.badge.bg-danger').remove(); // 移除"未讀"標籤
+            $item.find('.position-absolute.bg-warning, .position-absolute.bg-primary').fadeOut(); // 移除左側色條
+            $btn.fadeOut(function() { $(this).remove(); }); // 移除"標記已讀"按鈕
 
-            // 重新整理鈴鐺與計數 (會同步更新側邊欄數量)
+            // 重新整理鈴鐺與計數 (同步更新側邊欄數量)
             fetchBellNotifications();
             showToast('已標為已讀', 'success');
         }
@@ -168,12 +162,10 @@ function markAllAsRead() {
                     $('.notification-item.unread').each(function () {
                         $(this).removeClass('unread');
                         $(this).find('.badge.bg-danger').remove(); // 移除「未讀」標籤
-                        $(this).find('.badge.bg-primary').remove();
-                        $(this).find('.text-white').removeClass('text-white').addClass('text-muted');
-                        $(this).find('.bg-opacity-10').removeClass('bg-opacity-10').addClass('bg-opacity-25');
+                        $(this).find('.position-absolute.bg-warning, .position-absolute.bg-primary').fadeOut(); // 移除左側色條
                         $(this).find('.btn-mark-read').remove(); // 移除「標記已讀」按鈕
                     });
-                    // 重新整理鈴鐺與計數 (會同步更新側邊欄數量)
+                    // 重新整理鈴鐺與計數 (同步更新側邊欄數量)
                     fetchBellNotifications();
                     showToast('所有通知已標為已讀', 'success');
                 }
@@ -183,9 +175,8 @@ function markAllAsRead() {
         }
     });
 }
-/**
- * 刪除所有通知
- */
+
+// 刪除所有通知
 function deleteAllNotifications() {
     Swal.fire({
         title: '確定要刪除所有通知嗎?',
@@ -233,10 +224,10 @@ function deleteAllNotifications() {
 }
 
 function updateNotificationBadge(count) {
-    // 如果有傳入 count 則直接使用，否則從頁面元素計算
+    // 如果有傳入count直接使用
     const unreadCount = (count !== undefined) ? count : $('.notification-item.unread').length;
 
-    // 對應 dashboard.html 中的 #bellBadge 與 sidebar 中的 .sidebar-notify-badge
+    // 對應 dashboard.html的#bellBadge與sidebar的.sidebar-notify-badge
     const badgeElements = $('#bellBadge, #notificationBadge, .sidebar-notify-badge');
 
     if (unreadCount > 0) {
