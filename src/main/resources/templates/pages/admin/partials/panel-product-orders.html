@@ -56,7 +56,7 @@
             </thead>
             <tbody>
                 <tr th:each="order : ${allProdOrders}">
-                    <td><code th:text="${order.orderId}">PO-2024122601</code></td>
+                    <td th:style="'text-align: center !important;'"><code th:text="${order.orderId}">PO-2024122601</code></td>
                     <td>
                         <div class="d-flex align-items-center">
                             <img loading="lazy" th:src="${(order.orderItems != null and !order.orderItems.isEmpty() and !order.orderItems[0].prodId.prodImages.isEmpty()) 
@@ -130,7 +130,6 @@
    $(document).ready(function() {
     let refundOrderId = null;
     $(document).on('click', '.btn-refund-action', function (event) {
-        console.log(123);
         
         const button = event.currentTarget;
         const orderId = button.getAttribute('data-orderid');

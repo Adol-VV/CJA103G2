@@ -46,7 +46,6 @@
         </div>
     </div>
 </div> -->
-
 <div class="card bg-dark border-secondary">
     <div class="card-header border-secondary">
         <ul class="nav nav-tabs card-header-tabs" id="productOrderTabs">
@@ -94,7 +93,7 @@
             <tbody id="productOrdersTable">
                 <tr th:each="organizerOrder:${allOrganizerProdOrder}">
                     <!-- <td><input type="checkbox" class="form-check-input order-checkbox"></td> -->
-                    <td><code th:text="${organizerOrder.orderId}">#MOP20241226001</code></td>
+                    <td th:style="'text-align: center !important;'"><code  th:text="${organizerOrder.orderId}">#MOP20241226001</code></td>
                     <td>
                         <div class="d-flex align-items-center">
                             <div>

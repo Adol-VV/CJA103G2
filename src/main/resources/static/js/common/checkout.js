@@ -132,6 +132,8 @@ $(document).ready(function () {
                     })
                 });
                 $("#orderNumber").text(response);
+                $("#fetch_orderId").val(response);
+                
             } catch (err) {
                 showToast('訂單送出失敗，請檢查資料', 'error');
                 return; 
