@@ -56,54 +56,81 @@
 <div class="card bg-dark border-secondary mb-4">
     <div class="card-header border-secondary d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>活動票券結算</h5>
-        <span class="badge bg-success">本期 NT$ 1,856,000</span>
+        <span class="badge bg-success" id="eventTotalBadge">本期 NT$ 0</span>
     </div>
     <div class="table-responsive">
         <table class="table table-dark table-hover mb-0">
             <thead>
                 <tr>
                     <th>活動名稱</th>
-<!--                     <th>銷售張數</th> -->
                     <th>銷售金額</th>
                     <th>服務費 (5%)</th>
                     <th>應撥款</th>
                     <th>狀態</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="eventSettlementBody">
                 <tr>
-                    <td>
-                        <div class="fw-bold">2025新年音樂會｜維也納之夜</div>
-                        <small class="text-muted">2025/01/01</small>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="fas fa-spinner fa-spin me-2"></i>資料加載中...
                     </td>
-<!--                     <td>856 張</td> -->
-                    <td>NT$ 1,284,000</td>
-                    <td class="text-danger">-NT$ 64,200</td>
-                    <td class="text-success fw-bold">NT$ 1,219,800</td>
-                    <td><span class="badge bg-warning">待撥款</span></td>
                 </tr>
-<!--                 <tr> -->
-<!--                     <td> -->
-<!--                         <div class="fw-bold">春季室內樂系列</div> -->
-<!--                         <small class="text-muted">2024/12/15</small> -->
-<!--                     </td> -->
-<!--                     <td>234 張</td> -->
-<!--                     <td>NT$ 572,000</td> -->
-<!--                     <td class="text-danger">-NT$ 28,600</td> -->
-<!--                     <td class="text-success fw-bold">NT$ 543,400</td> -->
-<!--                     <td><span class="badge bg-success">已撥款</span></td> -->
-<!--                 </tr> -->
             </tbody>
         </table>
     </div>
 </div>
 
+<script th:inline="javascript">
+    (function () {
+        // 獨立作用域，避免干擾其他模組
+        function loadEventSettlement() {
+            $.get('/organizer/event/api/settlement-data', function (res) {
+                if (res.success) {
+                    // 更新標籤總額
+                    $('#eventTotalBadge').text('本期 NT$ ' + res.totalSales.toLocaleString());
+
+                    // 更新表格內容
+                    let html = '';
+                    if (res.settlements && res.settlements.length > 0) {
+                        res.settlements.forEach(function (s) {
+                            const date = s.eventDate ? new Date(s.eventDate).toLocaleDateString() : '-';
+                            const statusBadge = s.status === 1 ?
+                                '<span class="badge bg-success">已撥款</span>' :
+                                '<span class="badge bg-warning">待撥款</span>';
+
+                            html += `
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">${s.title}</div>
+                                    <small class="text-muted">${date}</small>
+                                </td>
+                                <td>NT$ ${s.sales.toLocaleString()}</td>
+                                <td class="text-danger">-NT$ ${s.serviceFee.toLocaleString()}</td>
+                                <td class="text-success fw-bold">NT$ ${s.payable.toLocaleString()}</td>
+                                <td>${statusBadge}</td>
+                            </tr>
+                        `;
+                        });
+                    } else {
+                        html = '<tr><td colspan="5" class="text-center py-4 text-muted">暫無已下架活動的結算資料</td></tr>';
+                    }
+                    $('#eventSettlementBody').html(html);
+                }
+            }).fail(function () {
+                $('#eventSettlementBody').html('<tr><td colspan="5" class="text-center py-4 text-danger">資料加載失敗</td></tr>');
+            });
+        }
+
+        // 立即執行
+        loadEventSettlement();
+    })();
+</script>
+
 <!-- 商品結算明細 -->
 <div class="card bg-dark border-secondary mb-4">
     <div class="card-header border-secondary d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-box me-2"></i>商品銷售結算</h5>
-        <span class="badge bg-info" 
-            th:text="'本期應撥總計 NT$ ' + ${#numbers.formatInteger(trueTotalPayable, 1, 'COMMA')}">
+        <span class="badge bg-info" th:text="'本期應撥總計 NT$ ' + ${#numbers.formatInteger(trueTotalPayable, 1, 'COMMA')}">
             本期 NT$ 0
         </span>
     </div>
@@ -127,11 +154,11 @@
                     </td>
                     <!-- <td>156 件</td> -->
                     <td th:text="'NT$ ' + ${#numbers.formatInteger(elements.prodSales, 1, 'COMMA')}">NT$ 106,080</td>
-                    <td class="text-danger" 
+                    <td class="text-danger"
                         th:text="'-NT$ ' + ${#numbers.formatInteger(elements.prodSales * 0.05, 1, 'COMMA')}">
                         -NT$ 5,304
                     </td>
-                    <td class="text-success fw-bold" 
+                    <td class="text-success fw-bold"
                         th:text="'NT$ ' + ${#numbers.formatInteger(elements.prodSales * 0.95, 1, 'COMMA')}">
                         NT$ 100,776
                     </td>
@@ -231,9 +258,10 @@
                         <i class="fas fa-check text-white"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0">銀行代碼：<span  th:text="${session.loginOrganizer.bankCode}"></span></h6>
-                        <p class="text-muted mb-0">帳號：<span  th:text="${session.loginOrganizer.bankAccount}"></span></p>
-                        <small class="text-muted">戶名：<span  th:text="${session.loginOrganizer.accountName}"></span></small>
+                        <h6 class="mb-0">銀行代碼：<span th:text="${session.loginOrganizer.bankCode}"></span></h6>
+                        <p class="text-muted mb-0">帳號：<span th:text="${session.loginOrganizer.bankAccount}"></span></p>
+                        <small class="text-muted">戶名：<span
+                                th:text="${session.loginOrganizer.accountName}"></span></small>
                     </div>
                 </div>
             </div>
