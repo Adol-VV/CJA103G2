@@ -305,113 +305,118 @@
             <div class="tab-pane" id="tab-products">
                 <div class="row g-4">
                     <!-- Product 1 -->
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="col-6 col-md-3 col-lg-2" th:each="prod:${prodList}" th:if="${prod.prodStatus} == '上架中'">
                         <div class="card bg-dark border-secondary product-card h-100">
-                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
-                                style="height: 200px; object-fit: cover;">
+                            <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}">
+                                <img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img-top"
+                                style="height: 90px; object-fit: cover;">
+                            </a>
                             <div class="card-body">
-                                <h6 class="card-title text-truncate">快樂文創紀念T恤</h6>
-                                <p class="text-muted small mb-2">官方週邊</p>
+                                <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}">
+                                	<h6 class="card-title text-truncate" th:text="${prod.prodName}">快樂文創紀念T恤</h6>
+                                </a>
+                                <p class="text-muted small mb-2" th:text="${prod.sortName}">官方週邊</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-white">NT$ 680</span>
-                                    <a href="../user/prod-detail.html" class="btn btn-sm btn-outline-primary"><i
-                                            class="fas fa-shopping-cart"></i></a>
+                                    <span class="fw-bold text-white" th:text="|$ ${prod.prodPrice}|">NT$ 680</span>
+                                    <span class="text-muted small" th:text="'庫存 '+${prod.prodStock}"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Product 2 -->
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card bg-dark border-secondary product-card h-100">
-                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
-                                style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate">限定版帆布袋</h6>
-                                <p class="text-muted small mb-2">環保系列</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-white">NT$ 450</span>
-                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
-                                            class="fas fa-shopping-cart"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+<!--                                 style="height: 200px; object-fit: cover;"> -->
+<!--                             <div class="card-body"> -->
+<!--                                 <h6 class="card-title text-truncate">限定版帆布袋</h6> -->
+<!--                                 <p class="text-muted small mb-2">環保系列</p> -->
+<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+<!--                                     <span class="fw-bold text-white">NT$ 450</span> -->
+<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+<!--                                             class="fas fa-shopping-cart"></i></a> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
                     <!-- Product 3 -->
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card bg-dark border-secondary product-card h-100">
-                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
-                                style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate">音樂祭貼紙包</h6>
-                                <p class="text-muted small mb-2">收藏品</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-white">NT$ 120</span>
-                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
-                                            class="fas fa-shopping-cart"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+<!--                                 style="height: 200px; object-fit: cover;"> -->
+<!--                             <div class="card-body"> -->
+<!--                                 <h6 class="card-title text-truncate">音樂祭貼紙包</h6> -->
+<!--                                 <p class="text-muted small mb-2">收藏品</p> -->
+<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+<!--                                     <span class="fw-bold text-white">NT$ 120</span> -->
+<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+<!--                                             class="fas fa-shopping-cart"></i></a> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
                     <!-- Product 4 -->
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card bg-dark border-secondary product-card h-100">
-                            <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top"
-                                style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate">保溫杯 500ml</h6>
-                                <p class="text-muted small mb-2">生活用品</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-white">NT$ 580</span>
-                                    <a href="#" class="btn btn-sm btn-outline-primary"><i
-                                            class="fas fa-shopping-cart"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+<!--                                 style="height: 200px; object-fit: cover;"> -->
+<!--                             <div class="card-body"> -->
+<!--                                 <h6 class="card-title text-truncate">保溫杯 500ml</h6> -->
+<!--                                 <p class="text-muted small mb-2">生活用品</p> -->
+<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+<!--                                     <span class="fw-bold text-white">NT$ 580</span> -->
+<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+<!--                                             class="fas fa-shopping-cart"></i></a> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
                 </div>
             </div>
 
             <!-- Articles Tab -->
             <div class="tab-pane" id="tab-articles">
-                <div class="row g-4">
-                    <!-- Article 1 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <div class="row g-0">
-                                <div class="col-4">
-                                    <img loading="lazy" src="https://via.placeholder.com/300x200"
-                                        class="img-fluid h-100" style="object-fit: cover;">
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body">
-                                        <span class="badge bg-success mb-2">主辦專欄</span>
-                                        <h5 class="card-title">打造沈浸式音樂體驗的幕後推手</h5>
-                                        <p class="text-muted small mb-2">不僅僅是聽覺的饗宴，我們致力於將視覺與互動結合...</p>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/15</small>
+                <div class="row g-4" th:if="${articles != null and !articles.isEmpty()}">
+                    <!-- Dynamic Article Loop -->
+                    <div class="col-md-6" th:each="article : ${articles}">
+                        <a th:href="@{/article/detail/{id}(id=${article.articleId})}"
+                            class="text-decoration-none text-reset">
+                            <div class="card bg-dark border-secondary h-100 article-card">
+                                <div class="row g-0 h-100">
+                                    <div class="col-4">
+                                        <img loading="lazy"
+                                            th:src="${article.articleImages != null and !article.articleImages.isEmpty()} ? ${article.articleImages[0].imageUrl} : 'https://via.placeholder.com/300x200?text=No+Image'"
+                                            class="img-fluid h-100 w-100" style="object-fit: cover;">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body d-flex flex-column h-100">
+                                            <div>
+                                                <span class="badge bg-success mb-2">主辦專欄</span>
+                                                <h5 class="card-title text-truncate" th:text="${article.title}">文章標題
+                                                </h5>
+                                                <p class="text-muted small mb-2"
+                                                    style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                                                    th:utext="${article.content}">
+                                                    文章內容...
+                                                </p>
+                                            </div>
+                                            <div class="mt-auto">
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock me-1"></i>
+                                                    <span
+                                                        th:text="${#themes.code('Timestamp')} ? ${#dates.format(article.createdAt, 'yyyy/MM/dd')} : ${article.createdAt}">2024/12/15</span>
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                    <!-- Article 2 -->
-                    <div class="col-md-6">
-                        <div class="card bg-dark border-secondary h-100">
-                            <div class="row g-0">
-                                <div class="col-4">
-                                    <img loading="lazy" src="https://via.placeholder.com/300x200"
-                                        class="img-fluid h-100" style="object-fit: cover;">
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body">
-                                        <span class="badge bg-success mb-2">主辦專欄</span>
-                                        <h5 class="card-title">2024年度回顧：我們一起走過的音樂歷程</h5>
-                                        <p class="text-muted small mb-2">感謝每一位支持者，讓我們共同創造了無數美好回憶...</p>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i>2024/12/28</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="text-center py-5" th:if="${articles == null or articles.isEmpty()}">
+                    <i class="fas fa-newspaper fs-1 text-muted mb-3"></i>
+                    <p class="text-muted">目前暫無文章</p>
                 </div>
             </div>
 

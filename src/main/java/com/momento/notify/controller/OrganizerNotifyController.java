@@ -62,6 +62,12 @@ public class OrganizerNotifyController {
             if (orgNotifications == null)
                 orgNotifications = new ArrayList<>();
 
+            // 主辦方"接收"通知
+            List<OrganizerNotifyVO> receivedNotifications = orgNotifications.stream()
+                    .filter(n -> n.getEmpVO() != null
+                            || (n.getTitle() != null && (n.getTitle().contains("訂單") || n.getTitle().startsWith("【系統通知】"))))
+                    .toList();
+
             // 查詢系統通知 (平台公告)
             List<SystemNotifyVO> sysNotifications = sysNotifySvc.getByOrgId(organizerId);
             if (sysNotifications == null)
@@ -70,7 +76,7 @@ public class OrganizerNotifyController {
             // 合併成統一格式
             List<Map<String, Object>> allNotifications = new ArrayList<>();
 
-            for (OrganizerNotifyVO n : orgNotifications) {
+            for (OrganizerNotifyVO n : receivedNotifications) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", n.getOrganizerNotifyId());
                 map.put("title", n.getTitle());
