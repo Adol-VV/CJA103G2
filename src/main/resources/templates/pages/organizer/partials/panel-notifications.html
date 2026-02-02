@@ -32,45 +32,48 @@
 </div>
 
 <!-- 通知列表 - 使用合併排序後的 allNotifies -->
-<div class="list-group" id="notificationList">
-    <div th:each="notify : ${allNotifies}"
-         class="list-group-item list-group-item-action bg-dark border-secondary mb-2 rounded notification-item"
-         th:classappend="${notify.isRead == 0} ? 'unread' : ''"
-         th:data-type="${notify.type == 'MEMBER'} ? 'member' : 'platform'"
-         th:data-id="${notify.id}">
+<div class="list-group list-group-flush" id="notificationList">
+    <a th:each="notify : ${allNotifies}" href="javascript:void(0)"
+       th:data-id="${notify.id}"
+       th:data-type="${notify.type == 'MEMBER'} ? 'member' : 'platform'"
+       th:classappend="${notify.isRead == 0} ? ' unread' : ''"
+       class="list-group-item list-group-item-action bg-dark text-white border-secondary p-4 position-relative notification-item">
 
-        <div class="d-flex w-100 justify-content-between align-items-start">
-            <div class="d-flex">
-                <!-- 圖示根據類型顯示 -->
-                <div class="rounded-circle p-2 me-3"
-                     th:classappend="${notify.type == 'MEMBER'} ? 'bg-warning bg-opacity-10' : 'bg-info bg-opacity-10'">
-                    <i th:class="${notify.type == 'MEMBER'} ? 'fas fa-shopping-cart text-warning' : 'fas fa-bullhorn text-info'"></i>
-                </div>
+        <!-- 未讀標記 : 根據類型顯示不同顏色: 會員:黃色, 平台:藍色 -->
+        <div th:if="${notify.isRead == 0}"
+             th:class="${notify.type == 'MEMBER'} ? 'position-absolute top-0 start-0 h-100 bg-warning' : 'position-absolute top-0 start-0 h-100 bg-primary'"
+             style="width: 4px;"></div>
 
-                <div>
-                    <h6 class="mb-1" th:classappend="${notify.isRead == 0} ? 'text-white' : 'text-muted'">
-                        <span th:text="${notify.title}">通知標題</span>
-                        <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
-                    </h6>
-                    <p class="mb-1 text-muted" th:text="${notify.content}">通知內容</p>
-                    <div class="d-flex align-items-center mt-2">
-                        <span th:if="${notify.type == 'MEMBER'}" class="badge bg-warning text-dark me-2">
-                            <i class="fas fa-user me-1"></i>會員
-                        </span>
-                        <span th:if="${notify.type == 'PLATFORM'}" class="badge bg-info me-2">
-                            <i class="fas fa-building me-1"></i>平台
-                        </span>
-                        <small class="text-muted" th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
-                        <small class="text-muted ms-2">| 來自：<span th:text="${notify.sourceName}">來源</span></small>
-                    </div>
-                </div>
+        <div class="d-flex w-100 justify-content-between mb-1">
+            <div class="d-flex align-items-center">
+                <!-- 會員通知 badge -->
+                <span th:if="${notify.type == 'MEMBER'}" class="badge bg-warning text-dark me-2">
+                    <i class="fas fa-user"></i> 會員
+                </span>
+                <!-- 系統通知 badge -->
+                <span th:if="${notify.type == 'PLATFORM'}" class="badge bg-primary me-2">
+                    <i class="fas fa-bullhorn"></i> 系統
+                </span>
+                <h6 class="mb-0 fw-bold" th:text="${notify.title}">通知標題</h6>
+                <span th:if="${notify.isRead == 0}" class="badge bg-danger ms-2">未讀</span>
             </div>
+            <small th:class="${notify.type == 'MEMBER'} ? 'text-warning' : 'text-primary'"
+                   th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">時間</small>
+        </div>
+
+        <p class="mb-1 text-muted" th:text="${notify.content}">通知內容</p>
+
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">
+                <i th:class="${notify.type == 'MEMBER'} ? 'fas fa-user me-1' : 'fas fa-building me-1'"></i>來自：
+                <span th:text="${notify.sourceName}">來源</span>
+            </small>
             <button th:if="${notify.isRead == 0}"
                     class="btn btn-sm btn-link p-0 text-decoration-none btn-mark-read"
                     th:data-id="${notify.id}"
                     th:data-notify-type="${notify.notifyType}">標記已讀</button>
         </div>
-    </div>
+    </a>
 
     <!-- 無資料時顯示 -->
     <div th:if="${#lists.isEmpty(allNotifies)}" class="text-center text-muted py-5">
