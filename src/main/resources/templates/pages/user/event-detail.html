@@ -357,37 +357,15 @@
             border-radius: 3px;
         }
 
-        /* 強化分頁顯示邏輯，徹底防止內容重疊 */
+        /* Tab Content Styling */
         #eventTabContent {
             position: relative;
             min-height: 200px;
         }
 
-        .tab-content>* {
-            display: none !important;
-            opacity: 0;
-            height: 0;
-            overflow: hidden;
-        }
-
-        .tab-content>.active {
-            display: block !important;
-            opacity: 1;
-            height: auto;
-            overflow: visible;
-            animation: fadeInTab 0.4s ease-out;
-        }
-
-        @keyframes fadeInTab {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .tab-pane {
+            /* 讓內容不會貼太緊 */
+            padding-top: 1rem;
         }
     </style>
 </head>
@@ -566,11 +544,11 @@
                     </li>
                 </ul>
 
-                <div class="tab-content mb-5" id="eventTabContent">
+                <div class="tab-content mb-4" id="eventTabContent">
                     <!-- 活動介紹 Tab -->
                     <div class="tab-pane active" id="about">
                         <div class="section-text text-muted" th:utext="${event.content}">
-                            與維也納愛樂管弦樂團一同迎接嶄新的一年。本次音樂會將演奏史特勞斯家族經典圓舞曲、波爾卡舞曲，以及多首膾炙人口的古典名曲。
+                            <!-- 活動內容 -->
                         </div>
                     </div>
 
@@ -650,9 +628,9 @@
                 </div>
 
                 <!-- Related Merchandise (同主辦) -->
-                <div th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
-                    <div class="mt-5 pt-4 border-top border-secondary">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                <div th:if="${relatedProducts != null and !relatedProducts.isEmpty()}" class="mt-3">
+                    <div class="pt-4 border-top border-secondary">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
                                 <h4 class="mb-1">
                                     <i class="fas fa-shopping-bag me-2 text-primary"></i>活動相關周邊
@@ -669,11 +647,12 @@
                         <div th:each="product : ${relatedProducts}" class="col-md-4">
                             <a th:href="@{/prod/getOne_For_Display(prodId=${product.prodId})}"
                                 class="text-decoration-none">
-                                <div class="card h-100 product-card bg-dark border-secondary">
+                                <div class="card h-100 product-card bg-dark border-secondary shadow-sm">
                                     <img loading="lazy" th:src="${product.mainImageUrl}" class="card-img-top"
                                         th:alt="${product.prodName}" style="aspect-ratio: 1/1; object-fit: cover;">
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-white mb-2" th:text="${product.prodName}">商品名稱</h6>
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title text-white mb-1" style="font-size: 1rem;"
+                                            th:text="${product.prodName}">商品名稱</h6>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span class="text-success fw-bold"
                                                 th:text="'NT$ ' + ${#numbers.formatInteger(product.prodPrice, 0, 'COMMA')}">NT$
