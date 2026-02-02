@@ -98,7 +98,7 @@ public class OrganizerCenterController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/";
+        return "redirect:/organizer/login";
     }
 
     @GetMapping("/dashboard")
