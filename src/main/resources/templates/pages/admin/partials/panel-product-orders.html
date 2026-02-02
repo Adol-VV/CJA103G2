@@ -1,17 +1,18 @@
-
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">商品訂單管理</h2>
     <div class="d-flex gap-2">
-        <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 150px;">
-            <option>全部狀態</option>
-            <option>待處理</option>
-            <option>已出貨</option>
-            <option>已完成</option>
-            <option>已取消</option>
+        <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 150px;"
+            id="filter-status">
+            <option value="all">全部狀態</option>
+            <option value="0">未付款</option>
+            <option value="1">已付款</option>
+            <option value="2">已到貨</option>
+            <option value="3">退貨中</option>
+            <option value="4">已退貨</option>
         </select>
         <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
-            placeholder="搜尋訂單編號..." style="width: 200px;">
-        <button class="btn btn-sm btn-outline-success"><i class="fas fa-download me-1"></i>匯出</button>
+            placeholder="搜尋訂單編號..." style="width: 200px;" id="search-order-id">
+        <!-- <button class="btn btn-sm btn-outline-success"><i class="fas fa-download me-1"></i>匯出</button> -->
     </div>
 </div>
 
@@ -55,8 +56,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="order : ${allProdOrders}">
-                    <td th:style="'text-align: center !important;'"><code th:text="${order.orderId}">PO-2024122601</code></td>
+                <tr th:each="order : ${allProdOrders}" class="order-row" th:data-status="${order.status}">
+                    <td th:style="'text-align: center !important;'"><code th:text="${order.orderId}"
+                            class="order-id-code">PO-2024122601</code></td>
                     <td>
                         <div class="d-flex align-items-center">
                             <img loading="lazy" th:src="${(order.orderItems != null and !order.orderItems.isEmpty() and !order.orderItems[0].prodId.prodImages.isEmpty()) 
@@ -73,7 +75,8 @@
                     <td th:text="${order.memberId.name}">王小明</td>
                     <td class="fw-bold">
                         <span class="text-success">NT$ </span>
-                        <span class="text-success" th:text="${#numbers.formatInteger(order.total, 1, 'COMMA')}">1,330</span>
+                        <span class="text-success"
+                            th:text="${#numbers.formatInteger(order.total, 1, 'COMMA')}">1,330</span>
                     </td>
                     <td>
                         <div th:switch="${order.status}">
@@ -86,7 +89,8 @@
                         </div>
                     </td>
                     <td>
-                        <div class="text-success" th:text="${#dates.format(order.createdDate, 'yyyy/MM/dd')}">2024/12/26</div>
+                        <div class="text-success" th:text="${#dates.format(order.createdDate, 'yyyy/MM/dd')}">2024/12/26
+                        </div>
                         <small class="text-muted" th:text="${#dates.format(order.createdDate,'HH:mm')}">14:30</small>
                     </td>
                     <td>
@@ -94,12 +98,10 @@
                             <form th:action="@{/admin/prod_order/orderDetail}" method="post" style="display:inline;">
                                 <input type="hidden" name="orderId" th:value="${order.orderId}" />
                                 <button class="btn btn-sm btn-outline-info " title="查看訂單"
-                                onclick="$('#productOrderModal').modal('show')">查看</button>
+                                    onclick="$('#productOrderModal').modal('show')">查看</button>
                             </form>
-                            <button class="btn btn-outline-danger btn-refund-action" 
-                                    title="審核退款"
-                                    th:if="${order.status == 3}"
-                                    th:data-orderid="${order.orderId}">
+                            <button class="btn btn-outline-danger btn-refund-action" title="審核退款"
+                                th:if="${order.status == 3}" th:data-orderid="${order.orderId}">
                                 退款
                             </button>
                         </div>
@@ -127,49 +129,74 @@
     <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print me-1"></i>列印出貨單</button>
 </div> -->
 <script>
-   $(document).ready(function() {
-    let refundOrderId = null;
-    $(document).on('click', '.btn-refund-action', function (event) {
-        
-        const button = event.currentTarget;
-        const orderId = button.getAttribute('data-orderid');
-        refundOrderId =orderId;
-        $.ajax({
-            url: '/admin/prod_order/orderRefund',
-            method: 'GET',
-            data: { orderId: orderId },
-            success: function(response) {
-                $('#orderRefundDetailModal').html(response); 
-                $('#orderRefundDetailModal').modal('show');
-            },
-            error: function() {
-                alert("無法取得退款詳情");
-            }
-        });
-    });
+    $(document).ready(function () {
+        let refundOrderId = null;
+        $(document).on('click', '.btn-refund-action', function (event) {
 
-    $(document).off('click', '.prod_refund_agree').on('click', '.prod_refund_agree', function (event) {
-        $.ajax({
-            url: '/admin/prod_order/agreeRefund',
-            method: 'GET',
-            data: { orderId: refundOrderId },
-            success: function(response) {
-                refundOrderId=null;
-                location.reload();
-            }
+            const button = event.currentTarget;
+            const orderId = button.getAttribute('data-orderid');
+            refundOrderId = orderId;
+            $.ajax({
+                url: '/admin/prod_order/orderRefund',
+                method: 'GET',
+                data: { orderId: orderId },
+                success: function (response) {
+                    $('#orderRefundDetailModal').html(response);
+                    $('#orderRefundDetailModal').modal('show');
+                },
+                error: function () {
+                    alert("無法取得退款詳情");
+                }
+            });
         });
-    });
-    $(document).off('click', '.prod_refund_disagree').on('click', '.prod_refund_disagree', function (event) {
-        $.ajax({
-            url: '/admin/prod_order/disagreeRefund',
-            method: 'GET',
-            data: { orderId: refundOrderId },
-            success: function(response) {
-                refundOrderId=null;
-                location.reload();
-            }
+
+        $(document).off('click', '.prod_refund_agree').on('click', '.prod_refund_agree', function (event) {
+            $.ajax({
+                url: '/admin/prod_order/agreeRefund',
+                method: 'GET',
+                data: { orderId: refundOrderId },
+                success: function (response) {
+                    refundOrderId = null;
+                    location.reload();
+                }
+            });
         });
-        
+        $(document).off('click', '.prod_refund_disagree').on('click', '.prod_refund_disagree', function (event) {
+            $.ajax({
+                url: '/admin/prod_order/disagreeRefund',
+                method: 'GET',
+                data: { orderId: refundOrderId },
+                success: function (response) {
+                    refundOrderId = null;
+                    location.reload();
+                }
+            });
+
+        });
+
+
+        // Filter & Search Logic
+        function filterOrders() {
+            const status = $('#filter-status').val();
+            const search = $('#search-order-id').val().toLowerCase();
+
+            $('.order-row').each(function () {
+                const row = $(this);
+                const rowStatus = String(row.data('status'));
+                const orderId = row.find('.order-id-code').text().toLowerCase();
+
+                let statusMatch = (status === 'all') || (status === rowStatus);
+                let searchMatch = orderId.includes(search);
+
+                if (statusMatch && searchMatch) {
+                    row.removeClass('d-none');
+                } else {
+                    row.addClass('d-none');
+                }
+            });
+        }
+
+        $('#filter-status').on('change', filterOrders);
+        $('#search-order-id').on('input', filterOrders);
     });
-});
 </script>
