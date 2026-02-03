@@ -140,11 +140,20 @@ $(document).ready(function () {
         }, {});
 
         let createdOrderIds = [];
+        let remainingToken = token_used; // Initialize remaining tokens
 
         try {
             for (let orgId of Object.keys(groupedData)) {
                 let items = groupedData[orgId];
                 let subTotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+                // Calculate token usage for this order
+                let tokenForThisOrder = 0;
+                if (remainingToken > 0) {
+                    // Use up to subTotal, or whatever is left
+                    tokenForThisOrder = Math.min(remainingToken, subTotal);
+                    remainingToken -= tokenForThisOrder;
+                }
 
                 // 轉換為 ProdOrderItemVO格式
                 let subOrderItems = items.map(i => ({
@@ -164,8 +173,8 @@ $(document).ready(function () {
                         memberId: { memberId: sessionStorage.getItem('memberId') },
                         organizerId: { organizerId: parseInt(orgId) },
                         total: subTotal,
-                        token: token_used,
-                        payable: subTotal - token_used,
+                        token: tokenForThisOrder, // Use calculated token
+                        payable: subTotal - tokenForThisOrder, // Calculate payable
                         status: 1,
                         orderItems: subOrderItems
                     })
