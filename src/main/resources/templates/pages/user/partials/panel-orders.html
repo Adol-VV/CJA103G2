@@ -64,7 +64,7 @@
                 <div class="card-body">
                     <div class="order-item mb-3" th:each="item:${order.orderItems}">
                         <div class="row align-items-center">
-                            <div class="col-auto"><img loading="lazy" th:src="${item.prodId.prodImages[0].imageUrl}"
+                            <div class="col-auto"><img loading="lazy" th:src="${not #lists.isEmpty(item.prodId.prodImages)} ? ${item.prodId.prodImages[0].imageUrl} : @{/images/default.png}"
                                     class="rounded"></div>
                             <div class="col">
                                 <h6 class="mb-1 text-white" th:text="${item.prodId.prodName}">2024年度音樂會紀念T恤</h6>
