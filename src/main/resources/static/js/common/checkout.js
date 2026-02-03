@@ -112,6 +112,29 @@ $(document).ready(function () {
                 showToast('請輸入有效的有效期限 (MM/YY)', 'error');
                 return;
             }
+
+            // Advanced Expiry Validation
+            const [expMonth, expYear] = ccExpiry.split('/').map(num => parseInt(num, 10));
+            const now = new Date();
+            const currentYear = parseInt(now.getFullYear().toString().slice(-2)); // Get last 2 digits
+            const currentMonth = now.getMonth() + 1; // 1-12
+
+            if (expMonth < 1 || expMonth > 12) {
+                showToast('無效的月份 (01-12)', 'error');
+                return;
+            }
+
+            // Check if expired
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                showToast('信用卡已過期', 'error');
+                return;
+            }
+
+            // Check for unrealistic future date (e.g. > 20 years from now)
+            if (expYear > currentYear + 20) {
+                showToast('有效期限年份不合理', 'error');
+                return;
+            }
             if (ccCvv.length < 3 || ccCvv.length > 4 || !/^\d+$/.test(ccCvv)) {
                 showToast('請輸入有效的安全碼 (3-4碼)', 'error');
                 return;
@@ -261,7 +284,6 @@ $(document).ready(function () {
                 <img loading="lazy" src="${item.image}" class="order-item-img" alt="Product">
                 <div class="flex-grow-1">
                     <h6 class="mb-1">${item.name}</h6>
-                    <p class="text-muted small mb-0">規格：米白色</p>
                 </div>
                 <div class="text-end">
                     <div class="text-success mb-1">NT$ ${item.price}</div>
