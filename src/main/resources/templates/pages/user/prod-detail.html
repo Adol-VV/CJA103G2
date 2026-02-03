@@ -140,10 +140,8 @@
 
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary btn-lg flex-grow-1" id="btnAddCart"
-                                th:data-id="${prod.prodId}"
-                                th:data-name="${prod.prodName}"
-                                th:data-price="${prod.prodPrice}"
-                                th:data-image="${prod.mainImageUrl}"
+                                th:data-id="${prod.prodId}" th:data-name="${prod.prodName}"
+                                th:data-price="${prod.prodPrice}" th:data-image="${prod.mainImageUrl}"
                                 th:data-organizer="${prod.organizerId}">
                                 <i class="fas fa-cart-plus me-2"></i>加入購物車
                             </button>
@@ -317,13 +315,14 @@
                 const price = btn.data('price');
                 const image = btn.data('image');
                 const organizerId = btn.data('organizer');
-                
+
                 const existing = cart.find(item => item.id === id);
+                const currentQty = parseInt($('#qtyInput').val()) || 1;
 
                 if (existing) {
-                    existing.quantity++;
+                    existing.quantity += currentQty;
                 } else {
-                    cart.push({ id, name, price, quantity: 1, image, organizerId });
+                    cart.push({ id, name, price, quantity: currentQty, image, organizerId });
                 }
 
                 updateCartUI();
