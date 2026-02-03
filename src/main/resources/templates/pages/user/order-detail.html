@@ -136,19 +136,25 @@
                         <i class="fas fa-copy"></i>
                     </button>
                 </p>
+                <p class="text-muted mb-0 mt-1">
+                    主辦單位：<span class="text-white fw-bold text-decoration-none"
+                        th:text="${orderDetail.organizerId.name}"></span>
+                </p>
             </div>
             <div class="text-end">
                 <td>
                     <div th:switch="${orderDetail.status}">
-                            <span th:case="0" class="badge bg-secondary">未付款</span>
-                            <span th:case="1" class="badge bg-primary">已付款</span>
-                            <span th:case="2" class="badge bg-success">已到貨</span>
-                            <span th:case="3" class="badge bg-danger">退貨中</span>
-                            <span th:case="4" class="badge bg-danger">已退貨</span>
-                            <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
+                        <span th:case="0" class="badge bg-secondary">未付款</span>
+                        <span th:case="1" class="badge bg-primary">已付款</span>
+                        <span th:case="2" class="badge bg-success">已到貨</span>
+                        <span th:case="3" class="badge bg-danger">退貨中</span>
+                        <span th:case="4" class="badge bg-danger">已退貨</span>
+                        <span th:case="*" class="badge bg-light text-dark">未知狀態</span>
                     </div>
                 </td>
-                <p class="text-muted small mb-0">下單時間：<span th:text="${#dates.format(orderDetail.createdDate, 'yyyy/MM/dd HH:mm')}">2024/12/26 14:30</span></p>
+                <p class="text-muted small mb-0">下單時間：<span
+                        th:text="${#dates.format(orderDetail.createdDate, 'yyyy/MM/dd HH:mm')}">2024/12/26 14:30</span>
+                </p>
             </div>
         </div>
 
@@ -218,11 +224,9 @@
 
                         <!-- Product Item -->
                         <div class="order-item" th:each="item : ${orderDetail.orderItems}">
-                            <img loading="lazy" 
-                                th:src="${(item.prodId.prodImages != null and !item.prodId.prodImages.isEmpty()) 
+                            <img loading="lazy" th:src="${(item.prodId.prodImages != null and !item.prodId.prodImages.isEmpty()) 
                                         ? item.prodId.prodImages[0].imageUrl 
-                                        : '/images/default.png'}" 
-                                class="order-item-img" alt="Product">
+                                        : '/images/default.png'}" class="order-item-img" alt="Product">
                             <div class="flex-grow-1">
                                 <span class="badge bg-warning text-dark mb-2">商品</span>
                                 <h6 class="mb-1" th:text="${item.prodId.prodName}">經典Logo帆布袋</h6>
@@ -263,7 +267,7 @@
                         
                         <hr class="border-secondary">
                          -->
-                        <!-- Tracking History
+                <!-- Tracking History
                         <div class="tracking-history">
                             <div class="d-flex mb-3">
                                 <div class="me-3">
@@ -316,7 +320,7 @@
                         </div>
                     </div>
                 </div>-->
-            </div> 
+            </div>
 
             <!-- Right Column -->
             <div class="col-lg-4">
@@ -354,11 +358,12 @@
                         <hr class="border-secondary">
                         <div class="d-flex justify-content-between">
                             <span class="fw-bold">實付金額</span>
-                            <span class="fw-bold text-success fs-5">NT$ <span th:text="${orderDetail.payable}"></span></span>
+                            <span class="fw-bold text-success fs-5">NT$ <span
+                                    th:text="${orderDetail.payable}"></span></span>
                         </div>
                         <div class="text-end">
                             <small class="text-success">
-                                <i class="fas fa-coins me-1"></i>已獲得 
+                                <i class="fas fa-coins me-1"></i>已獲得
                                 <span class="fw-bold" th:text="${(orderDetail.payable / 300) * 5}">54</span> Momento 幣
                             </small>
                         </div>
@@ -381,7 +386,8 @@
                         </div>
                         <div class="info-row">
                             <span class="text-muted">地址</span>
-                            <span class="text-success" th:text="${session.loginMember.address}">100 台北市中正區忠孝東路一段 100 號</span>
+                            <span class="text-success" th:text="${session.loginMember.address}">100 台北市中正區忠孝東路一段 100
+                                號</span>
                         </div>
                     </div>
                 </div>
@@ -490,4 +496,3 @@
 </body>
 
 </html>
-
