@@ -57,6 +57,7 @@ public class EventServiceImpl implements EventService {
                                 Sort.by(direction, filterDTO.getSort()));
 
                 Page<EventVO> eventPage = eventRepository.filterEvents(
+                                filterDTO.getStatus(),
                                 filterDTO.getTypeId(),
                                 filterDTO.getPlace(),
                                 filterDTO.getStartDate(),

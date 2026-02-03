@@ -60,7 +60,8 @@ function loadEventsForSelector() {
                 data: {
                     page: 0,
                     size: 100, // Fetch top 100 events
-                    sort: 'newest'
+                    sort: 'newest',
+                    status: 3
                 },
                 success: function (response) {
                     container.empty();

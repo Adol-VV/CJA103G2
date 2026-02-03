@@ -68,6 +68,35 @@ public class ArticleController {
         model.addAttribute("article", article);
         model.addAttribute("messages", messages);
 
+        // 4. 側邊欄：主辦方其他文章 OR 隨機推薦
+        List<ArticleVO> sidebarArticles;
+        if (article.getOrganizerVO() != null) {
+            List<ArticleVO> byOrganizer = articleService
+                    .getArticlesByOrganizer(article.getOrganizerVO().getOrganizerId());
+            // 過濾掉當前文章
+            sidebarArticles = byOrganizer.stream()
+                    .filter(a -> !a.getArticleId().equals(id))
+                    .limit(3) // 取前3篇，或根據需求調整
+                    .collect(java.util.stream.Collectors.toList());
+        } else {
+            sidebarArticles = new java.util.ArrayList<>();
+        }
+
+        // 如果該主辦方沒有其他文章，隨機推薦一篇
+        if (sidebarArticles.isEmpty()) {
+            List<ArticleVO> allArticles = articleService.getAll();
+            // 過濾掉當前文章
+            List<ArticleVO> otherArticles = allArticles.stream()
+                    .filter(a -> !a.getArticleId().equals(id))
+                    .collect(java.util.stream.Collectors.toList());
+
+            if (!otherArticles.isEmpty()) {
+                int randomIndex = (int) (Math.random() * otherArticles.size());
+                sidebarArticles.add(otherArticles.get(randomIndex));
+            }
+        }
+        model.addAttribute("sidebarArticles", sidebarArticles);
+
         // 4. 回傳 article-detail.html 模板
         return "pages/public/article-detail";
     }

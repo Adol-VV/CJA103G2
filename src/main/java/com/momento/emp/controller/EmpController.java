@@ -6,6 +6,7 @@ import com.momento.emp.model.EmpService;
 import com.momento.emp.model.EmpVO;
 import com.momento.member.model.MemberService;
 import com.momento.message.model.MessageService;
+import com.momento.messagereport.model.MessageReportService;
 import com.momento.notify.model.NotificationBridgeService;
 import com.momento.notify.model.SystemNotifyService;
 import com.momento.organizer.model.OrganizerService;
@@ -44,7 +45,10 @@ public class EmpController {
     @Autowired
     private MessageService messageService;
 
-    @Autowired //pei
+    @Autowired
+    private MessageReportService messageReportService;
+
+    @Autowired // pei
     private NotificationBridgeService bridgeService;
 
     @Autowired
@@ -150,8 +154,11 @@ public class EmpController {
         // pei的
         model.addAttribute("messageNotifyRecords", systemNotifyService.getMessageNotifyRecords());
 
-        // 留言管理：新增的留言 (Status = 1)
-        model.addAttribute("newComments", messageService.getMessagesByStatus(1));
+        // 留言管理：新增的留言 (待審核 Status = 0 的檢舉)
+        model.addAttribute("newComments", messageReportService.getReportsByStatus(0));
+
+        // 留言管理：被檢舉的留言
+        model.addAttribute("reportedComments", messageReportService.getAll());
 
         // 通知發送用的會員和主辦方數量
         model.addAttribute("memberCount", memberService.getMemberCount());
@@ -347,6 +354,7 @@ public class EmpController {
                 "account", emp.getAccount() != null ? emp.getAccount() : "",
                 "status", emp.getStatus() != null ? emp.getStatus() : 1);
     }
+
     /**
      * 員工自己修改密碼（已登入狀態，無需驗證舊密碼）
      */

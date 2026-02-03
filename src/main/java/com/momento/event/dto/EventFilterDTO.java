@@ -143,4 +143,15 @@ public class EventFilterDTO {
     public void setOnSaleOnly(Boolean onSaleOnly) {
         this.onSaleOnly = onSaleOnly;
     }
+
+    /** 活動狀態 */
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }

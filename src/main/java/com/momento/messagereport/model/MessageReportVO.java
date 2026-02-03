@@ -85,8 +85,8 @@ public class MessageReportVO implements java.io.Serializable {
 	}
 
 	@Column(name = "REPORT_REASON")
-	@NotEmpty(message="檢舉理由: 請勿空白")
-	@Size(max=500, message="檢舉理由: 長度不能超過{max}")
+	@NotEmpty(message = "檢舉理由: 請勿空白")
+	@Size(max = 500, message = "檢舉理由: 長度不能超過{max}")
 	public String getReportReason() {
 		return this.reportReason;
 	}
@@ -96,7 +96,7 @@ public class MessageReportVO implements java.io.Serializable {
 	}
 
 	@Column(name = "STATUS")
-	@NotNull(message="狀態: 請勿空白")
+	@NotNull(message = "狀態: 請勿空白")
 	public Integer getStatus() {
 		return this.status;
 	}

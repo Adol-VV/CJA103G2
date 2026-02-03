@@ -34,4 +34,8 @@ public class MessageReportService {
 	public List<MessageReportVO> getAll() {
 		return repository.findAll();
 	}
+
+	public List<MessageReportVO> getReportsByStatus(Integer status) {
+		return repository.findByStatus(status);
+	}
 }

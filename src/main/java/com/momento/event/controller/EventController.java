@@ -53,15 +53,16 @@ public class EventController {
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) String direction,
-            @RequestParam(defaultValue = "false") Boolean onSaleOnly) {
+            @RequestParam(defaultValue = "false") Boolean onSaleOnly,
+            @RequestParam(required = false) Integer status) {
 
         EventFilterDTO filterDTO = buildFilterDTO(page, size, sort, typeId, place, minPrice, maxPrice, direction,
-                onSaleOnly);
+                onSaleOnly, status);
         return eventService.filterEvents(filterDTO);
     }
 
     private EventFilterDTO buildFilterDTO(int page, int size, String sort, Integer typeId, String place,
-            Integer minPrice, Integer maxPrice, String direction, Boolean onSaleOnly) {
+            Integer minPrice, Integer maxPrice, String direction, Boolean onSaleOnly, Integer status) {
         EventFilterDTO dto = new EventFilterDTO();
         dto.setPage(page);
         dto.setSize(size);
@@ -70,6 +71,8 @@ public class EventController {
         dto.setMinPrice(minPrice);
         dto.setMaxPrice(maxPrice);
         dto.setOnSaleOnly(onSaleOnly);
+        // 若未指定狀態，預設為 3 (已發布)
+        dto.setStatus(status != null ? status : 3);
 
         String finalDir = (direction != null && !direction.isEmpty()) ? direction : "ASC";
 
@@ -138,11 +141,12 @@ public class EventController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "false") Boolean onSaleOnly,
+            @RequestParam(required = false) Integer status,
             Model model) {
 
         // 建立篩選條件
         EventFilterDTO filterDTO = buildFilterDTO(page, size, sort, typeId, place, minPrice, maxPrice, direction,
-                onSaleOnly);
+                onSaleOnly, status);
 
         // 查詢活動列表
         Page<EventListItemDTO> eventPage = eventService.filterEvents(filterDTO);
