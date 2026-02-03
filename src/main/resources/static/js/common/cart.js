@@ -27,7 +27,7 @@ $(function(){
                 </div>
                 <div class="col-auto text-end">
                         <h5 class="text-success mb-1">NT$ ${item.price * item.quantity}</h5>
-                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-danger btn-remove-item"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             `;
@@ -76,7 +76,7 @@ $(function(){
         localStorage.setItem('momento_cart', JSON.stringify(updatedCart));
     }
     //刪除商品
-    $(document).on("click",".btn-outline-danger", function(){
+    $(document).on("click",".btn-remove-item", function(){
         let r = confirm("確定要刪除該商品嗎？");
         if(r){
             let item = $(this).closest(".cart-item");
@@ -86,6 +86,19 @@ $(function(){
             localStorage.setItem("momento_cart", JSON.stringify(cart));
 
             this.closest(".cart-item").remove();
+            calculateTotal();
+            checkCartCount();
+        }
+    });
+
+    $(document).on("click","#all_remove", function(){
+        let r = confirm("確定要刪除所有商品嗎？");
+        if(r){
+            let item_list = $(".card.bg-dark.border-secondary.mb-3");
+            item_list.empty();
+            let cart = JSON.parse(localStorage.getItem("momento_cart")) || [];
+            cart = cart.filter(item => item.id == -1); // Remove all items
+            localStorage.setItem("momento_cart", JSON.stringify(cart));
             calculateTotal();
             checkCartCount();
         }
