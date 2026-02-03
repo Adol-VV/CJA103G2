@@ -445,10 +445,11 @@
 				</form>
 
 				<div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
-					<a href="member/cart" class="position-relative text-white text-decoration-none">
-						<i data-lucide="shopping-cart" class="icon-md"></i>
-						<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
-							style="font-size: 0.6rem;">  </span>
+					<a href="member/cart" class="position-relative text-white text-decoration-none" id="navCartBtn">
+						<i class="fas fa-shopping-cart fa-lg"></i>
+						<span
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
+							style="display:none; font-size: 0.6rem;"> </span>
 					</a>
 					<div th:if="${session.loginMember}">
 						<a th:text="${session.loginMember.name}"></a> <a th:href="@{/member/dashboard}"
@@ -1030,28 +1031,28 @@
 			});
 
 			//Update_Cart_UI
-            let cart = [];
+			let cart = [];
 
-            // Load from LocalStorage
-            const saved = localStorage.getItem('momento_cart');
-            if (saved) {
-                try {
-                    cart = JSON.parse(saved);
-                } catch (e) { console.error('Error loading cart', e); }
-            }
-            updateCartUI();
+			// Load from LocalStorage
+			const saved = localStorage.getItem('momento_cart');
+			if (saved) {
+				try {
+					cart = JSON.parse(saved);
+				} catch (e) { console.error('Error loading cart', e); }
+			}
+			updateCartUI();
 
-            function updateCartUI() {
-                const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+			function updateCartUI() {
+				const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+				const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-                // Update Badge
-                if (count > 0) {
-                    $('.cart-count').text(count).show();
-                } else {
-                    $('.cart-count').hide();
-                }
-            };
+				// Update Badge
+				if (count > 0) {
+					$('.cart-count').text(count).show();
+				} else {
+					$('.cart-count').hide();
+				}
+			};
 		})
 
 	</script>

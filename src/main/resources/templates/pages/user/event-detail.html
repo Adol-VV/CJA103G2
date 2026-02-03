@@ -396,11 +396,12 @@
                     </div>
                 </form>
                 <div class="d-flex align-items-center gap-3 ms-lg-3 mt-3 mt-lg-0">
-                    <a th:href="@{/member/cart}" class="position-relative text-white text-decoration-none">
+                    <a th:href="@{/member/cart}" class="position-relative text-white text-decoration-none"
+                        id="navCartBtn">
                         <i class="fas fa-shopping-cart fa-lg"></i>
                         <span
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
-                            style="font-size: 0.6rem;"> </span>
+                            style="display:none; font-size: 0.6rem;"> </span>
                     </a>
                     <div th:if="${session.loginMember}" class="d-flex align-items-center gap-3">
                         <span class="text-white" th:text="${session.loginMember.name}">會員姓名</span>

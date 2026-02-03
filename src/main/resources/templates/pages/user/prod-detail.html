@@ -21,22 +21,27 @@
             border: 2px solid transparent;
             transition: border-color 0.2s;
         }
+
         .product-thumb.active,
         .product-thumb:hover {
             border-color: var(--momento-green);
         }
+
         .product-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .related-event-card {
             transition: transform 0.2s, box-shadow 0.2s;
         }
+
         .related-event-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
+
         @media (max-width: 767.98px) {
             .product-thumb {
                 width: 60px;
@@ -63,9 +68,11 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/article}">文章</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
-                    <a href="/member/cart" class="btn btn-outline-secondary position-relative">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"></span>
+                    <a href="/member/cart" class="position-relative text-white text-decoration-none" id="navCartBtn">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
+                            style="display:none; font-size: 0.6rem;"></span>
                     </a>
                     <div th:if="${session.loginMember}">
                         <a th:text="${session.loginMember.name}"></a>
@@ -85,8 +92,10 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a></li>
-                <li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:text=${prod.sortName}>服飾配件</a></li>
+                <li class="breadcrumb-item"><a th:href="@{listAllProd}" class="text-muted text-decoration-none">找商品</a>
+                </li>
+                <li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:text=${prod.sortName}>服飾配件</a>
+                </li>
                 <li class="breadcrumb-item active text-white" aria-current="page" th:text="${prod.prodName}"></li>
             </ol>
         </nav>
@@ -95,14 +104,13 @@
             <!-- Product Images -->
             <div class="col-lg-6">
                 <div class="bg-dark rounded-3 overflow-hidden mb-3" style="aspect-ratio: 1/1;">
-                    <img loading="lazy" th:src="${prod.mainImageUrl != null}  ? ${prod.mainImageUrl} : @{/images/default.png}" 
-                         class="w-100 h-100" style="object-fit: cover;" 
-                         alt="商品"
-                         id="mainProductImage">
+                    <img loading="lazy"
+                        th:src="${prod.mainImageUrl != null}  ? ${prod.mainImageUrl} : @{/images/default.png}"
+                        class="w-100 h-100" style="object-fit: cover;" alt="商品" id="mainProductImage">
                 </div>
                 <div class="d-flex gap-2 overflow-auto pb-2">
                     <div th:each="prodImage : ${prod.prodImages}">
-                        <img class="product-thumb"  loading="lazy" th:src="${prodImage}" alt="縮圖">
+                        <img class="product-thumb" loading="lazy" th:src="${prodImage}" alt="縮圖">
                     </div>
                 </div>
             </div>
@@ -110,7 +118,7 @@
             <!-- Product Info -->
             <div class="col-lg-6">
                 <h1 class="h2 mb-2" th:text="${prod.prodName}"></h1>
-<!--                 <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p> -->
+                <!--                 <p class="text-muted mb-4">簡約時尚，適合日常使用的帆布提袋。Momento 官方出品。</p> -->
 
                 <div class="mb-4">
                     <span class="fs-2 fw-bold text-success" th:text="'NT$ '+ ${prod.prodPrice}"></span>
@@ -123,8 +131,9 @@
                             <label class="form-label">數量</label>
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-outline-secondary" id="btnMinus">-</button>
-                                <input type="text" value="1" class="form-control bg-dark text-white border-secondary text-center mx-2" 
-                                       style="width: 60px;" id="qtyInput" readonly>
+                                <input type="text" value="1"
+                                    class="form-control bg-dark text-white border-secondary text-center mx-2"
+                                    style="width: 60px;" id="qtyInput" readonly>
                                 <button class="btn btn-outline-secondary" id="btnPlus">+</button>
                             </div>
                         </div>
@@ -134,16 +143,16 @@
                                 <i class="fas fa-cart-plus me-2"></i>加入購物車
                             </button>
                             <form method="post" th:action="@{addFav}" th:unless="${isFav}">
-                            	<input type="hidden" name="prodId" th:value="${prod.prodId}">
-                            	<button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
-                                	<i class="far fa-heart"></i>
-                            	</button>
+                                <input type="hidden" name="prodId" th:value="${prod.prodId}">
+                                <button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </form>
                             <form method="post" th:action="@{removeFav}" th:if="${isFav}">
-                            	<input type="hidden" name="prodId" th:value="${prod.prodId}">
-                            	<button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
-                                	<i class="fas fa-heart text-danger"></i>
-                            	</button>
+                                <input type="hidden" name="prodId" th:value="${prod.prodId}">
+                                <button type="submit" class="btn btn-outline-secondary btn-lg" id="btnFavorite">
+                                    <i class="fas fa-heart text-danger"></i>
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -153,8 +162,8 @@
                 <div class="mb-4">
                     <h5 class="border-bottom border-secondary pb-2 mb-3">商品介紹</h5>
                     <div class="text-muted">
-<!--                         <p><strong>材質：</strong>100% 純棉帆布</p> -->
-<!--                         <p><strong>尺寸：</strong>35cm x 40cm</p> -->
+                        <!--                         <p><strong>材質：</strong>100% 純棉帆布</p> -->
+                        <!--                         <p><strong>尺寸：</strong>35cm x 40cm</p> -->
                         <p th:text="${prod.prodContent}"></p>
                     </div>
                 </div>
@@ -165,15 +174,19 @@
                     <div class="card bg-dark border-secondary">
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3">
-                                <img loading="lazy" src="https://ui-avatars.com/api/?name=Happy+Creative&background=2D5F4F&color=fff&size=128"
+                                <img loading="lazy"
+                                    src="https://ui-avatars.com/api/?name=Happy+Creative&background=2D5F4F&color=fff&size=128"
                                     class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1">
-                                        <a th:href="@{|/orginformation/${prod.organizerId}|}" class="text-white text-decoration-none" th:text="${prod.organizerName}">快樂文創</a>
+                                        <a th:href="@{|/orginformation/${prod.organizerId}|}"
+                                            class="text-white text-decoration-none"
+                                            th:text="${prod.organizerName}">快樂文創</a>
                                     </h6>
                                     <small class="text-muted">已認證主辦</small>
                                 </div>
-                                <a th:href="@{|/orginformation/${prod.organizerId}|}" class="btn btn-outline-secondary btn-sm d-none d-sm-inline-block">
+                                <a th:href="@{|/orginformation/${prod.organizerId}|}"
+                                    class="btn btn-outline-secondary btn-sm d-none d-sm-inline-block">
                                     查看主辦
                                 </a>
                             </div>
@@ -183,25 +196,31 @@
 
                 <!-- Related Events -->
                 <div>
-                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
+                    <div
+                        class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
                         <h5 class="mb-0">同主辦活動</h5>
-<!--                         <a href="event-list.html?organizer=1" class="text-success text-decoration-none small"> -->
-<!--                             查看更多 <i class="fas fa-chevron-right ms-1"></i> -->
-<!--                         </a> -->
+                        <!--                         <a href="event-list.html?organizer=1" class="text-success text-decoration-none small"> -->
+                        <!--                             查看更多 <i class="fas fa-chevron-right ms-1"></i> -->
+                        <!--                         </a> -->
                     </div>
-                    
+
                     <!-- Related Event 1 -->
-                    <a th:href="@{/event/{id}(id=${event.eventId})}" class="card bg-dark border-secondary mb-3 text-decoration-none related-event-card" th:each="event:${orgEvents}">
+                    <a th:href="@{/event/{id}(id=${event.eventId})}"
+                        class="card bg-dark border-secondary mb-3 text-decoration-none related-event-card"
+                        th:each="event:${orgEvents}">
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3">
-                                <img loading="lazy" th:src="${event.coverImageUrl}"
-                                     class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                <img loading="lazy" th:src="${event.coverImageUrl}" class="rounded"
+                                    style="width: 70px; height: 70px; object-fit: cover;">
                                 <div class="flex-grow-1 min-width-0">
-                                    <h6 class="text-white mb-1 text-truncate" th:text="${event.title}">2025新年音樂會｜維也納之夜</h6>
+                                    <h6 class="text-white mb-1 text-truncate" th:text="${event.title}">2025新年音樂會｜維也納之夜
+                                    </h6>
                                     <small class="text-muted">
-                                        <i class="fas fa-calendar me-1" ></i><span th:text="${event.eventStartAt}">2024/12/31</span>
+                                        <i class="fas fa-calendar me-1"></i><span
+                                            th:text="${event.eventStartAt}">2024/12/31</span>
                                         <span class="d-none d-sm-inline">
-                                            <i class="fas fa-map-marker-alt ms-2 me-1"></i><span th:text="${event.place}">台北市中山堂</span>
+                                            <i class="fas fa-map-marker-alt ms-2 me-1"></i><span
+                                                th:text="${event.place}">台北市中山堂</span>
                                         </span>
                                     </small>
                                 </div>
@@ -209,27 +228,27 @@
                             </div>
                         </div>
                     </a>
-                    
+
                     <!-- Related Event 2 -->
-<!--                     <a href="event-detail.html?id=2" class="card bg-dark border-secondary text-decoration-none related-event-card"> -->
-<!--                         <div class="card-body"> -->
-<!--                             <div class="d-flex align-items-center gap-3"> -->
-<!--                                 <img loading="lazy" src="https://picsum.photos/seed/chamber1/160/160"  -->
-<!--                                      class="rounded" style="width: 70px; height: 70px; object-fit: cover;"> -->
-<!--                                 <div class="flex-grow-1 min-width-0"> -->
-<!--                                     <span class="badge bg-secondary mb-1">同主辦活動</span> -->
-<!--                                     <h6 class="text-white mb-1 text-truncate">春季室內樂系列｜弦樂四重奏之夜</h6> -->
-<!--                                     <small class="text-muted"> -->
-<!--                                         <i class="fas fa-calendar me-1"></i>2025/04/05 -->
-<!--                                         <span class="d-none d-sm-inline"> -->
-<!--                                             <i class="fas fa-map-marker-alt ms-2 me-1"></i>國家演奏廳 -->
-<!--                                         </span> -->
-<!--                                     </small> -->
-<!--                                 </div> -->
-<!--                                 <i class="fas fa-chevron-right text-success d-none d-sm-block"></i> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </a> -->
+                    <!--                     <a href="event-detail.html?id=2" class="card bg-dark border-secondary text-decoration-none related-event-card"> -->
+                    <!--                         <div class="card-body"> -->
+                    <!--                             <div class="d-flex align-items-center gap-3"> -->
+                    <!--                                 <img loading="lazy" src="https://picsum.photos/seed/chamber1/160/160"  -->
+                    <!--                                      class="rounded" style="width: 70px; height: 70px; object-fit: cover;"> -->
+                    <!--                                 <div class="flex-grow-1 min-width-0"> -->
+                    <!--                                     <span class="badge bg-secondary mb-1">同主辦活動</span> -->
+                    <!--                                     <h6 class="text-white mb-1 text-truncate">春季室內樂系列｜弦樂四重奏之夜</h6> -->
+                    <!--                                     <small class="text-muted"> -->
+                    <!--                                         <i class="fas fa-calendar me-1"></i>2025/04/05 -->
+                    <!--                                         <span class="d-none d-sm-inline"> -->
+                    <!--                                             <i class="fas fa-map-marker-alt ms-2 me-1"></i>國家演奏廳 -->
+                    <!--                                         </span> -->
+                    <!--                                     </small> -->
+                    <!--                                 </div> -->
+                    <!--                                 <i class="fas fa-chevron-right text-success d-none d-sm-block"></i> -->
+                    <!--                             </div> -->
+                    <!--                         </div> -->
+                    <!--                     </a> -->
                 </div>
             </div>
         </div>
@@ -246,51 +265,51 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
-//點擊下方小圖會替換上方大圖
+        //點擊下方小圖會替換上方大圖
         let MainImage = document.getElementById("mainProductImage");
         let images = document.querySelectorAll(".product-thumb");
 
-        function removeActive(){
-           images.forEach(function(image,i){
+        function removeActive() {
+            images.forEach(function (image, i) {
                 image.classList.remove("active");
-            }) 
+            })
         }
-        images.forEach(function(image,i){
-            image.addEventListener("click", function(){
+        images.forEach(function (image, i) {
+            image.addEventListener("click", function () {
                 MainImage.src = image.src;
                 removeActive();
                 image.classList.add("active");
             })
         })
 
-// -----------------------------------------------------------------------
+        // -----------------------------------------------------------------------
 
-        $(document).ready(function() {
-            if(images[0] != null){
-        	images[0].classList.add("active");
+        $(document).ready(function () {
+            if (images[0] != null) {
+                images[0].classList.add("active");
             }
-            
-        	let qty = 1;
-            
-            $('#btnMinus').click(function() {
+
+            let qty = 1;
+
+            $('#btnMinus').click(function () {
                 if (qty > 1) {
                     qty--;
                     $('#qtyInput').val(qty);
                 }
             });
-            
-            $('#btnPlus').click(function() {
+
+            $('#btnPlus').click(function () {
                 if (qty < 99) {
                     qty++;
                     $('#qtyInput').val(qty);
                 }
             });
 
-            $('#btnAddCart').click(function() {
+            $('#btnAddCart').click(function () {
                 const btn = $(this);
                 btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>加入中...');
-                
-                setTimeout(function() {
+
+                setTimeout(function () {
                     btn.prop('disabled', false).html('<i class="fas fa-check me-2"></i>已加入');
                     if (typeof showToast === 'function') {
                         showToast('已加入購物車', 'success');
@@ -299,7 +318,7 @@
                 }, 500);
             });
 
-            $('#btnFavorite').click(function() {
+            $('#btnFavorite').click(function () {
                 const icon = $(this).find('i');
                 if (icon.hasClass('far')) {
                     icon.removeClass('far').addClass('fas text-danger');
