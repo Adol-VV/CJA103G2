@@ -1,4 +1,42 @@
 export function initEventOrders() {
+	    const counters = document.querySelectorAll('.counter');
+		
+		const animate = (counter) => {
+		        const target = parseInt(counter.getAttribute('data-target')) || 0;
+		        counter.innerText = "0"; // 每次觸發都先歸零
+
+		        const updateCount = () => {
+		            const count = parseInt(counter.innerText) || 0;
+		            const increment = Math.max(Math.ceil(target / 100), 1);
+
+		            if (count < target) {
+		                counter.innerText = count + increment;
+		                setTimeout(updateCount, 50);
+		            } else {
+		                counter.innerText = target;
+		            }
+		        };
+		        updateCount();
+		 };
+		 
+		 // 使用 IntersectionObserver 監測元素是否出現在螢幕上
+		     const observer = new IntersectionObserver((entries) => {
+		         entries.forEach(entry => {
+		             // 當元素進入視窗 (isIntersecting 為 true)
+		             if (entry.isIntersecting) {
+		                 animate(entry.target);
+		                 // 如果你希望每次切換回來都跑一次動畫，就不要取消觀察
+		                 // 如果只想跑一次，請加上下面這行：
+		                  observer.unobserve(entry.target);
+		             }
+		         });
+		     }, { threshold: 1 }); // 只要露出 10% 就觸發
+
+		     counters.forEach(counter => observer.observe(counter));
+		    
+			
+			
+
 	$(document).on('click', '#eventOrderTabs a', function(e) {
 		e.preventDefault();
 		$('#eventOrderTabs a').removeClass('active text-white').addClass('text-muted');
@@ -15,15 +53,8 @@ export function initEventOrders() {
 	$(document).on("click", "#searchBtn", function() {
 		fetchOrderData(0);
 	});
-	$(document).on("click", ".nav-link", function(e) {
-	    e.preventDefault();
-	    $(".nav-link").removeClass("active"); // 先把大家洗白
-	    $(this).addClass("active");           // 自己變亮（這很重要，loadOrders 會抓這個 active）
-	    
-	    fetchOrderData(0); // 帶上搜尋框的值與新的狀態進行查詢
-	});
 
-	$(document).on("click", ".orderInformation , .refund", function() {
+	$(document).on("click", ".orderInformation", function() {
 		let eventOrderId = $(this).attr("data-id");
 
 		fetch(`/admin/dashboard/order-detail?eventOrderId=${eventOrderId}`, {
@@ -37,42 +68,11 @@ export function initEventOrders() {
 			return response.text().then(html => ({ html, type: fragmentType }));
 		}).then(({ html, type }) => {
 			// 在這裡你就可以根據 type 分別處理邏輯
-			if (type === "refund") {
-				$("#refundDetailModal .modal-body").html(html);
-				$("#refundDetailModal").modal('show');
-			} else {
 				// 填充 Modal 內容並顯示
 				$("#orderDetailModal .modal-body").html(html);
 				$("#orderDetailModal").modal('show');
-			}
+			
 
-		});
-	})
-
-	$(document).on("click", ".refundRefuse, .refundAccept", function() {
-
-		let refundResult = false;
-		const eventOrderId = $("#refundId").text();
-		console.log(eventOrderId);
-
-		if ($(this).attr("class").includes("refundRefuse")) {
-			refundResult = false;
-		} else {
-			refundResult = true;
-		}
-
-		fetch(`/admin/dashboard/refund?eventOrderId=${eventOrderId}&refundResult=${refundResult}`, {
-			method: "GET"
-		}).then(response => {
-			if (response.ok) {
-				alert("申請結果已送出");
-				location.reload();
-			} else {
-				alert("送出失敗");
-			}
-
-		}).catch(error => {
-			console.error("Fetch error:", error);
 		});
 	})
 
@@ -83,7 +83,7 @@ export function initEventOrders() {
 		let eventOrderId = rawId ? rawId : "";
 		let memberName = encodeURIComponent($("input[name='memberName']").val() || "");
 		let eventTitle = encodeURIComponent($("input[name='eventTitle']").val() || "");
-		let payStatus = $(".nav-link.active").attr("data-status") || "";
+		let payStatus = $("select[name='payStatus']").val() || "";
 
 		// 組合 URL
 		let url = `/admin/dashboard/eventOrders?page=${pageNumber}` +
@@ -92,4 +92,5 @@ export function initEventOrders() {
 		// 執行局部載入更新表格
 		$("#table-container").load(url);
 	}
+	
 }

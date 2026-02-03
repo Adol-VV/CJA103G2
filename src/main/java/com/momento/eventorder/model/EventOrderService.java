@@ -102,4 +102,13 @@ public class EventOrderService {
 	    }
 	    return orders;
 	}
+	
+	public Map<String, Object> getStats() {
+	    // 這裡拿到的 Map 直接就是 {"paid": 1250, "applying": 28, ...}
+	    return eventOrderRepo.getOrderStatsMap();
+	}
+	
+	public EventOrderVO getOrderByItemId(Integer itemId) {
+        return eventOrderRepo.findByEventOrderItems_EventOrderItemId(itemId);
+    }
 }

@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.momento.event.model.EventRepository;
 import com.momento.event.model.EventVO;
@@ -19,6 +22,8 @@ import com.momento.eventorder.model.EventOrderItemService;
 import com.momento.eventorder.model.EventOrderItemVO;
 import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
+import com.momento.member.model.MemberService;
+import com.momento.member.model.MemberVO;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.ticket.model.TicketRepository;
 import com.momento.ticket.model.TicketVO;
@@ -42,6 +47,9 @@ public class OrganizerCenterOrderController {
 	
 	@Autowired
 	TicketRepository ticketRepo;
+	
+	@Autowired
+	MemberService memberSvc;
 
 	@GetMapping("/tickets")
 	public String showOrders(@RequestParam(required = false) Integer activeEvent,
@@ -126,6 +134,8 @@ public class OrganizerCenterOrderController {
 
 		EventOrderVO eventOrder = eventOrderSvc.getOneEventOrder(eventOrderId);
 
+		Integer tokenReward = (eventOrder.getPayable() / 300) * 5;
+
 		List<Object[]> eventOrderItems = eventOrderItemSvc.getTicketCount(eventOrderId);
 
 		Map<String, Integer> itemCount = new HashMap();
@@ -139,11 +149,52 @@ public class OrganizerCenterOrderController {
 
 			itemCount.put(ticketName, quantity);
 		}
+		if (eventOrder.getReason() == null)
+			eventOrder.setReason("");
 
 		model.addAttribute("eventOrder", eventOrder);
+		model.addAttribute("tokenReward", tokenReward);
 		model.addAttribute("itemCount", itemCount);
 
+		if (eventOrder.getPayStatus() == 2) {
+			response.setHeader("X-Fragment-Type", "refund");
+			return "pages/organizer/partials/panel-orders :: refund-body";
+		}
 		response.setHeader("X-Fragment-Type", "order");
 		return "pages/organizer/partials/panel-orders :: order-body";
+	}
+	
+	@GetMapping("/refund")
+	@ResponseBody
+	public ResponseEntity<String> refundResult(@RequestParam Integer eventOrderId, @RequestParam boolean refundResult) {
+		try {
+			EventOrderVO eventOrder = eventOrderSvc.getOneEventOrder(eventOrderId);
+			MemberVO member = eventOrder.getMember();
+			
+			Integer token = member.getToken();
+			
+			Integer tokenReward = (eventOrder.getPayable()/300) * 5;
+			
+			if (refundResult == true) {
+				eventOrder.setPayStatus(3);
+				
+				Integer tokenRefund = eventOrder.getTokenUsed() - tokenReward;
+				
+				member.setToken(token + tokenRefund);
+				
+			} else {
+				eventOrder.setPayStatus(4);
+			}
+			
+			memberSvc.updateMember(member);
+			eventOrderSvc.updateEventOrder(eventOrder);
+
+			return ResponseEntity.ok("申請結果已送出");
+
+		} catch (Exception e) {
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("處理失敗");
+		}
+
 	}
 }

@@ -91,7 +91,8 @@ public class MemberCenterOrderController {
 
 		String uuid = eventOrderItemSvc.getQrcodeById(Integer.valueOf(eventOrderItemId));
 		TicketVO ticket = eventOrderItemSvc.getTicketById(Integer.valueOf(eventOrderItemId));
-		String eventName = ticket.getEvent().getTitle();
+		EventOrderVO  eventOrder = eventOrderSvc.getOrderByItemId(Integer.valueOf(eventOrderItemId));
+		String eventName = eventOrder.getEvent().getTitle();
 
 		Map<String, String> map = new HashMap<>();
 		map.put("uuid", uuid);

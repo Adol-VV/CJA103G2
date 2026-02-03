@@ -19,4 +19,5 @@ public interface EventOrderItemRepository extends JpaRepository<EventOrderItemVO
 	           "WHERE i.eventOrder.eventOrderId = :eventOrderId " + // 這裡加上過濾條件
 	           "GROUP BY i.ticket.ticketId")
 	    List<Object[]> countByTicketAndOrderId(@Param("eventOrderId") Integer orderId);
+	    
 }

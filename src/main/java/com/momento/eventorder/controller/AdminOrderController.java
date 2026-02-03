@@ -59,7 +59,11 @@ public class AdminOrderController {
 
 		Page<EventOrderVO> orders = eventOrderSvc.getEventOrdersbyPages(eventOrderId, memberName, eventTitle, payStatus , pageable);
 
+		
+		Map<String, Object> statusCount = eventOrderSvc.getStats();
+		
 		model.addAttribute("orderPage", orders);
+		model.addAttribute("statusCount", statusCount);
 
 		if ("XMLHttpRequest".equals(requestedWith)) {
 			// 有點擊 a 標籤：只回傳片段，這樣樣式就不會消失
@@ -96,10 +100,6 @@ public class AdminOrderController {
 		model.addAttribute("tokenReward", tokenReward);
 		model.addAttribute("itemCount", itemCount);
 
-		if (eventOrder.getPayStatus() == 2) {
-			response.setHeader("X-Fragment-Type", "refund");
-			return "pages/admin/partials/panel-event-orders :: refund-body";
-		}
 		response.setHeader("X-Fragment-Type", "order");
 		return "pages/admin/partials/panel-event-orders :: order-body";
 	}

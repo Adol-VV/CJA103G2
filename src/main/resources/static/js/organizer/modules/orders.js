@@ -55,7 +55,7 @@ export function initOrderManagement() {
 	    .catch(error => console.error('Error:', error));
 	})
 	
-	$(".orderInformation").on("click", function(){
+	$(document).on("click", ".orderInformation , .refund", function() {
 		let eventOrderId = $(this).attr("data-id");
 
 		fetch(`/organizer/dashboard/order-detail?eventOrderId=${eventOrderId}`, {
@@ -69,11 +69,41 @@ export function initOrderManagement() {
 			return response.text().then(html => ({ html, type: fragmentType }));
 		}).then(({ html, type }) => {
 			// 在這裡你就可以根據 type 分別處理邏輯
+			if (type === "refund") {
+				$("#refundDetailModal .modal-body").html(html);
+				$("#refundDetailModal").modal('show');
+			} else {
 				// 填充 Modal 內容並顯示
 				$("#orderDetailModal .modal-body").html(html);
 				$("#orderDetailModal").modal('show');
-			
+			}
 
+		});
+	})
+	$(document).on("click", ".refundRefuse, .refundAccept", function() {
+
+		let refundResult = false;
+		const eventOrderId = $("#refundId").text();
+		console.log(eventOrderId);
+
+		if ($(this).attr("class").includes("refundRefuse")) {
+			refundResult = false;
+		} else {
+			refundResult = true;
+		}
+
+		fetch(`/admin/dashboard/refund?eventOrderId=${eventOrderId}&refundResult=${refundResult}`, {
+			method: "GET"
+		}).then(response => {
+			if (response.ok) {
+				alert("申請結果已送出");
+				location.reload();
+			} else {
+				alert("送出失敗");
+			}
+
+		}).catch(error => {
+			console.error("Fetch error:", error);
 		});
 	})
 	

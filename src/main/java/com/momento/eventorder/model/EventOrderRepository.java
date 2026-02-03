@@ -2,6 +2,7 @@ package com.momento.eventorder.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -65,4 +66,17 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 	 */
 	@Query("SELECT COUNT(DISTINCT o.member.memberId) FROM EventOrderVO o WHERE o.event.eventId = :eventId")
 	Integer countDistinctMembersByEventId(@Param("eventId") Integer eventId);
+	
+	
+	// 計算各個付款狀態的數量
+	@Query(value = "SELECT " +
+		       "SUM(CASE WHEN pay_status = 1 THEN 1 ELSE 0 END) AS paid, " +
+		       "SUM(CASE WHEN pay_status = 2 THEN 1 ELSE 0 END) AS applying, " +
+		       "SUM(CASE WHEN pay_status = 3 THEN 1 ELSE 0 END) AS refunded, " +
+		       "SUM(CASE WHEN pay_status = 4 THEN 1 ELSE 0 END) AS rejected " +
+		       "FROM event_order", nativeQuery = true)
+	public	Map<String, Object> getOrderStatsMap();
+	
+	
+	EventOrderVO findByEventOrderItems_EventOrderItemId(Integer eventOrderItemId);
 }
