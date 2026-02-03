@@ -16,11 +16,11 @@
         <p class="text-muted small mb-3" id="userEmail" th:text="${session.loginMember.account}">member001</p>
         <div class="d-flex justify-content-center gap-4 text-center">
             <div>
-                <strong class="d-block fs-5">12</strong>
+                <strong class="d-block fs-5 text-white-50" th:text="${activityCount}">12</strong>
                 <small class="text-muted">參與活動</small>
             </div>
             <div>
-                <strong class="d-block fs-5 favorite-count-sidebar"
+                <strong class="d-block fs-5 favorite-count-sidebar text-white-50"
                     th:text="${favoriteCount != null ? favoriteCount : '-'}">5</strong>
                 <small class="text-muted">收藏</small>
             </div>

@@ -24,7 +24,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +115,7 @@ public class MemberCenterController {
 	@GetMapping("/dashboard/sidebar")
 	public String showSidebar(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
+		Integer memberId = loginMember.getMemberId();
 		if (loginMember != null) {
 			List<EventListItemDTO> favoriteEvents = eventService.getMemberFavorites(loginMember.getMemberId());
 			model.addAttribute("favoriteCount", favoriteEvents.size());
@@ -126,6 +129,21 @@ public class MemberCenterController {
 			long unreadNotifyCount = sysUnread + orgUnread;
 
 			model.addAttribute("unreadNotifyCount", unreadNotifyCount);
+			
+			//計算待參加活動
+			List<EventOrderVO> eventOrderList = eventOrderSvc.getEventOrderByMemberId(memberId);
+			List<EventOrderVO> activityUnfinished = new ArrayList();
+			LocalDateTime now = LocalDateTime.now();
+			Iterator<EventOrderVO> iterator = eventOrderList.iterator();
+			while (iterator.hasNext()) {
+				EventOrderVO item = iterator.next();
+				if (item.getEvent().getEventStartAt() != null && now.isBefore(item.getEvent().getEventEndAt())) {
+					activityUnfinished.add(item);
+					iterator.remove();
+				}
+			}
+			
+			model.addAttribute("activityCount", activityUnfinished.size());
 		}
 		return "pages/user/partials/sidebar";
 	}
