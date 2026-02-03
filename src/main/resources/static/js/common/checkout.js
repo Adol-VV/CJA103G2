@@ -170,8 +170,8 @@ $(document).ready(function () {
                         orderItems: subOrderItems
                     })
                 });
-                $("#orderNumber").text(response);
-                $("#fetch_orderId").val(response);
+                // $("#orderNumber").text(response);
+                // $("#fetch_orderId").val(response);
                 createdOrderIds.push(response);
             }
 
@@ -210,6 +210,7 @@ $(document).ready(function () {
 
             } else {
                 // 所有商家的訂單都跑完後
+                renderOrderButtons(createdOrderIds);
                 showToast('恭喜！所有訂單已建立成功', 'success');
                 localStorage.removeItem('momento_cart');
                 goToStep(4);
@@ -312,10 +313,17 @@ $(document).ready(function () {
     if (paymentStatus === 'success') {
         // Restore UI state from session
         if (sessionStorage.getItem('linepay_orderId')) {
-            $("#orderNumber").text(sessionStorage.getItem('linepay_orderNumber'));
+            // $("#orderNumber").text(sessionStorage.getItem('linepay_orderNumber'));
             $("#finalPrice").text(sessionStorage.getItem('linepay_finalPrice'));
             $("#finalCouhnt").text(sessionStorage.getItem('linepay_itemCount'));
-            $("#fetch_orderId").val(sessionStorage.getItem('linepay_orderId')); // Restore orderId for form
+            $("#fetch_orderId").val(sessionStorage.getItem('linepay_orderId'));
+
+            // Render buttons for LINE Pay return
+            const storedOrderIds = sessionStorage.getItem('linepay_orderNumber'); // This is "id1, id2"
+            if (storedOrderIds) {
+                const ids = storedOrderIds.split(',').map(s => s.trim());
+                renderOrderButtons(ids);
+            }
 
             // Clean up
             sessionStorage.removeItem('linepay_orderNumber');
@@ -335,6 +343,35 @@ $(document).ready(function () {
         showToast('LINE Pay 付款失敗', 'error');
     }
 });
+
+// Helper to render order buttons
+function renderOrderButtons(orderIds) {
+    const container = $('#orderButtonsContainer');
+    container.empty();
+
+    orderIds.forEach(id => {
+        const formHtml = `
+            <form action="/member/prod_order/orderDetail" method="post" style="display:inline-block;" class="m-1">
+                <input type="hidden" name="orderId" value="${id}" />
+                <button class="btn text-start p-3 position-relative overflow-hidden group" 
+                        style="min-width: 180px; background: #000; border: 1px solid #333; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+                        onmouseover="this.style.borderColor='#198754'; this.style.boxShadow='0 0 15px rgba(25,135,84,0.3)'; this.querySelector('.view-text').style.opacity='1'; this.querySelector('.arrow-icon').style.transform='translateX(0)';"
+                        onmouseout="this.style.borderColor='#333'; this.style.boxShadow='none'; this.querySelector('.view-text').style.opacity='0'; this.querySelector('.arrow-icon').style.transform='translateX(-10px)';"
+                        onclick="$('#productOrderModal').modal('show')">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-muted small" style="font-size: 0.75rem;">訂單編號</span>
+                        <div class="view-text text-success small fw-bold" style="opacity: 0; transition: opacity 0.3s ease;">
+                            查看 <i class="fas fa-arrow-right arrow-icon" style="transition: transform 0.3s ease; transform: translateX(-10px);"></i>
+                        </div>
+                    </div>
+                    <div class="h5 text-success mb-0 fw-bold font-monospace">${id}</div>
+                </button>
+            </form>
+        `;
+        container.append(formHtml);
+    });
+}
 
 // Toast helper function
 function showToast(message, type) {
