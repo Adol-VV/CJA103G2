@@ -18,7 +18,34 @@
     <link th:href="@{/css/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/organizer-dashboard.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css">
-
+	<style>
+		.imageContainer{
+			position: relative;
+		}
+		
+		.imageContainer .btn-deleteProdImage{
+			box-sizing: border-box;
+			opacity: 0.6;
+			padding:0;
+			width: 20px;
+			height: 20px;
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			left: auto !important;
+			border: 1px solid red !important;
+			border-radius: 50%;
+			background-color: red;
+			z-index:9;
+			display:flex;
+			align-items: center;    /* 垂直置中 */
+    		justify-content: center; /* 水平置中 */
+		}
+		
+		.imageContainer .btn-deleteProdImage .fa-times{
+			color:white;
+		}
+	</style>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 
@@ -35,7 +62,7 @@
             </button>
 
             <a class="navbar-brand fw-bold" th:href="@{/}">Momento <span class="badge bg-secondary ms-2"
-                    style="font-size: 0.7rem;">Organizer</span></a>
+                    style="font-size: 0.7rem;">Organizer</span></a><i class="bi bi-x-circle"  style="font-size: 2rem; color: red;"></i>
 
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <!-- Notifications -->
@@ -229,44 +256,56 @@
 		                    <label class="form-label">圖片（最多 4 張）</label>
 		                    <div class="row g-2" id="additionalImagesContainer">
 		                        <div class="col-6">
-		                        	<input type="hidden" name="imageId1" th:value="${prod.images.size()}<1?null:${prod.images[0].prodImageId}">
+		                        	<input type="hidden" class="imageId" name="imageId1" th:value="${prod.images.size()}<1?null:${prod.images[0].prodImageId}">
 		                            <input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput1" name="imageFile1">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
-		                                id="productImageZone1" style="cursor: pointer;">										
-		                                <img th:src="${prod.images.size()}<1?'':${prod.images[0].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<1">
+		                                id="productImageZone1" style="cursor: pointer">										
+		                                <img th:src="${prod.images.size()}<1?'':${prod.images[0].imageUrl}" class="preview_img" style="width:100%; height:100%;z-index:5" th:unless="${prod.images.size()}<1">
+		                                <button class="btn-deleteProdImage" type="submit" form="deleteImage" th:unless="${prod.images.size()}<1">
+		                    				<i class="fas fa-times"></i>
+		                				</button>
 		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<1">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
-		                        	<input type="hidden" name="imageId2" th:value="${prod.images.size()}<2?null:${prod.images[1].prodImageId}">
+		                        	<input type="hidden" class="imageId" name="imageId2" th:value="${prod.images.size()}<2?null:${prod.images[1].prodImageId}">
 		                        	<input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput2" name="imageFile2">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
 		                                id="productImageZone2" style="cursor: pointer;">
 		                                <img th:src="${prod.images.size()}<2?'':${prod.images[1].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<2">
+		                                <button class="btn-deleteProdImage" type="submit" form="deleteImage" th:unless="${prod.images.size()}<2">
+		                    				<i class="fas fa-times"></i>
+		                				</button>
 		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<2">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
-		                        	<input type="hidden" name="imageId3" th:value="${prod.images.size()}<3?null:${prod.images[2].prodImageId}">
+		                        	<input type="hidden" class="imageId" name="imageId3" th:value="${prod.images.size()}<3?null:${prod.images[2].prodImageId}">
 		                            <input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput3" name="imageFile3">		                        
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
 		                                id="productImageZone3" style="cursor: pointer;">
 		                                <img th:src="${prod.images.size()}<3?'':${prod.images[2].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<3">
+		                               	<button class="btn-deleteProdImage" type="submit" form="deleteImage" th:unless="${prod.images.size()}<3">
+		                    				<i class="fas fa-times"></i>
+		                				</button> 
 		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<3">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div class="col-6">
-		                        	<input type="hidden" name="imageId4" th:value="${prod.images.size()}<4?null:${prod.images[3].prodImageId}">
+		                        	<input type="hidden" class="imageId" name="imageId4" th:value="${prod.images.size()}<4?null:${prod.images[3].prodImageId}">
 		                        	<input type="file" class="d-none additional-image-input productImageInput" accept="image/*" id="productImageInput4" name="imageFile4">
 		                            <div class="ratio ratio-1x1 bg-secondary rounded position-relative overflow-hidden additional-image-slot imageContainer"
 		                                id="productImageZone4" style="cursor: pointer;"> 
 		                                <img th:src="${prod.images.size()}<4?'':${prod.images[3].imageUrl}" class="preview_img" style="width:100%; height:100%" th:unless="${prod.images.size()}<4">
+		                                <button class="btn-deleteProdImage" type="submit" form="deleteImage" th:unless="${prod.images.size()}<4">
+		                    				<i class="fas fa-times"></i>
+		                				</button>
 		                                <div class="d-flex align-items-center justify-content-center h-100" th:if="${prod.images.size()}<4">
 		                                    <i class="fas fa-plus text-muted"></i>
 		                                </div>
@@ -290,6 +329,10 @@
 		        </div>
 		    </div>
 		</form>
+		<form id="deleteImage" method="get" th:action="@{deleteImage}">
+			<input type="hidden" class="imageId" name="prodImageId">
+			<input type="hidden" name="prodId" th:value="${prod.prodId}">
+		</form>
 	</main>
 
 
@@ -309,7 +352,7 @@
         window.INITIAL_PANEL = /*[[${activePanel}]]*/ null;
     </script>
 	<script>
-
+		//預覽圖片
 		$(".imageContainer").on("click",function(e){
 			let index = $(".imageContainer").index(this);
 			$(".productImageInput").eq(index).click();
@@ -325,7 +368,17 @@
 		    })
 		    reader.readAsDataURL(this.files[0]);
 		});
-	
+		
+		
+		//移除圖片時將對應的imageId綁到form表單上
+		$(".btn-deleteProdImage").on("click", function(e){
+			e.stopPropagation();
+			let imageId = $(this).closest("div.col-6").find(".imageId").val();
+			$("#deleteImage").find($(".imageId")).val(imageId);
+	        if (!confirm(`確定要移除圖片嗎？`)) {
+				e.preventDefault();
+			}
+		})
 </script>
 </body>
 

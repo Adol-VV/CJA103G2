@@ -20,6 +20,10 @@ public class ProdImageService {
 		repository.save(prodImageVO);
 	}
 	
+	public void deleteProdImageById(Integer prodImageId) {
+		repository.deleteByImageId(prodImageId);
+	}
+	
 	public ProdImageVO getOneProdImage(Integer prodImageId) {
 		Optional<ProdImageVO> optional = repository.findById(prodImageId);
 		return optional.orElse(null);

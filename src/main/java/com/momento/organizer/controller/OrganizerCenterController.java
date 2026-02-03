@@ -10,6 +10,7 @@ import com.momento.notify.model.SystemNotifyVO;
 import com.momento.organizer.model.OrganizerService;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.prod.dto.ProdDTO;
+import com.momento.prod.model.ProdImageService;
 import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import jakarta.servlet.http.HttpSession;
@@ -54,6 +55,9 @@ public class OrganizerCenterController {
 
     @Autowired
     private OrganizerNotifyService orgNotifySvc;
+    
+	@Autowired
+	ProdImageService prodImageSvc;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -610,8 +614,8 @@ public class OrganizerCenterController {
     }
 
     // 進入商品編輯頁面
-    @PostMapping("/prodEdit")
-    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer, Integer prodId, ModelMap model) {
+    @GetMapping("/prodEdit")
+    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer,@RequestParam("prodId") Integer prodId, ModelMap model) {
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
@@ -619,6 +623,20 @@ public class OrganizerCenterController {
         model.addAttribute("prodSortList", prodSortSvc.getAll());
         return "pages/organizer/product-edit";
     }
+    
+    //移除商品圖片
+	@GetMapping("/deleteImage")
+	public String deleteImage( HttpSession session, @RequestParam("prodId") Integer prodId,  @RequestParam("prodImageId") Integer prodImageId, ModelMap model) {
+		OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+		if (organizer == null) {
+            return "redirect:/organizer/login";
+        }
+		prodImageSvc.deleteProdImageById(prodImageId);
+        model.addAttribute("prod", prodSvc.getOneProd(prodId));
+        model.addAttribute("prodSortList", prodSortSvc.getAll());
+        
+		return "pages/organizer/product-edit";
+	}
 
     // 進入商品列表頁面
     @GetMapping("/goToProdList")

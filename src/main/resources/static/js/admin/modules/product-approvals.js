@@ -201,4 +201,13 @@ export function initProductApprovals() {
 			e.preventDefault();
 		}
 	})
+	
+	//審核通過或駁回後，隱藏按鈕
+	$(document).ready(function(){
+		if($(".showReviewStatus").text() != "待審核"){
+			$(".btn-approve").hide();
+			$(".btn-reject").hide();
+			
+		}
+	})
 }
