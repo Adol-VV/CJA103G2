@@ -41,10 +41,14 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 			+ "WHERE (:eventOrderId IS NULL OR o.eventOrderId = :eventOrderId) "
 			+ "AND (:memberName IS NULL OR m.name LIKE CONCAT('%', :memberName, '%')) "
 			+ "AND (:eventTitle IS NULL OR e.title LIKE CONCAT('%', :eventTitle, '%'))"
-			+ "AND (:payStatus IS NULL  OR o.payStatus = :payStatus)")
+			+ "AND (:payStatus IS NULL  OR o.payStatus = :payStatus)"
+			+ "AND (:isHistory IS NULL OR (:isHistory = true AND e.eventEndAt < :now) OR (:isHistory = false AND e.eventEndAt >= :now))")
 	public Page<EventOrderVO> searchOrders(@Param("eventOrderId") Integer eventOrderId,
 			@Param("memberName") String memberName, @Param("eventTitle") String eventTitle,
-			@Param("payStatus") Integer payStatus, Pageable pageable);
+			@Param("payStatus") Integer payStatus, 
+			@Param("isHistory") boolean isHistory,
+			@Param("now") LocalDateTime now,
+			Pageable pageable);
 
 	public List<EventOrderVO> findTop2ByMember_MemberIdAndEvent_EventStartAtAfterOrderByEvent_EventStartAtAsc(
 			Integer memberId, LocalDateTime currentTime);
@@ -74,7 +78,10 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 		       "SUM(CASE WHEN pay_status = 2 THEN 1 ELSE 0 END) AS applying, " +
 		       "SUM(CASE WHEN pay_status = 3 THEN 1 ELSE 0 END) AS refunded, " +
 		       "SUM(CASE WHEN pay_status = 4 THEN 1 ELSE 0 END) AS rejected " +
-		       "FROM event_order", nativeQuery = true)
+		       "FROM event_order o " 
+		       + "JOIN event e ON o.EVENT_ID = e.EVENT_ID "  // 關聯活動表以取得結束時間
+		       + "WHERE e.EVENT_END_AT > NOW()" // 僅統計活動結束時間在現在之後的訂單\"
+		       , nativeQuery = true)
 	public	Map<String, Object> getOrderStatsMap();
 	
 	

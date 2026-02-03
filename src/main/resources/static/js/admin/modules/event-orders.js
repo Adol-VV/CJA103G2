@@ -84,10 +84,12 @@ export function initEventOrders() {
 		let memberName = encodeURIComponent($("input[name='memberName']").val() || "");
 		let eventTitle = encodeURIComponent($("input[name='eventTitle']").val() || "");
 		let payStatus = $("select[name='payStatus']").val() || "";
+		let isHistory = $("select[name='historyOrders']").val() || "";
+		let isHistoryBool = (isHistory === "true");
 
 		// 組合 URL
 		let url = `/admin/dashboard/eventOrders?page=${pageNumber}` +
-			`&eventOrderId=${eventOrderId}&memberName=${memberName}&eventTitle=${eventTitle}&payStatus=${payStatus}`;
+			`&eventOrderId=${eventOrderId}&memberName=${memberName}&eventTitle=${eventTitle}&payStatus=${payStatus}&isHistory=${isHistoryBool}`;
 
 		// 執行局部載入更新表格
 		$("#table-container").load(url);

@@ -108,20 +108,28 @@ public class OrganizerCenterOrderController {
 		// 驗票(比對UUID)
 		if (randomUUID != null && !randomUUID.isEmpty()) {
 			EventOrderItemVO item = eventOrderItemSvc.getItemsByQrcode(randomUUID);
-			System.out.println(item.getEventOrder().getEvent().getEventId());
-			if (item != null && item.getEventOrder().getEvent().getEventId() == eventId && item.getStatus() != 1) {
-				model.addAttribute("msg", "核銷成功");
-				item.setStatus(1);
-				item.setVerifiedAt(LocalDateTime.now());
-				eventOrderItemSvc.updateItems(item);
-				model.addAttribute("information", item);
 
-			} else if (item.getEventOrder().getEvent().getEventId() != eventId) {
-				model.addAttribute("msg", "活動不符");
-			} else if (item.getStatus() == 1) {
-				model.addAttribute("msg", "重複驗票");
+			if (item != null) {
+			    // 進入這裡，代表 item 絕對不是 null，可以安全使用 get
+			    Integer currentItemEventId = item.getEventOrder().getEvent().getEventId();
+			    
+			    if (currentItemEventId == eventId && item.getStatus() != 1) {
+			        model.addAttribute("msg", "核銷成功");
+					item.setStatus(1);
+
+					item.setVerifiedAt(LocalDateTime.now());
+
+					eventOrderItemSvc.updateItems(item);
+
+					model.addAttribute("information", item);
+			    } else if (currentItemEventId != eventId) {
+			        model.addAttribute("msg", "活動不符");
+			    } else if (item.getStatus() == 1) {
+			        model.addAttribute("msg", "重複驗票");
+			    }
 			} else {
-				model.addAttribute("msg", "無效票券");
+			   
+			    model.addAttribute("msg", "無效票券");
 			}
 			return "pages/organizer/partials/panel-ticket-scanner :: success";
 		}

@@ -1,5 +1,6 @@
 package com.momento.eventorder.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 import com.momento.ticket.model.TicketRepository;
-import com.momento.ticket.model.TicketService;
 import com.momento.ticket.model.TicketVO;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,14 +51,16 @@ public class AdminOrderController {
 			@RequestParam(required = false) String memberName, 
 			@RequestParam(required = false) String eventTitle,
 			@RequestParam(required = false) Integer payStatus,
+			@RequestParam(required = false) boolean isHistory,
 			@RequestParam(defaultValue = "0") int page, 
 			@RequestParam(defaultValue = "10") int size,
 			@RequestHeader(value = "X-Requested-With", required = false) String requestedWith) {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+		
+		LocalDateTime now = LocalDateTime.now();
 
-		Page<EventOrderVO> orders = eventOrderSvc.getEventOrdersbyPages(eventOrderId, memberName, eventTitle, payStatus , pageable);
-
+		Page<EventOrderVO> orders = eventOrderSvc.getEventOrdersbyPages(eventOrderId, memberName, eventTitle, payStatus,isHistory, now , pageable);
 		
 		Map<String, Object> statusCount = eventOrderSvc.getStats();
 		

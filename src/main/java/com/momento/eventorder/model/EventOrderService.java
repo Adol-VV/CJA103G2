@@ -54,10 +54,17 @@ public class EventOrderService {
 		return eventOrderRepo.findAll();
 	}
 	
-	public Page<EventOrderVO> getEventOrdersbyPages(Integer eventOrderId, String memberName, String eventTitle, Integer payStatus , Pageable pageable){
+	public Page<EventOrderVO> getEventOrdersbyPages(
+			Integer eventOrderId, 
+			String memberName,
+			String eventTitle, 
+			Integer payStatus, 
+			boolean isHistory,
+			LocalDateTime now,
+			Pageable pageable){
 		
 		if (eventOrderId != null || memberName != null || eventTitle != null || payStatus != null) {
-		    return eventOrderRepo.searchOrders(eventOrderId, memberName, eventTitle, payStatus , pageable);
+		    return eventOrderRepo.searchOrders(eventOrderId, memberName, eventTitle, payStatus,isHistory ,now , pageable);
 		}
 		
 		return eventOrderRepo.findAll(pageable);
