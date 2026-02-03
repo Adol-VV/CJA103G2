@@ -139,7 +139,12 @@
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button class="btn btn-primary btn-lg flex-grow-1" id="btnAddCart">
+                            <button class="btn btn-primary btn-lg flex-grow-1" id="btnAddCart"
+                                th:data-id="${prod.prodId}"
+                                th:data-name="${prod.prodName}"
+                                th:data-price="${prod.prodPrice}"
+                                th:data-image="${prod.mainImageUrl}"
+                                th:data-organizer="${prod.organizerId}">
                                 <i class="fas fa-cart-plus me-2"></i>加入購物車
                             </button>
                             <form method="post" th:action="@{addFav}" th:unless="${isFav}">
@@ -307,26 +312,33 @@
 
             $('#btnAddCart').click(function () {
                 const btn = $(this);
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>加入中...');
+                const id = btn.data('id');
+                const name = btn.data('name');
+                const price = btn.data('price');
+                const image = btn.data('image');
+                const organizerId = btn.data('organizer');
+                
+                const existing = cart.find(item => item.id === id);
 
-                setTimeout(function () {
-                    btn.prop('disabled', false).html('<i class="fas fa-check me-2"></i>已加入');
-                    if (typeof showToast === 'function') {
-                        showToast('已加入購物車', 'success');
-                    }
-                    setTimeout(() => btn.html('<i class="fas fa-cart-plus me-2"></i>加入購物車'), 2000);
-                }, 500);
-            });
-
-            $('#btnFavorite').click(function () {
-                const icon = $(this).find('i');
-                if (icon.hasClass('far')) {
-                    icon.removeClass('far').addClass('fas text-danger');
-                    if (typeof showToast === 'function') showToast('已加入收藏', 'success');
+                if (existing) {
+                    existing.quantity++;
                 } else {
-                    icon.removeClass('fas text-danger').addClass('far');
-                    if (typeof showToast === 'function') showToast('已取消收藏', 'info');
+                    cart.push({ id, name, price, quantity: 1, image, organizerId });
                 }
+
+                updateCartUI();
+
+                // Show simple feedback (safe method)
+                const originalHtml = btn.html();
+                btn.empty()
+                    .append($('<i>').addClass('fas fa-check'))
+                    .append(' 已加入')
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
+                showToast('已加入購物車', 'success');
+                setTimeout(() => {
+                    btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
+                }, 1500);
             });
 
             //Update_Cart_UI
@@ -351,6 +363,21 @@
                 } else {
                     $('.cart-count').hide();
                 }
+
+                $('#cartItemCount').text(count);
+                $('#cartSubtotal').text('NT$ ' + subtotal.toLocaleString());
+
+                // Token Reward Calc
+                const tokenReward = Math.floor(subtotal / 300) * 5;
+                $('#tokenReward').text('+' + tokenReward + ' 元'); // Logic per user request
+
+                // Render Items
+                const container = $('#cartItems');
+                // Remove existing items (except empty-cart and template)
+                container.find('.cart-item').remove();
+
+                // Save
+                localStorage.setItem('momento_cart', JSON.stringify(cart));
             };
 
         });
