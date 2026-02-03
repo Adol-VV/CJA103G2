@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.momento.notify.model.NotificationBridgeService;
 import com.momento.prodorder.model.ProdOrderIdService;
 import com.momento.prodorder.model.ProdOrderIdVO;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +24,9 @@ public class AdminProdOrderController {
 
 	@Autowired
 	ProdOrderIdService poIdSev;
+
+	@Autowired
+	NotificationBridgeService notificationBridgeService;
 
 	@GetMapping("/getAllOrder")
 	public String getAllOrder(Model model, HttpSession session) {
@@ -71,10 +75,11 @@ public class AdminProdOrderController {
 	    	ProdOrderIdVO order = optional.get();
 	    	order.setStatus((byte)4);
 	    	poIdSev.updateProdOrder(order);
+	    	notificationBridgeService.processProdRefundResultNotify(order, true);
 	    }
 	    return "pages/admin/partials/panel-product-orders";
 	}
-	
+
 	@GetMapping("/disagreeRefund")
 	public String disagreeRefund(Integer orderId, Model model) {
 		Optional<ProdOrderIdVO> optional = poIdSev.getOne(orderId);
@@ -82,6 +87,7 @@ public class AdminProdOrderController {
 	    	ProdOrderIdVO order = optional.get();
 	    	order.setStatus((byte)1);
 	    	poIdSev.updateProdOrder(order);
+	    	notificationBridgeService.processProdRefundResultNotify(order, false);
 	    }
 	    return "pages/admin/partials/panel-product-orders";
 	}

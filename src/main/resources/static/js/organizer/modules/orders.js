@@ -92,7 +92,7 @@ export function initOrderManagement() {
 			refundResult = true;
 		}
 
-		fetch(`/admin/dashboard/refund?eventOrderId=${eventOrderId}&refundResult=${refundResult}`, {
+		fetch(`/organizer/dashboard/refund?eventOrderId=${eventOrderId}&refundResult=${refundResult}`, {
 			method: "GET"
 		}).then(response => {
 			if (response.ok) {

@@ -166,6 +166,7 @@ public class EmpController {
         model.addAttribute("newMemberCount", memberService.getNewMemberCount());
         model.addAttribute("organizerCount", organizerService.getOrganizerCount());
         model.addAttribute("activeOrganizerCount", organizerService.getActiveOrganizerCount());
+        model.addAttribute("organizerList", organizerService.getAllOrganizers());
 
         return "pages/admin/dashboard";
     }
