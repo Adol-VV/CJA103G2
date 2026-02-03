@@ -373,9 +373,9 @@
                             <h2 class="mb-3">訂單完成！</h2>
                             <p class="text-muted mb-4">感謝您的購買，訂單確認信已寄送至您的信箱</p>
 
-                            <div class="bg-black rounded p-4 mb-4 d-inline-block">
-                                <div class="text-muted small mb-1">訂單編號</div>
-                                <div class="h4 text-success mb-0" id="orderNumber">MO-20241226-001234</div>
+                            <div id="orderButtonsContainer" class="d-flex justify-content-center gap-2 flex-wrap mb-4"
+                                style="display:inline-block;">
+                                <!-- Order buttons will be injected here via JS -->
                             </div>
 
                             <div class="row justify-content-center g-3 mb-4">
@@ -414,12 +414,6 @@
                             </div>
 
                             <div class="d-flex justify-content-center gap-3">
-                                <form th:action="@{/member/prod_order/orderDetail}" method="post"
-                                    style="display:inline;">
-                                    <input type="hidden" name="orderId" id="fetch_orderId" th:value="1" />
-                                    <button class="btn btn-primary"
-                                        onclick="$('#productOrderModal').modal('show')">查看訂單</button>
-                                </form>
                                 <a href="/" class="btn btn-outline-secondary">
                                     <i class="fas fa-home me-2"></i>回首頁
                                 </a>
