@@ -15,6 +15,7 @@ import com.momento.prod.model.ProdService;
 import com.momento.prod.model.ProdSortService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/admin")
@@ -166,6 +166,7 @@ public class EmpController {
         model.addAttribute("newMemberCount", memberService.getNewMemberCount());
         model.addAttribute("organizerCount", organizerService.getOrganizerCount());
         model.addAttribute("activeOrganizerCount", organizerService.getActiveOrganizerCount());
+        model.addAttribute("organizerList", organizerService.getAllOrganizers());
 
         return "pages/admin/dashboard";
     }

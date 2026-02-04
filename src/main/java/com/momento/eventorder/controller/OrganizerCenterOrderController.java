@@ -24,6 +24,7 @@ import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
+import com.momento.notify.model.NotificationBridgeService;
 import com.momento.organizer.model.OrganizerVO;
 import com.momento.ticket.model.TicketRepository;
 import com.momento.ticket.model.TicketVO;
@@ -50,6 +51,9 @@ public class OrganizerCenterOrderController {
 	
 	@Autowired
 	MemberService memberSvc;
+
+	@Autowired
+	NotificationBridgeService notificationBridgeService;
 
 	@GetMapping("/tickets")
 	public String showOrders(@RequestParam(required = false) Integer activeEvent,
@@ -196,6 +200,7 @@ public class OrganizerCenterOrderController {
 			
 			memberSvc.updateMember(member);
 			eventOrderSvc.updateEventOrder(eventOrder);
+			notificationBridgeService.processRefundResultNotify(eventOrder, refundResult);
 
 			return ResponseEntity.ok("申請結果已送出");
 

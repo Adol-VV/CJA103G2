@@ -115,6 +115,7 @@ public class SystemNotifyService {
             case "front_new" -> "新會員";
             case "org_all" -> "全部主辦方";
             case "org_active" -> "活躍主辦方";
+            case "org_single" -> "指定主辦方";
             default -> "系統發送";
         };
     }

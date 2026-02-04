@@ -24,6 +24,7 @@ import com.momento.eventorder.model.EventOrderService;
 import com.momento.eventorder.model.EventOrderVO;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
+import com.momento.notify.model.NotificationBridgeService;
 import com.momento.ticket.model.TicketVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +41,9 @@ public class MemberCenterOrderController {
 	
 	@Autowired
 	MemberService memberSvc;
+
+	@Autowired
+	NotificationBridgeService notificationBridgeService;
 
 	@GetMapping("/panel-tickets")
 	public String MemberOrderEvent(HttpSession session, Model model) {
@@ -125,6 +129,7 @@ public class MemberCenterOrderController {
 			eventOrder.setPayStatus(2);
 			
 			eventOrderSvc.updateEventOrder(eventOrder);
+			notificationBridgeService.processRefundRequestNotify(eventOrder);
 			return ResponseEntity.ok("退票申請已提交");
 			
 		}catch(Exception e) {

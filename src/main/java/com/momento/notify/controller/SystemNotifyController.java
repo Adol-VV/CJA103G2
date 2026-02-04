@@ -37,6 +37,7 @@ public class SystemNotifyController {
             @NotEmpty(message="通知內容: 請勿空白") @RequestParam("rawContent") String rawContent,
             @RequestParam(value = "url", required = false) String url,
             @RequestParam("recipientGroup") String recipientGroup,
+            @RequestParam(value = "organizerId", required = false) Integer organizerId,
             HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
@@ -50,8 +51,18 @@ public class SystemNotifyController {
         }
 
         try {
-            // 執行發送
-            sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, loginEmp.getEmpId());
+            // 指定單一主辦方
+            if ("org_single".equals(recipientGroup)) {
+                if (organizerId == null) {
+                    response.put("success", false);
+                    response.put("message", "請選擇指定的主辦方");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+                sysNotifySvc.sendToOrganizer(organizerId, type, title, rawContent, url != null ? url : "", loginEmp);
+            } else {
+                // 執行群發
+                sysNotifySvc.sendMessageNotify(type, title, rawContent, url, recipientGroup, loginEmp.getEmpId());
+            }
 
             // JSON 回傳資料
             response.put("success", true);
