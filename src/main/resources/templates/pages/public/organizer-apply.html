@@ -447,9 +447,8 @@
                                         <label class="form-check-label text-muted small" for="agreeTerms"
                                             style="cursor: pointer;">
                                             我已閱讀並同意 <a th:href="@{/terms}" target="_blank"
-                                                class="text-success">主辦單位服務條款</a> 與 <a
-                                                th:href="@{/privacy}" target="_blank"
-                                                class="text-success">隱私權政策</a>
+                                                class="text-success">主辦單位服務條款</a> 與 <a th:href="@{/privacy}"
+                                                target="_blank" class="text-success">隱私權政策</a>
                                         </label>
                                     </div>
                                 </div>
@@ -546,15 +545,15 @@
                 // 驗證第二步：基本資料
                 if (currentStep === 2) {
                     const email = $('#emailInput').val();
-                    const emailPattern = /@.*\.com$/;
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailPattern.test(email)) {
-                        alert('Email 格式不正確 (需包含 @ 與 .com)');
+                        alert('Email 格式不正確');
                         $('#emailInput').focus();
                         return;
                     }
 
                     if ($('#emailError').is(':visible') && $('#emailErrorMsg').text().includes('已被使用')) {
-                        alert('此 Email 已被使用，請更換一個');
+                        alert('此 Email 已被使用，請更換');
                         $('#emailInput').focus();
                         return;
                     }
@@ -629,6 +628,15 @@
             // 隱藏所有提示
             $('#accountError, #accountSuccess').addClass('d-none');
 
+            const formatPattern = /^[a-zA-Z0-9_]+$/;  // 檢查格式：僅允許英文字母、數字和底線
+            if (!formatPattern.test(account)) {
+                // 如果檢查失敗 (test 返回 false)
+                $('#accountErrorMsg').text('請勿使用中文或特殊符號 (僅限英數與底線)');
+                $('#accountError').removeClass('d-none');// 顯示紅字
+                $('#accountSuccess').addClass('d-none');  // 隱藏綠勾
+                return;
+            }
+
             // 如果帳號長度不足，不檢查
             if (account.length < 4) {
                 return;
@@ -663,8 +671,8 @@
             // 隱藏所有提示
             $('#emailError, #emailSuccess').addClass('d-none');
 
-            // 簡化 Email 格式驗證：只要有 @ 和 .com 即可
-            const emailPattern = /@.*\.com$/;
+            // Email 格式驗證：必須有 @ 和至少一個 . 在 @ 之後
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email)) {
                 $('#emailErrorMsg').text('Email 格式不正確');
                 $('#emailError').removeClass('d-none');

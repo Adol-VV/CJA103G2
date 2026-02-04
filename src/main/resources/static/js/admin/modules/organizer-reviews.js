@@ -71,33 +71,54 @@ export function initOrganizerReviews() {
 
     // 駁回按鈕
     $('#btnRejectOrganizer').off('click').click(function () {
-        if (!currentOrganizerId) return;
-        if (!confirm('確定要駁回此申請嗎？\n(確定將直接刪除本次申請紀錄）')) return;
 
-        const btn = $(this);
-        btn.prop('disabled', true);
+        // if (!confirm('確定要駁回此申請嗎？\n(確定將直接刪除本次申請紀錄）')) return;
 
-        $.ajax({
-            url: '/admin/organizer/review/api/reject',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ id: currentOrganizerId }),
-            success: function (res) {
-                if (res.success) {
-                    alert('申請已駁回');
-                    $('#applicationReviewModal').modal('hide');
-                    loadOrganizerReviews();
-                } else {
-                    alert('操作失敗：' + res.message);
-                }
-                btn.prop('disabled', false);
-            },
-            error: function () {
-                alert('系統錯誤');
-                btn.prop('disabled', false);
-            }
-        });
+        //清空上次輸入
+        $('#rejectReasonInput').val('');
+
+        // 把原因的視窗叫出來
+        $('#rejectReasonModal').modal('show');
     });
+
+
+    $(document).off('click', '#btnConfirmReject')
+        .on('click', '#btnConfirmReject', function () {
+
+            //原因
+            const reason = $('#rejectReasonInput').val();
+
+            if (!confirm('【警告】確定要駁回此申請嗎？\n(此動作將「刪除」該筆申請資料，並發送駁回通知信）')) return;
+
+            //按鈕
+            const btn = $(this);
+            // 防止連點
+            btn.prop('disabled', true).text('處理中...');
+
+            //發送請求
+            $.ajax({
+                url: '/admin/organizer/review/api/reject',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ id: currentOrganizerId, reason: reason }),
+                success: function (res) {
+                    if (res.success) {
+                        alert('申請已駁回');
+                        //成功後要把兩個視窗都關掉  
+                        $('#rejectReasonModal').modal('hide');
+                        $('#applicationReviewModal').modal('hide');
+                        loadOrganizerReviews();  // 重新整理
+                    } else {
+                        alert('操作失敗：' + res.message);
+                    }
+                    btn.prop('disabled', false).text('確認駁回'); // 解鎖按鈕
+                },
+                error: function () {
+                    alert('系統錯誤');
+                    btn.prop('disabled', false);
+                }
+            });
+        });
 
     function loadOrganizerReviews() {
         const $list = $('#organizerReviewList');

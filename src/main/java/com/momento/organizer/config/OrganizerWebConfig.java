@@ -20,7 +20,9 @@ public class OrganizerWebConfig implements WebMvcConfigurer {
                         "/organizer/apply",
                         "/organizer/login",
                         "/organizer/forgot-password",
-                        "/organizer/reset-password"
+                        "/organizer/reset-password",
+                        "/organizer/account/exists",
+                        "/organizer/email/exists"
                 );
     }
 }

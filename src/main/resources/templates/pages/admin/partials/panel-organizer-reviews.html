@@ -26,4 +26,26 @@
     <div class="d-flex justify-content-center mt-auto pt-5 pb-3" id="organizerPagination">
         <!-- 分頁按鈕將透過 JavaScript 動態生成 -->
     </div>
+    <!-- 駁回原因輸入 Modal -->
+    <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">駁回申請</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-2">請輸入駁回原因：</p>
+                    <textarea class="form-control bg-dark text-white border-secondary" id="rejectReasonInput" rows="4"
+                        placeholder="例如：銀行帳戶名稱與負責人不符..."></textarea>
+                    <div class="form-text text-white-50">若未輸入，系統將使用預設理由。</div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmReject">確認駁回</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
