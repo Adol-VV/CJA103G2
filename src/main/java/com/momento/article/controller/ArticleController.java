@@ -61,8 +61,8 @@ public class ArticleController {
         // 1. 根據 ID 查詢文章
         ArticleVO article = articleService.getOneArticle(id);
 
-        // 2. 查詢該文章的所有留言
-        List<MessageVO> messages = messageService.getMessagesByArticleId(id);
+        // 2. 查詢該文章的所有留言 (Status 0 only)
+        List<MessageVO> messages = messageService.getMessagesByArticleIdAndStatus(id, 0);
 
         // 3. 將文章物件和留言列表放入 Model，讓 HTML 可以讀取
         model.addAttribute("article", article);
@@ -115,7 +115,8 @@ public class ArticleController {
             message.setArticleVO(article);
             message.setMemberVO(loginMember);
             message.setContent(content);
-            message.setStatus(1); // Default status: Active/Showing
+            message.setContent(content);
+            message.setStatus(0); // Default status: 0 (Visible)
 
             // Current time
             long now = new Date().getTime();

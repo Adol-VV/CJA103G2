@@ -74,14 +74,27 @@
                         </td>
                         <td>
                             <span class="badge bg-warning text-dark" th:if="${report.status == 0}">待處理</span>
-                            <span class="badge bg-success" th:if="${report.status == 1}">已處理</span>
+                            <span class="badge bg-success" th:if="${report.status == 1}">已移除</span>
+                            <span class="badge bg-success" th:if="${report.status == 2}">保留</span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"><i
-                                    class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"
+                                th:data-reporter="${report.memberVO != null ? report.memberVO.name : 'Unknown'}"
+                                th:data-content="${report.messageVO.content}" th:data-reason="${report.reportReason}"
+                                th:data-time="${#dates.format(report.reportedAt, 'yyyy/MM/dd HH:mm')}"
+                                th:data-status="${report.status == 0 ? '待處理' : '已處理'}"
+                                th:data-report-id="${report.messageReportId}" onclick="showReportDetail(this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
                             <!-- Pending usually implies action needed, keeping structure same -->
-                            <button class="btn btn-sm btn-outline-danger" title="刪除留言"><i
-                                    class="fas fa-trash-alt"></i></button>
+                            <button class="btn btn-sm btn-outline-success" title="保留留言"
+                                th:data-report-id="${report.messageReportId}" onclick="keepReport(this)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" title="刪除留言"
+                                th:data-report-id="${report.messageReportId}" onclick="deleteReport(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -161,12 +174,25 @@
                         <td>
                             <span class="badge bg-warning text-dark" th:if="${report.status == 0}">待處理</span>
                             <span class="badge bg-success" th:if="${report.status == 1}">已處理</span>
+                            <span class="badge bg-success" th:if="${report.status == 2}">保留</span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"><i
-                                    class="fas fa-eye"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" title="刪除留言"><i
-                                    class="fas fa-trash-alt"></i></button>
+                            <button class="btn btn-sm btn-outline-info me-1" title="查看詳情"
+                                th:data-reporter="${report.memberVO != null ? report.memberVO.name : 'Unknown'}"
+                                th:data-content="${report.messageVO.content}" th:data-reason="${report.reportReason}"
+                                th:data-time="${#dates.format(report.reportedAt, 'yyyy/MM/dd HH:mm')}"
+                                th:data-status="${report.status == 0 ? '待處理' : '已處理'}"
+                                th:data-report-id="${report.messageReportId}" onclick="showReportDetail(this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" title="保留留言"
+                                th:data-report-id="${report.messageReportId}" onclick="keepReport(this)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" title="刪除留言"
+                                th:data-report-id="${report.messageReportId}" onclick="deleteReport(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -198,5 +224,135 @@
                 reportedSection.style.display = 'block';
             }
         }
+
+        function showReportDetail(button) {
+            // Get data from attributes
+            const reporter = button.getAttribute('data-reporter');
+            const content = button.getAttribute('data-content');
+            const reason = button.getAttribute('data-reason');
+            const time = button.getAttribute('data-time');
+            const status = button.getAttribute('data-status');
+            const reportId = button.getAttribute('data-report-id');
+
+            // Populate Modal
+            document.getElementById('modalReporter').textContent = reporter;
+            document.getElementById('modalContent').textContent = content;
+            document.getElementById('modalReason').textContent = reason;
+            document.getElementById('modalTime').textContent = time;
+            document.getElementById('modalStatus').textContent = status;
+
+            // Set ID on Delete Button
+            const deleteBtn = document.getElementById('modalDeleteBtn');
+            if (deleteBtn) {
+                deleteBtn.setAttribute('data-report-id', reportId);
+            }
+
+            // Set ID on Keep Button
+            const keepBtn = document.getElementById('modalKeepBtn');
+            if (keepBtn) {
+                keepBtn.setAttribute('data-report-id', reportId);
+            }
+
+            // Show Modal
+            const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
+            modal.show();
+        }
+        function deleteReport(button) {
+            const reportId = button.getAttribute('data-report-id');
+            if (confirm('確定要刪除此留言嗎？這將會隱藏該留言並將檢舉標記為已處理。')) {
+                $.ajax({
+                    url: '/report/delete',
+                    type: 'POST',
+                    data: {
+                        messageReportId: reportId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('刪除失敗，請稍後再試');
+                    }
+                });
+            }
+        }
+
+        function keepReport(button) {
+            const reportId = button.getAttribute('data-report-id');
+            if (confirm('確定要保留此留言並駁回檢舉嗎？')) {
+                $.ajax({
+                    url: '/report/keep',
+                    type: 'POST',
+                    data: {
+                        messageReportId: reportId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('操作失敗，請稍後再試');
+                    }
+                });
+            }
+        }
     </script>
+
+    <!-- Report Detail Modal -->
+    <div class="modal fade" id="reportDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="fas fa-file-alt me-2 text-info"></i>檢舉詳情</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">原始留言內容</label>
+                        <div class="p-3 bg-black rounded border border-secondary">
+                            <p id="modalContent" class="mb-0 text-white-50 text-break">留言內容...</p>
+                        </div>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="mb-3">
+                        <label class="text-muted small">檢舉會員</label>
+                        <p id="modalReporter" class="fw-bold">會員名稱</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">檢舉時間</label>
+                        <p id="modalTime">2024/01/01 12:00</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">檢舉原因</label>
+                        <div class="p-2 bg-secondary bg-opacity-10 rounded border border-secondary text-danger">
+                            <p id="modalReason" class="mb-0 text-break">原因內容...</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">檢舉狀態</label>
+                        <p><span id="modalStatus" class="badge bg-warning text-dark">待處理</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                    <button type="button" class="btn btn-success me-2" id="modalKeepBtn" onclick="keepReport(this)">
+                        <i class="fas fa-check me-1"></i>保留留言
+                    </button>
+                    <button type="button" class="btn btn-danger" id="modalDeleteBtn" onclick="deleteReport(this)">
+                        <i class="fas fa-trash-alt me-1"></i>刪除留言
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

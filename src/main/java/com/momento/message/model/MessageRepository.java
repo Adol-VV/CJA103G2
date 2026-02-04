@@ -13,4 +13,7 @@ public interface MessageRepository extends JpaRepository<MessageVO, Integer> {
 
 	// 根據狀態查詢留言
 	List<MessageVO> findByStatus(Integer status);
+
+	// 查詢某篇文章下特定狀態的留言
+	List<MessageVO> findByArticleVO_ArticleIdAndStatus(Integer articleId, Integer status);
 }

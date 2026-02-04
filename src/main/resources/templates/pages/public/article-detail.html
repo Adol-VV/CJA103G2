@@ -168,9 +168,8 @@
                                     <p class="text-muted mb-2" th:text="${message.content}">留言內容</p>
                                     <div class="d-flex align-items-center">
                                         <!-- <a href="#" class="text-muted small me-3 text-decoration-none">回覆</a> -->
-                                        <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
-                                            data-bs-target="#reportCommentModal"
-                                            th:onclick="'setReportCommentId(' + ${message.messageId} + ')'">
+                                        <a href="javascript:void(0)" class="text-muted small text-decoration-none"
+                                            th:onclick="'checkLoginAndReport(' + ${message.messageId} + ')'">
                                             <i class="fas fa-flag me-1"></i>檢舉
                                         </a>
                                     </div>
@@ -339,34 +338,71 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../../js/common.js"></script>
     <script>
+        // Check login status
+        const isLoggedIn = [[${ session.loginMember != null }]];
+
         // 檢舉留言功能
         function setReportCommentId(commentId) {
             document.getElementById('reportCommentId').value = commentId;
         }
 
+        function checkLoginAndReport(commentId) {
+            if (isLoggedIn) {
+                setReportCommentId(commentId);
+                const modal = new bootstrap.Modal(document.getElementById('reportCommentModal'));
+                modal.show();
+            } else {
+                alert('請先登入會員後再進行檢舉');
+                window.location.href = '/member/login';
+            }
+        }
+
         function submitReport() {
             const commentId = document.getElementById('reportCommentId').value;
-            const reason = document.querySelector('input[name="reportReason"]:checked');
+            const reasonInput = document.querySelector('input[name="reportReason"]:checked');
             const description = document.getElementById('reportDescription').value;
 
-            if (!reason) {
+            if (!reasonInput) {
                 alert('請選擇檢舉原因');
                 return;
             }
 
-            // 模擬提交檢舉
-            console.log('提交檢舉:', { commentId, reason: reason.value, description });
+            const reason = reasonInput.value;
 
-            // 關閉 Modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('reportCommentModal'));
-            modal.hide();
+            $.ajax({
+                url: '/report/comment',
+                type: 'POST',
+                data: {
+                    messageId: commentId,
+                    reportReason: reason,
+                    description: description
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // 關閉 Modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('reportCommentModal'));
+                        modal.hide();
 
-            // 重置表單
-            document.querySelector('input[name="reportReason"]:checked').checked = false;
-            document.getElementById('reportDescription').value = '';
+                        // 重置表單
+                        if (document.querySelector('input[name="reportReason"]:checked')) {
+                            document.querySelector('input[name="reportReason"]:checked').checked = false;
+                        }
+                        document.getElementById('reportDescription').value = '';
 
-            // 顯示成功訊息
-            alert('檢舉已提交，我們會盡快審核處理。感謝您的回報！');
+                        // 顯示成功訊息
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                        if (response.message === '請先登入會員') {
+                            window.location.href = '/member/login';
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('提交失敗，請稍後再試');
+                }
+            });
         }
 
         $(document).ready(function () {
