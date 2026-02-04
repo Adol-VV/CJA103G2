@@ -447,9 +447,8 @@
                                         <label class="form-check-label text-muted small" for="agreeTerms"
                                             style="cursor: pointer;">
                                             我已閱讀並同意 <a th:href="@{/terms}" target="_blank"
-                                                class="text-success">主辦單位服務條款</a> 與 <a
-                                                th:href="@{/privacy}" target="_blank"
-                                                class="text-success">隱私權政策</a>
+                                                class="text-success">主辦單位服務條款</a> 與 <a th:href="@{/privacy}"
+                                                target="_blank" class="text-success">隱私權政策</a>
                                         </label>
                                     </div>
                                 </div>
@@ -628,6 +627,15 @@
 
             // 隱藏所有提示
             $('#accountError, #accountSuccess').addClass('d-none');
+
+            const formatPattern = /^[a-zA-Z0-9_]+$/;  // 檢查格式：僅允許英文字母、數字和底線
+            if (!formatPattern.test(account)) {
+                // 如果檢查失敗 (test 返回 false)
+                $('#accountErrorMsg').text('請勿使用中文或特殊符號 (僅限英數與底線)');
+                $('#accountError').removeClass('d-none');// 顯示紅字
+                $('#accountSuccess').addClass('d-none');  // 隱藏綠勾
+                return;
+            }
 
             // 如果帳號長度不足，不檢查
             if (account.length < 4) {
