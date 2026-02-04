@@ -545,15 +545,15 @@
                 // 驗證第二步：基本資料
                 if (currentStep === 2) {
                     const email = $('#emailInput').val();
-                    const emailPattern = /@.*\.com$/;
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailPattern.test(email)) {
-                        alert('Email 格式不正確 (需包含 @ 與 .com)');
+                        alert('Email 格式不正確');
                         $('#emailInput').focus();
                         return;
                     }
 
                     if ($('#emailError').is(':visible') && $('#emailErrorMsg').text().includes('已被使用')) {
-                        alert('此 Email 已被使用，請更換一個');
+                        alert('此 Email 已被使用，請更換');
                         $('#emailInput').focus();
                         return;
                     }
@@ -671,8 +671,8 @@
             // 隱藏所有提示
             $('#emailError, #emailSuccess').addClass('d-none');
 
-            // 簡化 Email 格式驗證：只要有 @ 和 .com 即可
-            const emailPattern = /@.*\.com$/;
+            // Email 格式驗證：必須有 @ 和至少一個 . 在 @ 之後
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email)) {
                 $('#emailErrorMsg').text('Email 格式不正確');
                 $('#emailError').removeClass('d-none');
