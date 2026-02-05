@@ -115,9 +115,11 @@
                         </div>
                         <input type="hidden" id="memberId" th:value="${detail.memberId}">
                         <div class="row g-3 mb-4 -none" id="updateMember">
+                        <div id="errorDisplay" style="color: #ff4d4f; background: #2a2a2a; padding: 10px; margin-bottom: 10px; border-radius: 4px; display: none;">
+    					</div>
                             <div class="col-md-6">
 								<label class="form-label text-white">密碼</label>
-								<input type="text"
+								<input type="password"
 								class="form-control bg-dark text-white border-secondary"
 								name="password">
 							</div>

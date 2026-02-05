@@ -98,17 +98,25 @@ export function initMemberList() {
 			method: "POST",
 			body: params,
 			headers: { 'X-Requested-With': 'XMLHttpRequest' }
-		}).then(res => res.text())
-		.then(msg => {
-				alert(msg);
-				location.reload(); // 更新成功後重新整理頁面看到新資料
-		}).catch(error => {
-				alert("發生錯誤：" + error);
+		})
+		.then(res => {
+		    // 先把 status 存起來，因為 res.text() 也是非同步的
+		    const isOk = res.ok;
+		    return res.text().then(msg => ({ isOk, msg }));
+		})
+		.then(({ isOk, msg }) => {
+		    if (isOk) {
+		        alert(msg);
+		        location.reload();
+		    } else {
+		        // 這裡要用 msg，因為上面 res.text() 傳回來的字串就是 msg
+		        errorDisplay.innerText = "❌ " + msg; 
+		        errorDisplay.style.display = 'block';
+		    }
 		})
 
-
 	})
-	$(document).on("click", "#cancelUpdate", function(){
+	$(document).on("click", "#cancelUpdate", function() {
 		$("#memberDetailModal").modal('hide');
 	})
 }
