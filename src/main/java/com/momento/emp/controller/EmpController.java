@@ -251,7 +251,6 @@ public class EmpController {
     @PostMapping("/changeReviewStatus")
     public String changeReviewStatus(@RequestParam("prodId") Integer prodId,
             @RequestParam("reviewStatus") Byte reviewStatus) {
-        System.out.println("收到 prodId: " + prodId + ", 收到狀態: " + reviewStatus);
         prodSvc.updateProdReviewStatus(prodId, reviewStatus);
 
         // pei
