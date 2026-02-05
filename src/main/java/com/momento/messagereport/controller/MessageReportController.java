@@ -159,10 +159,15 @@ public class MessageReportController {
             reportVO.setEmpVO(loginEmp);
             messageReportService.updateMessageReport(reportVO);
 
-            // 4. Do NOT update Message Status (Keep it as is)
+            // 4. Update Message Status to 0 (Visible/Active)
+            if (reportVO.getMessageVO() != null) {
+                MessageVO messageVO = reportVO.getMessageVO();
+                messageVO.setStatus(0);
+                messageService.updateMessage(messageVO);
+            }
 
             response.put("success", true);
-            response.put("message", "檢舉已駁回，留言予以保留");
+            response.put("message", "檢舉已駁回，留言予以保留（狀態已重置為公開）");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
