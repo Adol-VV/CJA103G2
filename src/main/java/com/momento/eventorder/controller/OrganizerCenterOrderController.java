@@ -106,8 +106,6 @@ public class OrganizerCenterOrderController {
 				activeEvents.add(event);
 		}
 
-		model.addAttribute("activeEvents", activeEvents);
-		model.addAttribute("checkedIn", checkedIn);
 		
 		
 		List<EventOrderVO> checkedInOrders = eventOrderSvc.getEventOrdersByEventId(eventId);
@@ -119,6 +117,8 @@ public class OrganizerCenterOrderController {
 					checkedIn.add(items);
 			}
 		}
+		model.addAttribute("activeEvents", activeEvents);
+		model.addAttribute("checkedIn", checkedIn);
 		// 驗票(比對UUID)
 		if (randomUUID != null && !randomUUID.isEmpty()) {
 			EventOrderItemVO item = eventOrderItemSvc.getItemsByQrcode(randomUUID);
