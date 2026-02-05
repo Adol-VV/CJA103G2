@@ -106,7 +106,17 @@ public class OrganizerCenterOrderController {
 				activeEvents.add(event);
 		}
 
-		List<EventOrderItemVO> checkedIn = eventOrderItemSvc.getEventOrderItemBystatus(1);
+		
+		
+		List<EventOrderVO> checkedInOrders = eventOrderSvc.getEventOrdersByEventId(eventId);
+		List<EventOrderItemVO> checkedIn = null;
+		for(EventOrderVO order: checkedInOrders) {
+			List<EventOrderItemVO> checkedInItems = order.getEventOrderItems();
+			for(EventOrderItemVO items: checkedInItems) {
+				if(items.getStatus() == 1)
+					checkedIn.add(items);
+			}
+		}
 		model.addAttribute("activeEvents", activeEvents);
 		model.addAttribute("checkedIn", checkedIn);
 		// 驗票(比對UUID)

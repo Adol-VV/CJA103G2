@@ -113,14 +113,26 @@ public class MemberController {
 		try {
 			if(member != null) {
 				
-				if(password != null && !password.trim().isEmpty())
+				if(password != null && !password.trim().isEmpty()) {
+					if( !password.matches("^.{8,}$") ) {
+						return ResponseEntity.badRequest().body("密碼須為8碼以上");
+					}
 					member.setPassword(password);
-				
-				if(phone != null && !phone.trim().isEmpty())
+				}
+				if(phone != null && !phone.trim().isEmpty()) {
+					if (!phone.matches("^09\\d{8}$")) {
+			            return ResponseEntity.badRequest().body("手機號碼格式不符");
+			        }
 					member.setPhone(phone);
-				
-				if(account != null && !account.trim().isEmpty())
+				}
+				if(account != null && !account.trim().isEmpty()) {
+					if( memberSvc.findByAccount(account)!= null ){
+						return ResponseEntity.badRequest().body("此帳號已註冊");
+					}else if( !account.matches("^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") ) {
+						return ResponseEntity.badRequest().body("電子信箱格式不符");
+					}
 					member.setAccount(account);
+				}
 				
 				if(address != null && !address.trim().isEmpty())
 					member.setAddress(address);
