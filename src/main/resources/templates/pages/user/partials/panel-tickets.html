@@ -25,7 +25,7 @@
 								<span class="badge bg-success" th:if="${order.payStatus == 1}">已付款</span>
 								<span class="badge bg-warning" th:if="${order.payStatus == 2}">申請退款</span>
 								<span class="badge bg-danger" th:if="${order.payStatus == 3}">已退款</span>
-								<span class="badge bg-secondary" th:if="${order.payStatus == 4}">已退款</span>
+								<span class="badge bg-primary" th:if="${order.payStatus == 4}">退款已駁回</span>
 							</div>
 							<p class="card-text text-muted mb-1">
 								<i class="far fa-calendar me-2"></i> <span
@@ -55,7 +55,7 @@
 										<span class="card-title mb-0" th:id="${item.eventOrderItemId}"
 											th:text="${item.ticket.ticketName}">貴賓席</span>
 
-										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal" th:if="${order.payStatus == 1}">
+										<button class="btn btn-primary btn-sm btn-show-qr" data-bs-target="#qrModal" th:if="${order.payStatus == 1 || order.payStatus == 4}">
 											<i class="fas fa-qrcode me-1"></i> 電子票券
 										</button>
 									</div>

@@ -71,6 +71,13 @@ export function initProductApprovals() {
 					$("#prodImages").append(`<img loading="lazy" src="${prod.prodImages[i]}" class="prodImage"
 					    style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px">`)
 				}
+				if(prod.reviewStatus != "待審核"){
+					$("#btn-reject2").hide();
+					$("#btn-approve2").hide();
+				}else{
+					$("#btn-reject2").show();
+					$("#btn-approve2").show();
+				}
 
 			}))
 
@@ -202,12 +209,4 @@ export function initProductApprovals() {
 		}
 	})
 	
-	//審核通過或駁回後，隱藏按鈕
-	$(document).ready(function(){
-		if($(".showReviewStatus").text() != "待審核"){
-			$(".btn-approve").hide();
-			$(".btn-reject").hide();
-			
-		}
-	})
 }

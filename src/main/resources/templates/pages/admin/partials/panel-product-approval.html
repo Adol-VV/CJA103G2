@@ -76,10 +76,12 @@
                                     </button>
                                     <form th:action="@{/admin/changeReviewStatus}" method="post">
 	                                    <input type="hidden" name="prodId" th:value="${prod.prodId}" />
-	                                    <button style="padding:6px 6px 6px 6px" class="btn btn-outline-success btn-approve" id="btn-approve1" type="submit" title="通過" name="reviewStatus" value="1">
+	                                    <button style="padding:6px 6px 6px 6px" class="btn btn-outline-success btn-approve" id="btn-approve1" type="submit" title="通過" name="reviewStatus" value="1"
+	                                    th:if="${prod.reviewStatus} == '待審核'">
 	                                        <i class="fas fa-check"></i>
 	                                    </button>
-										<button style="padding:6px 7px 6px 7px" class="btn btn-outline-danger btn-reject" id="btn-reject1" type="submit" title="駁回" name="reviewStatus" value="2">
+										<button style="padding:6px 7px 6px 7px" class="btn btn-outline-danger btn-reject" id="btn-reject1" type="submit" title="駁回" name="reviewStatus" value="2"
+										th:if="${prod.reviewStatus} == '待審核'">
 	                                        <i class="fas fa-times"></i>
 	                                    </button>
 									</form>

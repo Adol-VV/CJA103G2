@@ -32,7 +32,8 @@ public interface EventOrderRepository extends JpaRepository<EventOrderVO, Intege
 			+ "  OR (:activeEvent IS NOT NULL AND o.event.eventId = :activeEvent) "
 			+ "  OR (:finishedEvent IS NOT NULL AND o.event.eventId = :finishedEvent) " + ") "
 			+ "AND (:buyer IS NULL OR trim(:buyer) = '' " + "OR o.member.name LIKE %:buyer% "
-			+ "OR CAST(o.eventOrderId AS string) LIKE %:buyer%)")
+			+ "OR CAST(o.eventOrderId AS string) LIKE %:buyer%)"
+			+ "ORDER BY o.createdAt DESC")
 	public List<EventOrderVO> filterOrders(@Param("organizerId") Integer organizerId,
 			@Param("activeEvent") Integer activeEvent, @Param("finishedEvent") Integer finishedEvent,
 			@Param("buyer") String buyer);

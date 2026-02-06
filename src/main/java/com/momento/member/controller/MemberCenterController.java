@@ -89,7 +89,7 @@ public class MemberCenterController {
 				model.addAttribute("statusMsg", "此帳號已遭停權");
 				return "pages/user/login";
 			}
-
+			
 			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register")
 					|| targetUrl.contains("/forgot-password")) {
 

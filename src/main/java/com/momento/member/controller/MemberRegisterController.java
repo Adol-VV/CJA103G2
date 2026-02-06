@@ -43,7 +43,7 @@ public class MemberRegisterController {
 	public String register(@Valid @ModelAttribute("member") MemberVO memberVO, BindingResult result) {
 		
 		memberVO.setToken(0);
-		memberVO.setStatus(1);
+		memberVO.setStatus(0);
 		memberVO.setCreatedAt(LocalDateTime.now());
 		
 		if(memberSvc.findByAccount(memberVO.getAccount()) != null) {
