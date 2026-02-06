@@ -42,7 +42,7 @@ public class MemberCenterController {
 
 	@Autowired
 	ProdFavService prodFavSvc;
-	
+
 	@Autowired
 	EventOrderService eventOrderSvc;
 
@@ -53,10 +53,17 @@ public class MemberCenterController {
 	MemberNotifyService memberNotifyService;
 
 	@GetMapping("/login")
-	public String showLoginPage(String targetUrl, HttpServletRequest request, Model model, HttpSession session) {
-		String referer = request.getHeader("Referer");
-		if (referer != null && !referer.contains("/login")) {
-			session.setAttribute("actualBackUrl", referer);
+	public String showLoginPage(@RequestParam(required = false) String targetUrl, HttpServletRequest request,
+			Model model, HttpSession session) {
+		if (targetUrl != null && !targetUrl.isEmpty()) {
+			session.setAttribute("actualBackUrl", targetUrl);
+		} else {
+			String referer = request.getHeader("Referer");
+			if (referer != null && !referer.contains("/login") && !referer.contains("/register")) { // Added register
+																									// check just in
+																									// case
+				session.setAttribute("actualBackUrl", referer);
+			}
 		}
 		model.addAttribute("backUrl", session.getAttribute("actualBackUrl"));
 		return "pages/user/login";
@@ -77,12 +84,12 @@ public class MemberCenterController {
 		if (member != null && member.getPassword().equals(password)) {
 
 			session.setAttribute("loginMember", member);
-			
-			if(member.getStatus() == 1) {
+
+			if (member.getStatus() == 1) {
 				model.addAttribute("statusMsg", "此帳號已遭停權");
 				return "pages/user/login";
 			}
-			
+
 			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register")
 					|| targetUrl.contains("/forgot-password")) {
 
@@ -122,15 +129,16 @@ public class MemberCenterController {
 
 			// 計算未讀通知數量 (系統通知 + 主辦方通知)
 			List<SystemNotifyVO> sysNotifies = systemNotifyService.getByMemId(loginMember.getMemberId());
-			List<MemberNotifyVO> orgNotifies = memberNotifyService.getNotificationsByMemberId(loginMember.getMemberId());
+			List<MemberNotifyVO> orgNotifies = memberNotifyService
+					.getNotificationsByMemberId(loginMember.getMemberId());
 
 			long sysUnread = sysNotifies != null ? sysNotifies.stream().filter(n -> n.getIsRead() == 0).count() : 0;
 			long orgUnread = orgNotifies != null ? orgNotifies.stream().filter(n -> n.getIsRead() == 0).count() : 0;
 			long unreadNotifyCount = sysUnread + orgUnread;
 
 			model.addAttribute("unreadNotifyCount", unreadNotifyCount);
-			
-			//計算待參加活動
+
+			// 計算待參加活動
 			List<EventOrderVO> eventOrderList = eventOrderSvc.getEventOrderByMemberId(memberId);
 			List<EventOrderVO> activityUnfinished = new ArrayList();
 			LocalDateTime now = LocalDateTime.now();
@@ -142,7 +150,7 @@ public class MemberCenterController {
 					iterator.remove();
 				}
 			}
-			
+
 			model.addAttribute("activityCount", activityUnfinished.size());
 		}
 		return "pages/user/partials/sidebar";
@@ -156,11 +164,11 @@ public class MemberCenterController {
 	@GetMapping("/dashboard/overview")
 	public String showDashboardOverview(HttpSession session, Model model) {
 		MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
-		
+
 		if (loginMember != null) {
-			
+
 			MemberVO member = memberSvc.findOneMember(loginMember.getMemberId());
-			
+
 			Integer loginMemberToken = member.getToken();
 			model.addAttribute("loginMemberToken", loginMemberToken);
 
@@ -170,28 +178,29 @@ public class MemberCenterController {
 
 			// 抓收藏活動筆數
 			model.addAttribute("favoriteEventCount", eventService.getMemberFavoriteCount(loginMember.getMemberId()));
-			
+
 			// 待用票券數
 			List<EventOrderVO> eventOrders = eventOrderSvc.getEventOrderByMemberId(loginMember.getMemberId());
-			
+
 			int ticketCounts = 0;
 			LocalDateTime now = LocalDateTime.now();
-			
-			for(EventOrderVO eventOrder: eventOrders) {
-				if((eventOrder.getPayStatus() == 1 || eventOrder.getPayStatus() == 4) && eventOrder.getEvent().getEventEndAt().isAfter(now)) {
+
+			for (EventOrderVO eventOrder : eventOrders) {
+				if ((eventOrder.getPayStatus() == 1 || eventOrder.getPayStatus() == 4)
+						&& eventOrder.getEvent().getEventEndAt().isAfter(now)) {
 					List<EventOrderItemVO> eventOrderItems = eventOrder.getEventOrderItems();
 					ticketCounts += eventOrderItems.size();
 				}
 			}
-			
+
 			model.addAttribute("ticketCounts", ticketCounts);
-			
+
 			// 最近兩個活動
 			List<EventOrderVO> recentEvents = eventOrderSvc.getTwoRecentEvents(loginMember.getMemberId(), now);
 			model.addAttribute("recentEvents", recentEvents);
-			
+
 			List<Map<String, Object>> recentThreeOrders = eventOrderSvc.getThreeRecentOrders(loginMember.getMemberId());
-			model.addAttribute("latestOrders",recentThreeOrders);
+			model.addAttribute("latestOrders", recentThreeOrders);
 		}
 		return "pages/user/partials/panel-overview";
 	}
