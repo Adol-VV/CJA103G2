@@ -1,6 +1,8 @@
 package com.momento.prod.model;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,15 @@ public class ProdImageService {
 	}
 	
 	public void deleteProdImageById(Integer prodImageId) {
+		Optional<ProdImageVO> optional = repository.findById(prodImageId);
+		ProdImageVO prodImage = optional.get();
+		Path targetPath = Path.of("C:/momento-uploads/" + prodImage.getImageUrl());
+		try {
+			Files.deleteIfExists(targetPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		repository.deleteByImageId(prodImageId);
 	}
 	
