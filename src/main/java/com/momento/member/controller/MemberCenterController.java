@@ -83,8 +83,7 @@ public class MemberCenterController {
 				return "pages/user/login";
 			}
 			
-			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register")
-					|| targetUrl.contains("/forgot-password")) {
+			if (targetUrl == null || targetUrl.isEmpty() || targetUrl.contains("/register") || targetUrl.contains("/reset-password")) {
 
 				targetUrl = "/"; // 設定一個預設的跳轉頁面
 
