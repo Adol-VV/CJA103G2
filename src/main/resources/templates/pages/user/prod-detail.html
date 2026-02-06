@@ -220,7 +220,7 @@
                                     </h6>
                                     <small class="text-muted">
                                         <i class="fas fa-calendar me-1"></i><span
-                                            th:text="${event.eventStartAt}">2024/12/31</span>
+                                            th:text="${#temporals.format(event.eventStartAt, 'yyyy-MM-dd')}">2024/12/31</span>
                                         <span class="d-none d-sm-inline">
                                             <i class="fas fa-map-marker-alt ms-2 me-1"></i><span
                                                 th:text="${event.place}">台北市中山堂</span>
