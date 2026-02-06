@@ -32,10 +32,10 @@
                 role="tab">
                 <i class="fas fa-university me-2"></i> 銀行帳戶資訊
             </button>
-            <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#notification-settings"
+            <!-- <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#notification-settings"
                 type="button" role="tab">
                 <i class="fas fa-bell me-2"></i> 通知設定
-            </button>
+            </button> -->
             <button class="nav-link text-start mb-2" data-bs-toggle="pill" data-bs-target="#security-settings"
                 type="button" role="tab">
                 <i class="fas fa-lock me-2"></i> 帳號安全
@@ -155,7 +155,7 @@
             </div>
 
             <!-- Tab 3: 通知設定 -->
-            <div class="tab-pane fade" id="notification-settings" role="tabpanel">
+            <!-- <div class="tab-pane fade" id="notification-settings" role="tabpanel">
                 <div class="card bg-dark border-secondary">
                     <div class="card-header border-secondary">
                         <i class="fas fa-bell"></i> 通知設定
@@ -196,7 +196,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Tab 4: 帳號安全 -->
             <div class="tab-pane fade" id="security-settings" role="tabpanel">
@@ -209,19 +209,36 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">目前密碼 <span class="text-danger">*</span></label>
-                                    <input type="password" name="currentPassword"
-                                        class="form-control bg-dark text-white border-secondary" required>
+                                    <div class="input-group">
+                                        <input type="password" name="currentPassword" id="currentPassword"
+                                            class="form-control bg-dark text-white border-secondary" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="far fa-eye-slash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">新密碼 <span class="text-danger">*</span></label>
-                                    <input type="password" name="newPassword"
-                                        class="form-control bg-dark text-white border-secondary" minlength="8" required>
+                                    <div class="input-group">
+                                        <input type="password" name="newPassword" id="newPassword"
+                                            class="form-control bg-dark text-white border-secondary" minlength="8"
+                                            required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="far fa-eye-slash"></i>
+                                        </button>
+                                    </div>
                                     <small class="text-muted">至少 8 個字元,建議包含大小寫字母與數字</small>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">確認新密碼 <span class="text-danger">*</span></label>
-                                    <input type="password" name="confirmPassword"
-                                        class="form-control bg-dark text-white border-secondary" minlength="8" required>
+                                    <div class="input-group">
+                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                            class="form-control bg-dark text-white border-secondary" minlength="8"
+                                            required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="far fa-eye-slash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,3 +253,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // Toggle password visibility
+        $('.toggle-password').click(function () {
+            const input = $(this).siblings('input');
+            const icon = $(this).find('i');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            } else {
+                input.attr('type', 'password');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            }
+        });
+    });
+</script>
