@@ -36,16 +36,10 @@ public class LinePayService {
     @Value("${line.pay.api-url}")
     private String apiUrl;
 
-    @Value("${line.pay.confirm-url}")
-    private String confirmUrl;
-
-    @Value("${line.pay.cancel-url}")
-    private String cancelUrl;
-
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String initiatePayment(PaymentRequest request) throws Exception {
+    public String initiatePayment(PaymentRequest request, String baseUrl) throws Exception {
         String requestUri = "/v3/payments/request";
         String nonce = UUID.randomUUID().toString();
 
@@ -56,10 +50,9 @@ public class LinePayService {
         body.put("orderId", request.getOrderId());
 
         Map<String, Object> redirectUrls = new HashMap<>();
-        // Append context info to confirm URL if needed, or store in session.
-        // Here we keep it simple.
-        redirectUrls.put("confirmUrl", confirmUrl + "?orderId=" + request.getOrderId());
-        redirectUrls.put("cancelUrl", cancelUrl);
+        // Use dynamically provided baseUrl for redirects
+        redirectUrls.put("confirmUrl", baseUrl + "/api/linepay/confirm?orderId=" + request.getOrderId());
+        redirectUrls.put("cancelUrl", baseUrl + "/api/linepay/cancel");
         body.put("redirectUrls", redirectUrls);
 
         Map<String, Object> product = new HashMap<>();

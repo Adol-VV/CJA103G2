@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.momento.linepay.dto.PaymentRequest;
 import com.momento.linepay.service.LinePayService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
@@ -29,7 +30,8 @@ public class LinePayController {
 
     @PostMapping("/request")
     @ResponseBody
-    public ResponseEntity<String> requestPayment(@RequestBody PaymentRequest request, HttpSession session) {
+    public ResponseEntity<String> requestPayment(@RequestBody PaymentRequest request, HttpSession session,
+            HttpServletRequest httpServletRequest) {
         try {
             // Generate a unique transaction order ID for LINE Pay
             String transactionOrderId = UUID.randomUUID().toString();
@@ -42,7 +44,21 @@ public class LinePayController {
             }
             session.setAttribute(transactionOrderId + "_amount", request.getAmount());
 
-            String paymentUrl = linePayService.initiatePayment(request);
+            // Construct dynamic baseUrl
+            String scheme = httpServletRequest.getScheme();
+            String serverName = httpServletRequest.getServerName();
+            int serverPort = httpServletRequest.getServerPort();
+            String contextPath = httpServletRequest.getContextPath();
+
+            StringBuilder url = new StringBuilder();
+            url.append(scheme).append("://").append(serverName);
+            if ((scheme.equals("http") && serverPort != 80) || (scheme.equals("https") && serverPort != 443)) {
+                url.append(":").append(serverPort);
+            }
+            url.append(contextPath);
+            String baseUrl = url.toString();
+
+            String paymentUrl = linePayService.initiatePayment(request, baseUrl);
             return ResponseEntity.ok(paymentUrl);
         } catch (Exception e) {
             e.printStackTrace();
