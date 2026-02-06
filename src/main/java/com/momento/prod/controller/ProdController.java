@@ -128,7 +128,7 @@ public class ProdController {
 	public String addFav(HttpSession session, @RequestParam("prodId") Integer prodId) {
 		MemberVO member = (MemberVO) session.getAttribute("loginMember");
 		if (member == null) {
-			return "pages/user/login";
+			return "redirect:/member/login";
 		}
 		ProdFavVO prodFav = new ProdFavVO();
 		ProdVO prod = new ProdVO();
@@ -145,7 +145,7 @@ public class ProdController {
 	public String removeFav(HttpSession session, @RequestParam("prodId") Integer prodId) {
 		MemberVO member = (MemberVO) session.getAttribute("loginMember");
 		if (member == null) {
-			return "pages/user/login";
+			return "redirect:/member/login";
 		}
 
 		prodFavSvc.removeFavProd(member.getMemberId(), prodId);
