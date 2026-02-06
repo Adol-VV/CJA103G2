@@ -70,7 +70,7 @@ public class ProdVO implements Serializable {
 	@Column(name = "REVIEW_STATUS", columnDefinition = "TINYINT")
 	private byte reviewStatus;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy="prodVO")
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="prodVO")
 	@OrderBy("prodImageId asc")	
 	private List<ProdImageVO> prodImages = new ArrayList<ProdImageVO>();
 	
