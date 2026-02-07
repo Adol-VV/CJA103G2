@@ -30,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
 				.excludePathPatterns(
 						"/member/login",
 						"/member/register",
+						"/member/terms",
 						"/member/forgot-password",
 						"/member/reset-password",
 						"/uploads/**" // 排除圖片路徑

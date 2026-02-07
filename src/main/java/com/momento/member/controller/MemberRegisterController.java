@@ -57,4 +57,9 @@ public class MemberRegisterController {
 		memberSvc.addMember(memberVO);
 		return "redirect:/?registerSuccess";
 	}
+	
+	@GetMapping("/terms")
+	public String showTerms() {
+		return "pages/public/member-terms";
+	}
 }
