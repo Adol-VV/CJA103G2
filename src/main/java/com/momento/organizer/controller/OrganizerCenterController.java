@@ -55,9 +55,9 @@ public class OrganizerCenterController {
 
     @Autowired
     private OrganizerNotifyService orgNotifySvc;
-    
-	@Autowired
-	ProdImageService prodImageSvc;
+
+    @Autowired
+    ProdImageService prodImageSvc;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -361,7 +361,7 @@ public class OrganizerCenterController {
             @RequestParam String newPassword,
             @RequestParam String confirmPassword,
             HttpSession session,
-            Model model) {
+            RedirectAttributes redirectAttributes) {
 
         OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
         if (organizer == null) {
@@ -371,19 +371,19 @@ public class OrganizerCenterController {
         try {
             // 驗證目前密碼
             if (!organizer.getPassword().equals(currentPassword)) {
-                model.addAttribute("errorMsg", "目前密碼錯誤");
+                redirectAttributes.addFlashAttribute("passwordError", "目前密碼錯誤");
                 return "redirect:/organizer/dashboard#settings";
             }
 
             // 驗證新密碼與確認密碼是否一致
             if (!newPassword.equals(confirmPassword)) {
-                model.addAttribute("errorMsg", "新密碼與確認密碼不一致");
+                redirectAttributes.addFlashAttribute("passwordError", "新密碼與確認密碼不一致");
                 return "redirect:/organizer/dashboard#settings";
             }
 
             // 驗證新密碼長度
             if (newPassword.length() < 8) {
-                model.addAttribute("errorMsg", "新密碼至少需要8個字元");
+                redirectAttributes.addFlashAttribute("passwordError", "新密碼至少需要8個字元");
                 return "redirect:/organizer/dashboard#settings";
             }
 
@@ -398,11 +398,11 @@ public class OrganizerCenterController {
             // 更新 Session
             session.setAttribute("loginOrganizer", updated);
 
-            // TODO: 顯示成功訊息
-            model.addAttribute("successMsg", "密碼已變更");
+            // 顯示成功訊息
+            redirectAttributes.addFlashAttribute("passwordSuccess", "密碼變更成功");
 
         } catch (Exception e) {
-            model.addAttribute("errorMsg", "變更失敗: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("passwordError", "變更失敗: " + e.getMessage());
         }
 
         return "redirect:/organizer/dashboard#settings";
@@ -615,7 +615,8 @@ public class OrganizerCenterController {
 
     // 進入商品編輯頁面
     @GetMapping("/prodEdit")
-    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer,@RequestParam("prodId") Integer prodId, ModelMap model) {
+    public String prodEdit(@SessionAttribute("loginOrganizer") OrganizerVO organizer,
+            @RequestParam("prodId") Integer prodId, ModelMap model) {
         if (organizer == null) {
             return "redirect:/organizer/login";
         }
@@ -623,20 +624,21 @@ public class OrganizerCenterController {
         model.addAttribute("prodSortList", prodSortSvc.getAll());
         return "pages/organizer/product-edit";
     }
-    
-    //移除商品圖片
-	@GetMapping("/deleteImage")
-	public String deleteImage( HttpSession session, @RequestParam("prodId") Integer prodId,  @RequestParam("prodImageId") Integer prodImageId, ModelMap model) {
-		OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
-		if (organizer == null) {
+
+    // 移除商品圖片
+    @GetMapping("/deleteImage")
+    public String deleteImage(HttpSession session, @RequestParam("prodId") Integer prodId,
+            @RequestParam("prodImageId") Integer prodImageId, ModelMap model) {
+        OrganizerVO organizer = (OrganizerVO) session.getAttribute("loginOrganizer");
+        if (organizer == null) {
             return "redirect:/organizer/login";
         }
-		prodImageSvc.deleteProdImageById(prodImageId);
+        prodImageSvc.deleteProdImageById(prodImageId);
         model.addAttribute("prod", prodSvc.getOneProd(prodId));
         model.addAttribute("prodSortList", prodSortSvc.getAll());
-        
-		return "pages/organizer/product-edit";
-	}
+
+        return "pages/organizer/product-edit";
+    }
 
     // 進入商品列表頁面
     @GetMapping("/goToProdList")

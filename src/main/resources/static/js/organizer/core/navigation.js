@@ -33,12 +33,21 @@ const Navigation = {
         // Scroll Top Logic
         window.scrollTo(0, 0);
         $('html, body, main').scrollTop(0);
-        
-        
-        if(section === 'product-orders'){
+
+
+        if (section === 'product-orders') {
             organizerOrders();
-        }else if(section === 'settlement'){
+        } else if (section === 'settlement') {
             organizerSettlement();
+        } else if (section === 'settings') {
+            // 觸發 settings tab 初始化
+            setTimeout(() => {
+                const firstTabButton = document.querySelector('#panel-settings .nav-pills .nav-link:first-child');
+                if (firstTabButton) {
+                    const firstTab = new bootstrap.Tab(firstTabButton);
+                    firstTab.show();
+                }
+            }, 100);
         }
 
         history.replaceState(null, '', '#' + section);
@@ -50,23 +59,23 @@ const Navigation = {
     }
 };
 
-function organizerOrders(){
+function organizerOrders() {
     $.ajax({
         url: '/organizer/prod_order/getAllOrderByOrganizerId',
         method: 'GET',
-        success: function(responseHtml) {
+        success: function (responseHtml) {
             $('#panel-product-orders').html(responseHtml);
             $('.panel, .section, .content-panel').removeClass('active');
             $('#panel-product-orders').addClass('active');
         }
     });
-    
+
 }
-function organizerSettlement(){
+function organizerSettlement() {
     $.ajax({
         url: '/organizer/prod_settle/getAllSettlementByOrganizerId',
         method: 'GET',
-        success: function(responseHtml) {
+        success: function (responseHtml) {
             $('#panel-settlement').html(responseHtml);
             $('.panel, .section, .content-panel').removeClass('active');
             $('#panel-settlement').addClass('active');
