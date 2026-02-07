@@ -229,31 +229,31 @@
                                     </div>
                                     <small class="text-muted d-block mt-1">至少 8 個字元，建議包含大小寫字母與數字</small>
                                 </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">確認新密碼 <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" name="confirmPassword" id="confirmPassword"
-                                        class="form-control bg-dark text-white border-secondary" minlength="8" required>
-                                    <button class="btn btn-outline-secondary toggle-password" type="button">
-                                        <i class="far fa-eye-slash"></i>
-                                    </button>
+                                <div class="col-12">
+                                    <label class="form-label">確認新密碼 <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                            class="form-control bg-dark text-white border-secondary" minlength="8"
+                                            required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="far fa-eye-slash"></i>
+                                        </button>
+                                    </div>
+                                    <!-- 密碼一致性提示 -->
+                                    <small id="passwordMatchMessage" class="mt-1" style="display: none;"></small>
                                 </div>
-                                <!-- 密碼一致性提示 -->
-                                <small id="passwordMatchMessage" class="mt-1" style="display: none;"></small>
                             </div>
                         </div>
+                        <div class="card-footer border-secondary text-end">
+                            <button type="submit" class="btn btn-warning" id="submitPasswordBtn">
+                                <i class="fas fa-key"></i> 變更密碼
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-footer border-secondary text-end">
-                        <button type="submit" class="btn btn-warning" id="submitPasswordBtn">
-                            <i class="fas fa-key"></i> 變更密碼
-                        </button>
-                    </div>
+                </form>
             </div>
-            </form>
         </div>
     </div>
-</div>
 </div>
 
 <script>
