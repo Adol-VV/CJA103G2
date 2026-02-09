@@ -1,18 +1,20 @@
 package com.momento.member.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.momento.member.model.EmailService;
 import com.momento.member.model.MemberService;
 import com.momento.member.model.MemberVO;
 import com.momento.member.model.ResetPasswordService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/member")
@@ -34,7 +36,7 @@ public class ForgotPasswordController {
 	}
 
 	@PostMapping("/forgot-password")
-	public String processForgot(@RequestParam String resetEmail, Model model) {
+	public String processForgot(@RequestParam String resetEmail, Model model, HttpServletRequest request) {
 
 		MemberVO member = memberSvc.findByAccount(resetEmail);
 
@@ -50,7 +52,7 @@ public class ForgotPasswordController {
 		// 發送郵件
 		try {
 
-			emailSvc.sendResetPasswordEmail(resetEmail, token);
+			emailSvc.sendResetPasswordEmail(resetEmail, token, request);
 			model.addAttribute("message", "重設連結已發送至您的信箱");
 
 		} catch (Exception e) {
@@ -77,13 +79,20 @@ public class ForgotPasswordController {
 	}
 	
 	@PostMapping("/reset-password")
-	public String updatePassword(@RequestParam String token, @RequestParam String newPassword, Model model) {
+	public String updatePassword(@RequestParam String token, @RequestParam String newPassword, RedirectAttributes redirectAttributes) {
 		
 		String memberId = resetSvc.verifyToken(token);
+		
+		String regPassword = "^.{8,}$";
 		
 		if (memberId != null) {
 
 			MemberVO member = memberSvc.findOneMember(Integer.valueOf(memberId));
+			
+			if( !newPassword.matches(regPassword) ) {
+				redirectAttributes.addFlashAttribute("msg", "密碼須為8碼以上");
+				return "redirect:/member/reset-password?token="+token;
+			}
 
 			member.setPassword(newPassword);
 			memberSvc.updateMember(member);

@@ -45,7 +45,8 @@
                     <button class="btn btn-link text-muted position-relative p-2" data-bs-toggle="dropdown"
                         id="bellDropdown" type="button" aria-expanded="false">
                         <i class="far fa-bell fs-5"></i>
-                        <span id="bellBadge" th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}" th:text="${unreadNotifyCount}"
+                        <span id="bellBadge" th:if="${unreadNotifyCount != null and unreadNotifyCount > 0}"
+                            th:text="${unreadNotifyCount}"
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                             style="font-size: 0.6rem;">0</span>
                     </button>
@@ -206,7 +207,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <!-- Modularized JS -->
     <script type="module" th:src="@{/js/organizer/index.js}"></script>
@@ -270,6 +271,39 @@
                     showConfirmButton: false,
                     background: '#1a1d20',
                     color: '#fff'
+                });
+            }
+
+            // 密碼變更成功訊息
+            var passwordSuccess = /*[[${passwordSuccess}]]*/ null;
+            if (passwordSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '密碼變更成功',
+                    text: passwordSuccess,
+                    timer: 3000,
+                    showConfirmButton: false,
+                    background: '#1a1d20',
+                    color: '#fff',
+                    position: 'top-end',
+                    toast: true
+                });
+            }
+
+            // 密碼變更錯誤訊息
+            var passwordError = /*[[${passwordError}]]*/ null;
+            if (passwordError) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '密碼變更失敗',
+                    text: passwordError,
+                    timer: 4000,
+                    showConfirmButton: true,
+                    confirmButtonText: '我知道了',
+                    background: '#1a1d20',
+                    color: '#fff',
+                    position: 'top-end',
+                    toast: true
                 });
             }
         });
