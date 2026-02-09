@@ -309,68 +309,69 @@
                         <div class="card bg-dark border-secondary product-card h-100">
                             <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}">
                                 <img loading="lazy" th:src="${prod.mainImageUrl}" class="card-img-top"
-                                style="height: 90px; object-fit: cover;">
+                                    style="height: 90px; object-fit: cover;">
                             </a>
                             <div class="card-body">
                                 <a th:href="@{/prod/getOne_For_Display(prodId=${prod.prodId})}">
-                                	<h6 class="card-title text-truncate" th:text="${prod.prodName}">快樂文創紀念T恤</h6>
+                                    <h6 class="card-title text-truncate" th:text="${prod.prodName}">快樂文創紀念T恤</h6>
                                 </a>
                                 <p class="text-muted small mb-2" th:text="${prod.sortName}">官方週邊</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="fw-bold text-white" th:text="|$ ${prod.prodPrice}|">NT$ 680</span>
-                                    <span class="text-muted small" th:text="'庫存 '+${prod.prodStock}" style="font-size:12px"></span>
+                                    <span class="text-muted small" th:text="'庫存 '+${prod.prodStock}"
+                                        style="font-size:12px"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Product 2 -->
-<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
-<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
-<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
-<!--                                 style="height: 200px; object-fit: cover;"> -->
-<!--                             <div class="card-body"> -->
-<!--                                 <h6 class="card-title text-truncate">限定版帆布袋</h6> -->
-<!--                                 <p class="text-muted small mb-2">環保系列</p> -->
-<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
-<!--                                     <span class="fw-bold text-white">NT$ 450</span> -->
-<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
-<!--                                             class="fas fa-shopping-cart"></i></a> -->
-<!--                                 </div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
+                    <!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+                    <!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+                    <!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+                    <!--                                 style="height: 200px; object-fit: cover;"> -->
+                    <!--                             <div class="card-body"> -->
+                    <!--                                 <h6 class="card-title text-truncate">限定版帆布袋</h6> -->
+                    <!--                                 <p class="text-muted small mb-2">環保系列</p> -->
+                    <!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+                    <!--                                     <span class="fw-bold text-white">NT$ 450</span> -->
+                    <!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+                    <!--                                             class="fas fa-shopping-cart"></i></a> -->
+                    <!--                                 </div> -->
+                    <!--                             </div> -->
+                    <!--                         </div> -->
+                    <!--                     </div> -->
                     <!-- Product 3 -->
-<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
-<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
-<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
-<!--                                 style="height: 200px; object-fit: cover;"> -->
-<!--                             <div class="card-body"> -->
-<!--                                 <h6 class="card-title text-truncate">音樂祭貼紙包</h6> -->
-<!--                                 <p class="text-muted small mb-2">收藏品</p> -->
-<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
-<!--                                     <span class="fw-bold text-white">NT$ 120</span> -->
-<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
-<!--                                             class="fas fa-shopping-cart"></i></a> -->
-<!--                                 </div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
+                    <!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+                    <!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+                    <!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+                    <!--                                 style="height: 200px; object-fit: cover;"> -->
+                    <!--                             <div class="card-body"> -->
+                    <!--                                 <h6 class="card-title text-truncate">音樂祭貼紙包</h6> -->
+                    <!--                                 <p class="text-muted small mb-2">收藏品</p> -->
+                    <!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+                    <!--                                     <span class="fw-bold text-white">NT$ 120</span> -->
+                    <!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+                    <!--                                             class="fas fa-shopping-cart"></i></a> -->
+                    <!--                                 </div> -->
+                    <!--                             </div> -->
+                    <!--                         </div> -->
+                    <!--                     </div> -->
                     <!-- Product 4 -->
-<!--                     <div class="col-6 col-md-4 col-lg-3"> -->
-<!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
-<!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
-<!--                                 style="height: 200px; object-fit: cover;"> -->
-<!--                             <div class="card-body"> -->
-<!--                                 <h6 class="card-title text-truncate">保溫杯 500ml</h6> -->
-<!--                                 <p class="text-muted small mb-2">生活用品</p> -->
-<!--                                 <div class="d-flex justify-content-between align-items-center"> -->
-<!--                                     <span class="fw-bold text-white">NT$ 580</span> -->
-<!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
-<!--                                             class="fas fa-shopping-cart"></i></a> -->
-<!--                                 </div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
+                    <!--                     <div class="col-6 col-md-4 col-lg-3"> -->
+                    <!--                         <div class="card bg-dark border-secondary product-card h-100"> -->
+                    <!--                             <img loading="lazy" src="https://via.placeholder.com/400x400" class="card-img-top" -->
+                    <!--                                 style="height: 200px; object-fit: cover;"> -->
+                    <!--                             <div class="card-body"> -->
+                    <!--                                 <h6 class="card-title text-truncate">保溫杯 500ml</h6> -->
+                    <!--                                 <p class="text-muted small mb-2">生活用品</p> -->
+                    <!--                                 <div class="d-flex justify-content-between align-items-center"> -->
+                    <!--                                     <span class="fw-bold text-white">NT$ 580</span> -->
+                    <!--                                     <a href="#" class="btn btn-sm btn-outline-primary"><i -->
+                    <!--                                             class="fas fa-shopping-cart"></i></a> -->
+                    <!--                                 </div> -->
+                    <!--                             </div> -->
+                    <!--                         </div> -->
+                    <!--                     </div> -->
                 </div>
             </div>
 
@@ -379,7 +380,7 @@
                 <div class="row g-4" th:if="${articles != null and !articles.isEmpty()}">
                     <!-- Dynamic Article Loop -->
                     <div class="col-md-6" th:each="article : ${articles}">
-                        <a th:href="@{/article/detail/{id}(id=${article.articleId})}"
+                        <a th:href="@{/article/detail(id=${article.articleId})}"
                             class="text-decoration-none text-reset">
                             <div class="card bg-dark border-secondary h-100 article-card">
                                 <div class="row g-0 h-100">
