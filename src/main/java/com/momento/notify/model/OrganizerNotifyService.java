@@ -105,4 +105,12 @@ public class OrganizerNotifyService {
         List<OrganizerNotifyVO> notifications = repository.findByOrganizerVO_OrganizerIdOrderByCreatedAtDesc(organizerId);
         repository.deleteAll(notifications);
     }
+
+    /**
+     * 取得主辦方已發送通知的聚合紀錄 (含已讀率)
+     * 回傳 Object[]: [0]=TITLE, [1]=CREATED_AT, [2]=total, [3]=read_count
+     */
+    public List<Object[]> getGroupedSentRecords(Integer organizerId) {
+        return memNotifyRepo.findGroupedSentRecordsByOrganizerId(organizerId);
+    }
 }

@@ -128,13 +128,13 @@
 </form>
 
 <!-- 歷史通知紀錄 -->
-<div class="card bg-dark border-secondary mt-4">
-    <div class="card-header border-secondary">
-        <h6 class="mb-0"><i class="fas fa-history me-2"></i>已發送通知紀錄</h6>
+<div class="card bg-dark border-secondary mt-4" id="historyTableContainer">
+    <div class="card-header border-secondary d-flex justify-content-between">
+        <h6 class="mb-0"><i class="fas fa-history me-2"></i>發送紀錄</h6>
     </div>
     <div class="table-responsive">
         <table class="table table-dark table-hover mb-0">
-            <thead>
+            <thead class="border-secondary">
                 <tr>
                     <th>發送時間</th>
                     <th>類型</th>
@@ -145,18 +145,10 @@
             </thead>
             <tbody id="memberNotifyHistoryTbody">
                 <tr th:each="notify : ${sentNotifyHistoryList}">
-                    <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">發送時間</td>
-                    <td>
-                        <span th:switch="${notify.notifyStatus}">
-                            <span th:case="1" class="badge bg-info">活動提醒</span>
-                            <span th:case="2" class="badge bg-warning">活動異動</span>
-                            <span th:case="3" class="badge bg-danger">活動取消</span>
-                            <span th:case="4" class="badge bg-success">出貨通知</span>
-                            <span th:case="*" class="badge bg-secondary">一般通知</span>
-                        </span>
-                    </td>
+                    <td th:text="${#temporals.format(notify.createdAt, 'yyyy/MM/dd HH:mm')}">2024/12/25 18:00</td>
+                    <td><span class="badge bg-info">通知</span></td>
                     <td th:text="${notify.title}">標題</td>
-                    <td>所有會員</td>
+                    <td>會員</td>
                     <td><span class="badge bg-success">已發送</span></td>
                 </tr>
                 <!-- 無資料時顯示 -->

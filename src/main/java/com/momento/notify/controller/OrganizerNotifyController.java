@@ -261,9 +261,12 @@ public class OrganizerNotifyController {
             // 執行儲存
             orgNotifySvc.addNotify(vo);
 
-            // 抓主辦方最新通知列表給前端
-            List<OrganizerNotifyVO> updatedList = orgNotifySvc.getNotifiesByOrganizer(organizer.getOrganizerId());
-            return ResponseEntity.ok(updatedList);
+            // 抓主辦方已發送的通知列表給前端（過濾掉接收的通知）
+            List<OrganizerNotifyVO> allList = orgNotifySvc.getNotifiesByOrganizer(organizer.getOrganizerId());
+            List<OrganizerNotifyVO> sentList = allList.stream()
+                    .filter(n -> n.getEmpVO() == null && (n.getTitle() != null && !n.getTitle().contains("訂單")))
+                    .toList();
+            return ResponseEntity.ok(sentList);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("發送失敗：" + e.getMessage());

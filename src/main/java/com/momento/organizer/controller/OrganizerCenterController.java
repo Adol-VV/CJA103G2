@@ -189,7 +189,7 @@ public class OrganizerCenterController {
 
         model.addAttribute("allNotifies", allNotifiesNormalized); // 合併排序後的通知列表
         model.addAttribute("receivedNotifyList", receivedNotifies); // 給通知中心遍歷
-        model.addAttribute("sentNotifyHistoryList", sentNotifies); // 給已發送紀錄遍歷
+        model.addAttribute("sentNotifyHistoryList", sentNotifies); // 已發送紀錄
         model.addAttribute("sysAnnouncementList", sysNotifyList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("platformCount", platformCount);

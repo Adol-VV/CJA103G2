@@ -46,8 +46,6 @@ public class OrganizerNotifyVO implements Serializable {
     private LocalDateTime createdAt;
 
     @Transient
-    @Getter
-    @Setter
     private Integer notifyStatus;
 
     @Transient

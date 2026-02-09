@@ -199,8 +199,8 @@
                 <thead class="border-secondary">
                     <tr>
                         <th>發送時間</th>
-                        <th>標題</th>
                         <th>類型</th>
+                        <th>標題</th>
                         <th>對象</th>
                         <th>已讀率</th>
                         <th>狀態</th>
@@ -209,13 +209,9 @@
                 <tbody>
                     <tr th:each="row : ${messageNotifyRecords}">
                         <td th:text="${row[1] != null ? #dates.format(row[1], 'yyyy/MM/dd HH:mm') : ''}">2024/12/25 18:00</td>
-
+                        <td><span class="badge bg-info">通知</span></td>
                         <td th:text="${row[0]}">標題內容</td>
-
-                        <td><span class="badge bg-info" th:text="${row[5]}">類型</span></td>
-
                         <td th:text="${row[2]}">對象</td>
-
                         <td>
                             <div class="progress" style="width: 100px; height: 6px;">
                                 <div class="progress-bar bg-success"
@@ -223,36 +219,14 @@
                             </div>
                             <small th:text="${#numbers.formatDecimal(row[4] * 100.0 / row[3], 1, 0)} + '%'"></small>
                         </td>
-
                         <td><span class="badge bg-success">已發送</span></td>
                     </tr>
 
-                    <th:block th:if="${massNotifyRecords == null or #lists.isEmpty(massNotifyRecords)}">
-                        <tr>
-                            <td>2024/12/25 18:00</td>
-                            <td>聖誕節快樂！限時優惠開跑</td>
-                            <td><span class="badge bg-warning text-dark">促銷</span></td>
-                            <td>全部會員</td>
-                            <td>
-                                <div class="progress" style="width: 100px; height: 6px;">
-                                    <div class="progress-bar bg-success" style="width: 68%;"></div>
-                                </div><small>68%</small>
-                            </td>
-                            <td><span class="badge bg-success">已發送</span></td>
-                        </tr>
-                        <tr>
-                            <td>2024/12/20 10:00</td>
-                            <td>系統維護公告 (12/21)</td>
-                            <td><span class="badge bg-info">系統</span></td>
-                            <td>全部會員</td>
-                            <td>
-                                <div class="progress" style="width: 100px; height: 6px;">
-                                    <div class="progress-bar bg-success" style="width: 82%;"></div>
-                                </div><small>82%</small>
-                            </td>
-                            <td><span class="badge bg-success">已發送</span></td>
-                        </tr>
-                    </th:block>
+                    <tr th:if="${messageNotifyRecords == null or messageNotifyRecords.isEmpty()}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox me-2"></i>尚無發送紀錄
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

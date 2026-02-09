@@ -56,10 +56,6 @@ public class SystemNotifyService {
         if (!finalNotifyList.isEmpty()) {
             repository.saveAll(finalNotifyList);
         }
-
-        if (!finalNotifyList.isEmpty()) {
-            repository.saveAll(finalNotifyList);
-        }
     }
 
     @Transactional
@@ -206,9 +202,8 @@ public class SystemNotifyService {
         OrganizerVO org = new OrganizerVO();
         org.setOrganizerId(organizerId);
         notify.setOrganizerVO(org);
-        // 格式:類型,|主辦方|URL|內容
         notify.setTitle(title);
-        notify.setContent(category + "|主辦方|" + url + "|" + content);
+        notify.setContent(String.format("[%s]|%s|%s|%s", category, "指定主辦方", url, content));
         notify.setIsRead(0); // 預設未讀
         notify.setCreatedAt(java.time.LocalDateTime.now());
 

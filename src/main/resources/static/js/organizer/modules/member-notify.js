@@ -179,44 +179,43 @@ function sendMemberNotify() {
 }
 
 /**
- * 重新渲染紀錄表格
- */
-/**
- * 重新渲染紀錄表格 (優化顯示)
+ * 重新渲染紀錄表格 
  */
 function renderNotifyTable(list) {
-    const $tbody = $('table tbody');
+    const $tbody = $('#memberNotifyHistoryTbody');
     $tbody.empty();
 
-    if (!list || list.length === 0) return;
+    if (!list || list.length === 0) {
+        $tbody.append(`
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fas fa-inbox me-2"></i>尚無發送紀錄
+                </td>
+            </tr>
+        `);
+        return;
+    }
 
     list.forEach(item => {
-        // 優化時間顯示
-        let dateStr = "時間未知";
+        // 時間格式化
+        let dateStr = "";
         if (item.createdAt) {
             if (Array.isArray(item.createdAt)) {
                 const [y, m, d, hh, mm] = item.createdAt;
                 dateStr = `${y}/${m.toString().padStart(2, '0')}/${d.toString().padStart(2, '0')} ${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
             } else {
-                dateStr = item.createdAt.replace('T', ' ').substring(0, 16);
+                dateStr = item.createdAt.replace('T', ' ').substring(0, 16).replace(/-/g, '/');
             }
         }
 
-        const statusBadge = item.isRead === 1
-            ? '<span class="badge bg-success">已發送</span>'
-            : '<span class="badge bg-warning">處理中</span>';
-
-        const typeText = item.notifyStatus == 1 ? '活動提醒' : '一般通知';
-        // 確保標題不為 undefined
         const displayTitle = item.title || "無標題";
-
         const row = `
             <tr>
                 <td>${dateStr}</td>
-                <td><span class="badge bg-info">${typeText}</span></td>
+                <td><span class="badge bg-info">通知</span></td>
                 <td>${displayTitle}</td>
-                <td>所有人</td>
-                <td>${statusBadge}</td>
+                <td>會員</td>
+                <td><span class="badge bg-success">已發送</span></td>
             </tr>
         `;
         $tbody.append(row);

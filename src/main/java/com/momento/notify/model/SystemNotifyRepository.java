@@ -16,10 +16,12 @@ public interface SystemNotifyRepository extends JpaRepository<SystemNotifyVO, In
 
     @Query(value =
             "SELECT TITLE, CREATED_AT, " +
-            "SUBSTRING_INDEX(SUBSTRING_INDEX(MIN(CONTENT), '|', 2), '|', -1) as target, " +
+            "CASE WHEN MIN(CONTENT) LIKE '%|%' " +
+            "THEN SUBSTRING_INDEX(SUBSTRING_INDEX(MIN(CONTENT), '|', 2), '|', -1) " +
+            "ELSE '未知對象' END as target, " +
             "COUNT(*) as total, " +
             "SUM(IS_READ) as read_count, " +
-            "SUBSTRING_INDEX(SUBSTRING_INDEX(MIN(CONTENT), ']|', 1), '[', -1) as type " +
+            "'通知' as type " +
             "FROM SYS_NOTIFY " +
             "GROUP BY TITLE, CREATED_AT " +
             "ORDER BY CREATED_AT DESC", nativeQuery = true)
