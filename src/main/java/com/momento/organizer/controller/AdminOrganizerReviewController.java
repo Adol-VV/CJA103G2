@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class AdminOrganizerReviewController {
      */
     @PostMapping("/approve")
     public ResponseEntity<Map<String, Object>> approveOrganizer(@RequestBody Map<String, Integer> request,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest httpRequest) {
         Map<String, Object> response = new HashMap<>();
         if (session.getAttribute("loginEmp") == null) {
             response.put("success", false);
@@ -77,9 +78,9 @@ public class AdminOrganizerReviewController {
             organizerService.approve(id);
 
             // 撈出主辦方資訊並且寄過審信
-            OrganizerVO org= organizerService.getOrganizer(id);
-            if(org != null){
-                orgEmailSvc.sendAuditResultEmail(org.getEmail(), org.getName(), true, null);
+            OrganizerVO org = organizerService.getOrganizer(id);
+            if (org != null) {
+                orgEmailSvc.sendAuditResultEmail(org.getEmail(), org.getName(), true, null, httpRequest);
             }
 
             response.put("success", true);
@@ -97,7 +98,7 @@ public class AdminOrganizerReviewController {
      */
     @PostMapping("/reject")
     public ResponseEntity<Map<String, Object>> rejectOrganizer(@RequestBody Map<String, Object> request,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest httpRequest) {
         Map<String, Object> response = new HashMap<>();
         if (session.getAttribute("loginEmp") == null) {
             response.put("success", false);
@@ -106,20 +107,20 @@ public class AdminOrganizerReviewController {
         }
 
         try {
-            //因應駁回原因轉型Object
+            // 因應駁回原因轉型Object
             Integer id = (Integer) request.get("id");
-            //嘗試抓原因
+            // 嘗試抓原因
             String reason = (String) request.get("reason");
 
-            //撈資料寄信
-            OrganizerVO org= organizerService.getOrganizer(id);
+            // 撈資料寄信
+            OrganizerVO org = organizerService.getOrganizer(id);
             if (org != null) {
                 String finalReason = (reason != null && !reason.isEmpty()) ? reason : "審核未通過，請檢查您提交的資料是否完整。";
 
-                orgEmailSvc.sendAuditResultEmail(org.getEmail(), org.getName(), false, finalReason);
+                orgEmailSvc.sendAuditResultEmail(org.getEmail(), org.getName(), false, finalReason, httpRequest);
             }
 
-            //刪除
+            // 刪除
             organizerService.deleteOrganizer(id);
 
             response.put("success", true);

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/organizer")
 public class OrganizerForgotPasswordController {
@@ -26,11 +28,12 @@ public class OrganizerForgotPasswordController {
     OrganizerEmailService emailSvc;
 
     @GetMapping("/forgot-password")
-    public String ShowForgotPasswordPage(){
-        return "pages/organizer/forgot-password";    }
+    public String ShowForgotPasswordPage() {
+        return "pages/organizer/forgot-password";
+    }
 
     @PostMapping("/forgot-password")
-    public String processForgot(@RequestParam String resetEmail, Model model){
+    public String processForgot(@RequestParam String resetEmail, Model model, HttpServletRequest request) {
 
         OrganizerVO organizer = organizerSvc.findByEmail(resetEmail);
 
@@ -44,7 +47,7 @@ public class OrganizerForgotPasswordController {
         String token = resetSvc.createResetToken(organizerId);
 
         try {
-            emailSvc.sendResetPasswordEmail(resetEmail, token);
+            emailSvc.sendResetPasswordEmail(resetEmail, token, request);
             model.addAttribute("message", "密碼重設連結已發送至您的信箱");
 
         } catch (Exception e) {
