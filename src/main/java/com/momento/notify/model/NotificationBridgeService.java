@@ -33,9 +33,9 @@ public class NotificationBridgeService {
     public ProdService prodService;
 
     // 抓系統管理員
-    private EmpVO getSystemAdmin(){
+    private EmpVO getSystemAdmin() {
         EmpVO admin = empService.getEmployeeByAccount("admin");
-        if (admin == null){
+        if (admin == null) {
             List<EmpVO> allEmp = empService.getAllEmployees();
             return allEmp.isEmpty() ? null : allEmp.get(0);
         }
@@ -44,7 +44,7 @@ public class NotificationBridgeService {
 
     // 當活動下單時, 觸發這邊的方法 (CreateOrderService)、//(EventOrderService)
     @Transactional
-    public void processEventOrderNotify(EventOrderVO orderVO){
+    public void processEventOrderNotify(EventOrderVO orderVO) {
         // 格式化時間
         String timeStr = "今日";
         if (orderVO.getCreatedAt() != null) {
@@ -57,21 +57,24 @@ public class NotificationBridgeService {
         // 取得金額
         int payable = orderVO.getPayable() != null ? orderVO.getPayable() : 0;
 
-        // 通知會員
-        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
-        memberNotifyVO.setMemberVO(orderVO.getMember());
-        memberNotifyVO.setTitle("活動訂單 #" + orderVO.getEventOrderId() + "成立通知");
-        memberNotifyVO.setContent("您購買的活動『" + eventTitle + "』已於 " + timeStr + " 下單成功，共 " + ticketCount + " 張票券，請至會員中心查看電子票券。");
-        memberNotifyVO.setIsRead(0);
-        memberNotifyService.addMemberNotify(memberNotifyVO);
-
         // 通知主辦方
         OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
         organizerNotifyVO.setOrganizerVO(orderVO.getOrganizer());
         organizerNotifyVO.setTitle("新活動訂單 #" + orderVO.getEventOrderId());
-        organizerNotifyVO.setContent("您的活動『" + eventTitle + "』收到新訂單，票數：" + ticketCount + " 張，金額：$" + payable + "，請至後台查看訂單詳情。");
+        organizerNotifyVO
+                .setContent("您的活動『" + eventTitle + "』收到新訂單，票數：" + ticketCount + " 張，金額：$" + payable + "，請至後台查看訂單詳情。");
         organizerNotifyVO.setIsRead(0);
-        organizerNotifyRepository.save(organizerNotifyVO);
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
+        // 通知會員
+        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
+        memberNotifyVO.setMemberVO(orderVO.getMember());
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO); // 關聯主辦方通知
+        memberNotifyVO.setTitle("活動訂單 #" + orderVO.getEventOrderId() + "成立通知");
+        memberNotifyVO.setContent(
+                "您購買的活動『" + eventTitle + "』已於 " + timeStr + " 下單成功，共 " + ticketCount + " 張票券，請至會員中心查看電子票券。");
+        memberNotifyVO.setIsRead(0);
+        memberNotifyService.addMemberNotify(memberNotifyVO);
     }
 
     // 當商品下單時, 觸發這邊 (ProdOrderIdService)
@@ -88,7 +91,7 @@ public class NotificationBridgeService {
         // 取得訂單編號
         Integer orderId = prodOrderIdVO.getOrderId();
 
-        // 取得商品名稱列表 
+        // 取得商品名稱列表
         StringBuilder prodNames = new StringBuilder();
         if (prodOrderIdVO.getOrderItems() != null && !prodOrderIdVO.getOrderItems().isEmpty()) {
             for (int i = 0; i < prodOrderIdVO.getOrderItems().size(); i++) {
@@ -99,7 +102,8 @@ public class NotificationBridgeService {
                     if (prodId != null) {
                         var prodDTO = prodService.getOneProd(prodId);
                         if (prodDTO != null && prodDTO.getProdName() != null) {
-                            if (i > 0) prodNames.append("、");
+                            if (i > 0)
+                                prodNames.append("、");
                             prodNames.append(prodDTO.getProdName());
                         }
                     }
@@ -115,27 +119,26 @@ public class NotificationBridgeService {
         organizerNotifyVO.setTitle("新商品訂單 #" + orderId);
         organizerNotifyVO.setContent("您有一筆新訂單，商品：" + prodNameStr + "，金額：$" + payable + "，請盡快安排出貨。");
         organizerNotifyVO.setIsRead(0);
-        OrganizerNotifyVO savedOrgNotify = organizerNotifyRepository.save(organizerNotifyVO);
-        
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
         // 通知會員
         MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
         memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
         memberNotifyVO.setTitle("商品訂單 #" + orderId + "付款成功");
-        memberNotifyVO
-                .setContent("您購買的商品『" + prodNameStr + "』已於 " + dateStr + " 下單成功，金額：$" + payable + "，賣家將盡快為您安排出貨。");
+        memberNotifyVO.setContent("您購買的商品『" + prodNameStr + "』已於 " + dateStr + " 下單成功，金額：$" + payable + "，賣家將盡快為您安排出貨。");
         memberNotifyVO.setIsRead(0);
         // 設定關聯 (如果 MEMBER_NOTIFY 需要 FK)
-        memberNotifyVO.setOrganizerNotifyVO(savedOrgNotify);
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO);
         memberNotifyService.addMemberNotify(memberNotifyVO);
     }
 
     // 活動審核通知 (EventReviewService)
     @Transactional
-    public void processEventReviewNotify(EventVO event, boolean isPassed, String reason){
+    public void processEventReviewNotify(EventVO event, boolean isPassed, String reason) {
         OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
         organizerNotifyVO.setEmpVO(getSystemAdmin()); // 發送者:系統管理員
         organizerNotifyVO.setOrganizerVO(event.getOrganizer()); // 接收者:對應到的主辦方
-        if (isPassed){
+        if (isPassed) {
             organizerNotifyVO.setTitle("活動審核通過");
             organizerNotifyVO.setContent("恭喜！您的活動『" + event.getTitle() + "』已審核通過。");
         } else {
@@ -156,21 +159,22 @@ public class NotificationBridgeService {
         // 取得訂單編號
         Integer orderId = orderVO.getEventOrderId();
 
-        // 通知會員
-        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
-        memberNotifyVO.setMemberVO(orderVO.getMember());
-        memberNotifyVO.setTitle("退票申請通知");
-        memberNotifyVO.setContent("您購買的活動『" + eventTitle + "』已申請退款，請待主辦方通知。");
-        memberNotifyVO.setIsRead(0);
-        memberNotifyService.addMemberNotify(memberNotifyVO);
-
         // 通知主辦方
         OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
         organizerNotifyVO.setOrganizerVO(orderVO.getOrganizer());
         organizerNotifyVO.setTitle("訂單 #" + orderId + " 退票申請");
         organizerNotifyVO.setContent("訂單編號 #" + orderId + " 活動『" + eventTitle + "』已申請退票，請至票券訂單查看原因。");
         organizerNotifyVO.setIsRead(0);
-        organizerNotifyRepository.save(organizerNotifyVO);
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
+        // 通知會員
+        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
+        memberNotifyVO.setMemberVO(orderVO.getMember());
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO); // 關聯主辦方通知
+        memberNotifyVO.setTitle("退票申請通知");
+        memberNotifyVO.setContent("您購買的活動『" + eventTitle + "』已申請退款，請待主辦方通知。");
+        memberNotifyVO.setIsRead(0);
+        memberNotifyService.addMemberNotify(memberNotifyVO);
     }
 
     // 當主辦方處理退票結果時, 觸發通知 (OrganizerCenterOrderController)
@@ -179,8 +183,23 @@ public class NotificationBridgeService {
         String eventTitle = orderVO.getEvent() != null ? orderVO.getEvent().getTitle() : "活動";
         Integer orderId = orderVO.getEventOrderId();
 
+        // 通知主辦方 (滿足DB constraint，亦作為一個退票結果紀錄)
+        OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
+        organizerNotifyVO.setOrganizerVO(orderVO.getOrganizer());
+        if (isApproved) {
+            organizerNotifyVO.setTitle("訂單 #" + orderId + " 退票成功");
+            organizerNotifyVO.setContent("活動『" + eventTitle + "』的訂單 #" + orderId + " 已退票成功。");
+        } else {
+            organizerNotifyVO.setTitle("訂單 #" + orderId + " 退票駁回");
+            organizerNotifyVO.setContent("活動『" + eventTitle + "』的訂單 #" + orderId + " 退票申請已駁回。");
+        }
+        organizerNotifyVO.setIsRead(0);
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
+        // 通知會員
         MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
         memberNotifyVO.setMemberVO(orderVO.getMember());
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO); // 關聯主辦方通知
         memberNotifyVO.setTitle("退票申請結果通知");
         if (isApproved) {
             memberNotifyVO.setContent("您購買的活動『" + eventTitle + "』已退款成功。");
@@ -207,30 +226,34 @@ public class NotificationBridgeService {
                     if (prodId != null) {
                         var prodDTO = prodService.getOneProd(prodId);
                         if (prodDTO != null && prodDTO.getProdName() != null) {
-                            if (i > 0) prodNames.append("、");
+                            if (i > 0)
+                                prodNames.append("、");
                             prodNames.append(prodDTO.getProdName());
                         }
                     }
                 }
+
             }
         }
         String prodNameStr = !prodNames.isEmpty() ? prodNames.toString() : "商品";
-
-        // 通知會員
-        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
-        memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
-        memberNotifyVO.setTitle("商品訂單 #" + orderId + " 取消通知");
-        memberNotifyVO.setContent("您的商品訂單『" + prodNameStr + "』已申請取消，金額：$" + payable + "，請等待賣家處理。");
-        memberNotifyVO.setIsRead(0);
-        memberNotifyService.addMemberNotify(memberNotifyVO);
 
         // 通知主辦方
         OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
         organizerNotifyVO.setOrganizerVO(prodOrderIdVO.getOrganizerId());
         organizerNotifyVO.setTitle("商品訂單 #" + orderId + " 取消申請");
-        organizerNotifyVO.setContent("會員已申請取消商品訂單 #" + orderId + "，商品：" + prodNameStr + "，金額：$" + payable + "，請至後台查看處理。");
+        organizerNotifyVO
+                .setContent("會員已申請取消商品訂單 #" + orderId + "，商品：" + prodNameStr + "，金額：$" + payable + "，請至後台查看處理。");
         organizerNotifyVO.setIsRead(0);
-        organizerNotifyRepository.save(organizerNotifyVO);
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
+        // 通知會員
+        MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
+        memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO); // 關聯主辦方通知
+        memberNotifyVO.setTitle("商品訂單 #" + orderId + " 取消通知");
+        memberNotifyVO.setContent("您的商品訂單『" + prodNameStr + "』已申請取消，金額：$" + payable + "，請等待賣家處理。");
+        memberNotifyVO.setIsRead(0);
+        memberNotifyService.addMemberNotify(memberNotifyVO);
     }
 
     // 當管理員處理商品退款結果時, 觸發通知 (AdminProdOrderController)
@@ -249,7 +272,8 @@ public class NotificationBridgeService {
                     if (prodId != null) {
                         var prodDTO = prodService.getOneProd(prodId);
                         if (prodDTO != null && prodDTO.getProdName() != null) {
-                            if (i > 0) prodNames.append("、");
+                            if (i > 0)
+                                prodNames.append("、");
                             prodNames.append(prodDTO.getProdName());
                         }
                     }
@@ -258,9 +282,24 @@ public class NotificationBridgeService {
         }
         String prodNameStr = !prodNames.isEmpty() ? prodNames.toString() : "商品";
 
+        // 通知主辦方
+        OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
+        organizerNotifyVO.setOrganizerVO(prodOrderIdVO.getOrganizerId());
+        organizerNotifyVO.setEmpVO(getSystemAdmin()); // 管理員處理
+        if (isApproved) {
+            organizerNotifyVO.setTitle("商品訂單 #" + orderId + " 已退款");
+            organizerNotifyVO.setContent("商品訂單 #" + orderId + "『" + prodNameStr + "』已由平台同意退款，金額：$" + payable + "。");
+        } else {
+            organizerNotifyVO.setTitle("商品訂單 #" + orderId + " 退款駁回");
+            organizerNotifyVO.setContent("商品訂單 #" + orderId + "『" + prodNameStr + "』的退款申請已由平台駁回。");
+        }
+        organizerNotifyVO.setIsRead(0);
+        organizerNotifyVO = organizerNotifyRepository.save(organizerNotifyVO);
+
         // 通知會員
         MemberNotifyVO memberNotifyVO = new MemberNotifyVO();
         memberNotifyVO.setMemberVO(prodOrderIdVO.getMemberId());
+        memberNotifyVO.setOrganizerNotifyVO(organizerNotifyVO); // 關聯主辦方通知
         if (isApproved) {
             memberNotifyVO.setTitle("商品訂單 #" + orderId + " 退款成功");
             memberNotifyVO.setContent("您的商品訂單『" + prodNameStr + "』已退款成功，金額：$" + payable + "。");
@@ -270,24 +309,11 @@ public class NotificationBridgeService {
         }
         memberNotifyVO.setIsRead(0);
         memberNotifyService.addMemberNotify(memberNotifyVO);
-
-        // 通知主辦方
-        OrganizerNotifyVO organizerNotifyVO = new OrganizerNotifyVO();
-        organizerNotifyVO.setOrganizerVO(prodOrderIdVO.getOrganizerId());
-        if (isApproved) {
-            organizerNotifyVO.setTitle("商品訂單 #" + orderId + " 已退款");
-            organizerNotifyVO.setContent("商品訂單 #" + orderId + "『" + prodNameStr + "』已由平台同意退款，金額：$" + payable + "。");
-        } else {
-            organizerNotifyVO.setTitle("商品訂單 #" + orderId + " 退款駁回");
-            organizerNotifyVO.setContent("商品訂單 #" + orderId + "『" + prodNameStr + "』的退款申請已由平台駁回。");
-        }
-        organizerNotifyVO.setIsRead(0);
-        organizerNotifyRepository.save(organizerNotifyVO);
     }
 
     // 商品審核通知 (EmpController)
     @Transactional
-    public void processProdReviewNotify(Integer prodId, Byte reviewStatus){
+    public void processProdReviewNotify(Integer prodId, Byte reviewStatus) {
         ProdDTO prodDTO = prodService.getOneProd(prodId);
         if (prodDTO == null)
             return;
@@ -304,7 +330,7 @@ public class NotificationBridgeService {
         organizerNotifyVO.setOrganizerVO(organizerVO);
 
         // 判斷(1為通過、2為未通過)
-        if (reviewStatus == 1){
+        if (reviewStatus == 1) {
             organizerNotifyVO.setTitle("商品審核通過");
             organizerNotifyVO.setContent("恭喜！您的商品『" + prodDTO.getProdName() + "』已審核通過");
         } else {
