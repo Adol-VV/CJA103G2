@@ -533,22 +533,22 @@
                 <!-- Tabs -->
                 <ul class="nav nav-tabs mb-3" id="eventTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#about"
-                            type="button">活動介紹</button>
+                        <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about"
+                            type="button" role="tab" aria-controls="about" aria-selected="true">活動介紹</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#location"
-                            type="button">地點資訊</button>
+                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location"
+                            type="button" role="tab" aria-controls="location" aria-selected="false">地點資訊</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#organizer"
-                            type="button">主辦方</button>
+                        <button class="nav-link" id="organizer-tab" data-bs-toggle="tab" data-bs-target="#organizer"
+                            type="button" role="tab" aria-controls="organizer" aria-selected="false">主辦方</button>
                     </li>
                 </ul>
 
                 <div class="tab-content mb-4" id="eventTabContent">
                     <!-- 活動介紹 Tab -->
-                    <div class="tab-pane active" id="about">
+                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
                         <div class="section-text text-muted" th:utext="${event.content}">
                             <!-- 活動內容 -->
                         </div>
@@ -1262,6 +1262,10 @@
                         $btn.prop('disabled', false);
                     });
             });
+
+            // 強制預設選中「活動介紹」標籤
+            const firstTab = new bootstrap.Tab(document.querySelector('#about-tab'));
+            firstTab.show();
 
             // Initialize Total on load
             updateTotal();
