@@ -37,9 +37,14 @@ public class EmpAuthorityService {
     @Transactional
     public void updatePermissions(Integer targetEmpId, List<Integer> functionIds) {
 
-        // 1. 使用 getReferenceById 取得代理物件 (Proxy)
-        // 這樣可以避免 Hibernate 去查詢舊的 authorities 集合，防止狀態污染
-        EmpVO targetEmp = empRepository.getReferenceById(targetEmpId);
+        // 1. 【鎖定】先行鎖定員工資料列，防止併發修改導致 Deadlock
+        // 使用 PESSIMISTIC_WRITE 鎖，強制其他請求排隊等待
+        EmpVO targetEmp = entityManager.find(EmpVO.class, targetEmpId,
+                jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+
+        if (targetEmp == null) {
+            return; // 員工不存在或已被刪除
+        }
 
         // 【安全防護】(透過代理物件取 ID 是安全的)
         if (targetEmp.getEmpId() == 1) {
