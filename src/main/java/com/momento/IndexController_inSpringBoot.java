@@ -79,6 +79,7 @@ public class IndexController_inSpringBoot {
         eventFilter.setSize(5);
         eventFilter.setSort("publishedAt");
         eventFilter.setDirection("DESC");
+        eventFilter.setStatus((int) com.momento.event.model.EventVO.STATUS_PUBLISHED); // 強制僅顯示已上架活動
         org.springframework.data.domain.Page<com.momento.event.dto.EventListItemDTO> eventPage = eventService
                 .filterEvents(eventFilter);
         model.addAttribute("latestEvents", eventPage.getContent());

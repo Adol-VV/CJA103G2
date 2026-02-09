@@ -53,11 +53,22 @@ public class FeaturedService {
     public List<FeaturedCarouselDTO> getCarouselData() {
         List<FeaturedVO> featuredList = repository.findAll();
         List<FeaturedCarouselDTO> resultList = new ArrayList<>();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
         for (FeaturedVO featured : featuredList) {
             EventVO event = featured.getEventVO();
             // 防呆：如果關聯的活動不存在，則跳過
             if (event == null)
+                continue;
+
+            // 只顯示「已上架」的活動，且目前時間必須在主打期間內
+            if (event.getStatus() != com.momento.event.model.EventVO.STATUS_PUBLISHED)
+                continue;
+
+            java.time.LocalDateTime start = featured.getStartedAt().toLocalDateTime();
+            java.time.LocalDateTime end = featured.getEndedAt().toLocalDateTime();
+
+            if (now.isBefore(start) || now.isAfter(end))
                 continue;
 
             // 查詢該活動的第一張圖片 (封面圖)
