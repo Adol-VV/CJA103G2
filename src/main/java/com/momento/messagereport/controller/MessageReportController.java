@@ -8,7 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.momento.emp.model.EmpVO;
 import com.momento.member.model.MemberVO;
@@ -18,7 +22,7 @@ import com.momento.messagereport.model.MessageReportVO;
 
 import jakarta.servlet.http.HttpSession;
 
-@RestController
+@Controller
 @RequestMapping("/report")
 public class MessageReportController {
 
@@ -175,6 +179,31 @@ public class MessageReportController {
             response.put("success", false);
             response.put("message", "操作失敗，請稍後再試");
             return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/api/list")
+    public String getCommentListFragment(
+            @RequestParam("type") String type, // 'pending' or 'reported'
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(value = "sort", required = false, defaultValue = "newest") String sort,
+            org.springframework.ui.Model model) {
+
+        java.util.List<MessageReportVO> results = messageReportService.searchReports(type, keyword, sort);
+
+        // Use different model attribute names matching the original template if
+        // possible,
+        // OR standardise variable name in the fragment.
+        // In original template:
+        // Pending uses: newComments
+        // Reported uses: reportedComments
+
+        if ("pending".equals(type)) {
+            model.addAttribute("newComments", results);
+            return "pages/admin/partials/panel-comment-management :: #pending-tbody";
+        } else {
+            model.addAttribute("reportedComments", results);
+            return "pages/admin/partials/panel-comment-management :: #reported-tbody";
         }
     }
 }

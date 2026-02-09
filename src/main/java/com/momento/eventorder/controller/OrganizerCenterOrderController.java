@@ -109,7 +109,7 @@ public class OrganizerCenterOrderController {
 		
 		
 		List<EventOrderVO> checkedInOrders = eventOrderSvc.getEventOrdersByEventId(eventId);
-		List<EventOrderItemVO> checkedIn = null;
+		List<EventOrderItemVO> checkedIn = new ArrayList();
 		for(EventOrderVO order: checkedInOrders) {
 			List<EventOrderItemVO> checkedInItems = order.getEventOrderItems();
 			for(EventOrderItemVO items: checkedInItems) {
