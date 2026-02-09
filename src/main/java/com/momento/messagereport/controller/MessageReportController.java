@@ -179,8 +179,6 @@ public class MessageReportController {
             response.put("success", false);
             response.put("message", "操作失敗，請稍後再試");
             return ResponseEntity.status(500).body(response);
-            response.put("message", "操作失敗，請稍後再試");
-            return ResponseEntity.status(500).body(response);
         }
     }
 
