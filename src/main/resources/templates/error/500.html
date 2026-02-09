@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 伺服器錯誤 | Momento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/momento-theme.css" rel="stylesheet">
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%);
+        }
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #EF4444 0%, #F97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .error-illustration {
+            max-width: 300px;
+            margin-bottom: 2rem;
+        }
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @media (max-width: 767.98px) {
+            .error-code {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-page">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 text-center">
+                    <!-- Error Illustration -->
+                    <div class="error-illustration mx-auto">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="80" fill="rgba(239, 68, 68, 0.1)" stroke="rgba(239, 68, 68, 0.3)" stroke-width="2"/>
+                            <text x="100" y="75" text-anchor="middle" fill="#EF4444" font-size="24">
+                                <tspan x="100" dy="0">⚙️</tspan>
+                            </text>
+                            <text x="100" y="115" text-anchor="middle" fill="#6B7280" font-size="14" font-family="'Noto Sans TC', sans-serif">
+                                <tspan x="100" dy="0">錯誤</tspan>
+                            </text>
+                            <circle cx="100" cy="145" r="5" fill="#EF4444" class="pulse-animation"/>
+                        </svg>
+                    </div>
+
+                    <!-- Error Code -->
+                    <div class="error-code mb-3">500</div>
+                    
+                    <!-- Error Message -->
+                    <h1 class="h3 text-white mb-3">伺服器發生錯誤</h1>
+                    <p class="text-muted mb-4">
+                        抱歉，我們的伺服器暫時出現問題。<br>
+                        請稍後再試，或聯繫我們的客服團隊。
+                    </p>
+
+                    <!-- Status Info -->
+                    <div class="alert alert-dark border-secondary mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-info-circle text-warning me-2"></i>
+                            <span class="small text-muted">我們已收到此錯誤通知，正在處理中</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="location.reload()">
+                            <i class="fas fa-redo me-2"></i>重新載入
+                        </button>
+                        <a href="../../index.html" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-home me-2"></i>返回首頁
+                        </a>
+                    </div>
+
+                    <!-- Contact Support -->
+                    <div class="border-top border-secondary pt-4 mt-4">
+                        <p class="text-muted small mb-3">如果問題持續發生，請聯繫我們：</p>
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <a href="mailto:support@momento.com" class="text-decoration-none text-info">
+                                <i class="fas fa-envelope me-1"></i>support@momento.com
+                            </a>
+                            <a href="faq.html" class="text-decoration-none text-success">
+                                <i class="fas fa-question-circle me-1"></i>常見問題
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Error Details (for debugging) -->
+                    <div class="mt-4 text-start">
+                        <button class="btn btn-link text-muted p-0 small" type="button" data-bs-toggle="collapse" data-bs-target="#errorDetails">
+                            <i class="fas fa-chevron-down me-1"></i>顯示技術詳情
+                        </button>
+                        <div class="collapse mt-2" id="errorDetails">
+                            <div class="card bg-black border-secondary">
+                                <div class="card-body small font-monospace text-muted">
+                                    <p class="mb-1">Error Code: 500 Internal Server Error</p>
+                                    <p class="mb-1">Timestamp: <span id="errorTime"></span></p>
+                                    <p class="mb-0">Request ID: <span id="requestId"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('errorTime').textContent = new Date().toISOString();
+        document.getElementById('requestId').textContent = 'REQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    </script>
+</body>
+
+</html>
+
