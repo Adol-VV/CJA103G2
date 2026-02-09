@@ -58,6 +58,7 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
         @Query("SELECT e FROM EventVO e LEFT JOIN FETCH e.type t " +
                         "WHERE (:status IS NULL OR e.status = :status) " +
                         "AND (e.publishedAt IS NULL OR e.publishedAt <= :now) " +
+                        "AND (e.eventEndAt IS NULL OR e.eventEndAt > :now) " +
                         "AND (:typeId IS NULL OR :typeId = 0 OR t.typeId = :typeId) " +
                         "AND (:place IS NULL OR :place = '' OR e.place LIKE CONCAT('%', :place, '%')) " +
                         "AND (:startDate IS NULL OR e.eventStartAt >= :startDate) " +
@@ -101,7 +102,9 @@ public interface EventRepository extends JpaRepository<EventVO, Integer> {
 
         long countByStatus(Byte status);
 
-        long countByStatusAndType_TypeId(Byte status, Integer typeId);
+        @Query("SELECT COUNT(e) FROM EventVO e WHERE e.status = :status AND e.type.typeId = :typeId AND (e.eventEndAt IS NULL OR e.eventEndAt > :now)")
+        long countAvailableByStatusAndType(@Param("status") Byte status, @Param("typeId") Integer typeId,
+                        @Param("now") java.time.LocalDateTime now);
 
         long countByStatusIn(java.util.Collection<Byte> statuses);
 
