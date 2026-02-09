@@ -71,13 +71,22 @@ public class FeaturedService {
             if (now.isBefore(start) || now.isAfter(end))
                 continue;
 
-            // 查詢該活動的第一張圖片 (封面圖)
-            Optional<EventImageVO> imgOpt = eventImageRepository
-                    .findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(event.getEventId());
+            // 優先從 EventVO 的 images 集合獲取圖片，若集合為空則使用 Repository 查詢
+            String imgUrl = null;
+            if (event.getImages() != null && !event.getImages().isEmpty()) {
+                imgUrl = event.getImages().get(0).getImageUrl();
+            } else {
+                Optional<EventImageVO> imgOpt = eventImageRepository
+                        .findFirstByEvent_EventIdOrderByImageOrderAscEventImageIdAsc(event.getEventId());
+                if (imgOpt.isPresent()) {
+                    imgUrl = imgOpt.get().getImageUrl();
+                }
+            }
 
-            // 如果有圖就用資料庫的圖，沒圖就用預設圖 (可自行換成專案內的預設圖路徑)
-            String imgUrl = imgOpt.map(EventImageVO::getImageUrl)
-                    .orElse("https://via.placeholder.com/1920x600/2D5F4F/FFFFFF?text=No+Image");
+            // 若仍無圖片，使用與 EventServiceImpl 一致的 Picsum 隨機圖回退機制
+            if (imgUrl == null || imgUrl.trim().isEmpty()) {
+                imgUrl = "https://picsum.photos/seed/evento" + event.getEventId() + "/800/450";
+            }
 
             // 組裝 DTO
             FeaturedCarouselDTO dto = new FeaturedCarouselDTO();
