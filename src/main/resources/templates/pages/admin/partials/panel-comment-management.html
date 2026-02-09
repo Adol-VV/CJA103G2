@@ -16,18 +16,20 @@
     <!-- 待審核留言列表 -->
     <div id="section-pending" class="card bg-dark border-secondary">
         <div class="card-header border-secondary d-flex justify-content-between">
-            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
-                placeholder="搜尋留言內容或會員..." style="width: 300px;">
-            <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 150px;">
-                <option>最新優先</option>
-                <option>最舊優先</option>
+            <input type="text" id="pending-search"
+                class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="搜尋留言內容或會員..."
+                style="width: 300px;" oninput="loadComments('pending')">
+            <select id="pending-sort" class="form-select form-select-sm bg-dark text-white border-secondary"
+                style="width: 150px;" onchange="loadComments('pending')">
+                <option value="newest">最新優先</option>
+                <option value="oldest">最舊優先</option>
             </select>
         </div>
         <div class="table-responsive">
             <table class="table table-dark table-hover mb-0">
                 <thead>
                     <tr>
-                        <th><input type="checkbox"></th>
+                        <!-- <th><input type="checkbox"></th> -->
                         <th>被檢舉會員</th>
                         <th>留言內容</th>
                         <th>檢舉原因</th>
@@ -37,7 +39,7 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="pending-tbody">
                     <tr th:if="${#lists.isEmpty(newComments)}">
                         <td colspan="8" class="text-center py-4 text-muted">
                             <i class="fas fa-inbox fa-3x mb-3"></i>
@@ -45,7 +47,7 @@
                         </td>
                     </tr>
                     <tr th:each="report : ${newComments}"> <!-- newComments now list of MessageReportVO -->
-                        <td><input type="checkbox" th:value="${report.messageReportId}"></td>
+                        <!-- <td><input type="checkbox" th:value="${report.messageReportId}"></td> -->
                         <td>
                             <div class="d-flex align-items-center">
                                 <img loading="lazy"
@@ -82,7 +84,7 @@
                                 th:data-reporter="${report.memberVO != null ? report.memberVO.name : 'Unknown'}"
                                 th:data-content="${report.messageVO.content}" th:data-reason="${report.reportReason}"
                                 th:data-time="${#dates.format(report.reportedAt, 'yyyy/MM/dd HH:mm')}"
-                                th:data-status="${report.status == 0 ? '待處理' : '已處理'}"
+                                th:data-status="${report.status == 0 ? '待處理' : (report.status == 1 ? '已處理' : '保留')}"
                                 th:data-report-id="${report.messageReportId}" onclick="showReportDetail(this)">
                                 <i class="fas fa-eye"></i>
                             </button>
@@ -116,11 +118,13 @@
     <!-- 被檢舉留言列表 -->
     <div id="section-reported" class="card bg-dark border-secondary" style="display: none;">
         <div class="card-header border-secondary d-flex justify-content-between">
-            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
-                placeholder="搜尋檢舉內容..." style="width: 300px;">
-            <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 150px;">
-                <option>最新優先</option>
-                <option>最舊優先</option>
+            <input type="text" id="reported-search"
+                class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="搜尋檢舉內容..."
+                style="width: 300px;" oninput="loadComments('reported')">
+            <select id="reported-sort" class="form-select form-select-sm bg-dark text-white border-secondary"
+                style="width: 150px;" onchange="loadComments('reported')">
+                <option value="newest">最新優先</option>
+                <option value="oldest">最舊優先</option>
             </select>
         </div>
         <div class="table-responsive">
@@ -137,7 +141,7 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="reported-tbody">
                     <tr th:if="${#lists.isEmpty(reportedComments)}">
                         <td colspan="8" class="text-center py-4 text-muted">
                             <i class="fas fa-check-circle fa-3x mb-3"></i>
@@ -223,6 +227,30 @@
                 pendingSection.style.display = 'none';
                 reportedSection.style.display = 'block';
             }
+        }
+
+        function loadComments(type) {
+            const searchInput = document.getElementById(type + '-search');
+            const sortInput = document.getElementById(type + '-sort');
+            const keyword = searchInput ? searchInput.value : '';
+            const sort = sortInput ? sortInput.value : 'newest';
+
+            $.ajax({
+                url: '/report/api/list',
+                type: 'GET',
+                data: {
+                    type: type,
+                    keyword: keyword,
+                    sort: sort
+                },
+                success: function (response) {
+                    // Replace the tbody content with the response fragment
+                    $('#' + type + '-tbody').replaceWith(response);
+                },
+                error: function (xhr) {
+                    console.error('Search failed:', xhr);
+                }
+            });
         }
 
         function showReportDetail(button) {

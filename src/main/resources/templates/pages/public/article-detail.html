@@ -371,7 +371,7 @@
                 modal.show();
             } else {
                 alert('請先登入會員後再進行檢舉');
-                window.location.href = '/member/login';
+                window.location.href = '/member/login?targetUrl=' + encodeURIComponent(window.location.href);
             }
         }
 
